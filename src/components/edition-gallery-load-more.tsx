@@ -25,7 +25,7 @@ export function EditionGalleryLoadMore({ gallery, editionTitle }: EditionGallery
             <div className="relative aspect-square">
               <Image
                 src={imagePath}
-                alt={`${editionTitle} — imagem ${index + 1}`}
+                alt={`${editionTitle} - image ${index + 1}`}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className="object-cover"
@@ -37,14 +37,14 @@ export function EditionGalleryLoadMore({ gallery, editionTitle }: EditionGallery
 
       <div className="flex flex-col items-center gap-3">
         <p className="text-sm text-muted-foreground">
-          Mostrando {visiblePhotos.length} de {gallery.length} fotos
+          Showing {visiblePhotos.length} of {gallery.length} photos
         </p>
         {hasMore ? (
           <Button
             variant="outline"
             onClick={() => setVisibleCount((current) => Math.min(current + BATCH_SIZE, gallery.length))}
           >
-            Carregar mais fotos
+            Load more photos
           </Button>
         ) : null}
       </div>

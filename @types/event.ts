@@ -13,6 +13,8 @@ export type EventRef = {
   venue?: string;
   poster?: string;
   headliners?: string[];
+  ticketUrl?: string;
+  status?: "upcoming" | "past";
 };
 
 export type EventDetail = EventRef & {

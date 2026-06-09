@@ -10,7 +10,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 type MobileNavProps = {
   name: string
   links: { href: string; label: string }[]
-socials?: { instagram?: string; instagram2?: string; ra?: string }
+  socials?: { instagram?: string; instagram2?: string; ra?: string }
 }
 
 export function SiteMobileNav({ name, links, socials }: MobileNavProps) {
@@ -48,14 +48,14 @@ export function SiteMobileNav({ name, links, socials }: MobileNavProps) {
           {socials?.instagram && (
             <a href={socials.instagram} className="w-full">
               <Button variant="ghost" className="w-full">
-                <Instagram className="mr-2" /> Forest Instagram
+                <Instagram className="mr-2" /> Instagram
               </Button>
             </a>
           )}
           {socials?.instagram2 && (
             <a href={socials.instagram2} className="w-full">
               <Button variant="ghost" className="w-full">
-                <Instagram className="mr-2" /> Shankara Instagram
+                <Instagram className="mr-2" /> More Instagram
               </Button>
             </a>
           )}

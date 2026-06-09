@@ -4,12 +4,18 @@ import { TicketIcon } from "lucide-react"
 import { getParty, getGeneral } from "@/lib/party"
 import { Button } from "@/components/ui/button"
 import { SiteMobileNav } from "@/components/site-mobile-nav"
-import { NAV_LINKS } from "@/lib/nav"
+import { BOOKINGS_NAV, EVENTS_NAV } from "@/lib/nav"
+import type { SiteKey } from "@/lib/site"
 
-export async function SiteHeader() {
-  const cfg = getParty()
-  const general = getGeneral()
-  const nav = NAV_LINKS
+type SiteHeaderProps = {
+  site: SiteKey
+}
+
+export async function SiteHeader({ site }: SiteHeaderProps) {
+  const cfg = getParty(site)
+  const general = getGeneral(site)
+  const nav = site === "bookings" ? BOOKINGS_NAV : EVENTS_NAV
+  const homePath = site === "bookings" ? "/bookings-site" : "/events-site"
   const hasTicketUrl = typeof general.tickets?.url === "string" && general.tickets.url.length > 0
   const showTicketsSoon = general.ticketsComingSoon || !hasTicketUrl
 
@@ -17,12 +23,16 @@ export async function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-secondary/30 bg-card/80 backdrop-blur-sm text-foreground overflow-hidden">
       <div className="container mx-auto max-w-7xl px-4 flex h-14 items-center gap-3 relative">
         <div className="absolute left-4 z-10 md:hidden">
-          <SiteMobileNav name={cfg.name} links={nav} socials={cfg.socials} />
+          <SiteMobileNav
+            name={cfg.name}
+            links={nav.map((item) => ({ ...item, href: `${homePath}${item.href === "/" ? "" : item.href}` }))}
+            socials={cfg.socials}
+          />
         </div>
-        <Link href="/" className="flex items-center flex-1 justify-center md:flex-none md:justify-start">
+        <Link href={homePath} className="flex items-center flex-1 justify-center md:flex-none md:justify-start">
           <div className="bg-transparent">
             <Image 
-              src={cfg.logo || "/forest-shankara/logo.png"} 
+              src={cfg.logo || "/events/logo.svg"} 
               alt={cfg.name}
               width={240}
               height={80}
@@ -37,7 +47,7 @@ export async function SiteHeader() {
 
          <nav className="flex-1 justify-center items-center gap-6 hidden md:flex">
           {nav.map((l) => (
-            <Link key={l.href} href={l.href} className="text-base font-medium text-foreground/85 hover:text-foreground">
+            <Link key={l.href} href={`${homePath}${l.href === "/" ? "" : l.href}`} className="text-base font-medium text-foreground/85 hover:text-foreground">
               {l.label}
             </Link>
           ))}

@@ -24,8 +24,10 @@ export const EventLinksSchema = z.object({
 export const EventSchema = z.object({
   slug: z.string(),
   title: z.string(),
-  date: z.string(),
+  startDate: z.string(),
+  endDate: z.string().optional(),
   city: z.string(),
+  country: z.string().optional(),
   venue: z.string().optional(),
   poster: z.string().optional(),
   headliners: z.array(z.string()).optional(),
@@ -35,6 +37,8 @@ export const EventSchema = z.object({
   gallery: z.array(z.string()).optional(),
   heroImages: z.array(z.string()).optional(),
   links: EventLinksSchema.optional(),
+  ticketUrl: z.string().url().optional(),
+  status: z.enum(["upcoming", "past"]).optional(),
   description: z.string().optional(),
   seo: SEOSchema.optional()
 }).strict();

@@ -3,13 +3,20 @@ export type NavLink = {
   label: string
 }
 
-// Unified navigation used by header and footer quick links
-export const NAV_LINKS: NavLink[] = [
-  { href: "/about", label: "Sobre Nós" },
-  { href: "/lineup", label: "Lineup" },
-  { href: "/ultimas-edicoes", label: "Últimas Edições" },
-  { href: "/contact", label: "Contato" },
-  { href: "/faq", label: "Perguntas Frequentes" },
+export const EVENTS_NAV: NavLink[] = [
+  { href: "/", label: "Home" },
+  { href: "/events", label: "Events" },
+  { href: "/past", label: "Past Events" },
+  { href: "/map", label: "Map" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+]
+
+export const BOOKINGS_NAV: NavLink[] = [
+  { href: "/", label: "Home" },
+  { href: "/artists", label: "Artists" },
+  { href: "/calendar", label: "Calendar" },
+  { href: "/contact", label: "Book an Artist" },
 ]
 
 

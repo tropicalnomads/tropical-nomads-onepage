@@ -21,9 +21,9 @@ export function EventBanner({ config, general }: EventBannerProps) {
   const hasTicketUrl = typeof general.tickets?.url === "string" && general.tickets.url.length > 0;
   const showTicketsSoon = general.ticketsComingSoon || !hasTicketUrl;
   
-  const bannerSrc = (typeof cfg.banner === 'string' && /\.(png|jpe?g|webp|avif)$/i.test(cfg.banner))
+  const bannerSrc = (typeof cfg.banner === 'string' && /\.(png|jpe?g|webp|avif|svg)$/i.test(cfg.banner))
     ? cfg.banner
-    : "/forest-shankara/banner.png";
+    : "/events/hero.svg";
   
   const mobileBannerSrc = bannerSrc;
 
@@ -90,7 +90,7 @@ export function EventBanner({ config, general }: EventBannerProps) {
             }}
           >
             <Instagram className="mr-2" />
-            Seguir no Instagram
+            Follow on Instagram
           </Button>
         </div>
       </div>

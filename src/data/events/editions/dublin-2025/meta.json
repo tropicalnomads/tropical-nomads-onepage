@@ -1,0 +1,23 @@
+{
+  "id": "dublin-2025",
+  "slug": "dublin-2025",
+  "title": "Dublin Winter Edition 2025",
+  "shortLabel": "Dublin 2025",
+  "year": 2025,
+  "city": "Dublin",
+  "dateLabel": "Dec 06, 2025",
+  "description": "A sold-out night in Dublin with heavy grooves and tropical visuals.",
+  "mainArt": "/events/past/placeholder.svg",
+  "youtube": [
+    {
+      "title": "Dublin Official Recap",
+      "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    }
+  ],
+  "soundcloud": [
+    {
+      "title": "After June - Dublin Set",
+      "url": "https://soundcloud.com/afterjune/placeholder-dublin"
+    }
+  ]
+}

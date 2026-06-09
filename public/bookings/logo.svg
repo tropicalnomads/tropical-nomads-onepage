@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120" role="img" aria-label="Tropical Nomads Bookings">
+  <rect width="420" height="120" fill="#0f172a"/>
+  <circle cx="58" cy="60" r="30" fill="#14b8a6"/>
+  <text x="105" y="53" fill="#f8fafc" font-size="24" font-family="Arial, sans-serif" font-weight="700">Tropical Nomads</text>
+  <text x="105" y="81" fill="#94a3b8" font-size="18" font-family="Arial, sans-serif">BOOKINGS</text>
+</svg>

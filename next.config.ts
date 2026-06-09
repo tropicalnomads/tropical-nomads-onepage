@@ -4,13 +4,13 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: "/gallery",
-        destination: "/ultimas-edicoes",
+        source: "/events-site/gallery",
+        destination: "/events-site/past",
         permanent: true,
       },
       {
-        source: "/gallery/:editionId",
-        destination: "/ultimas-edicoes/:editionId",
+        source: "/events-site/gallery/:slug",
+        destination: "/events-site/past/:slug",
         permanent: true,
       },
     ];

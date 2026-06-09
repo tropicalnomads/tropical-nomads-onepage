@@ -10,18 +10,19 @@ export function AboutUsSection() {
         <CardContent className="p-8 md:p-12 text-center space-y-6">
           <div className="space-y-4">
             <H2 className="text-3xl md:text-4xl font-bold">
-              Sobre Nós
+              About Us
             </H2>
             <P className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            A Forest Shankara nasceu na Ilha da Magia através da união de duas crews que buscam celebrar o Psytrance na sua melhor versão, oferecendo uma estrutura de extrema qualidade pensada nos mínimos detalhes para que todos sintam-se confortáveis desfrutando de toda a energia psicodélica proposta em cada edição.
+              Tropical Nomads was born to connect dance floors across Europe through carefully curated artists,
+              immersive production, and strong community energy.
             </P>
             <P className="text-base md:text-lg text-muted-foreground/80 max-w-2xl mx-auto">
-              Se você já viveu, sabe. Se não, vem com o coração aberto.
+              If you have lived it, you know. If not, come with an open mind.
             </P>
           </div>
           <Button asChild size="lg" className="mt-6">
-            <a href="/about">
-              Conheça Nossa História
+            <a href="/events-site/about">
+              Discover our story
               <ArrowRight />
             </a>
           </Button>

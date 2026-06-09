@@ -1,0 +1,63 @@
+[
+  {
+    "slug": "after-june",
+    "name": "After June",
+    "role": "DJ",
+    "tags": ["Progressive", "Melodic"],
+    "genres": ["Progressive House", "Melodic Techno"],
+    "country": "IE",
+    "photo": "/events/artists/placeholder.svg",
+    "availableForBooking": true,
+    "agency": "Tropical Nomads Bookings",
+    "bio": [
+      "After June delivers warm progressive grooves designed for late-night dancefloors.",
+      "Known for seamless storytelling and euphoric transitions."
+    ],
+    "links": {
+      "instagram": "https://instagram.com/afterjune",
+      "soundcloud": "https://soundcloud.com/afterjune"
+    },
+    "embeds": {
+      "soundcloud": ["https://soundcloud.com/afterjune/placeholder-mix"],
+      "youtube": ["https://www.youtube.com/watch?v=dQw4w9WgXcQ"]
+    }
+  },
+  {
+    "slug": "shivaion",
+    "name": "Shivaion",
+    "role": "DJ",
+    "tags": ["Psytrance", "Forest"],
+    "genres": ["Psytrance", "Forest Psy"],
+    "country": "DE",
+    "photo": "/events/artists/placeholder.svg",
+    "availableForBooking": true,
+    "agency": "Tropical Nomads Bookings",
+    "bio": "Shivaion blends hypnotic forest layers with powerful rolling basslines.",
+    "links": {
+      "instagram": "https://instagram.com/shivaion",
+      "soundcloud": "https://soundcloud.com/shivaion"
+    },
+    "embeds": {
+      "soundcloud": ["https://soundcloud.com/shivaion/placeholder-set"]
+    }
+  },
+  {
+    "slug": "blazing",
+    "name": "Blazin'G",
+    "role": "DJ",
+    "tags": ["Techno", "Afro House"],
+    "genres": ["Afro House", "Tech House"],
+    "country": "NL",
+    "photo": "/events/artists/placeholder.svg",
+    "availableForBooking": true,
+    "agency": "Tropical Nomads Bookings",
+    "bio": "Blazin'G is known for percussive grooves and energetic peak-time sets.",
+    "links": {
+      "instagram": "https://instagram.com/blazing",
+      "spotify": "https://open.spotify.com/artist/0du5cEVh5yTK9QJze8zA0C"
+    },
+    "embeds": {
+      "youtube": ["https://www.youtube.com/watch?v=ysz5S6PUM-U"]
+    }
+  }
+]

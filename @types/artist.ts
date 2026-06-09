@@ -18,10 +18,14 @@ export type Artist = {
   name: string;
   role: ArtistRole;
   tags: ArtistTag[];
+  genres?: string[];
   country?: string;
   photo?: string;
   bio?: string | string[];
   agency?: string;
+  availableForBooking?: boolean;
+  pressKit?: string;
+  fee?: string;
   links?: SocialLinks;
   embeds?: ArtistEmbeds;
 };

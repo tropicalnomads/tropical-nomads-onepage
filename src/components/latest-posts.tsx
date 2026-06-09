@@ -1,7 +1,6 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import Image from "next/image";
 
@@ -26,9 +25,9 @@ export function LatestPosts({ allPosts }: LatestPostsProps) {
   return (
     <section className="space-y-6">
       <div className="space-y-2 text-center md:text-left">
-        <h2 className="text-2xl md:text-3xl font-bold">Últimas Notícias</h2>
+        <h2 className="text-2xl md:text-3xl font-bold">Latest Updates</h2>
         <p className="text-muted-foreground">
-          Mantenha-se conectado com as últimas notícias e atualizações da Forest Shankara
+          Stay connected with the latest announcements from Tropical Nomads.
         </p>
       </div>
       
@@ -69,9 +68,9 @@ export function LatestPosts({ allPosts }: LatestPostsProps) {
                       </h3>
                       <p className="text-sm text-muted-foreground">
                         {new Date(post.publishedAt).toLocaleDateString('pt-BR', {
-                          day: 'numeric',
-                          month: 'long',
-                          year: 'numeric'
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric"
                         })}
                       </p>
                     </CardContent>

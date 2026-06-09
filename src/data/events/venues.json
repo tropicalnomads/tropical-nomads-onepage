@@ -1,0 +1,38 @@
+[
+  {
+    "city": "Dublin",
+    "country": "Ireland",
+    "lat": 53.3498,
+    "lng": -6.2603,
+    "status": "past",
+    "count": 4,
+    "events": ["dublin-winter-edition"]
+  },
+  {
+    "city": "Amsterdam",
+    "country": "Netherlands",
+    "lat": 52.3676,
+    "lng": 4.9041,
+    "status": "past",
+    "count": 1,
+    "events": ["amsterdam-spring-edition"]
+  },
+  {
+    "city": "Berlin",
+    "country": "Germany",
+    "lat": 52.52,
+    "lng": 13.405,
+    "status": "past",
+    "count": 1,
+    "events": ["berlin-open-air-edition"]
+  },
+  {
+    "city": "London",
+    "country": "United Kingdom",
+    "lat": 51.5072,
+    "lng": -0.1276,
+    "status": "upcoming",
+    "count": 1,
+    "events": ["london-summer-session"]
+  }
+]

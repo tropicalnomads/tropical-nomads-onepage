@@ -1,0 +1,35 @@
+[
+  {
+    "slug": "london-summer-session",
+    "title": "Tropical Nomads London Summer Session",
+    "startDate": "2026-07-12",
+    "endDate": "2026-07-12",
+    "city": "London",
+    "country": "UK",
+    "venue": "Studio 338",
+    "poster": "/events/posters/london-summer-session.svg",
+    "status": "upcoming",
+    "ticketUrl": "https://www.residentadvisor.net/events/placeholder",
+    "description": "Our next major stop with an international lineup and full tropical production.",
+    "lineup": [
+      { "artistSlug": "after-june", "headliner": true, "order": 1 },
+      { "artistSlug": "shivaion", "order": 2 },
+      { "artistSlug": "blazing", "order": 3 }
+    ]
+  },
+  {
+    "slug": "dublin-winter-edition",
+    "title": "Tropical Nomads Dublin Winter Edition",
+    "startDate": "2025-12-06",
+    "endDate": "2025-12-06",
+    "city": "Dublin",
+    "country": "IE",
+    "venue": "District 8",
+    "status": "past",
+    "description": "Packed dancefloor and special guests from across Europe.",
+    "lineup": [
+      { "artistSlug": "shivaion", "headliner": true, "order": 1 },
+      { "artistSlug": "after-june", "order": 2 }
+    ]
+  }
+]

@@ -1,0 +1,27 @@
+{
+  "key": "bookings",
+  "name": "Tropical Nomads Bookings",
+  "logo": "/bookings/logo.svg",
+  "banner": "/bookings/hero.svg",
+  "tagline": "International roster for clubs, festivals, and private events.",
+  "city": "Europe",
+  "date": "2026-07-12",
+  "venue": "Available Across Europe",
+  "tickets": {
+    "label": "Bookings open"
+  },
+  "colors": {
+    "bg": "#0d1b2a",
+    "fg": "#f8fafc",
+    "accent": "#14b8a6"
+  },
+  "socials": {
+    "instagram": "https://instagram.com/tropicalnomads",
+    "website": "https://tropical-nomads.com"
+  },
+  "seo": {
+    "title": "Tropical Nomads Bookings",
+    "description": "Book our roster of DJs and artists for your event.",
+    "ogImage": "/bookings/hero.svg"
+  }
+}

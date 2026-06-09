@@ -15,6 +15,6 @@ export type PartyConfig = {
   colors?: { bg: string; fg: string; accent: string };
   socials?: SocialLinks;
   seo?: SEO;
-  tickets?: { url: string; label: string };
+  tickets?: { url?: string; label: string };
 };
 

@@ -1,27 +1,24 @@
 import type { MetadataRoute } from "next";
-import events from "@/data/forest-shankara/events.json";
-import editions from "@/data/forest-shankara/editions/index.json";
-import type { EditionIndexItem, EventDetail } from "@/lib/types";
+import { getEvents, listEditions } from "@/lib/party";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = process.env.NEXT_PUBLIC_SITE_URL || "";
-  const allEvents = events as EventDetail[];
-  const allEditions = editions as EditionIndexItem[];
+  const eventItems = getEvents("events");
+  const editionItems = listEditions("events");
   const urls: MetadataRoute.Sitemap = [
     { url: `${base}/`, changeFrequency: "weekly" as const, priority: 1.0 },
     { url: `${base}/about`, changeFrequency: "monthly" as const, priority: 0.5 },
     { url: `${base}/contact`, changeFrequency: "yearly" as const, priority: 0.3 },
     { url: `${base}/events`, changeFrequency: "weekly" as const, priority: 0.8 },
-    { url: `${base}/lineup`, changeFrequency: "weekly" as const, priority: 0.7 },
-    { url: `${base}/ultimas-edicoes`, changeFrequency: "monthly" as const, priority: 0.6 },
-    { url: `${base}/faq`, changeFrequency: "monthly" as const, priority: 0.4 },
+    { url: `${base}/past`, changeFrequency: "monthly" as const, priority: 0.6 },
+    { url: `${base}/map`, changeFrequency: "monthly" as const, priority: 0.7 },
   ];
 
   // Event detail pages
   urls.push(
-    ...allEvents.map((e) => ({
+    ...eventItems.map((e) => ({
       url: `${base}/events/${e.slug}`,
-      lastModified: e.startDate,
+      lastModified: e.startDate || e.endDate,
       changeFrequency: "weekly" as const,
       priority: 0.8
     }))
@@ -29,10 +26,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Gallery edition pages
   urls.push(
-    ...allEditions
+    ...editionItems
       .filter((edition) => edition.id !== "3")
       .map((edition) => ({
-        url: `${base}/ultimas-edicoes/${edition.id}`,
+        url: `${base}/past/${edition.slug}`,
         changeFrequency: "monthly" as const,
         priority: 0.5
       }))

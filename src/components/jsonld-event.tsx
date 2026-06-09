@@ -1,8 +1,13 @@
 import { getGeneral, getParty } from "@/lib/party";
+import type { SiteKey } from "@/lib/site";
 
-export function EventJsonLd() {
-  const config = getParty();
-  const general = getGeneral();
+type EventJsonLdProps = {
+  site: SiteKey;
+};
+
+export function EventJsonLd({ site }: EventJsonLdProps) {
+  const config = getParty(site);
+  const general = getGeneral(site);
 
   if (!config.date) {
     return null;

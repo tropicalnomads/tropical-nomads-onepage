@@ -2,21 +2,22 @@ import Image from "next/image";
 import { MapPin, TicketIcon } from "lucide-react";
 import { getParty } from "@/lib/party";
 import { TextButton } from "@/components/ui/text-button";
-import { NAV_LINKS } from "@/lib/nav";
+import { BOOKINGS_NAV, EVENTS_NAV } from "@/lib/nav";
+import type { SiteKey } from "@/lib/site";
 
-const MONTHS_PT_BR = [
-  "janeiro",
-  "fevereiro",
-  "março",
-  "abril",
-  "maio",
-  "junho",
-  "julho",
-  "agosto",
-  "setembro",
-  "outubro",
-  "novembro",
-  "dezembro",
+const MONTHS_EN = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ] as const;
 
 type DateParts = { day: number; month: number; year: number };
@@ -45,13 +46,13 @@ function parseDateParts(dateString?: string): DateParts | null {
 }
 
 function formatSingleDate(parts: DateParts): string {
-  const monthName = MONTHS_PT_BR[parts.month - 1];
-  return `${parts.day} de ${monthName} de ${parts.year}`;
+  const monthName = MONTHS_EN[parts.month - 1];
+  return `${monthName} ${parts.day}, ${parts.year}`;
 }
 
 function formatDateRange(date?: string, endDate?: string): string {
   const start = parseDateParts(date);
-  if (!start) return "Data a confirmar";
+  if (!start) return "Date to be announced";
 
   if (!endDate) return formatSingleDate(start);
 
@@ -60,15 +61,21 @@ function formatDateRange(date?: string, endDate?: string): string {
 
   const sameMonthAndYear = start.month === end.month && start.year === end.year;
   if (sameMonthAndYear) {
-    const monthName = MONTHS_PT_BR[start.month - 1];
-    return `${start.day} e ${end.day} de ${monthName} de ${start.year}`;
+    const monthName = MONTHS_EN[start.month - 1];
+    return `${monthName} ${start.day} - ${end.day}, ${start.year}`;
   }
 
-  return `${formatSingleDate(start)} até ${formatSingleDate(end)}`;
+  return `${formatSingleDate(start)} to ${formatSingleDate(end)}`;
 }
 
-export async function SiteFooter() {
-  const cfg = getParty();
+type SiteFooterProps = {
+  site: SiteKey;
+};
+
+export async function SiteFooter({ site }: SiteFooterProps) {
+  const cfg = getParty(site);
+  const nav = site === "bookings" ? BOOKINGS_NAV : EVENTS_NAV;
+  const homePath = site === "bookings" ? "/bookings-site" : "/events-site";
   const nextEventDate = formatDateRange(cfg.date, cfg.endDate);
 
   return (
@@ -79,7 +86,7 @@ export async function SiteFooter() {
           <div className="space-y-4 text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start space-x-3">
               <Image 
-                src={cfg.logo || "/forest-shankara/logo.png"} 
+                src={cfg.logo || "/events/logo.svg"} 
                 alt={cfg.name}
                 width={120}
                 height={40}
@@ -90,18 +97,17 @@ export async function SiteFooter() {
               />
             </div>
             <p className="text-muted-foreground max-w-md mx-auto md:mx-0">
-              Uma experiência única de música eletrônica em meio à natureza, 
-              onde as raízes cósmicas se encontram com a energia da floresta.
+              Tropical Nomads creates music-driven experiences and artist bookings across Europe.
             </p>
             <div className="flex gap-4 justify-center md:justify-start">
               {cfg.socials?.instagram && (
                 <a href={cfg.socials.instagram} target="_blank" rel="noopener noreferrer">
-                  <span className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-secondary transition-colors cursor-pointer">Forest Instagram</span>
+                  <span className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-secondary transition-colors cursor-pointer">Instagram</span>
                 </a>
               )}
               {cfg.socials?.instagram2 && (
                 <a href={cfg.socials.instagram2} target="_blank" rel="noopener noreferrer">
-                  <span className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-secondary transition-colors cursor-pointer">Shankara Instagram</span>
+                  <span className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-secondary transition-colors cursor-pointer">Instagram 2</span>
                 </a>
               )}
               {cfg.socials?.ra && (
@@ -119,23 +125,23 @@ export async function SiteFooter() {
 
           {/* Quick Links */}
           <div className="space-y-4 text-center">
-            <h3 className="font-semibold text-foreground">Links Rápidos</h3>
+            <h3 className="font-semibold text-foreground">Quick Links</h3>
             <nav className="flex flex-col space-y-2 items-center">
-              {NAV_LINKS.map((l) => (
-                <TextButton key={l.href} href={l.href}>{l.label}</TextButton>
+              {nav.map((l) => (
+                <TextButton key={l.href} href={`${homePath}${l.href === "/" ? "" : l.href}`}>{l.label}</TextButton>
               ))}
             </nav>
           </div>
 
           {/* Event Info */}
           <div className="space-y-4 text-center">
-            <h3 className="font-semibold text-foreground">Próximo Evento</h3>
+            <h3 className="font-semibold text-foreground">Next Event</h3>
             <div className="space-y-1">
               <p className="text-muted-foreground">
                 <strong className="text-foreground">{nextEventDate}</strong>
               </p>
               <p className="text-muted-foreground">
-                {cfg.city || "Local a confirmar"}
+                {cfg.city || "Location to be announced"}
               </p>
 
             </div>
@@ -150,7 +156,7 @@ export async function SiteFooter() {
               <a href={cfg.tickets?.url || '#'} target="_blank" rel="noopener noreferrer" data-ga-event="click_ticket_cta" data-ga-id="footer_tickets" data-ga-section="footer">
                 <span className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-secondary transition-colors cursor-pointer">
                   <TicketIcon className="w-4 h-4" />
-                  {cfg.tickets?.label || "Comprar Ingressos"} 
+                  {cfg.tickets?.label || "Buy Tickets"} 
                   </span>
                 </a>  
               )}
@@ -162,10 +168,10 @@ export async function SiteFooter() {
         <div className="border-t border-secondary/20 mt-8 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} {cfg.name}. Todos os direitos reservados.
+              © {new Date().getFullYear()} {cfg.name}. All rights reserved.
             </p>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <span>Desenvolvido com ❤️ para a comunidade psytrance</span>
+              <span>Built for the global electronic music community.</span>
             </div>
           </div>
         </div>

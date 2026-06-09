@@ -5,5 +5,6 @@ export * from "./event";
 export * from "./post";
 export * from "./faq";
 export * from "./party";
+export * from "./venue";
 export * as Collections from "./lists";
 

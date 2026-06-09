@@ -6,6 +6,7 @@ export const SocialLinksSchema = z.object({
   soundcloud: z.string().url().optional(),
   spotify: z.string().url().optional(),
   youtube: z.string().url().optional(),
+  facebook: z.string().url().optional(),
   ra: z.string().url().optional(),
   website: z.string().url().optional()
 }).strict();

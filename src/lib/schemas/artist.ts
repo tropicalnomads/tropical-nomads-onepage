@@ -10,6 +10,10 @@ export const ArtistSchema = z.object({
   photo: z.string().optional(),
   bio: z.union([z.string(), z.array(z.string())]).optional(),
   agency: z.string().optional(),
+  availableForBooking: z.boolean().optional(),
+  genres: z.array(z.string()).optional(),
+  pressKit: z.string().url().optional(),
+  fee: z.string().optional(),
   links: SocialLinksSchema.optional(),
   embeds: z.object({
     soundcloud: z.array(z.string().url()).optional(),
