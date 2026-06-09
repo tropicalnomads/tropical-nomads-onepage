@@ -1,0 +1,67 @@
+[
+  {
+    "category": "Alimentação",
+    "question": "Posso levar comida e bebida?",
+    "answer": "Não é permitido entrar com qualquer tipo de bebida alcoólica ou comida. Apenas frutas em embalagem transparente são permitidas."
+  },
+  {
+    "category": "Horários",
+    "question": "Qual o horário do evento?",
+    "answer": "A festa será 24 horas: começa às 18h de sábado, 05 de dezembro, e termina às 18h de domingo, 06 de dezembro."
+  },
+  {
+    "category": "Ingressos",
+    "question": "Onde posso comprar os ingressos?",
+    "answer": "Os ingressos podem ser comprados através do link https://uticket.com.br/evento/forest-shankara-sacred-pulse/01LZ9CCY0UCE1W ou com os promoters oficiais do evento."
+  },
+  {
+    "category": "Ingressos",
+    "question": "O camping está incluso no ingresso?",
+    "answer": "Sim, o camping está incluso no ingresso desta edição."
+  },
+  {
+    "category": "Ingressos",
+    "question": "Há re-entrada no evento?",
+    "answer": "Não, não há re-entrada."
+  },
+  {
+    "category": "Itens Permitidos",
+    "question": "O que posso levar para o evento?",
+    "answer": "Você pode levar: câmeras fotográficas, frutas (em embalagem transparente), cigarros (1 unidade por pessoa, lacrada), itens de higiene pessoal, bolsas e mochilas (serão revistadas), copo térmico ou ecológico, bonés e chapéus, malabares (sem ponta ou fogo), remédios controlados (com receita), cigarro eletrônico (vazio + essência lacrada), cadeira de praia (fora da pista), repelente, documento, roupa de frio, óculos de sol e roupa para calor."
+  },
+  {
+    "category": "Itens Permitidos",
+    "question": "Posso levar cadeira de praia?",
+    "answer": "Sim, você pode levar cadeira de praia, assento dobrável ou canga, mas apenas fora da pista de dança. Lembre-se: 'CADEIRA NÃO DANÇA!'"
+  },
+  {
+    "category": "Itens Proibidos",
+    "question": "O que NÃO posso levar?",
+    "answer": "É proibido levar: bebidas alcoólicas (tolerância zero), entorpecentes ou substâncias ilícitas, apito ou laser, caixa de som portátil, armas ou objetos perigosos, venda de produtos não cadastrados, narguile, maçarico e líquidos inflamáveis, itens de camping perigosos, preconceito e energias negativas. Portadores de itens com tolerância zero serão barrados."
+  },
+  {
+    "category": "Itens Proibidos",
+    "question": "Posso levar cigarro eletrônico?",
+    "answer": "Sim, mas apenas se estiver vazio e com a essência lacrada. É importante seguir essa regra para evitar problemas na entrada."
+  },
+  {
+    "category": "Localização",
+    "question": "Onde será o evento?",
+    "answer": "O evento será realizado em Florianópolis, SC. A localização exata pode ser encontrada no link: https://maps.app.goo.gl/PzrRkHoWQ1LyM9T3A"
+  },
+  {
+    "category": "Localização",
+    "question": "O evento é em Florianópolis?",
+    "answer": "Sim, o evento será realizado em Florianópolis, Santa Catarina, entre 05 e 06 de dezembro."
+  },
+  {
+    "category": "Regulamento",
+    "question": "Posso levar crianças?",
+    "answer": "Não. Por questões de regulamentação, segurança e classificação do evento, a entrada de crianças não é permitida."
+  },
+  {
+    "category": "Segurança",
+    "question": "Haverá revista na entrada?",
+    "answer": "Sim, todas as bolsas, mochilas e necessaires serão revistadas na entrada. Portadores de itens proibidos serão barrados do evento."
+  }
+]

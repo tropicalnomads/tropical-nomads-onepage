@@ -1,0 +1,27 @@
+{
+  "key": "forest-shankara",
+  "name": "Forest Shankara",
+  "logo": "/forest-shankara/logo.png",
+  "banner": "/forest-shankara/editions/3/main-art/Banner16x9AI.png",
+  "tagline": "Sacred Pulse",
+  "city": "Florianópolis",
+  "date": "2026-12-05T18:00:00-03:00",
+  "endDate": "2026-12-06T18:00:00-03:00",
+  "colors": {
+    "bg": "#0f172a",
+    "fg": "#e5e7eb",
+    "accent": "#a78bfa"
+  },
+  "socials": {
+    "instagram": "https://www.instagram.com/forest.untd/",
+    "instagram2": "https://www.instagram.com/shankarafestivalbr/"
+  },
+  "seo": {
+    "title": "Forest Shankara #3 — Sacred Pulse",
+    "description": "Forest Shankara #3: Sacred Pulse em Florianópolis/SC, nos dias 05 e 06 de dezembro de 2026.",
+    "ogImage": "/forest-shankara/editions/3/main-art/MainArt.jpeg"
+  },
+  "tickets": {
+    "label": "Ingressos em breve"
+  }
+}

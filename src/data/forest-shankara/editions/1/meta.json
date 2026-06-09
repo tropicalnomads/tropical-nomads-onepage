@@ -1,0 +1,26 @@
+{
+  "id": "1",
+  "slug": "primeira-edicao",
+  "title": "Forest Shankara #1 - O Suspiro",
+  "shortLabel": "1ª edição",
+  "year": 2024,
+  "city": "Florianópolis",
+  "dateLabel": "8 de junho de 2025",
+  "mainArt": "/forest-shankara/editions/1/main-art/principal-story.png",
+  "youtube": [
+    {
+      "title": "Sektorlogic vs After June @ Forest Shankara 2025",
+      "url": "https://www.youtube.com/watch?v=gaN6Bd0pLgM"
+    }
+  ],
+  "soundcloud": [
+    {
+      "title": "Piazer @ Forest Shankara",
+      "url": "https://soundcloud.com/piazermusic/set-piazer-at-forest-shankara-festival-setpiazer2025forestshankara"
+    },
+    {
+      "title": "Dani Gehlen @ Forest Shankara",
+      "url": "https://soundcloud.com/bookingsforest/dani-gehlen-at-forest-shankara"
+    }
+  ]
+}
