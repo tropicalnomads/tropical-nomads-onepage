@@ -10,7 +10,9 @@
     {
       "id": "117712",
       "title": "Tropical Nomads: Avan7",
-      "partnerIds": ["pgp"],
+      "partnerIds": [
+        "pgp"
+      ],
       "type": "Club",
       "dateStart": "2026-07-10T18:00:00+02:00",
       "dateEnd": "2026-07-11T03:00:00+02:00",
@@ -158,7 +160,9 @@
     {
       "id": "117713",
       "title": "Tropical Groove: Avan7",
-      "partnerIds": ["psy-groove"],
+      "partnerIds": [
+        "psy-groove"
+      ],
       "type": "Club",
       "dateStart": "2026-07-11T14:00:00+02:00",
       "dateEnd": "2026-07-12T03:00:00+02:00",
@@ -288,7 +292,9 @@
     {
       "id": "116643",
       "title": "Bom Shanka Label Night",
-      "partnerIds": ["universe"],
+      "partnerIds": [
+        "universe"
+      ],
       "type": "Club",
       "dateStart": "2026-08-15T20:00:00+02:00",
       "dateEnd": "2026-08-16T05:00:00+02:00",
@@ -306,8 +312,18 @@
         },
         "mapUrl": "https://maps.app.goo.gl/ZiJAPJSSdVRihLY48"
       },
-      "lineupRaw": "UNIVERSE & TROPICAL NOMADS presents\n🔱 BOM SHANKA MUSIC LABEL NIGHT 👽\n\nFor the first time, TROPICAL NOMADS arrives in London, joining forces with UNIVERSE for a special night dedicated to the sound and energy of Bom Shanka Music.\n\nThis edition brings 4 names from the Bom Shanka family, including BOCARA 🇧🇷, coming directly from Brazil, alongside ABIOTIQ 🇫🇷, DIRTY, SAFFI 🇬🇧 and NUKY 🇬🇧 — a lineup built for a proper psychedelic journey, from deep grooves to full-power dancefloor moments. 🔥\n\nThe night also features 3RD VISION 🇧🇷, AFTER JUNE 🇧🇷, BLAZIN’G 🇧🇷 and SHIVAION 🇧🇷, connecting the Brazilian psychedelic force with the London scene.\n\nExpect almost 9 hours of psytrance, international artists, heavy sound, psychedelic atmosphere and a dancefloor ready to move from the first beat until the morning. 🌀\n\nLondon, this is the first one — and we’re coming properly. 🤯",
+      "lineupRaw": "UNIVERSE & TROPICAL NOMADS presents\n🔱 BOM SHANKA MUSIC LABEL NIGHT 👽\n\nFor the first time, TROPICAL NOMADS arrives in London, joining forces with UNIVERSE for a special night dedicated to the sound and energy of Bom Shanka Music.\n\nThis edition brings 4 names from the Bom Shanka family, including BOCARA 🇧🇷, coming directly from Brazil, alongside ABIOTIQ 🇫🇷, DIRTY, SAFFI 🇬🇧 and NUKY 🇬🇧 — a lineup built for a proper psychedelic journey, from deep grooves to full-power dancefloor moments. 🔥\n\nThe night also features 3RD VISION 🇧🇷, After June 🇧🇷, BLAZIN’G 🇧🇷 and Shivaion 🇧🇷, connecting the Brazilian psychedelic force with the London scene.\n\nExpect almost 9 hours of psytrance, international artists, heavy sound, psychedelic atmosphere and a dancefloor ready to move from the first beat until the morning. 🌀\n\nLondon, this is the first one — and we’re coming properly. 🤯",
       "stages": [],
+      "cardArtists": [
+        "Bocara",
+        "Abiotiq",
+        "Dirty Saffi",
+        "Nuky",
+        "3rd Vision",
+        "After June",
+        "Blazin'G",
+        "Shivaion"
+      ],
       "description": "🗓️ Saturday — 15 August 2026\r\n📍 Bar A Bar, London\r\n🕣 20:00 – 04:30\r\n🔱 Bom Shanka Music Label Night\r\n👽 Universe x Tropical Nomads\r\n\r\n⚠️ LIMITED CAPACITY",
       "organizer": "After June",
       "images": {
@@ -337,7 +353,9 @@
     {
       "id": "tba-dublin-aug-2026",
       "title": "Tropical Groove: TBA",
-      "partnerIds": ["psy-groove"],
+      "partnerIds": [
+        "psy-groove"
+      ],
       "type": "Club",
       "dateStart": "2026-08-14T20:00:00+01:00",
       "timezone": "Europe/Dublin",
@@ -392,12 +410,41 @@
         },
         "mapUrl": "https://maps.app.goo.gl/EtfCwAWYFE9CAmhNA"
       },
-      "lineupRaw": "TERRACE\t\t\n19:00 - Underbeat  (Psytechno)\n20:00 - Araujah (Psytrance)\n21:00 - Carol Stefaniak (Psytrance)\n22:00 - Algorithmix (Psytrance)\n23:00 - Corralo (Psytrance)\n00:00 - Fluffy (Psycore)\n01:00 - END\n\t\t\t\nSOUNDHOUSE\n21:00 - Blazin'G (Fullon)\n22:00 - Altered State (Fullon)\n23:00 - Shivaion (Fullon)\n00:00 - 🔥 BURN IN NOISE 🔥 (Fullon)\n01:30 - After June (Fullon / Twilight)\n02:45 - END",
+      "lineupRaw": "TERRACE\t\t\n19:00 - Underbeat  (Psytechno)\n20:00 - Araujah (Psytrance)\n21:00 - Carol Stefaniak (Psytrance)\n22:00 - Algorithmix (Psytrance)\n23:00 - Corralo (Psytrance)\n00:00 - Fluffy (Psycore)\n01:00 - END\n\t\t\t\nSOUNDHOUSE\n21:00 - Blazin'G (Fullon)\n22:00 - Altered State (Fullon)\n23:00 - Shivaion (Fullon)\n00:00 - 🔥 Burn in Noise 🔥 (Fullon)\n01:30 - After June (Fullon / Twilight)\n02:45 - END",
       "stages": [
         {
           "name": "Line-up",
           "genres": [],
           "artists": [
+            {
+              "name": "Burn in Noise",
+              "genres": [
+                "Full-On"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Altered State",
+              "genres": [
+                "Full-On"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "After June",
+              "genres": [
+                "Full-On",
+                "Twilight"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Shivaion",
+              "genres": [
+                "Full-On"
+              ],
+              "stage": "Line-up"
+            },
             {
               "name": "Underbeat",
               "genres": [
@@ -446,40 +493,11 @@
                 "Full-On"
               ],
               "stage": "Line-up"
-            },
-            {
-              "name": "Altered State",
-              "genres": [
-                "Full-On"
-              ],
-              "stage": "Line-up"
-            },
-            {
-              "name": "Shivaion",
-              "genres": [
-                "Full-On"
-              ],
-              "stage": "Line-up"
-            },
-            {
-              "name": "BURN IN NOISE",
-              "genres": [
-                "Full-On"
-              ],
-              "stage": "Line-up"
-            },
-            {
-              "name": "After June",
-              "genres": [
-                "Full-On",
-                "Twilight"
-              ],
-              "stage": "Line-up"
             }
           ]
         }
       ],
-      "description": "🚨 BURN IN NOISE is coming to Dublin!!! 🚨\n\nOne of the biggest and most respected names in the global psytrance scene, BURN IN NOISE 🇧🇷 lands at The Sound House for a very special edition of Tropical Groove! 🔥👽\n\n🗓️ June 5th - 19:00\n📍 The Sound House\n👽 2 Floors\n⏱️ Over 7h of Party! \n⚠️ LIMITED CAPACITY\n\nDublin… this one will be next level 🤯",
+      "description": "🚨 Burn in Noise is coming to Dublin!!! 🚨\n\nOne of the biggest and most respected names in the global psytrance scene, Burn in Noise 🇧🇷 lands at The Sound House for a very special edition of Tropical Groove! 🔥👽\n\n🗓️ June 5th - 19:00\n📍 The Sound House\n👽 2 Floors\n⏱️ Over 7h of Party! \n⚠️ LIMITED CAPACITY\n\nDublin… this one will be next level 🤯",
       "organizer": "After June",
       "images": {
         "small": "https://img.goabase.net/images/flyer/small/20260605_tropical-groove-presents-burn-in-noise_20260301154809.png",
@@ -525,22 +543,22 @@
         },
         "mapUrl": "https://maps.app.goo.gl/Zp3PKsaYoqTaRQpH7"
       },
-      "lineupRaw": "🔥 BURN IN NOISE (Nano Records) 🔥\n🌀 AFTER JUNE (Tropical Nomads / Forest Shankara) 🌀\n🔥 SHIVAION (Tropical Nomads / Psy Groove )🔥\n🌀BLAZIN'G (Tropical Nomads / Psy Groove)🌀\n🔥 CIB & CIMI (Psychedelic Grateful Punks)🔥\n🌀 PSYKADELICA (Dutch Acid Family)🌀\n🔥 POLZITIV (Psychedelic Grateful Punks) 🔥\n🌀 VALKYRIE (M-United) 🌀",
+      "lineupRaw": "🔥 Burn in Noise (Nano Records) 🔥\n🌀 After June (Tropical Nomads / Forest Shankara) 🌀\n🔥 Shivaion (Tropical Nomads / Psy Groove )🔥\n🌀BLAZIN'G (Tropical Nomads / Psy Groove)🌀\n🔥 CIB & CIMI (Psychedelic Grateful Punks)🔥\n🌀 PSYKADELICA (Dutch Acid Family)🌀\n🔥 POLZITIV (Psychedelic Grateful Punks) 🔥\n🌀 VALKYRIE (M-United) 🌀",
       "stages": [
         {
           "name": "Line-up",
           "genres": [],
           "artists": [
             {
-              "name": "BURN IN NOISE",
+              "name": "Burn in Noise",
               "stage": "Line-up"
             },
             {
-              "name": "AFTER JUNE",
+              "name": "After June",
               "stage": "Line-up"
             },
             {
-              "name": "SHIVAION",
+              "name": "Shivaion",
               "stage": "Line-up"
             },
             {
@@ -619,9 +637,9 @@
           "genres": [],
           "artists": [
             {
-              "name": "Ivan Pocintela",
+              "name": "Texo",
               "genres": [
-                "Tech House"
+                "Full-On"
               ],
               "stage": "Line-up"
             },
@@ -629,6 +647,17 @@
               "name": "Candelas",
               "genres": [
                 "Prog Tech"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Blazin'G",
+              "stage": "Line-up"
+            },
+            {
+              "name": "Ivan Pocintela",
+              "genres": [
+                "Tech House"
               ],
               "stage": "Line-up"
             },
@@ -672,17 +701,6 @@
               "genres": [
                 "Psytrance"
               ],
-              "stage": "Line-up"
-            },
-            {
-              "name": "Texo",
-              "genres": [
-                "Full-On"
-              ],
-              "stage": "Line-up"
-            },
-            {
-              "name": "Blazin'G",
               "stage": "Line-up"
             }
           ]
@@ -735,12 +753,33 @@
         },
         "mapUrl": "https://maps.app.goo.gl/EtfCwAWYFE9CAmhNA"
       },
-      "lineupRaw": "☘️ Pre-St Patrick` s Day + NIAMH & SHIVAION` s Bday 🎂\n\nJoin us for a special Pre–St. Patrick’s Psytrance Night in Dublin as we also celebrate the birthday of Niamh & Shivaion!\nA full evening of psytrance, techno and tech-house vibes, good energy, and a dancefloor full of friends.\nLet’s warm up for St. Patrick’s with powerful beats, smiles, and a proper underground atmosphere. ☘️🎶\n\nVENUE\nThe Sound House – Dublin\n1st Floor, 28 Eden Quay, North City, Dublin D01 DE44\n\nLINE UP\n\n🌞 TERRACE (19:00 – 01:00)\n19:00 – Shivaion in Dub - Dub\n20:00 – Jamds – Tech House\n21:00 – Teejota – Techno\n22:00 – Dolce Vita – Full-On\n23:00 – Sylent Hill – Dark / Forest\n00:00 – Iaka – Dark / Forest\n01:00 – END\n\n🌙 MAIN FLOOR (23:00 – 2:45)\n23:00 – Romanetto b2b Imniamh – Peak Time\n00:15 – Blazin’G b2b Shivaion – Full-On\n01:30 – Adrenaline Rush (BOM SHANKA) – Full-On Night\n02:45 – END",
+      "lineupRaw": "☘️ Pre-St Patrick` s Day + NIAMH & Shivaion` s Bday 🎂\n\nJoin us for a special Pre–St. Patrick’s Psytrance Night in Dublin as we also celebrate the birthday of Niamh & Shivaion!\nA full evening of psytrance, techno and tech-house vibes, good energy, and a dancefloor full of friends.\nLet’s warm up for St. Patrick’s with powerful beats, smiles, and a proper underground atmosphere. ☘️🎶\n\nVENUE\nThe Sound House – Dublin\n1st Floor, 28 Eden Quay, North City, Dublin D01 DE44\n\nLINE UP\n\n🌞 TERRACE (19:00 – 01:00)\n19:00 – Shivaion in Dub - Dub\n20:00 – Jamds – Tech House\n21:00 – Teejota – Techno\n22:00 – Dolce Vita – Full-On\n23:00 – Sylent Hill – Dark / Forest\n00:00 – Iaka – Dark / Forest\n01:00 – END\n\n🌙 MAIN FLOOR (23:00 – 2:45)\n23:00 – Romanetto b2b Imniamh – Peak Time\n00:15 – Blazin’G b2b Shivaion – Full-On\n01:30 – Adrenaline Rush (BOM SHANKA) – Full-On Night\n02:45 – END",
       "stages": [
         {
           "name": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44",
           "genres": [],
           "artists": [
+            {
+              "name": "Adrenaline Rush",
+              "genres": [
+                "Full-On Night"
+              ],
+              "stage": "MAIN FLOOR"
+            },
+            {
+              "name": "Shivaion",
+              "genres": [
+                "Full-On"
+              ],
+              "stage": "MAIN FLOOR"
+            },
+            {
+              "name": "Blazin'G",
+              "genres": [
+                "Full-On"
+              ],
+              "stage": "MAIN FLOOR"
+            },
             {
               "name": "Shivaion in Dub",
               "genres": [
@@ -806,27 +845,6 @@
                 "Peak Time"
               ],
               "stage": "MAIN FLOOR"
-            },
-            {
-              "name": "Blazin'G",
-              "genres": [
-                "Full-On"
-              ],
-              "stage": "MAIN FLOOR"
-            },
-            {
-              "name": "Shivaion",
-              "genres": [
-                "Full-On"
-              ],
-              "stage": "MAIN FLOOR"
-            },
-            {
-              "name": "Adrenaline Rush",
-              "genres": [
-                "Full-On Night"
-              ],
-              "stage": "MAIN FLOOR"
             }
           ]
         }
@@ -879,13 +897,25 @@
           "genres": [],
           "artists": [
             {
-              "name": "AVAN7",
+              "name": "Avan7",
               "isoCountry": "BR",
               "countryFlag": "🇧🇷",
               "stage": "PSYTRANCE STAGE"
             },
             {
-              "name": "DIGITALK",
+              "name": "Paula",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "DARK & HITECH STAGE"
+            },
+            {
+              "name": "Karell",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "DARK & HITECH STAGE"
+            },
+            {
+              "name": "Digitalk",
               "isoCountry": "BR",
               "countryFlag": "🇧🇷",
               "stage": "PSYTRANCE STAGE"
@@ -933,13 +963,13 @@
           "genres": [],
           "artists": [
             {
-              "name": "DJ PAULA",
+              "name": "Paula",
               "isoCountry": "BR",
               "countryFlag": "🇧🇷",
               "stage": "DARK & HITECH STAGE"
             },
             {
-              "name": "KARELL",
+              "name": "Karell",
               "isoCountry": "BR",
               "countryFlag": "🇧🇷",
               "stage": "DARK & HITECH STAGE"
@@ -1023,6 +1053,28 @@
           "genres": [],
           "artists": [
             {
+              "name": "After June",
+              "genres": [
+                "Full-On",
+                "Night"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "BlazinG",
+              "genres": [
+                "Full-On"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Shivaion",
+              "genres": [
+                "Full-On"
+              ],
+              "stage": "Line-up"
+            },
+            {
               "name": "Katy Bnv",
               "genres": [
                 "Afro House"
@@ -1096,28 +1148,6 @@
               "name": "Carol Stefaniak",
               "genres": [
                 "Techno"
-              ],
-              "stage": "Line-up"
-            },
-            {
-              "name": "Shivaion",
-              "genres": [
-                "Full-On"
-              ],
-              "stage": "Line-up"
-            },
-            {
-              "name": "BlazinG",
-              "genres": [
-                "Full-On"
-              ],
-              "stage": "Line-up"
-            },
-            {
-              "name": "After June",
-              "genres": [
-                "Full-On",
-                "Night"
               ],
               "stage": "Line-up"
             },
@@ -1206,6 +1236,28 @@
           "genres": [],
           "artists": [
             {
+              "name": "Atohmic",
+              "genres": [
+                "Progressive Psytrance"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Valar",
+              "genres": [
+                "Progressive Psytrance"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "After June",
+              "genres": [
+                "Full-On",
+                "Full-On Night"
+              ],
+              "stage": "Line-up"
+            },
+            {
               "name": "Tyusha",
               "genres": [
                 "Progressive Psytrance"
@@ -1227,31 +1279,9 @@
               "stage": "Line-up"
             },
             {
-              "name": "Valar",
-              "genres": [
-                "Progressive Psytrance"
-              ],
-              "stage": "Line-up"
-            },
-            {
-              "name": "Atohmic",
-              "genres": [
-                "Progressive Psytrance"
-              ],
-              "stage": "Line-up"
-            },
-            {
               "name": "Nhandeva",
               "genres": [
                 "Full-On"
-              ],
-              "stage": "Line-up"
-            },
-            {
-              "name": "After June",
-              "genres": [
-                "Full-On",
-                "Full-On Night"
               ],
               "stage": "Line-up"
             },

@@ -1,6 +1,6 @@
 import type { JSX } from 'react';
-import { Calendar, MapPin } from 'lucide-react';
-import type { EventRecord } from '@/lib/data';
+import { Calendar, MapPin, Music } from 'lucide-react';
+import { getStageSummary, type EventRecord } from '@/lib/data';
 import { EmptyState } from '@/components/EmptyState';
 import { useI18n } from '@/i18n/I18nProvider';
 
@@ -17,6 +17,7 @@ const cardClassName =
   'group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-black/20 text-left transition hover:border-ozora-turquoise/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise';
 
 function CardContent({ event, locale }: { event: EventRecord; locale: string }): JSX.Element {
+  const summary = getStageSummary(event, 3);
   return (
     <>
       <div className="aspect-[3/4] w-full overflow-hidden">
@@ -46,6 +47,12 @@ function CardContent({ event, locale }: { event: EventRecord; locale: string }):
             {event.venue.city}, {event.venue.country}
           </span>
         </p>
+        {summary ? (
+          <p className="flex items-start gap-2 text-sm text-ozora-cream/70">
+            <Music size={14} aria-hidden="true" className="mt-0.5 shrink-0" />
+            <span>{summary}</span>
+          </p>
+        ) : null}
       </div>
     </>
   );

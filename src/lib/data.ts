@@ -64,15 +64,20 @@ export function hasTicketSales(event: EventRecord): boolean {
 }
 
 export function getStageSummary(event: EventRecord, maxArtists = 4): string {
-  const artists =
-    event.cardArtists && event.cardArtists.length > 0
-      ? event.cardArtists
-      : event.stages.flatMap((stage) => stage.artists.map((artist) => artist.name));
-  if (artists.length === 0) {
+  const stageArtists = event.stages.flatMap((stage) => stage.artists.map((artist) => artist.name));
+  // Featured names shown first: curated cardArtists when present, else the lineup.
+  const featured =
+    event.cardArtists && event.cardArtists.length > 0 ? event.cardArtists : stageArtists;
+  if (featured.length === 0) {
     return '';
   }
-  const shown = artists.slice(0, maxArtists).join(' \u00b7 ');
-  return artists.length > maxArtists ? `${shown} +${artists.length - maxArtists}` : shown;
+  // Total reflects the full lineup so the "+N" count covers every artist, even
+  // when only a few featured names are shown.
+  const total = stageArtists.length > 0 ? stageArtists.length : featured.length;
+  const shown = featured.slice(0, maxArtists);
+  const remaining = total - shown.length;
+  const shownText = shown.join(' \u00b7 ');
+  return remaining > 0 ? `${shownText} +${remaining}` : shownText;
 }
 
 export async function loadEvents(): Promise<EventRecord[]> {
