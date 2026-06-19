@@ -13,7 +13,7 @@ function formatEventDate(dateStart: string): string {
 
 export function PastEventsGallery({ events, onOpenPreview }: PastEventsGalleryProps): JSX.Element {
   return (
-    <section id="gallery" className="safe-x px-4 py-14 md:px-8">
+    <section id="gallery" className="safe-x px-5 py-8 md:px-8">
       <div className="mx-auto max-w-5xl">
         <h2 className="text-2xl font-bold text-ozora-cream md:text-3xl">Past events</h2>
         <p className="mt-2 text-sm text-ozora-cream/75">A look back at our previous gatherings.</p>
@@ -52,7 +52,10 @@ export function PastEventsGallery({ events, onOpenPreview }: PastEventsGalleryPr
                   </p>
                   <p className="flex items-center gap-2 text-sm text-ozora-cream/70">
                     <MapPin size={14} aria-hidden="true" />
-                    {event.venue.city}, {event.venue.country}
+                    <span>
+                      {event.venue.name ? `${event.venue.name} - ` : ''}
+                      {event.venue.city}, {event.venue.country}
+                    </span>
                   </p>
                 </div>
               </button>

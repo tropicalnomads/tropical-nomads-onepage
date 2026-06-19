@@ -20,7 +20,49 @@ export interface EventArtist {
   country?: string;
   isoCountry?: string;
   countryFlag?: string;
+  genres?: string[];
+  agencies?: string[];
+  labels?: string[];
   stage?: string;
+}
+
+export interface AffiliationOrg {
+  id: string;
+  name: string;
+  url?: string;
+  instagram?: string;
+  country?: string;
+  isoCountry?: string;
+}
+
+export interface AgenciesFile {
+  schemaVersion: number;
+  generatedAt: string;
+  count: number;
+  agencies: AffiliationOrg[];
+}
+
+export interface LabelsFile {
+  schemaVersion: number;
+  generatedAt: string;
+  count: number;
+  labels: AffiliationOrg[];
+}
+
+export interface Partner {
+  id: string;
+  name: string;
+  city: string;
+  handle: string;
+  instagram: string;
+  logo?: string;
+}
+
+export interface PartnersFile {
+  schemaVersion: number;
+  generatedAt: string;
+  count: number;
+  partners: Partner[];
 }
 
 export interface EventStage {
@@ -35,6 +77,7 @@ export interface EventVenue {
   city: string;
   country: string;
   isoCountry: string;
+  address?: string;
   geo?: { lat: number; lon: number };
   mapUrl?: string;
 }
@@ -50,6 +93,7 @@ export interface EventImages {
 export interface EventLinks {
   goabase: string;
   eventbrite?: string;
+  tickets?: string;
   instagram?: string[];
 }
 
@@ -73,6 +117,7 @@ export interface EventRecord {
   venue: EventVenue;
   lineupRaw?: string;
   stages: EventStage[];
+  cardArtists?: string[];
   description?: string;
   organizer?: string;
   images: EventImages;

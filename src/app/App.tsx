@@ -5,25 +5,30 @@ import { HeroSection } from '@/components/HeroSection';
 import { UpcomingEventsList } from '@/components/UpcomingEventsList';
 import { PastEventsGallery } from '@/components/PastEventsGallery';
 import { SocialLinks } from '@/components/SocialLinks';
+import { PartnersSection } from '@/components/PartnersSection';
 import { LightboxModal } from '@/components/LightboxModal';
 import { EmptyState } from '@/components/EmptyState';
 import {
   getPastEvents,
   getUpcomingEvents,
   loadEvents,
+  loadPartners,
   loadSocialLinks,
   type EventRecord,
+  type Partner,
   type SocialLink,
 } from '@/lib/data';
 
 interface AppDataState {
   events: EventRecord[];
   socialLinks: SocialLink[];
+  partners: Partner[];
 }
 
 const initialDataState: AppDataState = {
   events: [],
   socialLinks: [],
+  partners: [],
 };
 
 export default function App(): JSX.Element {
@@ -39,11 +44,15 @@ export default function App(): JSX.Element {
       setIsLoading(true);
       setError(null);
       try {
-        const [events, socialLinks] = await Promise.all([loadEvents(), loadSocialLinks()]);
+        const [events, socialLinks, partners] = await Promise.all([
+          loadEvents(),
+          loadSocialLinks(),
+          loadPartners(),
+        ]);
         if (!active) {
           return;
         }
-        setData({ events, socialLinks });
+        setData({ events, socialLinks, partners });
       } catch {
         if (!active) {
           return;
@@ -81,17 +90,18 @@ export default function App(): JSX.Element {
       <HeroSection onExploreEvents={() => handleScrollTo('upcoming-events')} />
 
       {isLoading ? (
-        <main className="safe-x mx-auto max-w-5xl px-4 pb-16 md:px-8">
+        <main className="safe-x mx-auto max-w-5xl px-5 py-8 md:px-8">
           <EmptyState title="Loading events..." description="Fetching upcoming and past events." />
         </main>
       ) : error ? (
-        <main className="safe-x mx-auto max-w-5xl px-4 pb-16 md:px-8">
+        <main className="safe-x mx-auto max-w-5xl px-5 py-8 md:px-8">
           <EmptyState title="Could not load content" description={error} />
         </main>
       ) : (
-        <main className="space-y-4 pb-12">
+        <main>
           <UpcomingEventsList events={upcomingEvents} />
           <PastEventsGallery events={pastEvents} onOpenPreview={setLightboxEvent} />
+          <PartnersSection partners={data.partners} />
           <SocialLinks links={data.socialLinks} />
         </main>
       )}

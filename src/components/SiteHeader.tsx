@@ -8,13 +8,14 @@ const NAV_ITEMS: ReadonlyArray<{ id: string; label: string }> = [
   { id: 'home', label: 'Home' },
   { id: 'upcoming-events', label: 'Events' },
   { id: 'gallery', label: 'Gallery' },
+  { id: 'partners', label: 'Partners' },
   { id: 'socials', label: 'Socials' },
 ];
 
 export function SiteHeader({ onNavigate }: SiteHeaderProps): JSX.Element {
   return (
     <header className="safe-top safe-x sticky top-0 z-40 border-b border-white/10 bg-ozora-navy/70 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 md:px-8">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3 md:px-8">
         <button
           type="button"
           onClick={() => onNavigate('home')}
@@ -22,9 +23,9 @@ export function SiteHeader({ onNavigate }: SiteHeaderProps): JSX.Element {
           aria-label="Tropical Nomads home"
         >
           <img
-            src="/branding/tropical-nomads-logo-horizontal-white.png"
+            src="/branding/tropical-nomads-logo-horizontal-cream.png"
             alt="Tropical Nomads"
-            className="h-9 w-auto object-contain md:h-10"
+            className="h-9 w-auto object-contain"
           />
         </button>
 

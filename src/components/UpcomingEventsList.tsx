@@ -17,7 +17,7 @@ function formatEventDate(dateStart: string): string {
 
 export function UpcomingEventsList({ events }: UpcomingEventsListProps): JSX.Element {
   return (
-    <section id="upcoming-events" className="safe-x px-4 py-14 md:px-8">
+    <section id="upcoming-events" className="safe-x px-5 py-8 md:px-8">
       <div className="mx-auto max-w-5xl">
         <h2 className="text-2xl font-bold text-ozora-cream md:text-3xl">Upcoming events</h2>
         <p className="mt-2 text-sm text-ozora-cream/75">All future dates, sorted from the next one.</p>
@@ -64,7 +64,23 @@ export function UpcomingEventsList({ events }: UpcomingEventsListProps): JSX.Ele
                     </p>
                     <p className="mt-1 flex items-center gap-2 text-sm text-ozora-cream/75">
                       <MapPin size={16} aria-hidden="true" />
-                      {event.venue.city}, {event.venue.country}
+                      {event.venue.mapUrl ? (
+                        <a
+                          href={event.venue.mapUrl}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          className="font-medium text-ozora-turquoise underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+                          aria-label={`Open ${event.venue.name ?? event.venue.city} on Google Maps`}
+                        >
+                          {event.venue.name ? `${event.venue.name} - ` : ''}
+                          {event.venue.city}, {event.venue.country}
+                        </a>
+                      ) : (
+                        <span>
+                          {event.venue.name ? `${event.venue.name} - ` : ''}
+                          {event.venue.city}, {event.venue.country}
+                        </span>
+                      )}
                     </p>
                     {summary ? <p className="mt-2 text-sm text-ozora-cream/70">{summary}</p> : null}
 
@@ -80,7 +96,7 @@ export function UpcomingEventsList({ events }: UpcomingEventsListProps): JSX.Ele
                         }`}
                         aria-label={
                           ticketsAvailable
-                            ? `Buy tickets for ${event.title} on Eventbrite`
+                            ? `Buy tickets for ${event.title}`
                             : `View ${event.title} on goabase`
                         }
                       >

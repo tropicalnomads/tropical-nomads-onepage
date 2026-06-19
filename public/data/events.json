@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-19T09:51:06.564Z",
+  "generatedAt": "2026-06-19T11:21:36.509Z",
   "source": {
     "provider": "goabase",
     "endpoint": "https://www.goabase.net/api/party/json"
@@ -16,14 +16,16 @@
       "timezone": "Europe/Amsterdam",
       "durationHours": 9,
       "venue": {
-        "id": "amsterdam-netherlands",
+        "id": "toekomstmuziek-amsterdam",
+        "name": "Toekomstmuziek",
         "city": "Amsterdam",
         "country": "Netherlands",
         "isoCountry": "NL",
         "geo": {
           "lat": 52.4,
           "lon": 4.9
-        }
+        },
+        "mapUrl": "https://maps.app.goo.gl/Zp3PKsaYoqTaRQpH7"
       },
       "lineupRaw": "🎶 TROPICAL NOMADS STAGE (Progressive, Psytrance, Fullon)\n🇧🇷 AVAN7\n🇧🇷 Blazin'G\n🇧🇷 Brain Damage\n🇧🇷 Critical Communication\n🇧🇷 Psychological\n🇧🇷 Shivaion\n🇳🇱 Valar\n🇧🇷 Yesca\n\n🌀 PGP STAGE (Night, Forest, Hitech)\n🇧🇷 After June\n🇳🇱🇧🇷 BACK TO MARS\n🇳🇱 C.S.M (Psykomeiko)\n🇳🇱 Idioblast\n🇳🇱 +Ripley",
       "stages": [
@@ -32,55 +34,55 @@
           "genres": [
             "Progressive",
             "Psytrance",
-            "Fullon"
+            "Full-On"
           ],
           "artists": [
             {
-              "name": "AVAN7",
-              "countryFlag": "🇧🇷",
+              "name": "Avan7",
               "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
               "stage": "TROPICAL NOMADS STAGE"
             },
             {
-              "name": "Blazin'G",
-              "countryFlag": "🇧🇷",
+              "name": "Back to Mars",
               "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
               "stage": "TROPICAL NOMADS STAGE"
             },
             {
               "name": "Brain Damage",
-              "countryFlag": "🇧🇷",
               "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
               "stage": "TROPICAL NOMADS STAGE"
             },
             {
               "name": "Critical Communication",
-              "countryFlag": "🇧🇷",
               "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
               "stage": "TROPICAL NOMADS STAGE"
             },
             {
               "name": "Psychological",
-              "countryFlag": "🇧🇷",
               "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
               "stage": "TROPICAL NOMADS STAGE"
             },
             {
               "name": "Shivaion",
-              "countryFlag": "🇧🇷",
               "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
               "stage": "TROPICAL NOMADS STAGE"
             },
             {
               "name": "Valar",
-              "countryFlag": "🇳🇱",
               "isoCountry": "NL",
+              "countryFlag": "🇳🇱",
               "stage": "TROPICAL NOMADS STAGE"
             },
             {
               "name": "Yesca",
-              "countryFlag": "🇧🇷",
               "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
               "stage": "TROPICAL NOMADS STAGE"
             }
           ]
@@ -95,32 +97,32 @@
           "artists": [
             {
               "name": "After June",
-              "countryFlag": "🇧🇷",
               "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
               "stage": "PGP STAGE"
             },
             {
               "name": "BACK TO MARS",
-              "countryFlag": "🇳🇱",
               "isoCountry": "NL",
+              "countryFlag": "🇳🇱",
               "stage": "PGP STAGE"
             },
             {
-              "name": "C.S.M (Psykomeiko)",
-              "countryFlag": "🇳🇱",
+              "name": "C.S.M",
               "isoCountry": "NL",
+              "countryFlag": "🇳🇱",
               "stage": "PGP STAGE"
             },
             {
               "name": "Idioblast",
-              "countryFlag": "🇳🇱",
               "isoCountry": "NL",
+              "countryFlag": "🇳🇱",
               "stage": "PGP STAGE"
             },
             {
               "name": "+Ripley",
-              "countryFlag": "🇳🇱",
               "isoCountry": "NL",
+              "countryFlag": "🇳🇱",
               "stage": "PGP STAGE"
             }
           ]
@@ -161,14 +163,16 @@
       "timezone": "Europe/Dublin",
       "durationHours": 13,
       "venue": {
-        "id": "dublin-ireland",
+        "id": "the-bernard-shaw-dublin",
+        "name": "The Bernard Shaw",
         "city": "Dublin",
         "country": "Ireland",
         "isoCountry": "IE",
         "geo": {
           "lat": 53.3,
           "lon": -6.3
-        }
+        },
+        "mapUrl": "https://maps.app.goo.gl/H1G1BBd19o61SCwA8"
       },
       "lineupRaw": "THE EATYARD STAGE\r\nAfter June 🇧🇷\r\nBlazin'g 🇧🇷\r\nJuliosmap 🇧🇷\r\nÖcto 🇧🇷\r\nShivaion 🇧🇷\r\nSolar Plexus 🇬🇹\r\nVinius 🇧🇷\r\n\r\nTHE RACKET SPACE STAGE\r\nAvan7 🇧🇷\r\nBrain Damage 🇧🇷\r\nFrostbite 🇵🇹\r\nPsychological 🇧🇷",
       "stages": [
@@ -177,45 +181,45 @@
           "genres": [],
           "artists": [
             {
-              "name": "After June 🇧🇷",
-              "countryFlag": "🇧🇷",
+              "name": "After June",
               "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
               "stage": "THE EATYARD STAGE"
             },
             {
-              "name": "Blazin'g 🇧🇷",
-              "countryFlag": "🇧🇷",
+              "name": "Blazin'g",
               "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
               "stage": "THE EATYARD STAGE"
             },
             {
-              "name": "Juliosmap 🇧🇷",
-              "countryFlag": "🇧🇷",
+              "name": "Juliosmap",
               "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
               "stage": "THE EATYARD STAGE"
             },
             {
-              "name": "Öcto 🇧🇷",
-              "countryFlag": "🇧🇷",
+              "name": "Öcto",
               "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
               "stage": "THE EATYARD STAGE"
             },
             {
-              "name": "Shivaion 🇧🇷",
-              "countryFlag": "🇧🇷",
+              "name": "Shivaion",
               "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
               "stage": "THE EATYARD STAGE"
             },
             {
-              "name": "Solar Plexus 🇬🇹",
-              "countryFlag": "🇬🇹",
+              "name": "Solar Plexus",
               "isoCountry": "GT",
+              "countryFlag": "🇬🇹",
               "stage": "THE EATYARD STAGE"
             },
             {
-              "name": "Vinius 🇧🇷",
-              "countryFlag": "🇧🇷",
+              "name": "Vinius",
               "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
               "stage": "THE EATYARD STAGE"
             }
           ]
@@ -225,31 +229,37 @@
           "genres": [],
           "artists": [
             {
-              "name": "Avan7 🇧🇷",
-              "countryFlag": "🇧🇷",
+              "name": "Avan7",
               "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
               "stage": "THE RACKET SPACE STAGE"
             },
             {
-              "name": "Brain Damage 🇧🇷",
-              "countryFlag": "🇧🇷",
+              "name": "Brain Damage",
               "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
               "stage": "THE RACKET SPACE STAGE"
             },
             {
-              "name": "Frostbite 🇵🇹",
-              "countryFlag": "🇵🇹",
+              "name": "Frostbite",
               "isoCountry": "PT",
+              "countryFlag": "🇵🇹",
               "stage": "THE RACKET SPACE STAGE"
             },
             {
-              "name": "Psychological 🇧🇷",
-              "countryFlag": "🇧🇷",
+              "name": "Psychological",
               "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
               "stage": "THE RACKET SPACE STAGE"
             }
           ]
         }
+      ],
+      "cardArtists": [
+        "Avan7",
+        "Brain Damage",
+        "Frostbite",
+        "Solar Plexus"
       ],
       "description": "Join Tropical Groove on July 11 at The Bernard Shaw, Dublin! 2 stages of Psytrance, psychedelic decor, and an epic journey\r\n\r\nGet ready to elevate your frequencies! Tropical Groove is taking over The Bernard Shaw for an unforgettable gathering. We are transforming the venue into a vibrant, neon-drenched psychedelic playground spread across two distinct stages.\r\n\r\nExpect a massive lineup of international and local heavyweights delivering pure psytrance energy, mind-bending UV decor, and an immersive dancefloor odyssey that will keep you moving until dawn. 👽🌴✨\r\n\r\n🗓️ April 25th\r\n📍 The Bernard Shaw, Dublin\r\n👽 2 Stages\r\n⏱️ Over 13h of Party!",
       "organizer": "After June",
@@ -282,58 +292,19 @@
       "timezone": "Europe/London",
       "durationHours": 9,
       "venue": {
-        "id": "london-united-kingdom",
+        "id": "bar-a-bar-london",
+        "name": "Bar A Bar",
         "city": "London",
         "country": "United Kingdom",
         "isoCountry": "GB",
         "geo": {
           "lat": 51.5,
           "lon": -0.1
-        }
+        },
+        "mapUrl": "https://maps.app.goo.gl/ZiJAPJSSdVRihLY48"
       },
       "lineupRaw": "UNIVERSE & TROPICAL NOMADS presents\n🔱 BOM SHANKA MUSIC LABEL NIGHT 👽\n\nFor the first time, TROPICAL NOMADS arrives in London, joining forces with UNIVERSE for a special night dedicated to the sound and energy of Bom Shanka Music.\n\nThis edition brings 4 names from the Bom Shanka family, including BOCARA 🇧🇷, coming directly from Brazil, alongside ABIOTIQ 🇫🇷, DIRTY, SAFFI 🇬🇧 and NUKY 🇬🇧 — a lineup built for a proper psychedelic journey, from deep grooves to full-power dancefloor moments. 🔥\n\nThe night also features 3RD VISION 🇧🇷, AFTER JUNE 🇧🇷, BLAZIN’G 🇧🇷 and SHIVAION 🇧🇷, connecting the Brazilian psychedelic force with the London scene.\n\nExpect almost 9 hours of psytrance, international artists, heavy sound, psychedelic atmosphere and a dancefloor ready to move from the first beat until the morning. 🌀\n\nLondon, this is the first one — and we’re coming properly. 🤯",
-      "stages": [
-        {
-          "name": "Line-up",
-          "genres": [],
-          "artists": [
-            {
-              "name": "UNIVERSE & TROPICAL NOMADS presents",
-              "stage": "Line-up"
-            },
-            {
-              "name": "BOM SHANKA MUSIC LABEL NIGHT 👽",
-              "stage": "Line-up"
-            },
-            {
-              "name": "For the first time, TROPICAL NOMADS arrives in London, joining forces with UNIVERSE for a special night dedicated to the sound and energy of Bom Shanka Music.",
-              "stage": "Line-up"
-            },
-            {
-              "name": "This edition brings 4 names from the Bom Shanka family, including BOCARA 🇧🇷, coming directly from Brazil, alongside ABIOTIQ 🇫🇷, DIRTY, SAFFI 🇬🇧 and NUKY 🇬🇧 — a lineup built for a proper psychedelic journey, from deep grooves to full-power dancefloor moments. 🔥",
-              "countryFlag": "🇧🇷",
-              "isoCountry": "BR",
-              "stage": "Line-up"
-            },
-            {
-              "name": "The night also features 3RD VISION 🇧🇷, AFTER JUNE 🇧🇷, BLAZIN’G 🇧🇷 and SHIVAION 🇧🇷, connecting the Brazilian psychedelic force with the London scene.",
-              "countryFlag": "🇧🇷",
-              "isoCountry": "BR",
-              "stage": "Line-up"
-            }
-          ]
-        },
-        {
-          "name": "Expect almost 9 hours of psytrance, international artists, heavy sound, psychedelic atmosphere and a dancefloor ready to move from the first beat until the morning. 🌀",
-          "genres": [],
-          "artists": [
-            {
-              "name": "London, this is the first one — and we’re coming properly. 🤯",
-              "stage": "Expect almost 9 hours of psytrance, international artists, heavy sound, psychedelic atmosphere and a dancefloor ready to move from the first beat until the morning. 🌀"
-            }
-          ]
-        }
-      ],
+      "stages": [],
       "description": "🗓️ Saturday — 15 August 2026\r\n📍 Bar A Bar, London\r\n🕣 20:00 – 04:30\r\n🔱 Bom Shanka Music Label Night\r\n👽 Universe x Tropical Nomads\r\n\r\n⚠️ LIMITED CAPACITY",
       "organizer": "After June",
       "images": {
@@ -345,6 +316,7 @@
       },
       "links": {
         "goabase": "https://www.goabase.net/party/boom-shanka-label-night/116643",
+        "tickets": "https://www.skiddle.com/whats-on/London/Bar-A-Bar/Universe--Tropical-Nomads-Bom-Shanka-Label-night/41911407/",
         "instagram": [
           "https://www.instagram.com/tropicalnomads.events/",
           "https://www.instagram.com/universeparty_111/"
@@ -368,14 +340,17 @@
       "timezone": "Europe/Dublin",
       "durationHours": 8,
       "venue": {
-        "id": "dublin-ireland",
+        "id": "the-sound-house-dublin",
+        "name": "The Sound House",
         "city": "Dublin",
         "country": "Ireland",
         "isoCountry": "IE",
+        "address": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44",
         "geo": {
           "lat": 53.4,
           "lon": -6.3
-        }
+        },
+        "mapUrl": "https://maps.app.goo.gl/EtfCwAWYFE9CAmhNA"
       },
       "lineupRaw": "TERRACE\t\t\n19:00 - Underbeat  (Psytechno)\n20:00 - Araujah (Psytrance)\n21:00 - Carol Stefaniak (Psytrance)\n22:00 - Algorithmix (Psytrance)\n23:00 - Corralo (Psytrance)\n00:00 - Fluffy (Psycore)\n01:00 - END\n\t\t\t\nSOUNDHOUSE\n21:00 - Blazin'G (Fullon)\n22:00 - Altered State (Fullon)\n23:00 - Shivaion (Fullon)\n00:00 - 🔥 BURN IN NOISE 🔥 (Fullon)\n01:30 - After June (Fullon / Twilight)\n02:45 - END",
       "stages": [
@@ -384,63 +359,81 @@
           "genres": [],
           "artists": [
             {
-              "name": "TERRACE",
+              "name": "Underbeat",
+              "genres": [
+                "Psytechno"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "19:00 - Underbeat  (Psytechno)",
+              "name": "Araujah",
+              "genres": [
+                "Psytrance"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "20:00 - Araujah (Psytrance)",
+              "name": "Carol Stefaniak",
+              "genres": [
+                "Psytrance"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "21:00 - Carol Stefaniak (Psytrance)",
+              "name": "Algorithmix",
+              "genres": [
+                "Psytrance"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "22:00 - Algorithmix (Psytrance)",
+              "name": "Corralo",
+              "genres": [
+                "Psytrance"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "23:00 - Corralo (Psytrance)",
+              "name": "Fluffy",
+              "genres": [
+                "Psycore"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "00:00 - Fluffy (Psycore)",
+              "name": "Blazin'G",
+              "genres": [
+                "Full-On"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "01:00 - END",
+              "name": "Altered State",
+              "genres": [
+                "Full-On"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "SOUNDHOUSE",
+              "name": "Shivaion",
+              "genres": [
+                "Full-On"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "21:00 - Blazin'G (Fullon)",
+              "name": "BURN IN NOISE",
+              "genres": [
+                "Full-On"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "22:00 - Altered State (Fullon)",
-              "stage": "Line-up"
-            },
-            {
-              "name": "23:00 - Shivaion (Fullon)",
-              "stage": "Line-up"
-            },
-            {
-              "name": "00:00 - 🔥 BURN IN NOISE 🔥 (Fullon)",
-              "stage": "Line-up"
-            },
-            {
-              "name": "01:30 - After June (Fullon / Twilight)",
-              "stage": "Line-up"
-            },
-            {
-              "name": "02:45 - END",
+              "name": "After June",
+              "genres": [
+                "Full-On",
+                "Twilight"
+              ],
               "stage": "Line-up"
             }
           ]
@@ -480,14 +473,16 @@
       "timezone": "Europe/Amsterdam",
       "durationHours": 18,
       "venue": {
-        "id": "amsterdam-netherlands",
+        "id": "toekomstmuziek-amsterdam",
+        "name": "Toekomstmuziek",
         "city": "Amsterdam",
         "country": "Netherlands",
         "isoCountry": "NL",
         "geo": {
           "lat": 52.39651,
           "lon": 4.87534
-        }
+        },
+        "mapUrl": "https://maps.app.goo.gl/Zp3PKsaYoqTaRQpH7"
       },
       "lineupRaw": "🔥 BURN IN NOISE (Nano Records) 🔥\n🌀 AFTER JUNE (Tropical Nomads / Forest Shankara) 🌀\n🔥 SHIVAION (Tropical Nomads / Psy Groove )🔥\n🌀BLAZIN'G (Tropical Nomads / Psy Groove)🌀\n🔥 CIB & CIMI (Psychedelic Grateful Punks)🔥\n🌀 PSYKADELICA (Dutch Acid Family)🌀\n🔥 POLZITIV (Psychedelic Grateful Punks) 🔥\n🌀 VALKYRIE (M-United) 🌀",
       "stages": [
@@ -496,35 +491,35 @@
           "genres": [],
           "artists": [
             {
-              "name": "BURN IN NOISE (Nano Records) 🔥",
+              "name": "BURN IN NOISE",
               "stage": "Line-up"
             },
             {
-              "name": "AFTER JUNE (Tropical Nomads / Forest Shankara) 🌀",
+              "name": "AFTER JUNE",
               "stage": "Line-up"
             },
             {
-              "name": "SHIVAION (Tropical Nomads / Psy Groove )🔥",
+              "name": "SHIVAION",
               "stage": "Line-up"
             },
             {
-              "name": "BLAZIN'G (Tropical Nomads / Psy Groove)🌀",
+              "name": "BLAZIN'G",
               "stage": "Line-up"
             },
             {
-              "name": "CIB & CIMI (Psychedelic Grateful Punks)🔥",
+              "name": "CIB & CIMI",
               "stage": "Line-up"
             },
             {
-              "name": "PSYKADELICA (Dutch Acid Family)🌀",
+              "name": "PSYKADELICA",
               "stage": "Line-up"
             },
             {
-              "name": "POLZITIV (Psychedelic Grateful Punks) 🔥",
+              "name": "POLZITIV",
               "stage": "Line-up"
             },
             {
-              "name": "VALKYRIE (M-United) 🌀",
+              "name": "VALKYRIE",
               "stage": "Line-up"
             }
           ]
@@ -564,14 +559,16 @@
       "timezone": "Europe/Dublin",
       "durationHours": 13,
       "venue": {
-        "id": "dublin-ireland",
+        "id": "the-bernard-shaw-dublin",
+        "name": "The Bernard Shaw",
         "city": "Dublin",
         "country": "Ireland",
         "isoCountry": "IE",
         "geo": {
           "lat": 53.3,
           "lon": -6.3
-        }
+        },
+        "mapUrl": "https://maps.app.goo.gl/H1G1BBd19o61SCwA8"
       },
       "lineupRaw": "🌼 THE EATYARD (14:00 – 23:00)\r\n14:00 – Ivan Pocintela (Tech House)\r\n15:30 – Candelas (Prog Tech)\r\n17:00 – 2Wins (Minimal)\r\n18:30 – MaadHouz (Minimal)\r\n20:00 – Ladysiu (Hard Techno)\r\n21:30 – Cosmic Brothers Project (Psytrance)\r\n23:00 – END\r\n\r\n🌙 THE RACKET SPACE (23:00 – 03:00)\r\n23:00 – Draco Dark (Psytech)\r\n00:00 – Shivaion (Psytrance)\r\n01:00 – Texo (Full-On)\r\n02:00 – Blazin’G (Full-On - SPECIAL B-DAY SET)\r\n03:00 – END",
       "stages": [
@@ -580,59 +577,70 @@
           "genres": [],
           "artists": [
             {
-              "name": "THE EATYARD (14:00 – 23:00)",
+              "name": "Ivan Pocintela",
+              "genres": [
+                "Tech House"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "14:00 – Ivan Pocintela (Tech House)",
+              "name": "Candelas",
+              "genres": [
+                "Prog Tech"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "15:30 – Candelas (Prog Tech)",
+              "name": "2Wins",
+              "genres": [
+                "Minimal"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "17:00 – 2Wins (Minimal)",
+              "name": "MaadHouz",
+              "genres": [
+                "Minimal"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "18:30 – MaadHouz (Minimal)",
+              "name": "Ladysiu",
+              "genres": [
+                "Hard Techno"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "20:00 – Ladysiu (Hard Techno)",
+              "name": "Cosmic Brothers Project",
+              "genres": [
+                "Psytrance"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "21:30 – Cosmic Brothers Project (Psytrance)",
+              "name": "Draco Dark",
+              "genres": [
+                "Psytech"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "23:00 – END",
+              "name": "Shivaion",
+              "genres": [
+                "Psytrance"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "THE RACKET SPACE (23:00 – 03:00)",
+              "name": "Texo",
+              "genres": [
+                "Full-On"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "23:00 – Draco Dark (Psytech)",
-              "stage": "Line-up"
-            },
-            {
-              "name": "00:00 – Shivaion (Psytrance)",
-              "stage": "Line-up"
-            },
-            {
-              "name": "01:00 – Texo (Full-On)",
-              "stage": "Line-up"
-            },
-            {
-              "name": "02:00 – Blazin’G (Full-On - SPECIAL B-DAY SET)",
-              "stage": "Line-up"
-            },
-            {
-              "name": "03:00 – END",
+              "name": "Blazin'G",
               "stage": "Line-up"
             }
           ]
@@ -672,87 +680,66 @@
       "timezone": "Europe/Dublin",
       "durationHours": 8,
       "venue": {
-        "id": "dublin-ireland",
+        "id": "the-sound-house-dublin",
+        "name": "The Sound House",
         "city": "Dublin",
         "country": "Ireland",
         "isoCountry": "IE",
+        "address": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44",
         "geo": {
           "lat": 53.4,
           "lon": -6.3
-        }
+        },
+        "mapUrl": "https://maps.app.goo.gl/EtfCwAWYFE9CAmhNA"
       },
       "lineupRaw": "☘️ Pre-St Patrick` s Day + NIAMH & SHIVAION` s Bday 🎂\n\nJoin us for a special Pre–St. Patrick’s Psytrance Night in Dublin as we also celebrate the birthday of Niamh & Shivaion!\nA full evening of psytrance, techno and tech-house vibes, good energy, and a dancefloor full of friends.\nLet’s warm up for St. Patrick’s with powerful beats, smiles, and a proper underground atmosphere. ☘️🎶\n\nVENUE\nThe Sound House – Dublin\n1st Floor, 28 Eden Quay, North City, Dublin D01 DE44\n\nLINE UP\n\n🌞 TERRACE (19:00 – 01:00)\n19:00 – Shivaion in Dub - Dub\n20:00 – Jamds – Tech House\n21:00 – Teejota – Techno\n22:00 – Dolce Vita – Full-On\n23:00 – Sylent Hill – Dark / Forest\n00:00 – Iaka – Dark / Forest\n01:00 – END\n\n🌙 MAIN FLOOR (23:00 – 2:45)\n23:00 – Romanetto b2b Imniamh – Peak Time\n00:15 – Blazin’G b2b Shivaion – Full-On\n01:30 – Adrenaline Rush (BOOM SHANKA) – Full-On Night\n02:45 – END",
       "stages": [
-        {
-          "name": "Line-up",
-          "genres": [],
-          "artists": [
-            {
-              "name": "Pre-St Patrick` s Day + NIAMH & SHIVAION` s Bday 🎂",
-              "stage": "Line-up"
-            },
-            {
-              "name": "Join us for a special Pre–St. Patrick’s Psytrance Night in Dublin as we also celebrate the birthday of Niamh & Shivaion!",
-              "stage": "Line-up"
-            }
-          ]
-        },
-        {
-          "name": "A full evening of psytrance, techno and tech-house vibes, good energy, and a dancefloor full of friends.",
-          "genres": [],
-          "artists": [
-            {
-              "name": "Let’s warm up for St. Patrick’s with powerful beats, smiles, and a proper underground atmosphere. ☘️🎶",
-              "stage": "A full evening of psytrance, techno and tech-house vibes, good energy, and a dancefloor full of friends."
-            },
-            {
-              "name": "VENUE",
-              "stage": "A full evening of psytrance, techno and tech-house vibes, good energy, and a dancefloor full of friends."
-            },
-            {
-              "name": "The Sound House – Dublin",
-              "stage": "A full evening of psytrance, techno and tech-house vibes, good energy, and a dancefloor full of friends."
-            }
-          ]
-        },
         {
           "name": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44",
           "genres": [],
           "artists": [
             {
-              "name": "LINE UP",
+              "name": "Shivaion in Dub",
+              "genres": [
+                "Dub"
+              ],
               "stage": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44"
             },
             {
-              "name": "TERRACE (19:00 – 01:00)",
+              "name": "Jamds",
+              "genres": [
+                "Tech House"
+              ],
               "stage": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44"
             },
             {
-              "name": "19:00 – Shivaion in Dub - Dub",
+              "name": "Teejota",
+              "genres": [
+                "Techno"
+              ],
               "stage": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44"
             },
             {
-              "name": "20:00 – Jamds – Tech House",
+              "name": "Dolce Vita",
+              "genres": [
+                "Full-On"
+              ],
               "stage": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44"
             },
             {
-              "name": "21:00 – Teejota – Techno",
+              "name": "Sylent Hill",
+              "genres": [
+                "Dark",
+                "Forest"
+              ],
               "stage": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44"
             },
             {
-              "name": "22:00 – Dolce Vita – Full-On",
-              "stage": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44"
-            },
-            {
-              "name": "23:00 – Sylent Hill – Dark / Forest",
-              "stage": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44"
-            },
-            {
-              "name": "00:00 – Iaka – Dark / Forest",
-              "stage": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44"
-            },
-            {
-              "name": "01:00 – END",
+              "name": "Iaka",
+              "genres": [
+                "Dark",
+                "Forest"
+              ],
               "stage": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44"
             }
           ]
@@ -764,19 +751,38 @@
           ],
           "artists": [
             {
-              "name": "23:00 – Romanetto b2b Imniamh – Peak Time",
+              "name": "Romanetto",
+              "genres": [
+                "Peak Time"
+              ],
               "stage": "MAIN FLOOR"
             },
             {
-              "name": "00:15 – Blazin’G b2b Shivaion – Full-On",
+              "name": "Imniamh",
+              "genres": [
+                "Peak Time"
+              ],
               "stage": "MAIN FLOOR"
             },
             {
-              "name": "01:30 – Adrenaline Rush (BOOM SHANKA) – Full-On Night",
+              "name": "Blazin'G",
+              "genres": [
+                "Full-On"
+              ],
               "stage": "MAIN FLOOR"
             },
             {
-              "name": "02:45 – END",
+              "name": "Shivaion",
+              "genres": [
+                "Full-On"
+              ],
+              "stage": "MAIN FLOOR"
+            },
+            {
+              "name": "Adrenaline Rush",
+              "genres": [
+                "Full-On Night"
+              ],
               "stage": "MAIN FLOOR"
             }
           ]
@@ -811,82 +817,112 @@
       "timezone": "Europe/Berlin",
       "durationHours": 10,
       "venue": {
-        "id": "berlin-germany",
+        "id": "m-bia-berlin",
+        "name": "M-Bia",
         "city": "Berlin",
         "country": "Germany",
         "isoCountry": "DE",
         "geo": {
           "lat": 52.5,
           "lon": 13.4
-        }
+        },
+        "mapUrl": "https://maps.app.goo.gl/cBdLaFkzqKo3vMS26"
       },
       "lineupRaw": "══════════════════════\r\n🌕 PSYTRANCE STAGE 🌕\r\n══════════════════════\r\nAVAN7 (BR) \r\nDIGITALK (BR) \r\nAstralica (DE) \r\nAfter June (BR) \r\nBlazin'G (BR)\r\nNhandeva (BR) \r\nShivaion (BR) \r\n3rd Vision (BR)\r\n\r\n══════════════════════\r\n🌑 DARK & HITECH STAGE 🌑\r\n══════════════════════\r\nDJ PAULA (BR) \r\nKARELL (BR) \r\nGunD (PL) \r\nNo Pressure (PL) \r\nPanchikarana (PL) \r\nTyusha (DE)",
       "stages": [
         {
-          "name": "PSYTRANCE STAGE 🌕",
+          "name": "PSYTRANCE STAGE",
           "genres": [],
           "artists": [
             {
-              "name": "AVAN7 (BR)",
-              "stage": "PSYTRANCE STAGE 🌕"
+              "name": "AVAN7",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "PSYTRANCE STAGE"
             },
             {
-              "name": "DIGITALK (BR)",
-              "stage": "PSYTRANCE STAGE 🌕"
+              "name": "DIGITALK",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "PSYTRANCE STAGE"
             },
             {
-              "name": "Astralica (DE)",
-              "stage": "PSYTRANCE STAGE 🌕"
+              "name": "Astralica",
+              "isoCountry": "DE",
+              "countryFlag": "🇩🇪",
+              "stage": "PSYTRANCE STAGE"
             },
             {
-              "name": "After June (BR)",
-              "stage": "PSYTRANCE STAGE 🌕"
+              "name": "After June",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "PSYTRANCE STAGE"
             },
             {
-              "name": "Blazin'G (BR)",
-              "stage": "PSYTRANCE STAGE 🌕"
+              "name": "Blazin'G",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "PSYTRANCE STAGE"
             },
             {
-              "name": "Nhandeva (BR)",
-              "stage": "PSYTRANCE STAGE 🌕"
+              "name": "Nhandeva",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "PSYTRANCE STAGE"
             },
             {
-              "name": "Shivaion (BR)",
-              "stage": "PSYTRANCE STAGE 🌕"
+              "name": "Shivaion",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "PSYTRANCE STAGE"
             },
             {
-              "name": "3rd Vision (BR)",
-              "stage": "PSYTRANCE STAGE 🌕"
+              "name": "3rd Vision",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "PSYTRANCE STAGE"
             }
           ]
         },
         {
-          "name": "DARK & HITECH STAGE 🌑",
+          "name": "DARK & HITECH STAGE",
           "genres": [],
           "artists": [
             {
-              "name": "DJ PAULA (BR)",
-              "stage": "DARK & HITECH STAGE 🌑"
+              "name": "DJ PAULA",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "DARK & HITECH STAGE"
             },
             {
-              "name": "KARELL (BR)",
-              "stage": "DARK & HITECH STAGE 🌑"
+              "name": "KARELL",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "DARK & HITECH STAGE"
             },
             {
-              "name": "GunD (PL)",
-              "stage": "DARK & HITECH STAGE 🌑"
+              "name": "GunD",
+              "isoCountry": "PL",
+              "countryFlag": "🇵🇱",
+              "stage": "DARK & HITECH STAGE"
             },
             {
-              "name": "No Pressure (PL)",
-              "stage": "DARK & HITECH STAGE 🌑"
+              "name": "No Pressure",
+              "isoCountry": "PL",
+              "countryFlag": "🇵🇱",
+              "stage": "DARK & HITECH STAGE"
             },
             {
-              "name": "Panchikarana (PL)",
-              "stage": "DARK & HITECH STAGE 🌑"
+              "name": "Panchikarana",
+              "isoCountry": "PL",
+              "countryFlag": "🇵🇱",
+              "stage": "DARK & HITECH STAGE"
             },
             {
-              "name": "Tyusha (DE)",
-              "stage": "DARK & HITECH STAGE 🌑"
+              "name": "Tyusha",
+              "isoCountry": "DE",
+              "countryFlag": "🇩🇪",
+              "stage": "DARK & HITECH STAGE"
             }
           ]
         }
@@ -924,14 +960,16 @@
       "timezone": "Europe/Dublin",
       "durationHours": 14,
       "venue": {
-        "id": "dublin-ireland",
+        "id": "the-bernard-shaw-dublin",
+        "name": "The Bernard Shaw",
         "city": "Dublin",
         "country": "Ireland",
         "isoCountry": "IE",
         "geo": {
           "lat": 53.3,
           "lon": -6.3
-        }
+        },
+        "mapUrl": "https://maps.app.goo.gl/H1G1BBd19o61SCwA8"
       },
       "lineupRaw": "🎃 Halloween Mini Festival – Line Up 🎶\n🕑 Horário: 2PM – 3AM\n📍 The Bernard Shaw\n\n🌞 FREE – Eatyard (2PM – 10:30PM)\n14:00 – Katy Bnv (Afro House)\n15:30 – Plain4Jane (Underground House)\n16:30 – F.Hollow (Techno)\n17:30 – Campello b2b Niamh (Techno)\n18:30 – Phill Base b2b Nilaaa (Raw)\n20:00 – MhonoType (Techno)\n21:00 – Vinius (FullOn)\n22:00 – End\n\n🌙 PAID – Racket Space (11PM – 3AM)\n23:00 – Romanetto b2b Carol Stefaniak (Techno)\n00:00 – Shivaion (Fullon)\n01:00 – BlazinG (Fullon)\n02:00 – After June (Fullon / Night)\n\n🌌 PAID – Bernard Shaw (11PM – 3AM)\n23:00 – Kalinke (Minimal)\n00:00 – 2WINS (Tech House)\n01:00 – Zintek (Minimal Deep Tech)\n02:00 – The Drifter (Tech House / Minimal)\n\n✨ FREE ENTRY: 2PM – 10:30PM\n✨ PAID ENTRY: 11PM – 3AM",
       "stages": [
@@ -940,99 +978,131 @@
           "genres": [],
           "artists": [
             {
-              "name": "Halloween Mini Festival – Line Up 🎶",
+              "name": "Katy Bnv",
+              "genres": [
+                "Afro House"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "Horário: 2PM – 3AM",
+              "name": "Plain4Jane",
+              "genres": [
+                "Underground House"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "The Bernard Shaw",
+              "name": "F.Hollow",
+              "genres": [
+                "Techno"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "FREE – Eatyard (2PM – 10:30PM)",
+              "name": "Campello",
+              "genres": [
+                "Techno"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "14:00 – Katy Bnv (Afro House)",
+              "name": "Niamh",
+              "genres": [
+                "Techno"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "15:30 – Plain4Jane (Underground House)",
+              "name": "Phill Base",
+              "genres": [
+                "Raw"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "16:30 – F.Hollow (Techno)",
+              "name": "Nilaaa",
+              "genres": [
+                "Raw"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "17:30 – Campello b2b Niamh (Techno)",
+              "name": "MhonoType",
+              "genres": [
+                "Techno"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "18:30 – Phill Base b2b Nilaaa (Raw)",
+              "name": "Vinius",
+              "genres": [
+                "Full-On"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "20:00 – MhonoType (Techno)",
+              "name": "Romanetto",
+              "genres": [
+                "Techno"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "21:00 – Vinius (FullOn)",
+              "name": "Carol Stefaniak",
+              "genres": [
+                "Techno"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "22:00 – End",
+              "name": "Shivaion",
+              "genres": [
+                "Full-On"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "PAID – Racket Space (11PM – 3AM)",
+              "name": "BlazinG",
+              "genres": [
+                "Full-On"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "23:00 – Romanetto b2b Carol Stefaniak (Techno)",
+              "name": "After June",
+              "genres": [
+                "Full-On",
+                "Night"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "00:00 – Shivaion (Fullon)",
+              "name": "Kalinke",
+              "genres": [
+                "Minimal"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "01:00 – BlazinG (Fullon)",
+              "name": "2WINS",
+              "genres": [
+                "Tech House"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "02:00 – After June (Fullon / Night)",
+              "name": "Zintek",
+              "genres": [
+                "Minimal Deep Tech"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "PAID – Bernard Shaw (11PM – 3AM)",
-              "stage": "Line-up"
-            },
-            {
-              "name": "23:00 – Kalinke (Minimal)",
-              "stage": "Line-up"
-            },
-            {
-              "name": "00:00 – 2WINS (Tech House)",
-              "stage": "Line-up"
-            },
-            {
-              "name": "01:00 – Zintek (Minimal Deep Tech)",
-              "stage": "Line-up"
-            },
-            {
-              "name": "02:00 – The Drifter (Tech House / Minimal)",
-              "stage": "Line-up"
-            },
-            {
-              "name": "FREE ENTRY: 2PM – 10:30PM",
-              "stage": "Line-up"
-            },
-            {
-              "name": "PAID ENTRY: 11PM – 3AM",
+              "name": "The Drifter",
+              "genres": [
+                "Tech House",
+                "Minimal"
+              ],
               "stage": "Line-up"
             }
           ]
@@ -1071,14 +1141,17 @@
       "timezone": "Europe/Lisbon",
       "durationHours": 8,
       "venue": {
-        "id": "lisbon-portugal",
+        "id": "cargo-111-lisbon",
+        "name": "Cargo 111",
         "city": "Lisbon",
         "country": "Portugal",
         "isoCountry": "PT",
+        "address": "Rua do Norte 111, 1200-365 Lisboa",
         "geo": {
           "lat": 46.4,
           "lon": -97.7
-        }
+        },
+        "mapUrl": "https://maps.app.goo.gl/KoCdexDUkmuoHbep7"
       },
       "lineupRaw": "18:00 → 19:00 - Tyusha - Progressive Psytrance\r\n19:00 → 20:00 - Sindy - Progressive Psytrance \r\n20:00 → 21:00 - DJ Rsn - Progressive Psytrance\r\n21:00 → 22:00 - Valar LIVE - Progressive Psytrance\r\n22:00 → 23:00 - Atohmic LIVE -  Progressive Psytrance\r\n23:00 → 00:00 - Nhandeva  -  Fullon\r\n00:00 → 1:00 - After June - Fullon / Fullon Night\r\n01:00 → 2:00 - Alien Noise LIVE - Fullon Night",
       "stages": [
@@ -1087,35 +1160,60 @@
           "genres": [],
           "artists": [
             {
-              "name": "18:00 → 19:00 - Tyusha - Progressive Psytrance",
+              "name": "Tyusha",
+              "genres": [
+                "Progressive Psytrance"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "19:00 → 20:00 - Sindy - Progressive Psytrance",
+              "name": "Sindy",
+              "genres": [
+                "Progressive Psytrance"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "20:00 → 21:00 - DJ Rsn - Progressive Psytrance",
+              "name": "DJ Rsn",
+              "genres": [
+                "Progressive Psytrance"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "21:00 → 22:00 - Valar LIVE - Progressive Psytrance",
+              "name": "Valar",
+              "genres": [
+                "Progressive Psytrance"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "22:00 → 23:00 - Atohmic LIVE -  Progressive Psytrance",
+              "name": "Atohmic",
+              "genres": [
+                "Progressive Psytrance"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "23:00 → 00:00 - Nhandeva  -  Fullon",
+              "name": "Nhandeva",
+              "genres": [
+                "Full-On"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "00:00 → 1:00 - After June - Fullon / Fullon Night",
+              "name": "After June",
+              "genres": [
+                "Full-On",
+                "Full-On Night"
+              ],
               "stage": "Line-up"
             },
             {
-              "name": "01:00 → 2:00 - Alien Noise LIVE - Fullon Night",
+              "name": "Alien Noise",
+              "genres": [
+                "Full-On Night"
+              ],
               "stage": "Line-up"
             }
           ]

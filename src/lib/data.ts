@@ -1,6 +1,6 @@
-import type { EventRecord, EventsFile } from '@/lib/types/event';
+import type { EventRecord, EventsFile, Partner, PartnersFile } from '@/lib/types/event';
 
-export type { EventRecord, EventStage, EventArtist, EventVenue } from '@/lib/types/event';
+export type { EventRecord, EventStage, EventArtist, EventVenue, Partner } from '@/lib/types/event';
 
 export interface SocialLink {
   id: string;
@@ -48,15 +48,18 @@ export function getPastEvents(events: EventRecord[]): EventRecord[] {
 }
 
 export function getPrimaryTicketUrl(event: EventRecord): string {
-  return event.links.eventbrite ?? event.links.goabase;
+  return event.links.eventbrite ?? event.links.tickets ?? event.links.goabase;
 }
 
 export function hasTicketSales(event: EventRecord): boolean {
-  return Boolean(event.links.eventbrite);
+  return Boolean(event.links.eventbrite ?? event.links.tickets);
 }
 
 export function getStageSummary(event: EventRecord, maxArtists = 4): string {
-  const artists = event.stages.flatMap((stage) => stage.artists.map((artist) => artist.name));
+  const artists =
+    event.cardArtists && event.cardArtists.length > 0
+      ? event.cardArtists
+      : event.stages.flatMap((stage) => stage.artists.map((artist) => artist.name));
   if (artists.length === 0) {
     return '';
   }
@@ -71,4 +74,9 @@ export async function loadEvents(): Promise<EventRecord[]> {
 
 export async function loadSocialLinks(): Promise<SocialLink[]> {
   return fetchJson<SocialLink[]>('/data/socials.json');
+}
+
+export async function loadPartners(): Promise<Partner[]> {
+  const file = await fetchJson<PartnersFile>('/data/partners.json');
+  return file.partners;
 }

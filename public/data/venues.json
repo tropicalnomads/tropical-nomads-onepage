@@ -1,57 +1,81 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-19T09:51:06.564Z",
-  "count": 5,
+  "generatedAt": "2026-06-19T11:21:36.509Z",
+  "count": 6,
   "venues": [
     {
-      "id": "amsterdam-netherlands",
+      "id": "toekomstmuziek-amsterdam",
+      "name": "Toekomstmuziek",
       "city": "Amsterdam",
       "country": "Netherlands",
       "isoCountry": "NL",
       "geo": {
         "lat": 52.4,
         "lon": 4.9
-      }
+      },
+      "mapUrl": "https://maps.app.goo.gl/Zp3PKsaYoqTaRQpH7"
     },
     {
-      "id": "berlin-germany",
+      "id": "m-bia-berlin",
+      "name": "M-Bia",
       "city": "Berlin",
       "country": "Germany",
       "isoCountry": "DE",
       "geo": {
         "lat": 52.5,
         "lon": 13.4
-      }
+      },
+      "mapUrl": "https://maps.app.goo.gl/cBdLaFkzqKo3vMS26"
     },
     {
-      "id": "dublin-ireland",
+      "id": "the-bernard-shaw-dublin",
+      "name": "The Bernard Shaw",
       "city": "Dublin",
       "country": "Ireland",
       "isoCountry": "IE",
       "geo": {
         "lat": 53.3,
         "lon": -6.3
-      }
+      },
+      "mapUrl": "https://maps.app.goo.gl/H1G1BBd19o61SCwA8"
     },
     {
-      "id": "lisbon-portugal",
+      "id": "the-sound-house-dublin",
+      "name": "The Sound House",
+      "city": "Dublin",
+      "country": "Ireland",
+      "isoCountry": "IE",
+      "address": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44",
+      "geo": {
+        "lat": 53.4,
+        "lon": -6.3
+      },
+      "mapUrl": "https://maps.app.goo.gl/EtfCwAWYFE9CAmhNA"
+    },
+    {
+      "id": "cargo-111-lisbon",
+      "name": "Cargo 111",
       "city": "Lisbon",
       "country": "Portugal",
       "isoCountry": "PT",
+      "address": "Rua do Norte 111, 1200-365 Lisboa",
       "geo": {
         "lat": 46.4,
         "lon": -97.7
-      }
+      },
+      "mapUrl": "https://maps.app.goo.gl/KoCdexDUkmuoHbep7"
     },
     {
-      "id": "london-united-kingdom",
+      "id": "bar-a-bar-london",
+      "name": "Bar A Bar",
       "city": "London",
       "country": "United Kingdom",
       "isoCountry": "GB",
       "geo": {
         "lat": 51.5,
         "lon": -0.1
-      }
+      },
+      "mapUrl": "https://maps.app.goo.gl/ZiJAPJSSdVRihLY48"
     }
   ]
 }

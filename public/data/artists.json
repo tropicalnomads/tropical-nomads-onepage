@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-19T09:51:06.564Z",
-  "count": 131,
+  "generatedAt": "2026-06-19T11:21:36.509Z",
+  "count": 72,
   "artists": [
     {
       "name": "+Ripley",
@@ -9,243 +9,89 @@
       "countryFlag": "🇳🇱"
     },
     {
-      "name": "00:00 - 🔥 BURN IN NOISE 🔥 (Fullon)"
+      "name": "2Wins",
+      "genres": [
+        "Minimal",
+        "Tech House"
+      ]
     },
     {
-      "name": "00:00 - Fluffy (Psycore)"
+      "name": "3rd Vision",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷"
     },
     {
-      "name": "00:00 – 2WINS (Tech House)"
-    },
-    {
-      "name": "00:00 – Iaka – Dark / Forest"
-    },
-    {
-      "name": "00:00 – Shivaion (Fullon)"
-    },
-    {
-      "name": "00:00 – Shivaion (Psytrance)"
-    },
-    {
-      "name": "00:00 → 1:00 - After June - Fullon / Fullon Night"
-    },
-    {
-      "name": "00:15 – Blazin’G b2b Shivaion – Full-On"
-    },
-    {
-      "name": "01:00 - END"
-    },
-    {
-      "name": "01:00 – BlazinG (Fullon)"
-    },
-    {
-      "name": "01:00 – END"
-    },
-    {
-      "name": "01:00 – Texo (Full-On)"
-    },
-    {
-      "name": "01:00 – Zintek (Minimal Deep Tech)"
-    },
-    {
-      "name": "01:00 → 2:00 - Alien Noise LIVE - Fullon Night"
-    },
-    {
-      "name": "01:30 - After June (Fullon / Twilight)"
-    },
-    {
-      "name": "01:30 – Adrenaline Rush (BOOM SHANKA) – Full-On Night"
-    },
-    {
-      "name": "02:00 – After June (Fullon / Night)"
-    },
-    {
-      "name": "02:00 – Blazin’G (Full-On - SPECIAL B-DAY SET)"
-    },
-    {
-      "name": "02:00 – The Drifter (Tech House / Minimal)"
-    },
-    {
-      "name": "02:45 - END"
-    },
-    {
-      "name": "02:45 – END"
-    },
-    {
-      "name": "03:00 – END"
-    },
-    {
-      "name": "14:00 – Ivan Pocintela (Tech House)"
-    },
-    {
-      "name": "14:00 – Katy Bnv (Afro House)"
-    },
-    {
-      "name": "15:30 – Candelas (Prog Tech)"
-    },
-    {
-      "name": "15:30 – Plain4Jane (Underground House)"
-    },
-    {
-      "name": "16:30 – F.Hollow (Techno)"
-    },
-    {
-      "name": "17:00 – 2Wins (Minimal)"
-    },
-    {
-      "name": "17:30 – Campello b2b Niamh (Techno)"
-    },
-    {
-      "name": "18:00 → 19:00 - Tyusha - Progressive Psytrance"
-    },
-    {
-      "name": "18:30 – MaadHouz (Minimal)"
-    },
-    {
-      "name": "18:30 – Phill Base b2b Nilaaa (Raw)"
-    },
-    {
-      "name": "19:00 - Underbeat  (Psytechno)"
-    },
-    {
-      "name": "19:00 – Shivaion in Dub - Dub"
-    },
-    {
-      "name": "19:00 → 20:00 - Sindy - Progressive Psytrance"
-    },
-    {
-      "name": "20:00 - Araujah (Psytrance)"
-    },
-    {
-      "name": "20:00 – Jamds – Tech House"
-    },
-    {
-      "name": "20:00 – Ladysiu (Hard Techno)"
-    },
-    {
-      "name": "20:00 – MhonoType (Techno)"
-    },
-    {
-      "name": "20:00 → 21:00 - DJ Rsn - Progressive Psytrance"
-    },
-    {
-      "name": "21:00 - Blazin'G (Fullon)"
-    },
-    {
-      "name": "21:00 - Carol Stefaniak (Psytrance)"
-    },
-    {
-      "name": "21:00 – Teejota – Techno"
-    },
-    {
-      "name": "21:00 – Vinius (FullOn)"
-    },
-    {
-      "name": "21:00 → 22:00 - Valar LIVE - Progressive Psytrance"
-    },
-    {
-      "name": "21:30 – Cosmic Brothers Project (Psytrance)"
-    },
-    {
-      "name": "22:00 - Algorithmix (Psytrance)"
-    },
-    {
-      "name": "22:00 - Altered State (Fullon)"
-    },
-    {
-      "name": "22:00 – Dolce Vita – Full-On"
-    },
-    {
-      "name": "22:00 – End"
-    },
-    {
-      "name": "22:00 → 23:00 - Atohmic LIVE -  Progressive Psytrance"
-    },
-    {
-      "name": "23:00 - Corralo (Psytrance)"
-    },
-    {
-      "name": "23:00 - Shivaion (Fullon)"
-    },
-    {
-      "name": "23:00 – Draco Dark (Psytech)"
-    },
-    {
-      "name": "23:00 – END"
-    },
-    {
-      "name": "23:00 – Kalinke (Minimal)"
-    },
-    {
-      "name": "23:00 – Romanetto b2b Carol Stefaniak (Techno)"
-    },
-    {
-      "name": "23:00 – Romanetto b2b Imniamh – Peak Time"
-    },
-    {
-      "name": "23:00 – Sylent Hill – Dark / Forest"
-    },
-    {
-      "name": "23:00 → 00:00 - Nhandeva  -  Fullon"
-    },
-    {
-      "name": "3rd Vision (BR)"
+      "name": "Adrenaline Rush",
+      "genres": [
+        "Full-On Night"
+      ]
     },
     {
       "name": "After June",
       "isoCountry": "BR",
-      "countryFlag": "🇧🇷"
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Full-On",
+        "Full-On Night",
+        "Night",
+        "Twilight"
+      ],
+      "agencies": [
+        "Tropical Bookings"
+      ]
     },
     {
-      "name": "After June (BR)"
+      "name": "Algorithmix",
+      "genres": [
+        "Psytrance"
+      ]
     },
     {
-      "name": "AFTER JUNE (Tropical Nomads / Forest Shankara) 🌀"
+      "name": "Alien Noise",
+      "genres": [
+        "Full-On Night"
+      ]
     },
     {
-      "name": "After June 🇧🇷",
+      "name": "Altered State",
+      "genres": [
+        "Full-On"
+      ]
+    },
+    {
+      "name": "Araujah",
+      "genres": [
+        "Psytrance"
+      ]
+    },
+    {
+      "name": "Astralica",
+      "isoCountry": "DE",
+      "countryFlag": "🇩🇪"
+    },
+    {
+      "name": "Atohmic",
+      "genres": [
+        "Progressive Psytrance"
+      ]
+    },
+    {
+      "name": "Avan7",
       "isoCountry": "BR",
       "countryFlag": "🇧🇷"
     },
     {
-      "name": "Astralica (DE)"
-    },
-    {
-      "name": "AVAN7",
+      "name": "Back to Mars",
       "isoCountry": "BR",
       "countryFlag": "🇧🇷"
     },
     {
-      "name": "AVAN7 (BR)"
-    },
-    {
-      "name": "Avan7 🇧🇷",
+      "name": "Blazin'g",
       "isoCountry": "BR",
-      "countryFlag": "🇧🇷"
-    },
-    {
-      "name": "BACK TO MARS",
-      "isoCountry": "NL",
-      "countryFlag": "🇳🇱"
-    },
-    {
-      "name": "Blazin'G",
-      "isoCountry": "BR",
-      "countryFlag": "🇧🇷"
-    },
-    {
-      "name": "Blazin'G (BR)"
-    },
-    {
-      "name": "BLAZIN'G (Tropical Nomads / Psy Groove)🌀"
-    },
-    {
-      "name": "Blazin'g 🇧🇷",
-      "isoCountry": "BR",
-      "countryFlag": "🇧🇷"
-    },
-    {
-      "name": "BOM SHANKA MUSIC LABEL NIGHT 👽"
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Full-On"
+      ]
     },
     {
       "name": "Brain Damage",
@@ -253,20 +99,49 @@
       "countryFlag": "🇧🇷"
     },
     {
-      "name": "Brain Damage 🇧🇷",
-      "isoCountry": "BR",
-      "countryFlag": "🇧🇷"
+      "name": "BURN IN NOISE",
+      "genres": [
+        "Full-On"
+      ]
     },
     {
-      "name": "BURN IN NOISE (Nano Records) 🔥"
-    },
-    {
-      "name": "C.S.M (Psykomeiko)",
+      "name": "C.S.M",
       "isoCountry": "NL",
       "countryFlag": "🇳🇱"
     },
     {
-      "name": "CIB & CIMI (Psychedelic Grateful Punks)🔥"
+      "name": "Campello",
+      "genres": [
+        "Techno"
+      ]
+    },
+    {
+      "name": "Candelas",
+      "genres": [
+        "Prog Tech"
+      ]
+    },
+    {
+      "name": "Carol Stefaniak",
+      "genres": [
+        "Psytrance",
+        "Techno"
+      ]
+    },
+    {
+      "name": "CIB & CIMI"
+    },
+    {
+      "name": "Corralo",
+      "genres": [
+        "Psytrance"
+      ]
+    },
+    {
+      "name": "Cosmic Brothers Project",
+      "genres": [
+        "Psytrance"
+      ]
     },
     {
       "name": "Critical Communication",
@@ -274,33 +149,61 @@
       "countryFlag": "🇧🇷"
     },
     {
-      "name": "DIGITALK (BR)"
+      "name": "DIGITALK",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷"
     },
     {
-      "name": "DJ PAULA (BR)"
+      "name": "DJ PAULA",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷"
     },
     {
-      "name": "For the first time, TROPICAL NOMADS arrives in London, joining forces with UNIVERSE for a special night dedicated to the sound and energy of Bom Shanka Music."
+      "name": "DJ Rsn",
+      "genres": [
+        "Progressive Psytrance"
+      ]
     },
     {
-      "name": "FREE – Eatyard (2PM – 10:30PM)"
+      "name": "Dolce Vita",
+      "genres": [
+        "Full-On"
+      ]
     },
     {
-      "name": "FREE ENTRY: 2PM – 10:30PM"
+      "name": "Draco Dark",
+      "genres": [
+        "Psytech"
+      ]
     },
     {
-      "name": "Frostbite 🇵🇹",
+      "name": "F.Hollow",
+      "genres": [
+        "Techno"
+      ]
+    },
+    {
+      "name": "Fluffy",
+      "genres": [
+        "Psycore"
+      ]
+    },
+    {
+      "name": "Frostbite",
       "isoCountry": "PT",
       "countryFlag": "🇵🇹"
     },
     {
-      "name": "GunD (PL)"
+      "name": "GunD",
+      "isoCountry": "PL",
+      "countryFlag": "🇵🇱"
     },
     {
-      "name": "Halloween Mini Festival – Line Up 🎶"
-    },
-    {
-      "name": "Horário: 2PM – 3AM"
+      "name": "Iaka",
+      "genres": [
+        "Dark",
+        "Forest"
+      ]
     },
     {
       "name": "Idioblast",
@@ -308,53 +211,112 @@
       "countryFlag": "🇳🇱"
     },
     {
-      "name": "Join us for a special Pre–St. Patrick’s Psytrance Night in Dublin as we also celebrate the birthday of Niamh & Shivaion!"
+      "name": "Imniamh",
+      "genres": [
+        "Peak Time"
+      ]
     },
     {
-      "name": "Juliosmap 🇧🇷",
+      "name": "Ivan Pocintela",
+      "genres": [
+        "Tech House"
+      ]
+    },
+    {
+      "name": "Jamds",
+      "genres": [
+        "Tech House"
+      ]
+    },
+    {
+      "name": "Juliosmap",
       "isoCountry": "BR",
       "countryFlag": "🇧🇷"
     },
     {
-      "name": "KARELL (BR)"
+      "name": "Kalinke",
+      "genres": [
+        "Minimal"
+      ]
     },
     {
-      "name": "Let’s warm up for St. Patrick’s with powerful beats, smiles, and a proper underground atmosphere. ☘️🎶"
-    },
-    {
-      "name": "LINE UP"
-    },
-    {
-      "name": "London, this is the first one — and we’re coming properly. 🤯"
-    },
-    {
-      "name": "Nhandeva (BR)"
-    },
-    {
-      "name": "No Pressure (PL)"
-    },
-    {
-      "name": "Öcto 🇧🇷",
+      "name": "KARELL",
       "isoCountry": "BR",
       "countryFlag": "🇧🇷"
     },
     {
-      "name": "PAID – Bernard Shaw (11PM – 3AM)"
+      "name": "Katy Bnv",
+      "genres": [
+        "Afro House"
+      ]
     },
     {
-      "name": "PAID – Racket Space (11PM – 3AM)"
+      "name": "Ladysiu",
+      "genres": [
+        "Hard Techno"
+      ]
     },
     {
-      "name": "PAID ENTRY: 11PM – 3AM"
+      "name": "MaadHouz",
+      "genres": [
+        "Minimal"
+      ]
     },
     {
-      "name": "Panchikarana (PL)"
+      "name": "MhonoType",
+      "genres": [
+        "Techno"
+      ]
     },
     {
-      "name": "POLZITIV (Psychedelic Grateful Punks) 🔥"
+      "name": "Nhandeva",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Full-On"
+      ]
     },
     {
-      "name": "Pre-St Patrick` s Day + NIAMH & SHIVAION` s Bday 🎂"
+      "name": "Niamh",
+      "genres": [
+        "Techno"
+      ]
+    },
+    {
+      "name": "Nilaaa",
+      "genres": [
+        "Raw"
+      ]
+    },
+    {
+      "name": "No Pressure",
+      "isoCountry": "PL",
+      "countryFlag": "🇵🇱"
+    },
+    {
+      "name": "Öcto",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷"
+    },
+    {
+      "name": "Panchikarana",
+      "isoCountry": "PL",
+      "countryFlag": "🇵🇱"
+    },
+    {
+      "name": "Phill Base",
+      "genres": [
+        "Raw"
+      ]
+    },
+    {
+      "name": "Plain4Jane",
+      "genres": [
+        "Underground House"
+      ]
+    },
+    {
+      "name": "POLZITIV"
     },
     {
       "name": "Psychological",
@@ -362,91 +324,110 @@
       "countryFlag": "🇧🇷"
     },
     {
-      "name": "Psychological 🇧🇷",
-      "isoCountry": "BR",
-      "countryFlag": "🇧🇷"
+      "name": "PSYKADELICA"
     },
     {
-      "name": "PSYKADELICA (Dutch Acid Family)🌀"
+      "name": "Romanetto",
+      "genres": [
+        "Peak Time",
+        "Techno"
+      ]
     },
     {
       "name": "Shivaion",
       "isoCountry": "BR",
-      "countryFlag": "🇧🇷"
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Full-On",
+        "Psytrance"
+      ]
     },
     {
-      "name": "Shivaion (BR)"
+      "name": "Shivaion in Dub",
+      "genres": [
+        "Dub"
+      ]
     },
     {
-      "name": "SHIVAION (Tropical Nomads / Psy Groove )🔥"
+      "name": "Sindy",
+      "genres": [
+        "Progressive Psytrance"
+      ]
     },
     {
-      "name": "Shivaion 🇧🇷",
-      "isoCountry": "BR",
-      "countryFlag": "🇧🇷"
-    },
-    {
-      "name": "Solar Plexus 🇬🇹",
+      "name": "Solar Plexus",
       "isoCountry": "GT",
       "countryFlag": "🇬🇹"
     },
     {
-      "name": "SOUNDHOUSE"
+      "name": "Sylent Hill",
+      "genres": [
+        "Dark",
+        "Forest"
+      ]
     },
     {
-      "name": "TERRACE"
+      "name": "Teejota",
+      "genres": [
+        "Techno"
+      ]
     },
     {
-      "name": "TERRACE (19:00 – 01:00)"
+      "name": "Texo",
+      "genres": [
+        "Full-On"
+      ]
     },
     {
-      "name": "The Bernard Shaw"
+      "name": "The Drifter",
+      "genres": [
+        "Minimal",
+        "Tech House"
+      ]
     },
     {
-      "name": "THE EATYARD (14:00 – 23:00)"
+      "name": "Tyusha",
+      "isoCountry": "DE",
+      "countryFlag": "🇩🇪",
+      "genres": [
+        "Progressive Psytrance"
+      ]
     },
     {
-      "name": "The night also features 3RD VISION 🇧🇷, AFTER JUNE 🇧🇷, BLAZIN’G 🇧🇷 and SHIVAION 🇧🇷, connecting the Brazilian psychedelic force with the London scene.",
-      "isoCountry": "BR",
-      "countryFlag": "🇧🇷"
-    },
-    {
-      "name": "THE RACKET SPACE (23:00 – 03:00)"
-    },
-    {
-      "name": "The Sound House – Dublin"
-    },
-    {
-      "name": "This edition brings 4 names from the Bom Shanka family, including BOCARA 🇧🇷, coming directly from Brazil, alongside ABIOTIQ 🇫🇷, DIRTY, SAFFI 🇬🇧 and NUKY 🇬🇧 — a lineup built for a proper psychedelic journey, from deep grooves to full-power dancefloor moments. 🔥",
-      "isoCountry": "BR",
-      "countryFlag": "🇧🇷"
-    },
-    {
-      "name": "Tyusha (DE)"
-    },
-    {
-      "name": "UNIVERSE & TROPICAL NOMADS presents"
+      "name": "Underbeat",
+      "genres": [
+        "Psytechno"
+      ]
     },
     {
       "name": "Valar",
       "isoCountry": "NL",
-      "countryFlag": "🇳🇱"
+      "countryFlag": "🇳🇱",
+      "genres": [
+        "Progressive Psytrance"
+      ]
     },
     {
-      "name": "VALKYRIE (M-United) 🌀"
+      "name": "VALKYRIE"
     },
     {
-      "name": "VENUE"
-    },
-    {
-      "name": "Vinius 🇧🇷",
+      "name": "Vinius",
       "isoCountry": "BR",
-      "countryFlag": "🇧🇷"
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Full-On"
+      ]
     },
     {
       "name": "Yesca",
       "isoCountry": "BR",
       "countryFlag": "🇧🇷"
+    },
+    {
+      "name": "Zintek",
+      "genres": [
+        "Minimal Deep Tech"
+      ]
     }
   ]
 }

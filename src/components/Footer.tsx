@@ -6,12 +6,13 @@ const FOOTER_LINKS: ReadonlyArray<{ id: string; label: string }> = [
   { id: 'home', label: 'Home' },
   { id: 'upcoming-events', label: 'Events' },
   { id: 'gallery', label: 'Gallery' },
+  { id: 'partners', label: 'Partners' },
   { id: 'socials', label: 'Socials' },
 ];
 
 export function Footer({ onNavigate }: FooterProps): JSX.Element {
   return (
-    <footer className="safe-x safe-bottom border-t border-white/10 px-4 py-8 text-center text-xs text-ozora-cream/70 md:px-8">
+    <footer className="safe-x safe-bottom border-t border-white/10 px-5 py-8 text-center text-xs text-ozora-cream/70 md:px-8">
       <nav aria-label="Footer" className="mb-4 flex flex-wrap justify-center gap-2">
         {FOOTER_LINKS.map((link) => (
           <button

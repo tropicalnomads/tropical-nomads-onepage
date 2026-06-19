@@ -1,0 +1,52 @@
+[
+  {
+    "id": "toekomstmuziek-amsterdam",
+    "name": "Toekomstmuziek",
+    "city": "Amsterdam",
+    "country": "Netherlands",
+    "isoCountry": "NL",
+    "mapUrl": "https://maps.app.goo.gl/Zp3PKsaYoqTaRQpH7"
+  },
+  {
+    "id": "the-bernard-shaw-dublin",
+    "name": "The Bernard Shaw",
+    "city": "Dublin",
+    "country": "Ireland",
+    "isoCountry": "IE",
+    "mapUrl": "https://maps.app.goo.gl/H1G1BBd19o61SCwA8"
+  },
+  {
+    "id": "the-sound-house-dublin",
+    "name": "The Sound House",
+    "city": "Dublin",
+    "country": "Ireland",
+    "isoCountry": "IE",
+    "address": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44",
+    "mapUrl": "https://maps.app.goo.gl/EtfCwAWYFE9CAmhNA"
+  },
+  {
+    "id": "bar-a-bar-london",
+    "name": "Bar A Bar",
+    "city": "London",
+    "country": "United Kingdom",
+    "isoCountry": "GB",
+    "mapUrl": "https://maps.app.goo.gl/ZiJAPJSSdVRihLY48"
+  },
+  {
+    "id": "m-bia-berlin",
+    "name": "M-Bia",
+    "city": "Berlin",
+    "country": "Germany",
+    "isoCountry": "DE",
+    "mapUrl": "https://maps.app.goo.gl/cBdLaFkzqKo3vMS26"
+  },
+  {
+    "id": "cargo-111-lisbon",
+    "name": "Cargo 111",
+    "city": "Lisbon",
+    "country": "Portugal",
+    "isoCountry": "PT",
+    "address": "Rua do Norte 111, 1200-365 Lisboa",
+    "mapUrl": "https://maps.app.goo.gl/KoCdexDUkmuoHbep7"
+  }
+]

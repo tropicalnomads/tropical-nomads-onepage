@@ -1,0 +1,26 @@
+[
+  {
+    "id": "psy-groove",
+    "name": "Psy Groove",
+    "city": "Dublin",
+    "handle": "@psy.groove",
+    "instagram": "https://www.instagram.com/psy.groove/",
+    "igUsername": "psy.groove"
+  },
+  {
+    "id": "universe",
+    "name": "Universe",
+    "city": "London",
+    "handle": "@universeparty_111",
+    "instagram": "https://www.instagram.com/universeparty_111/",
+    "igUsername": "universeparty_111"
+  },
+  {
+    "id": "pgp",
+    "name": "Psychedelic Grateful Punks",
+    "city": "Amsterdam",
+    "handle": "@psychedelicgratefulpunks",
+    "instagram": "https://www.instagram.com/psychedelicgratefulpunks/",
+    "igUsername": "psychedelicgratefulpunks"
+  }
+]

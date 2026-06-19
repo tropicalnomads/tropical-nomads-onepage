@@ -1,14 +1,19 @@
 // Generates the file-based events "backend" from the goabase JSON API.
 // Outputs:
-//   public/data/events.json   (versioned envelope of EventRecord[])
-//   public/data/artists.json  (deduped artist catalog)
-//   public/data/venues.json   (deduped venue catalog)
+//   public/data/events.json    (versioned envelope of EventRecord[])
+//   public/data/artists.json   (deduped artist catalog, incl. agencies/labels)
+//   public/data/venues.json    (deduped venue catalog)
+//   public/data/agencies.json  (booking agencies catalog)
+//   public/data/labels.json    (record labels catalog)
 //   public/events/banners/<id>.<ext>  (downloaded flyer per event)
+//
+// Agency/label data is NOT provided by goabase. It is curated by hand in
+// scripts/data/{agencies,labels,artist-affiliations}.json and merged in here.
 //
 // Run: pnpm events
 
 import { Buffer } from 'node:buffer';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -18,13 +23,19 @@ const API_BASE = 'https://www.goabase.net/api/party/json';
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const dataDir = resolve(projectRoot, 'public/data');
 const bannersDir = resolve(projectRoot, 'public/events/banners');
+const partnersDir = resolve(projectRoot, 'public/partners');
+const curatedDir = resolve(projectRoot, 'scripts/data');
 
 // Authoritative event set (from the goabase member "added events" page),
 // ordered by curation. Eventbrite overrides where ticket sales exist.
 const EVENT_SOURCES = [
   { id: 117712, eventbrite: 'https://avan7amsterdam.eventbrite.ie' },
   { id: 117713, eventbrite: 'https://avan7dublin.eventbrite.ie' },
-  { id: 116643 },
+  {
+    id: 116643,
+    tickets:
+      'https://www.skiddle.com/whats-on/London/Bar-A-Bar/Universe--Tropical-Nomads-Bom-Shanka-Label-night/41911407/',
+  },
   { id: 117120 },
   { id: 117152 },
   { id: 117257 },
@@ -59,12 +70,184 @@ function flagToIso(flag) {
 }
 
 const FLAG_REGEX = /[\u{1F1E6}-\u{1F1FF}]{2}/u;
-const LEADING_EMOJI_REGEX =
-  /^[\s\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}\uFE0F\u200D]+/u;
+const EMOJI_GLOBAL =
+  /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}\u{1F1E6}-\u{1F1FF}\uFE0F\u200D]/gu;
+// Leading timecode / time-range prefix, e.g. "00:00 - ", "18:00 → 19:00 - ".
+const TIME_PREFIX_REGEX =
+  /^\s*\d{1,2}:\d{2}\s*(?:[–\-—→]\s*\d{1,2}:\d{2}\s*)?[–\-—→]\s*/u;
+const DASH_SPLIT_REGEX = /\s+[–\-—]\s+/u;
+
+// Genre vocabulary used to tell musical genres apart from artist names, crew
+// affiliations and venue/label tags.
+const GENRE_TOKENS = new Set([
+  'psytrance',
+  'progressive psytrance',
+  'progressive',
+  'prog',
+  'prog tech',
+  'fullon',
+  'full-on',
+  'full on',
+  'fullon night',
+  'full-on night',
+  'night',
+  'twilight',
+  'forest',
+  'dark',
+  'hitech',
+  'hi-tech',
+  'hi tech',
+  'psycore',
+  'techno',
+  'hard techno',
+  'tech house',
+  'minimal',
+  'minimal deep tech',
+  'deep tech',
+  'house',
+  'afro house',
+  'underground house',
+  'psytech',
+  'psy-tech',
+  'psytechno',
+  'dub',
+  'raw',
+  'peak time',
+  'acid',
+]);
+
+// Canonical display form for genres so casing/spelling variants merge.
+const GENRE_CANON = new Map([
+  ['psytrance', 'Psytrance'],
+  ['progressive psytrance', 'Progressive Psytrance'],
+  ['progressive', 'Progressive'],
+  ['prog', 'Prog'],
+  ['prog tech', 'Prog Tech'],
+  ['fullon', 'Full-On'],
+  ['full-on', 'Full-On'],
+  ['full on', 'Full-On'],
+  ['fullon night', 'Full-On Night'],
+  ['full-on night', 'Full-On Night'],
+  ['night', 'Night'],
+  ['twilight', 'Twilight'],
+  ['forest', 'Forest'],
+  ['dark', 'Dark'],
+  ['hitech', 'Hitech'],
+  ['hi-tech', 'Hitech'],
+  ['hi tech', 'Hitech'],
+  ['psycore', 'Psycore'],
+  ['techno', 'Techno'],
+  ['hard techno', 'Hard Techno'],
+  ['tech house', 'Tech House'],
+  ['minimal', 'Minimal'],
+  ['minimal deep tech', 'Minimal Deep Tech'],
+  ['deep tech', 'Deep Tech'],
+  ['house', 'House'],
+  ['afro house', 'Afro House'],
+  ['underground house', 'Underground House'],
+  ['psytech', 'Psytech'],
+  ['psy-tech', 'Psytech'],
+  ['psytechno', 'Psytechno'],
+  ['dub', 'Dub'],
+  ['raw', 'Raw'],
+  ['peak time', 'Peak Time'],
+  ['acid', 'Acid'],
+]);
+
+function canonicalizeGenre(token) {
+  return GENRE_CANON.get(token.toLowerCase()) ?? token.trim();
+}
+
+const ARTIST_STOPWORDS = new Set([
+  'end',
+  'venue',
+  'terrace',
+  'soundhouse',
+  'line up',
+  'lineup',
+  'free',
+  'paid',
+  'tba',
+]);
+
+const ARTIST_BLOCKLIST = [
+  'presents',
+  'entry',
+  'festival',
+  'line up',
+  'lineup',
+  'horário',
+  'horario',
+  'join us',
+  'let’s',
+  "let's",
+  'edition',
+  'features',
+  'arrives',
+  'dedicated',
+  'http',
+  'eatyard',
+  'racket space',
+  'bernard shaw',
+  'sound house',
+  'label night',
+  'music label',
+  'this is',
+  'coming properly',
+];
 
 // Lines that contain no letters/numbers are decorative separators (e.g. "═════").
 function isDecorative(value) {
   return !/[\p{L}\p{N}]/u.test(value);
+}
+
+function isoToFlag(iso) {
+  if (!iso || !/^[A-Z]{2}$/.test(iso)) return undefined;
+  const base = 0x1f1e6;
+  return String.fromCodePoint(base + iso.charCodeAt(0) - 65, base + iso.charCodeAt(1) - 65);
+}
+
+function stripEmoji(value) {
+  return value.replace(EMOJI_GLOBAL, ' ').replace(/\s+/g, ' ').trim();
+}
+
+// Returns the genre tokens if every slash/comma-separated token is a known
+// genre, otherwise null (so labels/crews are not mistaken for genres).
+function asGenres(text) {
+  const tokens = text
+    .split(/[\/,]/)
+    .map((token) => token.trim())
+    .filter(Boolean);
+  if (tokens.length === 0) return null;
+  if (tokens.every((token) => GENRE_TOKENS.has(token.toLowerCase()))) {
+    return tokens.map(canonicalizeGenre);
+  }
+  return null;
+}
+
+// Canonical artist display name: normalize curly apostrophes and drop a
+// trailing " LIVE" marker so "Valar" and "Valar LIVE" merge.
+function normalizeArtistName(name) {
+  return name
+    .replace(/[’‘`]/g, "'")
+    .replace(/\s+live$/i, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function artistKey(name) {
+  return normalizeArtistName(name).toLowerCase().replace(/'/g, '');
+}
+
+function isLikelyArtist(name) {
+  if (!name || name.length < 2) return false;
+  const lower = name.toLowerCase();
+  if (ARTIST_STOPWORDS.has(lower)) return false;
+  if (/\d{1,2}:\d{2}/.test(name)) return false;
+  if (/\d\s*(?:am|pm)\b/i.test(name)) return false;
+  if (name.split(/\s+/).length > 5) return false;
+  if (ARTIST_BLOCKLIST.some((blocked) => lower.includes(blocked))) return false;
+  return true;
 }
 
 function slugify(value) {
@@ -76,9 +259,59 @@ function slugify(value) {
     .replace(/(^-|-$)/g, '');
 }
 
+// Turns a single line-up line into zero or more clean artist records.
+// Strips timecodes, pulls out genres (parentheses or trailing dash segment)
+// and country, drops crew/label tags, and splits "A b2b B" into two artists.
+function parseArtistEntries(line) {
+  const flagMatch = line.match(FLAG_REGEX);
+  let isoCountry = flagToIso(flagMatch ? flagMatch[0] : undefined);
+  const genres = [];
+
+  let working = line.replace(TIME_PREFIX_REGEX, '');
+
+  working = working.replace(/\(([^)]*)\)/g, (_full, inner) => {
+    const trimmed = inner.trim();
+    if (/^[A-Z]{2,3}$/.test(trimmed)) {
+      isoCountry = isoCountry ?? trimmed;
+      return ' ';
+    }
+    const genreTokens = asGenres(trimmed);
+    if (genreTokens) {
+      genres.push(...genreTokens);
+    }
+    return ' ';
+  });
+
+  working = stripEmoji(working);
+
+  const dashParts = working.split(DASH_SPLIT_REGEX);
+  if (dashParts.length > 1) {
+    const tail = dashParts[dashParts.length - 1];
+    const tailGenres = asGenres(tail);
+    if (tailGenres) {
+      genres.push(...tailGenres);
+      working = dashParts.slice(0, -1).join(' - ').trim();
+    }
+  }
+
+  const iso = isoCountry && /^[A-Z]{2}$/.test(isoCountry) ? isoCountry : undefined;
+  const flag = iso ? isoToFlag(iso) : flagMatch ? flagMatch[0] : undefined;
+  const cleanGenres = [...new Set(genres.map((genre) => genre.trim()).filter(Boolean))];
+
+  return working
+    .split(/\s+b2b\s+/i)
+    .map((name) => normalizeArtistName(name.replace(/^[\s"'*]+|[\s"'*]+$/g, '')))
+    .filter((name) => isLikelyArtist(name))
+    .map((name) => ({
+      name,
+      ...(iso ? { isoCountry: iso } : {}),
+      ...(flag ? { countryFlag: flag } : {}),
+      ...(cleanGenres.length ? { genres: cleanGenres } : {}),
+    }));
+}
+
 // Parses goabase free-text line-up into structured stages + artists.
-// Stage headers are lines without a country flag that contain "STAGE"/"FLOOR"
-// or are wrapped emphasis; artist lines usually start with a country flag.
+// Stage headers are lines without a country flag that contain "STAGE"/"FLOOR".
 function parseLineup(textLineUp) {
   if (!textLineUp || !textLineUp.trim()) return [];
 
@@ -98,41 +331,44 @@ function parseLineup(textLineUp) {
     return current;
   };
 
+  const pushArtist = (stage, artist) => {
+    const existing = stage.artists.find(
+      (item) => artistKey(item.name) === artistKey(artist.name),
+    );
+    if (!existing) {
+      stage.artists.push({ ...artist, stage: stage.name });
+      return;
+    }
+    if (artist.genres) {
+      existing.genres = [...new Set([...(existing.genres ?? []), ...artist.genres])];
+    }
+    existing.isoCountry = existing.isoCountry ?? artist.isoCountry;
+    existing.countryFlag = existing.countryFlag ?? artist.countryFlag;
+  };
+
   for (const line of lines) {
     const hasFlag = FLAG_REGEX.test(line);
-    const looksLikeStage =
-      !hasFlag && /(stage|floor|arena|area|palco)/i.test(line);
+    const looksLikeStage = !hasFlag && /(stage|floor|arena|palco)/i.test(line);
 
     if (looksLikeStage) {
       const genreMatch = line.match(/\(([^)]*)\)/);
       const genres = genreMatch
         ? genreMatch[1]
             .split(/[,/]/)
-            .map((g) => g.trim())
+            .map((genre) => genre.trim())
             .filter(Boolean)
+            .map(canonicalizeGenre)
         : [];
-      const name = line
-        .replace(/\(([^)]*)\)/, '')
-        .replace(LEADING_EMOJI_REGEX, '')
-        .trim();
-      current = { name: name || 'Stage', genres, artists: [] };
+      const name = stripEmoji(line.replace(/\(([^)]*)\)/, '')) || 'Stage';
+      current = { name, genres, artists: [] };
       stages.push(current);
       continue;
     }
 
     const stage = ensureDefaultStage();
-    const flagMatch = line.match(FLAG_REGEX);
-    const countryFlag = flagMatch ? flagMatch[0] : undefined;
-    const name = line.replace(LEADING_EMOJI_REGEX, '').trim();
-    if (!name) continue;
-
-    const isoCountry = flagToIso(countryFlag);
-    stage.artists.push({
-      name,
-      countryFlag,
-      ...(isoCountry ? { isoCountry } : {}),
-      stage: stage.name,
-    });
+    for (const artist of parseArtistEntries(line)) {
+      pushArtist(stage, artist);
+    }
   }
 
   return stages.filter((stage) => stage.artists.length > 0 || stage.genres.length > 0);
@@ -181,19 +417,83 @@ async function downloadBanner(url, id) {
   return `/events/banners/${fileName}`;
 }
 
-function normalizeEvent(party, override) {
+// Downloads a partner's Instagram avatar via unavatar.io and stores it locally.
+// Best-effort: returns the local path on success, undefined on failure.
+async function downloadPartnerAvatar(igUsername, id) {
+  const url = `https://unavatar.io/instagram/${igUsername}?fallback=false`;
+  try {
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'tropical-nomads-page/1.0' },
+    });
+    if (!response.ok) {
+      throw new Error(`status ${response.status}`);
+    }
+    const arrayBuffer = await response.arrayBuffer();
+    if (arrayBuffer.byteLength === 0) {
+      throw new Error('empty image');
+    }
+    const fileName = `${id}.jpg`;
+    await writeFile(resolve(partnersDir, fileName), Buffer.from(arrayBuffer));
+    return `/partners/${fileName}`;
+  } catch (error) {
+    console.warn(`Partner avatar download failed for ${igUsername}: ${error.message}`);
+    return undefined;
+  }
+}
+
+async function buildPartners() {
+  const curated = await readCuratedJson('partners.json', []);
+  const partners = [];
+  for (const partner of curated) {
+    const logo = await downloadPartnerAvatar(partner.igUsername, partner.id);
+    partners.push({
+      id: partner.id,
+      name: partner.name,
+      city: partner.city,
+      handle: partner.handle,
+      instagram: partner.instagram,
+      ...(logo ? { logo } : {}),
+    });
+    console.log(`Partner ${partner.name}${logo ? ' (logo)' : ' (no logo)'}`);
+  }
+  return partners;
+}
+
+function normalizeEvent(party, override, venueOverride, lineupOverride) {
   const stages = parseLineup(party.textLineUp);
-  const venueName = (party.textLocation || '').trim() || undefined;
-  const venue = {
-    id: slugify(`${party.nameTown}-${party.nameCountry}`),
-    ...(venueName ? { name: venueName } : {}),
-    city: party.nameTown,
-    country: party.nameCountry,
-    isoCountry: party.isoCountry,
-    ...(party.geoLat || party.geoLon
-      ? { geo: { lat: party.geoLat, lon: party.geoLon } }
-      : {}),
-  };
+
+  // Curated lineup corrections: rename specific artists across all stages.
+  const renameMap = lineupOverride?.rename;
+  if (renameMap) {
+    for (const stage of stages) {
+      for (const artist of stage.artists) {
+        if (Object.prototype.hasOwnProperty.call(renameMap, artist.name)) {
+          artist.name = renameMap[artist.name];
+        }
+      }
+    }
+  }
+  const geo =
+    party.geoLat || party.geoLon ? { geo: { lat: party.geoLat, lon: party.geoLon } } : {};
+  const venue = venueOverride
+    ? {
+        id: venueOverride.id,
+        ...(venueOverride.name ? { name: venueOverride.name } : {}),
+        city: venueOverride.city ?? party.nameTown,
+        country: venueOverride.country ?? party.nameCountry,
+        isoCountry: venueOverride.isoCountry ?? party.isoCountry,
+        ...(venueOverride.address ? { address: venueOverride.address } : {}),
+        ...geo,
+        ...(venueOverride.mapUrl ? { mapUrl: venueOverride.mapUrl } : {}),
+      }
+    : {
+        id: slugify(`${party.nameTown}-${party.nameCountry}`),
+        ...((party.textLocation || '').trim() ? { name: party.textLocation.trim() } : {}),
+        city: party.nameTown,
+        country: party.nameCountry,
+        isoCountry: party.isoCountry,
+        ...geo,
+      };
 
   return {
     id: String(party.id),
@@ -208,6 +508,7 @@ function normalizeEvent(party, override) {
     venue,
     ...(party.textLineUp ? { lineupRaw: party.textLineUp } : {}),
     stages,
+    ...(lineupOverride?.cardArtists?.length ? { cardArtists: lineupOverride.cardArtists } : {}),
     ...(party.textMore ? { description: party.textMore } : {}),
     ...(party.nameOrganizer ? { organizer: party.nameOrganizer } : {}),
     images: {
@@ -219,6 +520,7 @@ function normalizeEvent(party, override) {
     links: {
       goabase: party.urlParty || party.urlPartyHtml,
       ...(override?.eventbrite ? { eventbrite: override.eventbrite } : {}),
+      ...(override?.tickets ? { tickets: override.tickets } : {}),
       ...(parseInstagramLinks(party.urlOrganizer).length
         ? { instagram: parseInstagramLinks(party.urlOrganizer) }
         : {}),
@@ -234,23 +536,95 @@ function normalizeEvent(party, override) {
   };
 }
 
-function buildArtistCatalog(events) {
+function isAllCaps(value) {
+  return value === value.toUpperCase() && /[A-Z]/.test(value);
+}
+
+async function readCuratedJson(fileName, fallback) {
+  try {
+    return JSON.parse(await readFile(resolve(curatedDir, fileName), 'utf8'));
+  } catch {
+    return fallback;
+  }
+}
+
+// Loads curated agency/label catalogs and the per-artist affiliation map.
+// Returns resolver helpers keyed by artistKey, plus the catalog arrays to emit.
+async function loadAffiliations() {
+  const agencies = await readCuratedJson('agencies.json', []);
+  const labels = await readCuratedJson('labels.json', []);
+  const rawAffiliations = await readCuratedJson('artist-affiliations.json', {});
+
+  const agencyById = new Map(agencies.map((agency) => [agency.id, agency]));
+  const labelById = new Map(labels.map((label) => [label.id, label]));
+
+  const byArtist = new Map();
+  for (const [artistName, value] of Object.entries(rawAffiliations)) {
+    const agencyNames = (value.agencies ?? []).map((id) => {
+      const agency = agencyById.get(id);
+      if (!agency) {
+        console.warn(`Unknown agency id "${id}" for artist "${artistName}"`);
+        return null;
+      }
+      return agency.name;
+    });
+    const labelNames = (value.labels ?? []).map((id) => {
+      const label = labelById.get(id);
+      if (!label) {
+        console.warn(`Unknown label id "${id}" for artist "${artistName}"`);
+        return null;
+      }
+      return label.name;
+    });
+    byArtist.set(artistKey(artistName), {
+      agencies: agencyNames.filter(Boolean),
+      labels: labelNames.filter(Boolean),
+    });
+  }
+
+  return { agencies, labels, byArtist };
+}
+
+function buildArtistCatalog(events, affiliations = { byArtist: new Map() }) {
   const byKey = new Map();
   for (const event of events) {
     for (const stage of event.stages) {
       for (const artist of stage.artists) {
-        const key = artist.name.toLowerCase();
-        if (!byKey.has(key)) {
+        const key = artistKey(artist.name);
+        const existing = byKey.get(key);
+        if (!existing) {
           byKey.set(key, {
             name: artist.name,
-            ...(artist.isoCountry ? { isoCountry: artist.isoCountry } : {}),
-            ...(artist.countryFlag ? { countryFlag: artist.countryFlag } : {}),
+            isoCountry: artist.isoCountry,
+            countryFlag: artist.countryFlag,
+            genres: new Set(artist.genres ?? []),
           });
+          continue;
+        }
+        if (isAllCaps(existing.name) && !isAllCaps(artist.name)) {
+          existing.name = artist.name;
+        }
+        existing.isoCountry = existing.isoCountry ?? artist.isoCountry;
+        existing.countryFlag = existing.countryFlag ?? artist.countryFlag;
+        for (const genre of artist.genres ?? []) {
+          existing.genres.add(genre);
         }
       }
     }
   }
-  return [...byKey.values()].sort((a, b) => a.name.localeCompare(b.name));
+  return [...byKey.entries()]
+    .sort(([, a], [, b]) => a.name.localeCompare(b.name))
+    .map(([key, artist]) => {
+      const affiliation = affiliations.byArtist.get(key);
+      return {
+        name: artist.name,
+        ...(artist.isoCountry ? { isoCountry: artist.isoCountry } : {}),
+        ...(artist.countryFlag ? { countryFlag: artist.countryFlag } : {}),
+        ...(artist.genres.size ? { genres: [...artist.genres].sort() } : {}),
+        ...(affiliation?.agencies.length ? { agencies: affiliation.agencies } : {}),
+        ...(affiliation?.labels.length ? { labels: affiliation.labels } : {}),
+      };
+    });
 }
 
 function buildVenueCatalog(events) {
@@ -266,6 +640,12 @@ function buildVenueCatalog(events) {
 async function main() {
   await mkdir(dataDir, { recursive: true });
   await mkdir(bannersDir, { recursive: true });
+  await mkdir(partnersDir, { recursive: true });
+
+  const curatedVenues = await readCuratedJson('venues.json', []);
+  const eventVenueMap = await readCuratedJson('event-venues.json', {});
+  const venueById = new Map(curatedVenues.map((venue) => [venue.id, venue]));
+  const lineupOverrides = await readCuratedJson('event-lineups.json', {});
 
   const events = [];
 
@@ -277,7 +657,14 @@ async function main() {
       continue;
     }
 
-    const event = normalizeEvent(party, sourceItem);
+    const venueId = eventVenueMap[String(sourceItem.id)];
+    const venueOverride = venueId ? venueById.get(venueId) : undefined;
+    if (venueId && !venueOverride) {
+      console.warn(`Unknown venue id "${venueId}" for event ${sourceItem.id}`);
+    }
+
+    const lineupOverride = lineupOverrides[String(sourceItem.id)];
+    const event = normalizeEvent(party, sourceItem, venueOverride, lineupOverride);
 
     const bannerSource =
       party.urlImageLarge || party.urlImageFull || party.urlImageMedium || party.urlImageSmall;
@@ -303,8 +690,10 @@ async function main() {
     events,
   };
 
-  const artists = buildArtistCatalog(events);
+  const affiliations = await loadAffiliations();
+  const artists = buildArtistCatalog(events, affiliations);
   const venues = buildVenueCatalog(events);
+  const partners = await buildPartners();
 
   await writeFile(resolve(dataDir, 'events.json'), `${JSON.stringify(eventsFile, null, 2)}\n`);
   await writeFile(
@@ -315,8 +704,32 @@ async function main() {
     resolve(dataDir, 'venues.json'),
     `${JSON.stringify({ schemaVersion: SCHEMA_VERSION, generatedAt, count: venues.length, venues }, null, 2)}\n`,
   );
+  await writeFile(
+    resolve(dataDir, 'agencies.json'),
+    `${JSON.stringify(
+      { schemaVersion: SCHEMA_VERSION, generatedAt, count: affiliations.agencies.length, agencies: affiliations.agencies },
+      null,
+      2,
+    )}\n`,
+  );
+  await writeFile(
+    resolve(dataDir, 'labels.json'),
+    `${JSON.stringify(
+      { schemaVersion: SCHEMA_VERSION, generatedAt, count: affiliations.labels.length, labels: affiliations.labels },
+      null,
+      2,
+    )}\n`,
+  );
+  await writeFile(
+    resolve(dataDir, 'partners.json'),
+    `${JSON.stringify({ schemaVersion: SCHEMA_VERSION, generatedAt, count: partners.length, partners }, null, 2)}\n`,
+  );
 
-  console.log(`\nWrote ${events.length} events, ${artists.length} artists, ${venues.length} venues.`);
+  console.log(
+    `\nWrote ${events.length} events, ${artists.length} artists, ${venues.length} venues, ` +
+      `${affiliations.agencies.length} agencies, ${affiliations.labels.length} labels, ` +
+      `${partners.length} partners.`,
+  );
 }
 
 main().catch((error) => {

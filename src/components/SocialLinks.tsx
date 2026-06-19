@@ -21,7 +21,7 @@ function platformIcon(platform: SocialLink['platform']): JSX.Element {
 
 export function SocialLinks({ links }: SocialLinksProps): JSX.Element {
   return (
-    <section id="socials" className="safe-x px-4 py-12 md:px-8">
+    <section id="socials" className="safe-x px-5 py-8 md:px-8">
       <div className="mx-auto max-w-5xl rounded-3xl border border-white/10 bg-black/30 p-6 md:p-8">
         <h2 className="text-2xl font-bold text-ozora-cream md:text-3xl">Stay connected</h2>
         <p className="mt-2 text-sm text-ozora-cream/75">Follow Tropical Nomads and friends across our socials.</p>

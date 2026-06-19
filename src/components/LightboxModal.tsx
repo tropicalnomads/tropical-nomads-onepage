@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { ExternalLink, X } from 'lucide-react';
+import { ExternalLink, MapPin, X } from 'lucide-react';
 import type { EventRecord } from '@/lib/data';
 
 interface LightboxModalProps {
@@ -53,8 +53,28 @@ export function LightboxModal({ event, onClose }: LightboxModalProps): JSX.Eleme
         </button>
 
         <h3 className="pr-10 text-xl font-semibold text-ozora-cream">{event.title}</h3>
-        <p className="mt-1 text-sm text-ozora-cream/70">
-          {formatEventDate(event.dateStart)} - {event.venue.city}, {event.venue.country}
+        <p className="mt-1 text-sm text-ozora-cream/70">{formatEventDate(event.dateStart)}</p>
+        <p className="mt-1 flex items-center gap-2 text-sm text-ozora-cream/70">
+          <MapPin size={15} aria-hidden="true" />
+          {event.venue.mapUrl ? (
+            <a
+              href={event.venue.mapUrl}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="font-medium text-ozora-turquoise underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+              aria-label={`Open ${event.venue.name ?? event.venue.city} on Google Maps`}
+            >
+              {event.venue.name ? `${event.venue.name} - ` : ''}
+              {event.venue.city}, {event.venue.country}
+              {event.venue.address ? ` (${event.venue.address})` : ''}
+            </a>
+          ) : (
+            <span>
+              {event.venue.name ? `${event.venue.name} - ` : ''}
+              {event.venue.city}, {event.venue.country}
+              {event.venue.address ? ` (${event.venue.address})` : ''}
+            </span>
+          )}
         </p>
 
         {event.images.bannerLocal ? (
