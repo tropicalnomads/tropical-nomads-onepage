@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { Instagram } from 'lucide-react';
 
 interface HeroSectionProps {

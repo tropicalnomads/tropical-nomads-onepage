@@ -335,6 +335,43 @@
       }
     },
     {
+      "id": "tba-dublin-aug-2026",
+      "title": "Tropical Groove: TBA",
+      "partnerIds": ["psy-groove"],
+      "type": "Club",
+      "dateStart": "2026-08-14T20:00:00+01:00",
+      "timezone": "Europe/Dublin",
+      "venue": {
+        "id": "the-sound-house-dublin",
+        "name": "The Sound House",
+        "city": "Dublin",
+        "country": "Ireland",
+        "isoCountry": "IE",
+        "address": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44",
+        "geo": {
+          "lat": 53.4,
+          "lon": -6.3
+        },
+        "mapUrl": "https://maps.app.goo.gl/EtfCwAWYFE9CAmhNA"
+      },
+      "stages": [],
+      "description": "Lineup and tickets to be announced. Stay tuned!",
+      "images": {},
+      "links": {
+        "goabase": "",
+        "instagram": [
+          "https://www.instagram.com/tropicalnomads.events/",
+          "https://www.instagram.com/psy.groove/"
+        ]
+      },
+      "source": {
+        "provider": "manual",
+        "id": 0,
+        "url": "",
+        "status": "Tentative"
+      }
+    },
+    {
       "id": "117120",
       "title": "Tropical Groove: Burn in Noise",
       "type": "Club",

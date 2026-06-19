@@ -1,4 +1,5 @@
-import { Calendar, ExternalLink, MapPin, Ticket } from 'lucide-react';
+import type { JSX } from 'react';
+import { Calendar, Clock, ExternalLink, MapPin, Ticket } from 'lucide-react';
 import {
   getPrimaryTicketUrl,
   getStageSummary,
@@ -37,13 +38,14 @@ export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps
               const summary = getStageSummary(event);
               const ticketUrl = getPrimaryTicketUrl(event);
               const ticketsAvailable = hasTicketSales(event);
+              const hasLink = ticketsAvailable || Boolean(event.links.goabase);
               const eventPartners = (event.partnerIds ?? [])
                 .map((partnerId) => partnerById.get(partnerId))
                 .filter((partner): partner is Partner => Boolean(partner));
               return (
                 <article
                   key={event.id}
-                  className={`flex flex-col gap-4 rounded-2xl border p-4 transition md:flex-row md:items-stretch ${
+                  className={`flex flex-col gap-4 rounded-2xl border p-4 transition md:min-h-[15rem] md:flex-row md:items-stretch ${
                     highlighted
                       ? 'border-ozora-yellow/60 bg-ozora-yellow/10 shadow-glow'
                       : 'border-white/10 bg-black/20'
@@ -56,7 +58,14 @@ export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps
                       loading="lazy"
                       className="mx-auto aspect-[3/4] w-full max-w-[260px] rounded-xl object-cover md:mx-0 md:aspect-auto md:h-auto md:w-44 md:max-w-none"
                     />
-                  ) : null}
+                  ) : (
+                    <div className="mx-auto flex aspect-[3/4] w-full max-w-[260px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/20 bg-black/30 text-center md:mx-0 md:aspect-auto md:h-auto md:w-44 md:max-w-none">
+                      <Clock size={24} aria-hidden="true" className="text-ozora-cream/40" />
+                      <span className="px-2 text-sm font-semibold uppercase tracking-wide text-ozora-cream/55">
+                        Coming soon
+                      </span>
+                    </div>
+                  )}
 
                   <div className="flex flex-1 flex-col">
                     {highlighted ? (
@@ -92,33 +101,40 @@ export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps
                     {summary ? <p className="mt-2 text-sm text-ozora-cream/70">{summary}</p> : null}
 
                     <div className="mt-4 flex flex-wrap items-center justify-center gap-3 md:justify-start">
-                      <a
-                        href={ticketUrl}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 ${
-                          ticketsAvailable
-                            ? 'bg-ozora-coral text-ozora-ink hover:bg-ozora-yellow focus-visible:ring-ozora-yellow'
-                            : 'border border-ozora-turquoise/70 bg-ozora-turquoise/10 text-ozora-cream hover:bg-ozora-turquoise/20 focus-visible:ring-ozora-turquoise'
-                        }`}
-                        aria-label={
-                          ticketsAvailable
-                            ? `Buy tickets for ${event.title}`
-                            : `View ${event.title} on goabase`
-                        }
-                      >
-                        {ticketsAvailable ? (
-                          <>
-                            <Ticket size={16} aria-hidden="true" />
-                            Buy tickets
-                          </>
-                        ) : (
-                          <>
-                            Event details
-                            <ExternalLink size={16} aria-hidden="true" />
-                          </>
-                        )}
-                      </a>
+                      {hasLink ? (
+                        <a
+                          href={ticketUrl}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 ${
+                            ticketsAvailable
+                              ? 'bg-ozora-coral text-ozora-ink hover:bg-ozora-yellow focus-visible:ring-ozora-yellow'
+                              : 'border border-ozora-turquoise/70 bg-ozora-turquoise/10 text-ozora-cream hover:bg-ozora-turquoise/20 focus-visible:ring-ozora-turquoise'
+                          }`}
+                          aria-label={
+                            ticketsAvailable
+                              ? `Buy tickets for ${event.title}`
+                              : `View ${event.title} on goabase`
+                          }
+                        >
+                          {ticketsAvailable ? (
+                            <>
+                              <Ticket size={16} aria-hidden="true" />
+                              Buy tickets
+                            </>
+                          ) : (
+                            <>
+                              Event details
+                              <ExternalLink size={16} aria-hidden="true" />
+                            </>
+                          )}
+                        </a>
+                      ) : (
+                        <span className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-ozora-cream/60">
+                          <Clock size={16} aria-hidden="true" />
+                          Coming soon
+                        </span>
+                      )}
                     </div>
                   </div>
 
