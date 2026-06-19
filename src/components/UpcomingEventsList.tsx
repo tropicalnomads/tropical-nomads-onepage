@@ -21,7 +21,7 @@ function formatEventDate(dateStart: string): string {
 export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps): JSX.Element {
   const partnerById = new Map(partners.map((partner) => [partner.id, partner]));
   return (
-    <section id="upcoming-events" className="safe-x px-5 py-8 md:px-8">
+    <section id="upcoming-events" className="px-5 py-8 md:px-8">
       <div className="mx-auto max-w-5xl">
         <h2 className="text-2xl font-bold text-ozora-cream md:text-3xl">Upcoming events</h2>
         <p className="mt-2 text-sm text-ozora-cream/75">All future dates, sorted from the next one.</p>
@@ -54,7 +54,7 @@ export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps
                       src={event.images.bannerLocal}
                       alt={`${event.title} flyer`}
                       loading="lazy"
-                      className="h-40 w-full rounded-xl object-cover md:h-auto md:w-44"
+                      className="mx-auto aspect-[3/4] w-full max-w-[260px] rounded-xl object-cover md:mx-0 md:aspect-auto md:h-auto md:w-44 md:max-w-none"
                     />
                   ) : null}
 
@@ -91,7 +91,7 @@ export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps
                     </p>
                     {summary ? <p className="mt-2 text-sm text-ozora-cream/70">{summary}</p> : null}
 
-                    <div className="mt-4 flex flex-wrap items-center gap-3">
+                    <div className="mt-4 flex flex-wrap items-center justify-center gap-3 md:justify-start">
                       <a
                         href={ticketUrl}
                         target="_blank"
@@ -123,7 +123,7 @@ export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps
                   </div>
 
                   {eventPartners.length > 0 ? (
-                    <div className="order-first flex shrink-0 flex-row items-center justify-center gap-3 md:order-none md:self-center">
+                    <div className="hidden shrink-0 flex-row items-center justify-center gap-3 md:flex md:self-center">
                       {eventPartners.map((partner) => (
                         <a
                           key={partner.id}

@@ -12,7 +12,7 @@ const HIGHLIGHTS: ReadonlyArray<{ icon: typeof Globe; label: string }> = [
 
 export function HeroSection({ onExploreEvents }: HeroSectionProps): JSX.Element {
   return (
-    <section id="home" className="safe-x px-5 py-8 md:px-8">
+    <section id="home" className="px-5 py-8 md:px-8">
       <div className="relative mx-auto max-w-3xl overflow-hidden rounded-3xl border border-white/10 bg-black/30 p-7 text-center shadow-2xl backdrop-blur-sm md:p-12">
         <div
           aria-hidden="true"
@@ -27,7 +27,7 @@ export function HeroSection({ onExploreEvents }: HeroSectionProps): JSX.Element 
           />
 
           <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-ozora-turquoise md:text-sm">
-            Brazilian psytrance crew based in Europe
+            Brazilian psytrance crew
           </p>
 
           <h1 className="mx-auto mt-3 max-w-2xl text-3xl font-black tracking-tight text-ozora-cream md:text-5xl">
@@ -41,17 +41,6 @@ export function HeroSection({ onExploreEvents }: HeroSectionProps): JSX.Element 
             keeping the culture alive with an unmistakably Brazilian touch.
           </p>
 
-          <ul className="mt-7 flex flex-wrap justify-center gap-2.5">
-            {HIGHLIGHTS.map(({ icon: Icon, label }) => (
-              <li
-                key={label}
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-xs font-medium text-ozora-cream/85 md:text-sm"
-              >
-                <Icon size={15} aria-hidden="true" className="text-ozora-yellow" />
-                {label}
-              </li>
-            ))}
-          </ul>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <button

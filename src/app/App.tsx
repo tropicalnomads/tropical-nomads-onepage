@@ -90,11 +90,11 @@ export default function App(): JSX.Element {
       <HeroSection onExploreEvents={() => handleScrollTo('upcoming-events')} />
 
       {isLoading ? (
-        <main className="safe-x mx-auto max-w-5xl px-5 py-8 md:px-8">
+        <main className="mx-auto max-w-5xl px-5 py-8 md:px-8">
           <EmptyState title="Loading events..." description="Fetching upcoming and past events." />
         </main>
       ) : error ? (
-        <main className="safe-x mx-auto max-w-5xl px-5 py-8 md:px-8">
+        <main className="mx-auto max-w-5xl px-5 py-8 md:px-8">
           <EmptyState title="Could not load content" description={error} />
         </main>
       ) : (

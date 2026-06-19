@@ -9,7 +9,7 @@ interface PartnersSectionProps {
 
 export function PartnersSection({ partners }: PartnersSectionProps): JSX.Element {
   return (
-    <section id="partners" className="safe-x px-5 py-8 md:px-8">
+    <section id="partners" className="px-5 py-8 md:px-8">
       <div className="mx-auto max-w-5xl">
         <h2 className="text-2xl font-bold text-ozora-cream md:text-3xl">Partners</h2>
         <p className="mt-2 text-sm text-ozora-cream/75">

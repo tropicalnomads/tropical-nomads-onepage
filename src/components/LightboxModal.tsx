@@ -94,7 +94,7 @@ export function LightboxModal({ event, onClose }: LightboxModalProps): JSX.Eleme
       aria-modal="true"
       aria-label={`${event.title} details`}
     >
-      <div className="safe-x sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-ozora-navy/90 px-5 py-3 backdrop-blur md:px-8">
+      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-ozora-navy/90 px-5 py-3 backdrop-blur md:px-8">
         <span className="truncate pr-4 text-sm font-semibold text-ozora-cream/80">{event.title}</span>
         <button
           type="button"
@@ -107,7 +107,7 @@ export function LightboxModal({ event, onClose }: LightboxModalProps): JSX.Eleme
         </button>
       </div>
 
-      <div className="safe-x mx-auto max-w-4xl px-5 py-8 md:px-8">
+      <div className="mx-auto max-w-4xl px-5 py-8 md:px-8">
         <h3 className="text-2xl font-bold text-ozora-cream md:text-3xl">{event.title}</h3>
         <p className="mt-1 text-sm text-ozora-cream/70">{formatEventDate(event.dateStart)}</p>
         <p className="mt-1 flex items-center gap-2 text-sm text-ozora-cream/70">

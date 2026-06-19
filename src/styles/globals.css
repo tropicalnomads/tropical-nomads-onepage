@@ -39,12 +39,6 @@ body {
   padding-bottom: 0.5rem;
 }
 
-.safe-x {
-  --safe-x-base: 0px;
-  padding-left: calc(env(safe-area-inset-left) + var(--safe-x-base));
-  padding-right: calc(env(safe-area-inset-right) + var(--safe-x-base));
-}
-
 @layer utilities {
   .scrollbar-none {
     scrollbar-width: none;

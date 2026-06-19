@@ -1,4 +1,5 @@
-import { Ticket } from 'lucide-react';
+import { Menu, Ticket, X } from 'lucide-react';
+import { useState } from 'react';
 
 interface SiteHeaderProps {
   onNavigate: (id: string) => void;
@@ -13,13 +14,20 @@ const NAV_ITEMS: ReadonlyArray<{ id: string; label: string }> = [
 ];
 
 export function SiteHeader({ onNavigate }: SiteHeaderProps): JSX.Element {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleNavigate = (id: string): void => {
+    onNavigate(id);
+    setMenuOpen(false);
+  };
+
   return (
-    <header className="safe-top safe-x sticky top-0 z-40 border-b border-white/10 bg-ozora-navy/70 backdrop-blur-md">
+    <header className="safe-top sticky top-0 z-40 border-b border-white/10 bg-ozora-navy/70 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3 md:px-8">
         <button
           type="button"
-          onClick={() => onNavigate('home')}
-          className="flex shrink-0 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow"
+          onClick={() => handleNavigate('home')}
+          className="hidden shrink-0 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow md:flex"
           aria-label="Tropical Nomads home"
         >
           <img
@@ -29,12 +37,12 @@ export function SiteHeader({ onNavigate }: SiteHeaderProps): JSX.Element {
           />
         </button>
 
-        <nav aria-label="Primary" className="scrollbar-none -mx-1 flex items-center gap-1 overflow-x-auto px-1">
+        <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
           {NAV_ITEMS.map((item) => (
             <button
               key={item.id}
               type="button"
-              onClick={() => onNavigate(item.id)}
+              onClick={() => handleNavigate(item.id)}
               className="shrink-0 rounded-full px-3 py-1.5 text-sm font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
             >
               {item.label}
@@ -44,13 +52,51 @@ export function SiteHeader({ onNavigate }: SiteHeaderProps): JSX.Element {
 
         <button
           type="button"
-          onClick={() => onNavigate('upcoming-events')}
-          className="inline-flex shrink-0 items-center gap-2 rounded-full bg-ozora-yellow px-4 py-2 text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow focus-visible:ring-offset-2 focus-visible:ring-offset-ozora-navy"
+          onClick={() => handleNavigate('upcoming-events')}
+          className="hidden shrink-0 items-center gap-2 rounded-full bg-ozora-yellow px-4 py-2 text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow focus-visible:ring-offset-2 focus-visible:ring-offset-ozora-navy md:inline-flex"
         >
           <Ticket size={16} aria-hidden="true" />
-          <span className="hidden sm:inline">Tickets</span>
+          <span>Tickets</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setMenuOpen((open) => !open)}
+          className="ml-auto inline-flex items-center justify-center rounded-lg p-2 text-ozora-cream transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise md:hidden"
+          aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-nav"
+        >
+          {menuOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
         </button>
       </div>
+
+      {menuOpen ? (
+        <nav
+          id="mobile-nav"
+          aria-label="Primary mobile"
+          className="flex flex-col gap-1 border-t border-white/10 bg-ozora-navy/95 px-5 py-3 md:hidden"
+        >
+          {NAV_ITEMS.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => handleNavigate(item.id)}
+              className="rounded-lg px-3 py-2.5 text-left text-base font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+            >
+              {item.label}
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={() => handleNavigate('upcoming-events')}
+            className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-ozora-yellow px-4 py-2.5 text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow"
+          >
+            <Ticket size={16} aria-hidden="true" />
+            Tickets
+          </button>
+        </nav>
+      ) : null}
     </header>
   );
 }
