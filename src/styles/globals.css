@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--tn-color-brand-navy);
+  color: var(--tn-color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background-image:
+    radial-gradient(circle at 12% -10%, rgb(var(--tn-color-brand-turquoise-rgb) / 0.28), transparent 45%),
+    radial-gradient(circle at 88% 0%, rgb(var(--tn-color-brand-pink-rgb) / 0.22), transparent 40%),
+    radial-gradient(circle at 50% 120%, rgb(var(--tn-color-brand-yellow-rgb) / 0.18), transparent 55%),
+    linear-gradient(
+      160deg,
+      var(--tn-color-brand-navy-elevated) 0%,
+      var(--tn-color-brand-navy) 45%,
+      var(--tn-color-brand-navy-deep) 100%
+    );
+  background-attachment: fixed;
+}
+
+.safe-top {
+  padding-top: calc(env(safe-area-inset-top) + var(--safe-top-base, 0px));
+}
+
+.safe-bottom {
+  padding-bottom: 0.5rem;
+}
+
+.safe-x {
+  --safe-x-base: 0px;
+  padding-left: calc(env(safe-area-inset-left) + var(--safe-x-base));
+  padding-right: calc(env(safe-area-inset-right) + var(--safe-x-base));
+}
+
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+* {
+  scroll-margin-top: 7rem;
+}

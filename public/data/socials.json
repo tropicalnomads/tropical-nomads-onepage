@@ -1,0 +1,23 @@
+[
+  {
+    "id": "instagram-tropical-nomads",
+    "platform": "instagram",
+    "label": "Instagram - Tropical Nomads",
+    "handle": "@tropical-nomads.events",
+    "url": "https://www.instagram.com/tropical-nomads.events/"
+  },
+  {
+    "id": "instagram-psy-groove",
+    "platform": "instagram",
+    "label": "Instagram - Psy Groove",
+    "handle": "@psy.groove",
+    "url": "https://www.instagram.com/psy.groove/"
+  },
+  {
+    "id": "facebook-placeholder",
+    "platform": "facebook",
+    "label": "Facebook - Tropical Nomads",
+    "handle": "facebook.com/tropicalnomads",
+    "url": "https://www.facebook.com/tropicalnomads"
+  }
+]

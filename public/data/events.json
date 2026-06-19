@@ -1,0 +1,38 @@
+[
+  {
+    "id": "avan7-amsterdam-2026",
+    "title": "Tropical Nomads Amsterdam presents: Avan7",
+    "date": "2026-08-14",
+    "city": "Amsterdam",
+    "country": "Netherlands",
+    "eventbriteUrl": "https://avan7amsterdam.eventbrite.ie",
+    "description": "A tropical psychedelic night curated by Tropical Nomads in Amsterdam."
+  },
+  {
+    "id": "avan7-dublin-2026",
+    "title": "Tropical Groove presents: Avan7",
+    "date": "2026-09-04",
+    "city": "Dublin",
+    "country": "Ireland",
+    "eventbriteUrl": "https://avan7dublin.eventbrite.ie",
+    "description": "Tropical Groove meets Avan7 for a special dancefloor journey."
+  },
+  {
+    "id": "summer-ritual-lisbon-2026",
+    "title": "Tropical Nomads Summer Ritual",
+    "date": "2026-09-26",
+    "city": "Lisbon",
+    "country": "Portugal",
+    "eventbriteUrl": "https://example.eventbrite.com/e/tropical-nomads-summer-ritual-lisbon-2026",
+    "description": "Sunset to sunrise ritual featuring progressive and twilight vibes."
+  },
+  {
+    "id": "jungle-resonance-berlin-2026",
+    "title": "Jungle Resonance by Tropical Nomads",
+    "date": "2026-10-17",
+    "city": "Berlin",
+    "country": "Germany",
+    "eventbriteUrl": "https://example.eventbrite.com/e/jungle-resonance-berlin-2026",
+    "description": "A deep psychedelic exploration with immersive visuals and community energy."
+  }
+]
