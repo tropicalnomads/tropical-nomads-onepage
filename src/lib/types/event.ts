@@ -71,6 +71,17 @@ export interface EventStage {
   artists: EventArtist[];
 }
 
+export interface MediaLink {
+  url: string;
+  label?: string;
+}
+
+export interface EventMedia {
+  photos?: MediaLink[];
+  videos?: MediaLink[];
+  sets?: MediaLink[];
+}
+
 export interface EventVenue {
   id: string;
   name?: string;
@@ -118,6 +129,8 @@ export interface EventRecord {
   lineupRaw?: string;
   stages: EventStage[];
   cardArtists?: string[];
+  partnerIds?: string[];
+  media?: EventMedia;
   description?: string;
   organizer?: string;
   images: EventImages;

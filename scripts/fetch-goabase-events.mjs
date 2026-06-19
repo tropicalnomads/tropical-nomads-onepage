@@ -445,7 +445,9 @@ async function buildPartners() {
   const curated = await readCuratedJson('partners.json', []);
   const partners = [];
   for (const partner of curated) {
-    const logo = await downloadPartnerAvatar(partner.igUsername, partner.id);
+    // A curated local logo (committed under public/partners/) always wins;
+    // otherwise fall back to a best-effort unavatar download.
+    const logo = partner.logo ?? (await downloadPartnerAvatar(partner.igUsername, partner.id));
     partners.push({
       id: partner.id,
       name: partner.name,
@@ -454,12 +456,30 @@ async function buildPartners() {
       instagram: partner.instagram,
       ...(logo ? { logo } : {}),
     });
-    console.log(`Partner ${partner.name}${logo ? ' (logo)' : ' (no logo)'}`);
+    console.log(`Partner ${partner.name}${logo ? ` (logo${partner.logo ? ', curated' : ''})` : ' (no logo)'}`);
   }
   return partners;
 }
 
-function normalizeEvent(party, override, venueOverride, lineupOverride) {
+function pickMedia(mediaOverride) {
+  if (!mediaOverride) {
+    return undefined;
+  }
+  const kinds = ['photos', 'videos', 'sets'];
+  const media = {};
+  for (const kind of kinds) {
+    const links = (mediaOverride[kind] ?? []).filter((item) => item && item.url);
+    if (links.length > 0) {
+      media[kind] = links.map((item) => ({
+        url: item.url,
+        ...(item.label ? { label: item.label } : {}),
+      }));
+    }
+  }
+  return Object.keys(media).length > 0 ? media : undefined;
+}
+
+function normalizeEvent(party, override, venueOverride, lineupOverride, mediaOverride) {
   const stages = parseLineup(party.textLineUp);
 
   // Curated lineup corrections: rename specific artists across all stages.
@@ -509,6 +529,7 @@ function normalizeEvent(party, override, venueOverride, lineupOverride) {
     ...(party.textLineUp ? { lineupRaw: party.textLineUp } : {}),
     stages,
     ...(lineupOverride?.cardArtists?.length ? { cardArtists: lineupOverride.cardArtists } : {}),
+    ...(pickMedia(mediaOverride) ? { media: pickMedia(mediaOverride) } : {}),
     ...(party.textMore ? { description: party.textMore } : {}),
     ...(party.nameOrganizer ? { organizer: party.nameOrganizer } : {}),
     images: {
@@ -637,15 +658,16 @@ function buildVenueCatalog(events) {
   return [...byId.values()].sort((a, b) => a.city.localeCompare(b.city));
 }
 
-async function main() {
-  await mkdir(dataDir, { recursive: true });
-  await mkdir(bannersDir, { recursive: true });
-  await mkdir(partnersDir, { recursive: true });
-
+// One-time importer: pulls raw events from the goabase API and normalizes them.
+// Only runs when explicitly requested via --refresh / GOABASE_REFRESH=1, because
+// public/data/events.json is now the curated source of truth and must not be
+// clobbered (titles, lineups, media etc. are edited by hand).
+async function fetchEventsFromGoabase() {
   const curatedVenues = await readCuratedJson('venues.json', []);
   const eventVenueMap = await readCuratedJson('event-venues.json', {});
   const venueById = new Map(curatedVenues.map((venue) => [venue.id, venue]));
   const lineupOverrides = await readCuratedJson('event-lineups.json', {});
+  const mediaOverrides = await readCuratedJson('event-media.json', {});
 
   const events = [];
 
@@ -664,7 +686,8 @@ async function main() {
     }
 
     const lineupOverride = lineupOverrides[String(sourceItem.id)];
-    const event = normalizeEvent(party, sourceItem, venueOverride, lineupOverride);
+    const mediaOverride = mediaOverrides[String(sourceItem.id)];
+    const event = normalizeEvent(party, sourceItem, venueOverride, lineupOverride, mediaOverride);
 
     const bannerSource =
       party.urlImageLarge || party.urlImageFull || party.urlImageMedium || party.urlImageSmall;
@@ -680,22 +703,54 @@ async function main() {
     console.log(`Fetched ${party.id} - ${party.nameParty}`);
   }
 
-  const generatedAt = new Date().toISOString();
+  return events;
+}
 
-  const eventsFile = {
-    schemaVersion: SCHEMA_VERSION,
-    generatedAt,
-    source: { provider: 'goabase', endpoint: API_BASE },
-    count: events.length,
-    events,
-  };
+async function loadExistingEvents() {
+  try {
+    const raw = JSON.parse(await readFile(resolve(dataDir, 'events.json'), 'utf8'));
+    return Array.isArray(raw.events) ? raw.events : [];
+  } catch {
+    return [];
+  }
+}
+
+async function main() {
+  await mkdir(dataDir, { recursive: true });
+  await mkdir(bannersDir, { recursive: true });
+  await mkdir(partnersDir, { recursive: true });
+
+  const refresh = process.argv.includes('--refresh') || process.env.GOABASE_REFRESH === '1';
+
+  let events;
+  if (refresh) {
+    console.log('Refreshing events from goabase (one-time fetch)...');
+    events = await fetchEventsFromGoabase();
+  } else {
+    events = await loadExistingEvents();
+    console.log(
+      `Using ${events.length} curated events from events.json (goabase fetch skipped; pass --refresh to re-import).`,
+    );
+  }
+
+  const generatedAt = new Date().toISOString();
 
   const affiliations = await loadAffiliations();
   const artists = buildArtistCatalog(events, affiliations);
   const venues = buildVenueCatalog(events);
   const partners = await buildPartners();
 
-  await writeFile(resolve(dataDir, 'events.json'), `${JSON.stringify(eventsFile, null, 2)}\n`);
+  if (refresh) {
+    const eventsFile = {
+      schemaVersion: SCHEMA_VERSION,
+      generatedAt,
+      source: { provider: 'goabase', endpoint: API_BASE },
+      count: events.length,
+      events,
+    };
+    await writeFile(resolve(dataDir, 'events.json'), `${JSON.stringify(eventsFile, null, 2)}\n`);
+  }
+
   await writeFile(
     resolve(dataDir, 'artists.json'),
     `${JSON.stringify({ schemaVersion: SCHEMA_VERSION, generatedAt, count: artists.length, artists }, null, 2)}\n`,
@@ -726,9 +781,10 @@ async function main() {
   );
 
   console.log(
-    `\nWrote ${events.length} events, ${artists.length} artists, ${venues.length} venues, ` +
+    `\nWrote ${artists.length} artists, ${venues.length} venues, ` +
       `${affiliations.agencies.length} agencies, ${affiliations.labels.length} labels, ` +
-      `${partners.length} partners.`,
+      `${partners.length} partners` +
+      `${refresh ? `, ${events.length} events (events.json refreshed)` : ' (events.json left untouched)'}.`,
   );
 }
 

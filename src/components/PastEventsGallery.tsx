@@ -32,16 +32,18 @@ export function PastEventsGallery({ events, onOpenPreview }: PastEventsGalleryPr
                 className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-black/20 text-left transition hover:border-ozora-turquoise/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
                 aria-label={`View details for ${event.title}`}
               >
-                {event.images.bannerLocal ? (
-                  <img
-                    src={event.images.bannerLocal}
-                    alt={`${event.title} flyer`}
-                    loading="lazy"
-                    className="h-48 w-full object-cover"
-                  />
-                ) : (
-                  <div className="h-48 w-full bg-ozora-navy/60" aria-hidden="true" />
-                )}
+                <div className="aspect-[3/4] w-full overflow-hidden">
+                  {event.images.bannerLocal ? (
+                    <img
+                      src={event.images.bannerLocal}
+                      alt={`${event.title} flyer`}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-ozora-navy/60" aria-hidden="true" />
+                  )}
+                </div>
                 <div className="space-y-1 p-4">
                   <h3 className="text-base font-semibold text-ozora-cream group-hover:text-ozora-yellow">
                     {event.title}

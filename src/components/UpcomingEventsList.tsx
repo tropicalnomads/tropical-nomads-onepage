@@ -4,18 +4,22 @@ import {
   getStageSummary,
   hasTicketSales,
   type EventRecord,
+  type Partner,
 } from '@/lib/data';
 import { EmptyState } from '@/components/EmptyState';
+import { PartnerAvatar } from '@/components/PartnerAvatar';
 
 interface UpcomingEventsListProps {
   events: EventRecord[];
+  partners: Partner[];
 }
 
 function formatEventDate(dateStart: string): string {
   return new Intl.DateTimeFormat('en', { dateStyle: 'long' }).format(new Date(dateStart));
 }
 
-export function UpcomingEventsList({ events }: UpcomingEventsListProps): JSX.Element {
+export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps): JSX.Element {
+  const partnerById = new Map(partners.map((partner) => [partner.id, partner]));
   return (
     <section id="upcoming-events" className="safe-x px-5 py-8 md:px-8">
       <div className="mx-auto max-w-5xl">
@@ -33,6 +37,9 @@ export function UpcomingEventsList({ events }: UpcomingEventsListProps): JSX.Ele
               const summary = getStageSummary(event);
               const ticketUrl = getPrimaryTicketUrl(event);
               const ticketsAvailable = hasTicketSales(event);
+              const eventPartners = (event.partnerIds ?? [])
+                .map((partnerId) => partnerById.get(partnerId))
+                .filter((partner): partner is Partner => Boolean(partner));
               return (
                 <article
                   key={event.id}
@@ -114,6 +121,28 @@ export function UpcomingEventsList({ events }: UpcomingEventsListProps): JSX.Ele
                       </a>
                     </div>
                   </div>
+
+                  {eventPartners.length > 0 ? (
+                    <div className="order-first flex shrink-0 flex-row items-center justify-center gap-3 md:order-none md:self-center">
+                      {eventPartners.map((partner) => (
+                        <a
+                          key={partner.id}
+                          href={partner.instagram}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          className="group focus-visible:outline-none"
+                          aria-label={`Open ${partner.name} on Instagram`}
+                          title={partner.name}
+                        >
+                          <PartnerAvatar
+                            partner={partner}
+                            className="h-20 w-20 group-focus-visible:ring-2 group-focus-visible:ring-ozora-pink md:h-24 md:w-24"
+                            textClassName="text-2xl"
+                          />
+                        </a>
+                      ))}
+                    </div>
+                  ) : null}
                 </article>
               );
             })}

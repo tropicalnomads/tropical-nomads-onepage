@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-19T11:21:36.509Z",
+  "generatedAt": "2026-06-19T12:36:59.148Z",
   "count": 3,
   "partners": [
     {
@@ -8,21 +8,24 @@
       "name": "Psy Groove",
       "city": "Dublin",
       "handle": "@psy.groove",
-      "instagram": "https://www.instagram.com/psy.groove/"
+      "instagram": "https://www.instagram.com/psy.groove/",
+      "logo": "/partners/psy-groove.png"
     },
     {
       "id": "universe",
       "name": "Universe",
       "city": "London",
       "handle": "@universeparty_111",
-      "instagram": "https://www.instagram.com/universeparty_111/"
+      "instagram": "https://www.instagram.com/universeparty_111/",
+      "logo": "/partners/universe.png"
     },
     {
       "id": "pgp",
       "name": "Psychedelic Grateful Punks",
       "city": "Amsterdam",
       "handle": "@psychedelicgratefulpunks",
-      "instagram": "https://www.instagram.com/psychedelicgratefulpunks/"
+      "instagram": "https://www.instagram.com/psychedelicgratefulpunks/",
+      "logo": "/partners/pgp.png"
     }
   ]
 }

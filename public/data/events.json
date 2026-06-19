@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-19T11:21:36.509Z",
+  "generatedAt": "2026-06-19T11:34:12.271Z",
   "source": {
     "provider": "goabase",
     "endpoint": "https://www.goabase.net/api/party/json"
@@ -9,7 +9,8 @@
   "events": [
     {
       "id": "117712",
-      "title": "Tropical Nomads & PGP presents: Avan7",
+      "title": "Tropical Nomads: Avan7",
+      "partnerIds": ["pgp"],
       "type": "Club",
       "dateStart": "2026-07-10T18:00:00+02:00",
       "dateEnd": "2026-07-11T03:00:00+02:00",
@@ -156,7 +157,8 @@
     },
     {
       "id": "117713",
-      "title": "Tropical Groove presents: Avan7",
+      "title": "Tropical Groove: Avan7",
+      "partnerIds": ["psy-groove"],
       "type": "Club",
       "dateStart": "2026-07-11T14:00:00+02:00",
       "dateEnd": "2026-07-12T03:00:00+02:00",
@@ -286,6 +288,7 @@
     {
       "id": "116643",
       "title": "Boom Shanka Label Night",
+      "partnerIds": ["universe"],
       "type": "Club",
       "dateStart": "2026-08-15T20:00:00+02:00",
       "dateEnd": "2026-08-16T05:00:00+02:00",
@@ -333,7 +336,7 @@
     },
     {
       "id": "117120",
-      "title": "Tropical Groove presents: Burn in Noise",
+      "title": "Tropical Groove: Burn in Noise",
       "type": "Club",
       "dateStart": "2026-06-05T19:00:00+02:00",
       "dateEnd": "2026-06-06T02:30:00+02:00",
@@ -466,7 +469,7 @@
     },
     {
       "id": "117152",
-      "title": "Tropical Nomads Amsterdam presents: Burn in Noise",
+      "title": "Tropical Nomads: Burn in Noise",
       "type": "Club",
       "dateStart": "2026-05-29T18:00:00+02:00",
       "dateEnd": "2026-05-30T12:00:00+02:00",

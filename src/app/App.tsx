@@ -99,7 +99,7 @@ export default function App(): JSX.Element {
         </main>
       ) : (
         <main>
-          <UpcomingEventsList events={upcomingEvents} />
+          <UpcomingEventsList events={upcomingEvents} partners={data.partners} />
           <PastEventsGallery events={pastEvents} onOpenPreview={setLightboxEvent} />
           <PartnersSection partners={data.partners} />
           <SocialLinks links={data.socialLinks} />

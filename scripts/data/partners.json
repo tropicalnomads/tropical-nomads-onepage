@@ -5,7 +5,8 @@
     "city": "Dublin",
     "handle": "@psy.groove",
     "instagram": "https://www.instagram.com/psy.groove/",
-    "igUsername": "psy.groove"
+    "igUsername": "psy.groove",
+    "logo": "/partners/psy-groove.png"
   },
   {
     "id": "universe",
@@ -13,7 +14,8 @@
     "city": "London",
     "handle": "@universeparty_111",
     "instagram": "https://www.instagram.com/universeparty_111/",
-    "igUsername": "universeparty_111"
+    "igUsername": "universeparty_111",
+    "logo": "/partners/universe.png"
   },
   {
     "id": "pgp",
@@ -21,6 +23,7 @@
     "city": "Amsterdam",
     "handle": "@psychedelicgratefulpunks",
     "instagram": "https://www.instagram.com/psychedelicgratefulpunks/",
-    "igUsername": "psychedelicgratefulpunks"
+    "igUsername": "psychedelicgratefulpunks",
+    "logo": "/partners/pgp.png"
   }
 ]

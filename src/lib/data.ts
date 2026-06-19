@@ -1,6 +1,14 @@
 import type { EventRecord, EventsFile, Partner, PartnersFile } from '@/lib/types/event';
 
-export type { EventRecord, EventStage, EventArtist, EventVenue, Partner } from '@/lib/types/event';
+export type {
+  EventRecord,
+  EventStage,
+  EventArtist,
+  EventVenue,
+  EventMedia,
+  MediaLink,
+  Partner,
+} from '@/lib/types/event';
 
 export interface SocialLink {
   id: string;

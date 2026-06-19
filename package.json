@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "start": "vite preview",
     "lint": "tsc --noEmit",
-    "events": "node scripts/fetch-goabase-events.mjs"
+    "events": "node scripts/fetch-goabase-events.mjs",
+    "events:refresh": "node scripts/fetch-goabase-events.mjs --refresh"
   },
   "dependencies": {
     "@fontsource-variable/outfit": "^5.2.8",

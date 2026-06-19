@@ -1,18 +1,10 @@
 import { Instagram, MapPin } from 'lucide-react';
 import type { Partner } from '@/lib/data';
 import { EmptyState } from '@/components/EmptyState';
+import { PartnerAvatar } from '@/components/PartnerAvatar';
 
 interface PartnersSectionProps {
   partners: Partner[];
-}
-
-function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 3)
-    .map((word) => word[0]?.toUpperCase() ?? '')
-    .join('');
 }
 
 export function PartnersSection({ partners }: PartnersSectionProps): JSX.Element {
@@ -39,21 +31,7 @@ export function PartnersSection({ partners }: PartnersSectionProps): JSX.Element
                 className="group flex flex-col items-center rounded-2xl border border-white/10 bg-black/20 p-6 text-center transition hover:border-ozora-pink/60 hover:bg-ozora-pink/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-pink"
                 aria-label={`Open ${partner.name} on Instagram`}
               >
-                {partner.logo ? (
-                  <img
-                    src={partner.logo}
-                    alt={`${partner.name} logo`}
-                    loading="lazy"
-                    className="h-24 w-24 rounded-full border border-white/15 object-cover transition group-hover:scale-105"
-                  />
-                ) : (
-                  <span
-                    aria-hidden="true"
-                    className="flex h-24 w-24 items-center justify-center rounded-full border border-white/15 bg-gradient-to-br from-ozora-turquoise/40 to-ozora-pink/40 text-2xl font-black text-ozora-cream transition group-hover:scale-105"
-                  >
-                    {initials(partner.name)}
-                  </span>
-                )}
+                <PartnerAvatar partner={partner} />
 
                 <h3 className="mt-4 text-lg font-semibold text-ozora-cream group-hover:text-ozora-yellow">
                   {partner.name}
