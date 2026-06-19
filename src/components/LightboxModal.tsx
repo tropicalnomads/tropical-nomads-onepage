@@ -2,14 +2,15 @@ import { useEffect } from 'react';
 import { ExternalLink, Images, MapPin, Music, Video, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { EventRecord, MediaLink } from '@/lib/data';
+import { useI18n } from '@/i18n/I18nProvider';
 
 interface LightboxModalProps {
   event: EventRecord | null;
   onClose: () => void;
 }
 
-function formatEventDate(dateStart: string): string {
-  return new Intl.DateTimeFormat('en', { dateStyle: 'full' }).format(new Date(dateStart));
+function formatEventDate(dateStart: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, { dateStyle: 'full' }).format(new Date(dateStart));
 }
 
 function hostFromUrl(url: string): string {
@@ -58,6 +59,7 @@ function MediaSection({ title, icon: Icon, links }: MediaSectionProps): JSX.Elem
 }
 
 export function LightboxModal({ event, onClose }: LightboxModalProps): JSX.Element | null {
+  const { t } = useI18n();
   useEffect(() => {
     if (!event) {
       return undefined;
@@ -99,17 +101,17 @@ export function LightboxModal({ event, onClose }: LightboxModalProps): JSX.Eleme
         <button
           type="button"
           onClick={onClose}
-          aria-label="Close details"
+          aria-label={t.closeDetailsAria}
           className="inline-flex items-center gap-2 rounded-lg bg-white/10 px-3 py-1.5 text-sm font-medium text-ozora-cream transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow"
         >
           <X size={16} aria-hidden="true" />
-          Close
+          {t.close}
         </button>
       </div>
 
       <div className="mx-auto max-w-4xl px-5 py-8 md:px-8">
         <h3 className="text-2xl font-bold text-ozora-cream md:text-3xl">{event.title}</h3>
-        <p className="mt-1 text-sm text-ozora-cream/70">{formatEventDate(event.dateStart)}</p>
+        <p className="mt-1 text-sm text-ozora-cream/70">{formatEventDate(event.dateStart, t.dateLocale)}</p>
         <p className="mt-1 flex items-center gap-2 text-sm text-ozora-cream/70">
           <MapPin size={15} aria-hidden="true" />
           {event.venue.mapUrl ? (
@@ -118,7 +120,7 @@ export function LightboxModal({ event, onClose }: LightboxModalProps): JSX.Eleme
               target="_blank"
               rel="noreferrer noopener"
               className="font-medium text-ozora-turquoise underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
-              aria-label={`Open ${event.venue.name ?? event.venue.city} on Google Maps`}
+              aria-label={t.openOnMapsAria(event.venue.name ?? event.venue.city)}
             >
               {event.venue.name ? `${event.venue.name} - ` : ''}
               {event.venue.city}, {event.venue.country}
@@ -171,12 +173,12 @@ export function LightboxModal({ event, onClose }: LightboxModalProps): JSX.Eleme
           </div>
         ) : null}
 
-        <MediaSection title="Photos" icon={Images} links={photos} />
-        <MediaSection title="Videos" icon={Video} links={videos} />
-        <MediaSection title="Sets" icon={Music} links={sets} />
+        <MediaSection title={t.photos} icon={Images} links={photos} />
+        <MediaSection title={t.videos} icon={Video} links={videos} />
+        <MediaSection title={t.sets} icon={Music} links={sets} />
 
         {!hasMedia ? (
-          <p className="mt-6 text-sm text-ozora-cream/50">Photos and videos coming soon.</p>
+          <p className="mt-6 text-sm text-ozora-cream/50">{t.mediaComingSoon}</p>
         ) : null}
 
         <a
@@ -185,7 +187,7 @@ export function LightboxModal({ event, onClose }: LightboxModalProps): JSX.Eleme
           rel="noreferrer noopener"
           className="mt-8 inline-flex items-center gap-2 rounded-lg border border-ozora-turquoise/70 bg-ozora-turquoise/10 px-4 py-2 text-sm font-medium text-ozora-cream transition hover:bg-ozora-turquoise/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
         >
-          View on goabase
+          {t.viewOnGoabase}
           <ExternalLink size={16} aria-hidden="true" />
         </a>
       </div>

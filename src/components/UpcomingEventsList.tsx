@@ -9,27 +9,29 @@ import {
 } from '@/lib/data';
 import { EmptyState } from '@/components/EmptyState';
 import { PartnerAvatar } from '@/components/PartnerAvatar';
+import { useI18n } from '@/i18n/I18nProvider';
 
 interface UpcomingEventsListProps {
   events: EventRecord[];
   partners: Partner[];
 }
 
-function formatEventDate(dateStart: string): string {
-  return new Intl.DateTimeFormat('en', { dateStyle: 'long' }).format(new Date(dateStart));
+function formatEventDate(dateStart: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(new Date(dateStart));
 }
 
 export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps): JSX.Element {
+  const { t } = useI18n();
   const partnerById = new Map(partners.map((partner) => [partner.id, partner]));
   return (
     <section id="upcoming-events" className="px-5 py-8 md:px-8">
       <div className="mx-auto max-w-5xl">
-        <h2 className="text-2xl font-bold text-ozora-cream md:text-3xl">Upcoming events</h2>
-        <p className="mt-2 text-sm text-ozora-cream/75">All future dates, sorted from the next one.</p>
+        <h2 className="text-2xl font-bold text-ozora-cream md:text-3xl">{t.upcomingEvents}</h2>
+        <p className="mt-2 text-sm text-ozora-cream/75">{t.upcomingEventsSubtitle}</p>
 
         {events.length === 0 ? (
           <div className="mt-6">
-            <EmptyState title="No upcoming events" description="Check back soon for newly announced dates." />
+            <EmptyState title={t.noUpcomingTitle} description={t.noUpcomingBody} />
           </div>
         ) : (
           <div className="mt-6 space-y-4">
@@ -70,13 +72,13 @@ export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps
                   <div className="flex flex-1 flex-col">
                     {highlighted ? (
                       <span className="mb-1 inline-flex w-fit items-center rounded-full bg-ozora-yellow/20 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-ozora-yellow">
-                        Next up
+                        {t.nextUp}
                       </span>
                     ) : null}
                     <h3 className="text-lg font-semibold text-ozora-cream">{event.title}</h3>
                     <p className="mt-1 flex items-center gap-2 text-sm text-ozora-cream/75">
                       <Calendar size={16} aria-hidden="true" />
-                      {formatEventDate(event.dateStart)}
+                      {formatEventDate(event.dateStart, t.dateLocale)}
                     </p>
                     <p className="mt-1 flex items-center gap-2 text-sm text-ozora-cream/75">
                       <MapPin size={16} aria-hidden="true" />
@@ -86,7 +88,7 @@ export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps
                           target="_blank"
                           rel="noreferrer noopener"
                           className="font-medium text-ozora-turquoise underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
-                          aria-label={`Open ${event.venue.name ?? event.venue.city} on Google Maps`}
+                          aria-label={t.openOnMapsAria(event.venue.name ?? event.venue.city)}
                         >
                           {event.venue.name ? `${event.venue.name} - ` : ''}
                           {event.venue.city}, {event.venue.country}
@@ -113,18 +115,18 @@ export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps
                           }`}
                           aria-label={
                             ticketsAvailable
-                              ? `Buy tickets for ${event.title}`
-                              : `View ${event.title} on goabase`
+                              ? t.buyTicketsAria(event.title)
+                              : t.viewOnGoabaseAria(event.title)
                           }
                         >
                           {ticketsAvailable ? (
                             <>
                               <Ticket size={16} aria-hidden="true" />
-                              Buy tickets
+                              {t.buyTickets}
                             </>
                           ) : (
                             <>
-                              Event details
+                              {t.eventDetails}
                               <ExternalLink size={16} aria-hidden="true" />
                             </>
                           )}
@@ -132,7 +134,7 @@ export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps
                       ) : (
                         <span className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-ozora-cream/60">
                           <Clock size={16} aria-hidden="true" />
-                          Coming soon
+                          {t.comingSoon}
                         </span>
                       )}
                     </div>

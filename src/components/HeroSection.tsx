@@ -1,11 +1,13 @@
 import type { JSX } from 'react';
 import { Instagram } from 'lucide-react';
+import { useI18n } from '@/i18n/I18nProvider';
 
 interface HeroSectionProps {
   onExploreEvents: () => void;
 }
 
 export function HeroSection({ onExploreEvents }: HeroSectionProps): JSX.Element {
+  const { t } = useI18n();
   return (
     <section id="home" className="px-5 py-8 md:px-8">
       <div className="relative mx-auto max-w-3xl overflow-hidden rounded-3xl border border-white/10 bg-black/30 p-7 text-center shadow-2xl backdrop-blur-sm md:p-12">
@@ -22,14 +24,11 @@ export function HeroSection({ onExploreEvents }: HeroSectionProps): JSX.Element 
           />
 
           <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-ozora-turquoise md:text-sm">
-          Psytrance with a Brazilian touch
+            {t.heroTagline}
           </p>
 
           <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-ozora-cream/85 md:text-lg">
-            Tropical Nomads is a Brazilian crew based in Europe, carrying the warmth and energy of
-            the Brazilian psytrance scene to dancefloors across the continent. We throw parties all
-            around Europe, uniting artists and dancers under one psychedelic, tropical family and
-            keeping the culture alive with an unmistakably Brazilian touch.
+            {t.heroDescription}
           </p>
 
 
@@ -38,9 +37,9 @@ export function HeroSection({ onExploreEvents }: HeroSectionProps): JSX.Element 
               type="button"
               onClick={onExploreEvents}
               className="inline-flex w-full items-center justify-center rounded-xl bg-ozora-green px-5 py-3 text-sm font-bold text-ozora-ink transition hover:bg-ozora-yellow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow focus-visible:ring-offset-2 focus-visible:ring-offset-ozora-navy sm:w-auto"
-              aria-label="Scroll to upcoming events"
+              aria-label={t.exploreUpcomingAria}
             >
-              Explore upcoming events
+              {t.exploreUpcoming}
             </button>
             <a
               href="https://www.instagram.com/tropicalnomads.events/"
@@ -49,7 +48,7 @@ export function HeroSection({ onExploreEvents }: HeroSectionProps): JSX.Element 
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-ozora-pink/50 bg-ozora-pink/10 px-5 py-3 text-sm font-semibold text-ozora-cream transition hover:border-ozora-yellow hover:bg-ozora-yellow/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow sm:w-auto"
             >
               <Instagram size={16} aria-hidden="true" />
-              Follow our journey
+              {t.followJourney}
             </a>
           </div>
         </div>

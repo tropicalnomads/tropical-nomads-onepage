@@ -1,16 +1,20 @@
+import { useI18n } from '@/i18n/I18nProvider';
+import type { TranslationDict } from '@/i18n/translations';
+
 interface FooterProps {
   onNavigate: (id: string) => void;
 }
 
-const FOOTER_LINKS: ReadonlyArray<{ id: string; label: string }> = [
-  { id: 'home', label: 'Home' },
-  { id: 'upcoming-events', label: 'Events' },
-  { id: 'gallery', label: 'Gallery' },
-  { id: 'partners', label: 'Partners' },
-  { id: 'socials', label: 'Socials' },
+const FOOTER_LINKS: ReadonlyArray<{ id: string; labelKey: keyof TranslationDict }> = [
+  { id: 'home', labelKey: 'navHome' },
+  { id: 'upcoming-events', labelKey: 'navEvents' },
+  { id: 'gallery', labelKey: 'navGallery' },
+  { id: 'partners', labelKey: 'navPartners' },
+  { id: 'socials', labelKey: 'navSocials' },
 ];
 
 export function Footer({ onNavigate }: FooterProps): JSX.Element {
+  const { t } = useI18n();
   return (
     <footer className="safe-bottom border-t border-white/10 px-5 py-8 text-center text-xs text-ozora-cream/70 md:px-8">
       <nav aria-label="Footer" className="mb-4 flex flex-wrap justify-center gap-2">
@@ -21,11 +25,11 @@ export function Footer({ onNavigate }: FooterProps): JSX.Element {
             onClick={() => onNavigate(link.id)}
             className="rounded-full px-3 py-1 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
           >
-            {link.label}
+            {t[link.labelKey] as string}
           </button>
         ))}
       </nav>
-      <p>Tropical Nomads - made for the dancefloor community.</p>
+      <p>{t.footerTagline}</p>
       <p className="mt-1 text-ozora-cream/50">
         &copy; {new Date().getFullYear()} Tropical Nomads
       </p>

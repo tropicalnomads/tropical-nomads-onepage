@@ -2,23 +2,25 @@ import { Instagram, MapPin } from 'lucide-react';
 import type { Partner } from '@/lib/data';
 import { EmptyState } from '@/components/EmptyState';
 import { PartnerAvatar } from '@/components/PartnerAvatar';
+import { useI18n } from '@/i18n/I18nProvider';
 
 interface PartnersSectionProps {
   partners: Partner[];
 }
 
 export function PartnersSection({ partners }: PartnersSectionProps): JSX.Element {
+  const { t } = useI18n();
   return (
     <section id="partners" className="px-5 py-8 md:px-8">
       <div className="mx-auto max-w-5xl">
-        <h2 className="text-2xl font-bold text-ozora-cream md:text-3xl">Partners</h2>
+        <h2 className="text-2xl font-bold text-ozora-cream md:text-3xl">{t.partners}</h2>
         <p className="mt-2 text-sm text-ozora-cream/75">
-          The crews we join forces with across Europe.
+          {t.partnersSubtitle}
         </p>
 
         {partners.length === 0 ? (
           <div className="mt-6">
-            <EmptyState title="No partners yet" description="Our partner crews will appear here." />
+            <EmptyState title={t.noPartnersTitle} description={t.noPartnersBody} />
           </div>
         ) : (
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -29,7 +31,7 @@ export function PartnersSection({ partners }: PartnersSectionProps): JSX.Element
                 target="_blank"
                 rel="noreferrer noopener"
                 className="group flex flex-col items-center rounded-2xl border border-white/10 bg-black/20 p-6 text-center transition hover:border-ozora-pink/60 hover:bg-ozora-pink/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-pink"
-                aria-label={`Open ${partner.name} on Instagram`}
+                aria-label={t.openOnInstagramAria(partner.name)}
               >
                 <PartnerAvatar partner={partner} />
 

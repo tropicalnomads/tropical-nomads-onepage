@@ -2,20 +2,21 @@ import type { JSX } from 'react';
 import { Calendar, MapPin } from 'lucide-react';
 import type { EventRecord } from '@/lib/data';
 import { EmptyState } from '@/components/EmptyState';
+import { useI18n } from '@/i18n/I18nProvider';
 
 interface PastEventsGalleryProps {
   events: EventRecord[];
   onOpenPreview: (event: EventRecord) => void;
 }
 
-function formatEventDate(dateStart: string): string {
-  return new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(new Date(dateStart));
+function formatEventDate(dateStart: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(dateStart));
 }
 
 const cardClassName =
   'group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-black/20 text-left transition hover:border-ozora-turquoise/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise';
 
-function CardContent({ event }: { event: EventRecord }): JSX.Element {
+function CardContent({ event, locale }: { event: EventRecord; locale: string }): JSX.Element {
   return (
     <>
       <div className="aspect-[3/4] w-full overflow-hidden">
@@ -36,7 +37,7 @@ function CardContent({ event }: { event: EventRecord }): JSX.Element {
         </h3>
         <p className="flex items-center gap-2 text-sm text-ozora-cream/70">
           <Calendar size={14} aria-hidden="true" />
-          {formatEventDate(event.dateStart)}
+          {formatEventDate(event.dateStart, locale)}
         </p>
         <p className="flex items-center gap-2 text-sm text-ozora-cream/70">
           <MapPin size={14} aria-hidden="true" />
@@ -51,15 +52,16 @@ function CardContent({ event }: { event: EventRecord }): JSX.Element {
 }
 
 export function PastEventsGallery({ events, onOpenPreview }: PastEventsGalleryProps): JSX.Element {
+  const { t } = useI18n();
   return (
     <section id="gallery" className="px-5 py-8 md:px-8">
       <div className="mx-auto max-w-5xl">
-        <h2 className="text-2xl font-bold text-ozora-cream md:text-3xl">Past events</h2>
-        <p className="mt-2 text-sm text-ozora-cream/75">A look back at our previous gatherings.</p>
+        <h2 className="text-2xl font-bold text-ozora-cream md:text-3xl">{t.pastEvents}</h2>
+        <p className="mt-2 text-sm text-ozora-cream/75">{t.pastEventsSubtitle}</p>
 
         {events.length === 0 ? (
           <div className="mt-6">
-            <EmptyState title="No past events yet" description="Our history will appear here." />
+            <EmptyState title={t.noPastTitle} description={t.noPastBody} />
           </div>
         ) : (
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -71,9 +73,9 @@ export function PastEventsGallery({ events, onOpenPreview }: PastEventsGalleryPr
                   target="_blank"
                   rel="noreferrer noopener"
                   className={cardClassName}
-                  aria-label={`Open ${event.title} on Instagram`}
+                  aria-label={t.openEventInstagramAria(event.title)}
                 >
-                  <CardContent event={event} />
+                  <CardContent event={event} locale={t.dateLocale} />
                 </a>
               ) : (
                 <button
@@ -81,9 +83,9 @@ export function PastEventsGallery({ events, onOpenPreview }: PastEventsGalleryPr
                   type="button"
                   onClick={() => onOpenPreview(event)}
                   className={cardClassName}
-                  aria-label={`View details for ${event.title}`}
+                  aria-label={t.viewDetailsAria(event.title)}
                 >
-                  <CardContent event={event} />
+                  <CardContent event={event} locale={t.dateLocale} />
                 </button>
               ),
             )}
