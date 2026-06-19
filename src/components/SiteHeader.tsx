@@ -23,7 +23,20 @@ export function SiteHeader({ onNavigate }: SiteHeaderProps): JSX.Element {
 
   return (
     <header className="safe-top sticky top-0 z-40 border-b border-white/10 bg-ozora-navy/70 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3 md:px-8">
+      <div className="relative mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3 md:px-8">
+        <button
+          type="button"
+          onClick={() => handleNavigate('home')}
+          className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow md:hidden"
+          aria-label="Tropical Nomads home"
+        >
+          <img
+            src="/branding/tropical-nomads-logo-horizontal-cream.png"
+            alt="Tropical Nomads"
+            className="h-7 w-auto object-contain"
+          />
+        </button>
+
         <button
           type="button"
           onClick={() => handleNavigate('home')}

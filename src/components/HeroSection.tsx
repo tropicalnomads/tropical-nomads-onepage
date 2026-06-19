@@ -1,14 +1,8 @@
-import { Globe, Instagram, Music, Sparkles } from 'lucide-react';
+import { Instagram } from 'lucide-react';
 
 interface HeroSectionProps {
   onExploreEvents: () => void;
 }
-
-const HIGHLIGHTS: ReadonlyArray<{ icon: typeof Globe; label: string }> = [
-  { icon: Sparkles, label: 'Brazilian roots' },
-  { icon: Globe, label: 'Parties across Europe' },
-  { icon: Music, label: 'Psytrance culture' },
-];
 
 export function HeroSection({ onExploreEvents }: HeroSectionProps): JSX.Element {
   return (
