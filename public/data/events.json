@@ -1,38 +1,1149 @@
-[
-  {
-    "id": "avan7-amsterdam-2026",
-    "title": "Tropical Nomads Amsterdam presents: Avan7",
-    "date": "2026-08-14",
-    "city": "Amsterdam",
-    "country": "Netherlands",
-    "eventbriteUrl": "https://avan7amsterdam.eventbrite.ie",
-    "description": "A tropical psychedelic night curated by Tropical Nomads in Amsterdam."
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-19T09:51:06.564Z",
+  "source": {
+    "provider": "goabase",
+    "endpoint": "https://www.goabase.net/api/party/json"
   },
-  {
-    "id": "avan7-dublin-2026",
-    "title": "Tropical Groove presents: Avan7",
-    "date": "2026-09-04",
-    "city": "Dublin",
-    "country": "Ireland",
-    "eventbriteUrl": "https://avan7dublin.eventbrite.ie",
-    "description": "Tropical Groove meets Avan7 for a special dancefloor journey."
-  },
-  {
-    "id": "summer-ritual-lisbon-2026",
-    "title": "Tropical Nomads Summer Ritual",
-    "date": "2026-09-26",
-    "city": "Lisbon",
-    "country": "Portugal",
-    "eventbriteUrl": "https://example.eventbrite.com/e/tropical-nomads-summer-ritual-lisbon-2026",
-    "description": "Sunset to sunrise ritual featuring progressive and twilight vibes."
-  },
-  {
-    "id": "jungle-resonance-berlin-2026",
-    "title": "Jungle Resonance by Tropical Nomads",
-    "date": "2026-10-17",
-    "city": "Berlin",
-    "country": "Germany",
-    "eventbriteUrl": "https://example.eventbrite.com/e/jungle-resonance-berlin-2026",
-    "description": "A deep psychedelic exploration with immersive visuals and community energy."
-  }
-]
+  "count": 10,
+  "events": [
+    {
+      "id": "117712",
+      "title": "Tropical Nomads & PGP presents: Avan7",
+      "type": "Club",
+      "dateStart": "2026-07-10T18:00:00+02:00",
+      "dateEnd": "2026-07-11T03:00:00+02:00",
+      "timezone": "Europe/Amsterdam",
+      "durationHours": 9,
+      "venue": {
+        "id": "amsterdam-netherlands",
+        "city": "Amsterdam",
+        "country": "Netherlands",
+        "isoCountry": "NL",
+        "geo": {
+          "lat": 52.4,
+          "lon": 4.9
+        }
+      },
+      "lineupRaw": "🎶 TROPICAL NOMADS STAGE (Progressive, Psytrance, Fullon)\n🇧🇷 AVAN7\n🇧🇷 Blazin'G\n🇧🇷 Brain Damage\n🇧🇷 Critical Communication\n🇧🇷 Psychological\n🇧🇷 Shivaion\n🇳🇱 Valar\n🇧🇷 Yesca\n\n🌀 PGP STAGE (Night, Forest, Hitech)\n🇧🇷 After June\n🇳🇱🇧🇷 BACK TO MARS\n🇳🇱 C.S.M (Psykomeiko)\n🇳🇱 Idioblast\n🇳🇱 +Ripley",
+      "stages": [
+        {
+          "name": "TROPICAL NOMADS STAGE",
+          "genres": [
+            "Progressive",
+            "Psytrance",
+            "Fullon"
+          ],
+          "artists": [
+            {
+              "name": "AVAN7",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "TROPICAL NOMADS STAGE"
+            },
+            {
+              "name": "Blazin'G",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "TROPICAL NOMADS STAGE"
+            },
+            {
+              "name": "Brain Damage",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "TROPICAL NOMADS STAGE"
+            },
+            {
+              "name": "Critical Communication",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "TROPICAL NOMADS STAGE"
+            },
+            {
+              "name": "Psychological",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "TROPICAL NOMADS STAGE"
+            },
+            {
+              "name": "Shivaion",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "TROPICAL NOMADS STAGE"
+            },
+            {
+              "name": "Valar",
+              "countryFlag": "🇳🇱",
+              "isoCountry": "NL",
+              "stage": "TROPICAL NOMADS STAGE"
+            },
+            {
+              "name": "Yesca",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "TROPICAL NOMADS STAGE"
+            }
+          ]
+        },
+        {
+          "name": "PGP STAGE",
+          "genres": [
+            "Night",
+            "Forest",
+            "Hitech"
+          ],
+          "artists": [
+            {
+              "name": "After June",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "PGP STAGE"
+            },
+            {
+              "name": "BACK TO MARS",
+              "countryFlag": "🇳🇱",
+              "isoCountry": "NL",
+              "stage": "PGP STAGE"
+            },
+            {
+              "name": "C.S.M (Psykomeiko)",
+              "countryFlag": "🇳🇱",
+              "isoCountry": "NL",
+              "stage": "PGP STAGE"
+            },
+            {
+              "name": "Idioblast",
+              "countryFlag": "🇳🇱",
+              "isoCountry": "NL",
+              "stage": "PGP STAGE"
+            },
+            {
+              "name": "+Ripley",
+              "countryFlag": "🇳🇱",
+              "isoCountry": "NL",
+              "stage": "PGP STAGE"
+            }
+          ]
+        }
+      ],
+      "description": "🌴🚀 TROPICAL NOMADS returns to Amsterdam! 🚀🌴\n\nAfter an unforgettable first edition, we're back at Toekomstmuziek for a new psychedelic journey — and this time, we're taking things even further.\n\nFor this special edition, Tropical Nomads joins forces once again with our friends from PGP – Psychedelic Grateful Punks, who will host a dedicated second stage, bringing their own unique energy and artists to the experience. 👽🌀\n\nTogether, we're creating a night that celebrates the diversity of the psychedelic scene, combining international artists, local talents, two dancefloors and one united tribe.\n\nExpect powerful Full-On, groovy psychedelic sounds, deeper nighttime journeys and an atmosphere built by people who genuinely love this culture.\n\n📍 Toekomstmuziek – Amsterdam 🇳🇱\n📅 10 July 2026\n🕕 18:00 – 03:00\n🎶 2 Stages\n🌍 International & Local Psytrance Artists\n🌀 Psychedelic Decoration\n🎨 Body Painting\n🛍️ Psychedelic Shop\n🍵 Chai Corner\n\nMore artists, more collaborations, more experiences.\nOne night. Two stages. One tribe. 👽🔥",
+      "organizer": "After June",
+      "images": {
+        "small": "https://img.goabase.net/images/flyer/small/20260710_tropical-nomads-pgp-presents-avan7_20260607154402.png",
+        "medium": "https://img.goabase.net/images/flyer/medium/20260710_tropical-nomads-pgp-presents-avan7_20260607154402.png",
+        "large": "https://img.goabase.net/images/flyer/large/20260710_tropical-nomads-pgp-presents-avan7_20260607154402.png",
+        "full": "https://img.goabase.net/images/flyer/full/20260710_tropical-nomads-pgp-presents-avan7_20260607154402.png",
+        "bannerLocal": "/events/banners/117712.png"
+      },
+      "links": {
+        "goabase": "https://www.goabase.net/party/tropical-nomads-pgp-presents-avan7/117712",
+        "eventbrite": "https://avan7amsterdam.eventbrite.ie",
+        "instagram": [
+          "https://www.instagram.com/tropicalnomads.events/",
+          "https://www.instagram.com/psychedelicgratefulpunks/"
+        ]
+      },
+      "source": {
+        "provider": "goabase",
+        "id": 117712,
+        "url": "https://www.goabase.net/party/tropical-nomads-pgp-presents-avan7/117712",
+        "status": "Scheduled",
+        "dateCreated": "2026-06-01T13:53:17+02:00",
+        "dateModified": "2026-06-01T15:30:58+02:00"
+      }
+    },
+    {
+      "id": "117713",
+      "title": "Tropical Groove presents: Avan7",
+      "type": "Club",
+      "dateStart": "2026-07-11T14:00:00+02:00",
+      "dateEnd": "2026-07-12T03:00:00+02:00",
+      "timezone": "Europe/Dublin",
+      "durationHours": 13,
+      "venue": {
+        "id": "dublin-ireland",
+        "city": "Dublin",
+        "country": "Ireland",
+        "isoCountry": "IE",
+        "geo": {
+          "lat": 53.3,
+          "lon": -6.3
+        }
+      },
+      "lineupRaw": "THE EATYARD STAGE\r\nAfter June 🇧🇷\r\nBlazin'g 🇧🇷\r\nJuliosmap 🇧🇷\r\nÖcto 🇧🇷\r\nShivaion 🇧🇷\r\nSolar Plexus 🇬🇹\r\nVinius 🇧🇷\r\n\r\nTHE RACKET SPACE STAGE\r\nAvan7 🇧🇷\r\nBrain Damage 🇧🇷\r\nFrostbite 🇵🇹\r\nPsychological 🇧🇷",
+      "stages": [
+        {
+          "name": "THE EATYARD STAGE",
+          "genres": [],
+          "artists": [
+            {
+              "name": "After June 🇧🇷",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "THE EATYARD STAGE"
+            },
+            {
+              "name": "Blazin'g 🇧🇷",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "THE EATYARD STAGE"
+            },
+            {
+              "name": "Juliosmap 🇧🇷",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "THE EATYARD STAGE"
+            },
+            {
+              "name": "Öcto 🇧🇷",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "THE EATYARD STAGE"
+            },
+            {
+              "name": "Shivaion 🇧🇷",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "THE EATYARD STAGE"
+            },
+            {
+              "name": "Solar Plexus 🇬🇹",
+              "countryFlag": "🇬🇹",
+              "isoCountry": "GT",
+              "stage": "THE EATYARD STAGE"
+            },
+            {
+              "name": "Vinius 🇧🇷",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "THE EATYARD STAGE"
+            }
+          ]
+        },
+        {
+          "name": "THE RACKET SPACE STAGE",
+          "genres": [],
+          "artists": [
+            {
+              "name": "Avan7 🇧🇷",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "THE RACKET SPACE STAGE"
+            },
+            {
+              "name": "Brain Damage 🇧🇷",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "THE RACKET SPACE STAGE"
+            },
+            {
+              "name": "Frostbite 🇵🇹",
+              "countryFlag": "🇵🇹",
+              "isoCountry": "PT",
+              "stage": "THE RACKET SPACE STAGE"
+            },
+            {
+              "name": "Psychological 🇧🇷",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "THE RACKET SPACE STAGE"
+            }
+          ]
+        }
+      ],
+      "description": "Join Tropical Groove on July 11 at The Bernard Shaw, Dublin! 2 stages of Psytrance, psychedelic decor, and an epic journey\r\n\r\nGet ready to elevate your frequencies! Tropical Groove is taking over The Bernard Shaw for an unforgettable gathering. We are transforming the venue into a vibrant, neon-drenched psychedelic playground spread across two distinct stages.\r\n\r\nExpect a massive lineup of international and local heavyweights delivering pure psytrance energy, mind-bending UV decor, and an immersive dancefloor odyssey that will keep you moving until dawn. 👽🌴✨\r\n\r\n🗓️ April 25th\r\n📍 The Bernard Shaw, Dublin\r\n👽 2 Stages\r\n⏱️ Over 13h of Party!",
+      "organizer": "After June",
+      "images": {
+        "small": "https://img.goabase.net/images/flyer/small/20260711_tropical-groove-presents-avan7_20260607153815.png",
+        "medium": "https://img.goabase.net/images/flyer/medium/20260711_tropical-groove-presents-avan7_20260607153815.png",
+        "large": "https://img.goabase.net/images/flyer/large/20260711_tropical-groove-presents-avan7_20260607153815.png",
+        "full": "https://img.goabase.net/images/flyer/full/20260711_tropical-groove-presents-avan7_20260607153815.png",
+        "bannerLocal": "/events/banners/117713.png"
+      },
+      "links": {
+        "goabase": "https://www.goabase.net/party/tropical-groove-presents-avan7/117713",
+        "eventbrite": "https://avan7dublin.eventbrite.ie"
+      },
+      "source": {
+        "provider": "goabase",
+        "id": 117713,
+        "url": "https://www.goabase.net/party/tropical-groove-presents-avan7/117713",
+        "status": "Scheduled",
+        "dateCreated": "2026-06-01T15:35:56+02:00",
+        "dateModified": "2026-06-01T15:39:43+02:00"
+      }
+    },
+    {
+      "id": "116643",
+      "title": "Boom Shanka Label Night",
+      "type": "Club",
+      "dateStart": "2026-08-15T20:00:00+02:00",
+      "dateEnd": "2026-08-16T05:00:00+02:00",
+      "timezone": "Europe/London",
+      "durationHours": 9,
+      "venue": {
+        "id": "london-united-kingdom",
+        "city": "London",
+        "country": "United Kingdom",
+        "isoCountry": "GB",
+        "geo": {
+          "lat": 51.5,
+          "lon": -0.1
+        }
+      },
+      "lineupRaw": "UNIVERSE & TROPICAL NOMADS presents\n🔱 BOM SHANKA MUSIC LABEL NIGHT 👽\n\nFor the first time, TROPICAL NOMADS arrives in London, joining forces with UNIVERSE for a special night dedicated to the sound and energy of Bom Shanka Music.\n\nThis edition brings 4 names from the Bom Shanka family, including BOCARA 🇧🇷, coming directly from Brazil, alongside ABIOTIQ 🇫🇷, DIRTY, SAFFI 🇬🇧 and NUKY 🇬🇧 — a lineup built for a proper psychedelic journey, from deep grooves to full-power dancefloor moments. 🔥\n\nThe night also features 3RD VISION 🇧🇷, AFTER JUNE 🇧🇷, BLAZIN’G 🇧🇷 and SHIVAION 🇧🇷, connecting the Brazilian psychedelic force with the London scene.\n\nExpect almost 9 hours of psytrance, international artists, heavy sound, psychedelic atmosphere and a dancefloor ready to move from the first beat until the morning. 🌀\n\nLondon, this is the first one — and we’re coming properly. 🤯",
+      "stages": [
+        {
+          "name": "Line-up",
+          "genres": [],
+          "artists": [
+            {
+              "name": "UNIVERSE & TROPICAL NOMADS presents",
+              "stage": "Line-up"
+            },
+            {
+              "name": "BOM SHANKA MUSIC LABEL NIGHT 👽",
+              "stage": "Line-up"
+            },
+            {
+              "name": "For the first time, TROPICAL NOMADS arrives in London, joining forces with UNIVERSE for a special night dedicated to the sound and energy of Bom Shanka Music.",
+              "stage": "Line-up"
+            },
+            {
+              "name": "This edition brings 4 names from the Bom Shanka family, including BOCARA 🇧🇷, coming directly from Brazil, alongside ABIOTIQ 🇫🇷, DIRTY, SAFFI 🇬🇧 and NUKY 🇬🇧 — a lineup built for a proper psychedelic journey, from deep grooves to full-power dancefloor moments. 🔥",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "Line-up"
+            },
+            {
+              "name": "The night also features 3RD VISION 🇧🇷, AFTER JUNE 🇧🇷, BLAZIN’G 🇧🇷 and SHIVAION 🇧🇷, connecting the Brazilian psychedelic force with the London scene.",
+              "countryFlag": "🇧🇷",
+              "isoCountry": "BR",
+              "stage": "Line-up"
+            }
+          ]
+        },
+        {
+          "name": "Expect almost 9 hours of psytrance, international artists, heavy sound, psychedelic atmosphere and a dancefloor ready to move from the first beat until the morning. 🌀",
+          "genres": [],
+          "artists": [
+            {
+              "name": "London, this is the first one — and we’re coming properly. 🤯",
+              "stage": "Expect almost 9 hours of psytrance, international artists, heavy sound, psychedelic atmosphere and a dancefloor ready to move from the first beat until the morning. 🌀"
+            }
+          ]
+        }
+      ],
+      "description": "🗓️ Saturday — 15 August 2026\r\n📍 Bar A Bar, London\r\n🕣 20:00 – 04:30\r\n🔱 Bom Shanka Music Label Night\r\n👽 Universe x Tropical Nomads\r\n\r\n⚠️ LIMITED CAPACITY",
+      "organizer": "After June",
+      "images": {
+        "small": "https://img.goabase.net/images/flyer/small/20260815_universe-tropical-nomads-in-london_20260512171032.png",
+        "medium": "https://img.goabase.net/images/flyer/medium/20260815_universe-tropical-nomads-in-london_20260512171032.png",
+        "large": "https://img.goabase.net/images/flyer/large/20260815_universe-tropical-nomads-in-london_20260512171032.png",
+        "full": "https://img.goabase.net/images/flyer/full/20260815_universe-tropical-nomads-in-london_20260512171032.png",
+        "bannerLocal": "/events/banners/116643.png"
+      },
+      "links": {
+        "goabase": "https://www.goabase.net/party/boom-shanka-label-night/116643",
+        "instagram": [
+          "https://www.instagram.com/tropicalnomads.events/",
+          "https://www.instagram.com/universeparty_111/"
+        ]
+      },
+      "source": {
+        "provider": "goabase",
+        "id": 116643,
+        "url": "https://www.goabase.net/party/boom-shanka-label-night/116643",
+        "status": "Scheduled",
+        "dateCreated": "2025-12-25T13:40:57+01:00",
+        "dateModified": "2026-05-12T17:30:59+02:00"
+      }
+    },
+    {
+      "id": "117120",
+      "title": "Tropical Groove presents: Burn in Noise",
+      "type": "Club",
+      "dateStart": "2026-06-05T19:00:00+02:00",
+      "dateEnd": "2026-06-06T02:30:00+02:00",
+      "timezone": "Europe/Dublin",
+      "durationHours": 8,
+      "venue": {
+        "id": "dublin-ireland",
+        "city": "Dublin",
+        "country": "Ireland",
+        "isoCountry": "IE",
+        "geo": {
+          "lat": 53.4,
+          "lon": -6.3
+        }
+      },
+      "lineupRaw": "TERRACE\t\t\n19:00 - Underbeat  (Psytechno)\n20:00 - Araujah (Psytrance)\n21:00 - Carol Stefaniak (Psytrance)\n22:00 - Algorithmix (Psytrance)\n23:00 - Corralo (Psytrance)\n00:00 - Fluffy (Psycore)\n01:00 - END\n\t\t\t\nSOUNDHOUSE\n21:00 - Blazin'G (Fullon)\n22:00 - Altered State (Fullon)\n23:00 - Shivaion (Fullon)\n00:00 - 🔥 BURN IN NOISE 🔥 (Fullon)\n01:30 - After June (Fullon / Twilight)\n02:45 - END",
+      "stages": [
+        {
+          "name": "Line-up",
+          "genres": [],
+          "artists": [
+            {
+              "name": "TERRACE",
+              "stage": "Line-up"
+            },
+            {
+              "name": "19:00 - Underbeat  (Psytechno)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "20:00 - Araujah (Psytrance)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "21:00 - Carol Stefaniak (Psytrance)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "22:00 - Algorithmix (Psytrance)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "23:00 - Corralo (Psytrance)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "00:00 - Fluffy (Psycore)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "01:00 - END",
+              "stage": "Line-up"
+            },
+            {
+              "name": "SOUNDHOUSE",
+              "stage": "Line-up"
+            },
+            {
+              "name": "21:00 - Blazin'G (Fullon)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "22:00 - Altered State (Fullon)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "23:00 - Shivaion (Fullon)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "00:00 - 🔥 BURN IN NOISE 🔥 (Fullon)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "01:30 - After June (Fullon / Twilight)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "02:45 - END",
+              "stage": "Line-up"
+            }
+          ]
+        }
+      ],
+      "description": "🚨 BURN IN NOISE is coming to Dublin!!! 🚨\n\nOne of the biggest and most respected names in the global psytrance scene, BURN IN NOISE 🇧🇷 lands at The Sound House for a very special edition of Tropical Groove! 🔥👽\n\n🗓️ June 5th - 19:00\n📍 The Sound House\n👽 2 Floors\n⏱️ Over 7h of Party! \n⚠️ LIMITED CAPACITY\n\nDublin… this one will be next level 🤯",
+      "organizer": "After June",
+      "images": {
+        "small": "https://img.goabase.net/images/flyer/small/20260605_tropical-groove-presents-burn-in-noise_20260301154809.png",
+        "medium": "https://img.goabase.net/images/flyer/medium/20260605_tropical-groove-presents-burn-in-noise_20260301154809.png",
+        "large": "https://img.goabase.net/images/flyer/large/20260605_tropical-groove-presents-burn-in-noise_20260301154809.png",
+        "full": "https://img.goabase.net/images/flyer/full/20260605_tropical-groove-presents-burn-in-noise_20260301154809.png",
+        "bannerLocal": "/events/banners/117120.png"
+      },
+      "links": {
+        "goabase": "https://www.goabase.net/party/tropical-groove-presents-burn-in-noise/117120",
+        "instagram": [
+          "https://www.instagram.com/psy.groove/",
+          "https://www.instagram.com/tropicalnomads.events/"
+        ]
+      },
+      "source": {
+        "provider": "goabase",
+        "id": 117120,
+        "url": "https://www.goabase.net/party/tropical-groove-presents-burn-in-noise/117120",
+        "status": "Scheduled",
+        "dateCreated": "2026-03-01T15:45:29+01:00",
+        "dateModified": "2026-03-01T15:48:49+01:00"
+      }
+    },
+    {
+      "id": "117152",
+      "title": "Tropical Nomads Amsterdam presents: Burn in Noise",
+      "type": "Club",
+      "dateStart": "2026-05-29T18:00:00+02:00",
+      "dateEnd": "2026-05-30T12:00:00+02:00",
+      "timezone": "Europe/Amsterdam",
+      "durationHours": 18,
+      "venue": {
+        "id": "amsterdam-netherlands",
+        "city": "Amsterdam",
+        "country": "Netherlands",
+        "isoCountry": "NL",
+        "geo": {
+          "lat": 52.39651,
+          "lon": 4.87534
+        }
+      },
+      "lineupRaw": "🔥 BURN IN NOISE (Nano Records) 🔥\n🌀 AFTER JUNE (Tropical Nomads / Forest Shankara) 🌀\n🔥 SHIVAION (Tropical Nomads / Psy Groove )🔥\n🌀BLAZIN'G (Tropical Nomads / Psy Groove)🌀\n🔥 CIB & CIMI (Psychedelic Grateful Punks)🔥\n🌀 PSYKADELICA (Dutch Acid Family)🌀\n🔥 POLZITIV (Psychedelic Grateful Punks) 🔥\n🌀 VALKYRIE (M-United) 🌀",
+      "stages": [
+        {
+          "name": "Line-up",
+          "genres": [],
+          "artists": [
+            {
+              "name": "BURN IN NOISE (Nano Records) 🔥",
+              "stage": "Line-up"
+            },
+            {
+              "name": "AFTER JUNE (Tropical Nomads / Forest Shankara) 🌀",
+              "stage": "Line-up"
+            },
+            {
+              "name": "SHIVAION (Tropical Nomads / Psy Groove )🔥",
+              "stage": "Line-up"
+            },
+            {
+              "name": "BLAZIN'G (Tropical Nomads / Psy Groove)🌀",
+              "stage": "Line-up"
+            },
+            {
+              "name": "CIB & CIMI (Psychedelic Grateful Punks)🔥",
+              "stage": "Line-up"
+            },
+            {
+              "name": "PSYKADELICA (Dutch Acid Family)🌀",
+              "stage": "Line-up"
+            },
+            {
+              "name": "POLZITIV (Psychedelic Grateful Punks) 🔥",
+              "stage": "Line-up"
+            },
+            {
+              "name": "VALKYRIE (M-United) 🌀",
+              "stage": "Line-up"
+            }
+          ]
+        }
+      ],
+      "description": "Tropical Nomads lands in Amsterdam for the first time with psytrance legend Burn in Noise — followed by a special PGP afterparty.\n\n🔥 Burn in Noise comes to Amsterdam! 🔥\n\nOne of the biggest and most respected names in the global psytrance scene, Burn in Noise 🇧🇷 has been dominating dancefloors worldwide with his explosive energy, powerful grooves and unmistakable sound — performing at some of the biggest festivals and parties across the globe. 🌍✨\n\nFor the first time ever, Tropical Nomads lands in Amsterdam 🇳🇱, joining forces with PGP – Psychedelic Grateful Punks to create a massive psychedelic gathering.\n\nThis special edition will take place at Toekomstmuziek, one of Amsterdam’s most iconic underground venues.\n\nExpect a full psychedelic experience featuring international artists, immersive decoration, body painting, psychedelic shop, and a dancefloor filled with pure energy and connection. 🌀\n\nThe main event runs from 18:00 to 03:00, followed by an official afterparty hosted by Psychedelic Grateful Punks from 03:00 until 12:00.\n\nThat’s 18 hours of music, community and psychedelic celebration. 🌈\n\n📅 Save the date — more details and full lineup coming soon.\n\n📍 Venue: Toekomstmuziek – Amsterdam 🇳🇱\n📅 29th May, 2026\n🕕 Main Event: 18:00 – 03:00\n🌅 Official Afterparty by PGP: 03:00 – 12:00\n🎶 18 Hours of Music\n🌍 International Psytrance Artists\n🌀 Psychedelic Decoration by SHIVA SHAKTI\n🎨 Body Painting\n🛍️ Psychedelic Shop \n💃 Dancefloor Journey Until Sunrise",
+      "organizer": "After June",
+      "images": {
+        "small": "https://img.goabase.net/images/flyer/small/20260529_tropical-nomads-amsterdam-presents-burn-in-noise_20260306154231.jpg",
+        "medium": "https://img.goabase.net/images/flyer/medium/20260529_tropical-nomads-amsterdam-presents-burn-in-noise_20260306154231.jpg",
+        "large": "https://img.goabase.net/images/flyer/large/20260529_tropical-nomads-amsterdam-presents-burn-in-noise_20260306154231.jpg",
+        "full": "https://img.goabase.net/images/flyer/full/20260529_tropical-nomads-amsterdam-presents-burn-in-noise_20260306154231.jpg",
+        "bannerLocal": "/events/banners/117152.jpg"
+      },
+      "links": {
+        "goabase": "https://www.goabase.net/party/tropical-nomads-amsterdam-presents-burn-in-noise/117152",
+        "instagram": [
+          "https://www.instagram.com/tropicalnomads.events/",
+          "https://www.instagram.com/psychedelicgratefulpunks/"
+        ]
+      },
+      "source": {
+        "provider": "goabase",
+        "id": 117152,
+        "url": "https://www.goabase.net/party/tropical-nomads-amsterdam-presents-burn-in-noise/117152",
+        "status": "Scheduled",
+        "dateCreated": "2026-03-06T14:20:59+01:00",
+        "dateModified": "2026-03-06T15:42:51+01:00"
+      }
+    },
+    {
+      "id": "117257",
+      "title": "Tropical Groove: Spring Awakening",
+      "type": "In- & Outdoor",
+      "dateStart": "2026-04-25T14:00:00+02:00",
+      "dateEnd": "2026-04-26T03:00:00+02:00",
+      "timezone": "Europe/Dublin",
+      "durationHours": 13,
+      "venue": {
+        "id": "dublin-ireland",
+        "city": "Dublin",
+        "country": "Ireland",
+        "isoCountry": "IE",
+        "geo": {
+          "lat": 53.3,
+          "lon": -6.3
+        }
+      },
+      "lineupRaw": "🌼 THE EATYARD (14:00 – 23:00)\r\n14:00 – Ivan Pocintela (Tech House)\r\n15:30 – Candelas (Prog Tech)\r\n17:00 – 2Wins (Minimal)\r\n18:30 – MaadHouz (Minimal)\r\n20:00 – Ladysiu (Hard Techno)\r\n21:30 – Cosmic Brothers Project (Psytrance)\r\n23:00 – END\r\n\r\n🌙 THE RACKET SPACE (23:00 – 03:00)\r\n23:00 – Draco Dark (Psytech)\r\n00:00 – Shivaion (Psytrance)\r\n01:00 – Texo (Full-On)\r\n02:00 – Blazin’G (Full-On - SPECIAL B-DAY SET)\r\n03:00 – END",
+      "stages": [
+        {
+          "name": "Line-up",
+          "genres": [],
+          "artists": [
+            {
+              "name": "THE EATYARD (14:00 – 23:00)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "14:00 – Ivan Pocintela (Tech House)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "15:30 – Candelas (Prog Tech)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "17:00 – 2Wins (Minimal)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "18:30 – MaadHouz (Minimal)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "20:00 – Ladysiu (Hard Techno)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "21:30 – Cosmic Brothers Project (Psytrance)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "23:00 – END",
+              "stage": "Line-up"
+            },
+            {
+              "name": "THE RACKET SPACE (23:00 – 03:00)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "23:00 – Draco Dark (Psytech)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "00:00 – Shivaion (Psytrance)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "01:00 – Texo (Full-On)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "02:00 – Blazin’G (Full-On - SPECIAL B-DAY SET)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "03:00 – END",
+              "stage": "Line-up"
+            }
+          ]
+        }
+      ],
+      "description": "☀️ Spring Awakening + Blazin’G’s Bday 🎂\n\nJoin us for a special Spring Awakening celebration in Dublin as we also celebrate Blazin’G’s birthday!\nA full day and night with 2 stages, from tech house to psytrance, good energy, and a dancefloor full of friends.\n\nCome celebrate spring with us through good music, good people and that energy we all love. 🌸🎶\n\n🗓️ April 25th\n📍 The Bernard Shaw, Dublin\n👽 2 Stages\n⏱️ Over 13h of Party!",
+      "organizer": "After June",
+      "images": {
+        "small": "https://img.goabase.net/images/flyer/small/20260425_tropical-groove-spring-awakening_20260318172655.png",
+        "medium": "https://img.goabase.net/images/flyer/medium/20260425_tropical-groove-spring-awakening_20260318172655.png",
+        "large": "https://img.goabase.net/images/flyer/large/20260425_tropical-groove-spring-awakening_20260318172655.png",
+        "full": "https://img.goabase.net/images/flyer/full/20260425_tropical-groove-spring-awakening_20260318172655.png",
+        "bannerLocal": "/events/banners/117257.png"
+      },
+      "links": {
+        "goabase": "https://www.goabase.net/party/tropical-groove-spring-awakening/117257",
+        "instagram": [
+          "https://www.instagram.com/psy.groove/",
+          "https://www.instagram.com/tropicalnomads.events/"
+        ]
+      },
+      "source": {
+        "provider": "goabase",
+        "id": 117257,
+        "url": "https://www.goabase.net/party/tropical-groove-spring-awakening/117257",
+        "status": "Scheduled",
+        "dateCreated": "2026-03-18T17:17:57+01:00",
+        "dateModified": "2026-03-18T17:27:34+01:00"
+      }
+    },
+    {
+      "id": "116906",
+      "title": "Tropical Groove: Pre-St Patrick` s Day",
+      "type": "Club",
+      "dateStart": "2026-03-13T19:00:00+01:00",
+      "dateEnd": "2026-03-14T02:30:00+01:00",
+      "timezone": "Europe/Dublin",
+      "durationHours": 8,
+      "venue": {
+        "id": "dublin-ireland",
+        "city": "Dublin",
+        "country": "Ireland",
+        "isoCountry": "IE",
+        "geo": {
+          "lat": 53.4,
+          "lon": -6.3
+        }
+      },
+      "lineupRaw": "☘️ Pre-St Patrick` s Day + NIAMH & SHIVAION` s Bday 🎂\n\nJoin us for a special Pre–St. Patrick’s Psytrance Night in Dublin as we also celebrate the birthday of Niamh & Shivaion!\nA full evening of psytrance, techno and tech-house vibes, good energy, and a dancefloor full of friends.\nLet’s warm up for St. Patrick’s with powerful beats, smiles, and a proper underground atmosphere. ☘️🎶\n\nVENUE\nThe Sound House – Dublin\n1st Floor, 28 Eden Quay, North City, Dublin D01 DE44\n\nLINE UP\n\n🌞 TERRACE (19:00 – 01:00)\n19:00 – Shivaion in Dub - Dub\n20:00 – Jamds – Tech House\n21:00 – Teejota – Techno\n22:00 – Dolce Vita – Full-On\n23:00 – Sylent Hill – Dark / Forest\n00:00 – Iaka – Dark / Forest\n01:00 – END\n\n🌙 MAIN FLOOR (23:00 – 2:45)\n23:00 – Romanetto b2b Imniamh – Peak Time\n00:15 – Blazin’G b2b Shivaion – Full-On\n01:30 – Adrenaline Rush (BOOM SHANKA) – Full-On Night\n02:45 – END",
+      "stages": [
+        {
+          "name": "Line-up",
+          "genres": [],
+          "artists": [
+            {
+              "name": "Pre-St Patrick` s Day + NIAMH & SHIVAION` s Bday 🎂",
+              "stage": "Line-up"
+            },
+            {
+              "name": "Join us for a special Pre–St. Patrick’s Psytrance Night in Dublin as we also celebrate the birthday of Niamh & Shivaion!",
+              "stage": "Line-up"
+            }
+          ]
+        },
+        {
+          "name": "A full evening of psytrance, techno and tech-house vibes, good energy, and a dancefloor full of friends.",
+          "genres": [],
+          "artists": [
+            {
+              "name": "Let’s warm up for St. Patrick’s with powerful beats, smiles, and a proper underground atmosphere. ☘️🎶",
+              "stage": "A full evening of psytrance, techno and tech-house vibes, good energy, and a dancefloor full of friends."
+            },
+            {
+              "name": "VENUE",
+              "stage": "A full evening of psytrance, techno and tech-house vibes, good energy, and a dancefloor full of friends."
+            },
+            {
+              "name": "The Sound House – Dublin",
+              "stage": "A full evening of psytrance, techno and tech-house vibes, good energy, and a dancefloor full of friends."
+            }
+          ]
+        },
+        {
+          "name": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44",
+          "genres": [],
+          "artists": [
+            {
+              "name": "LINE UP",
+              "stage": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44"
+            },
+            {
+              "name": "TERRACE (19:00 – 01:00)",
+              "stage": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44"
+            },
+            {
+              "name": "19:00 – Shivaion in Dub - Dub",
+              "stage": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44"
+            },
+            {
+              "name": "20:00 – Jamds – Tech House",
+              "stage": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44"
+            },
+            {
+              "name": "21:00 – Teejota – Techno",
+              "stage": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44"
+            },
+            {
+              "name": "22:00 – Dolce Vita – Full-On",
+              "stage": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44"
+            },
+            {
+              "name": "23:00 – Sylent Hill – Dark / Forest",
+              "stage": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44"
+            },
+            {
+              "name": "00:00 – Iaka – Dark / Forest",
+              "stage": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44"
+            },
+            {
+              "name": "01:00 – END",
+              "stage": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44"
+            }
+          ]
+        },
+        {
+          "name": "MAIN FLOOR",
+          "genres": [
+            "23:00 – 2:45"
+          ],
+          "artists": [
+            {
+              "name": "23:00 – Romanetto b2b Imniamh – Peak Time",
+              "stage": "MAIN FLOOR"
+            },
+            {
+              "name": "00:15 – Blazin’G b2b Shivaion – Full-On",
+              "stage": "MAIN FLOOR"
+            },
+            {
+              "name": "01:30 – Adrenaline Rush (BOOM SHANKA) – Full-On Night",
+              "stage": "MAIN FLOOR"
+            },
+            {
+              "name": "02:45 – END",
+              "stage": "MAIN FLOOR"
+            }
+          ]
+        }
+      ],
+      "organizer": "After June",
+      "images": {
+        "small": "https://img.goabase.net/images/flyer/small/20260313_tropical-groove-pre-st-patrick-s-day_20260202122928.png",
+        "medium": "https://img.goabase.net/images/flyer/medium/20260313_tropical-groove-pre-st-patrick-s-day_20260202122928.png",
+        "large": "https://img.goabase.net/images/flyer/large/20260313_tropical-groove-pre-st-patrick-s-day_20260202122928.png",
+        "full": "https://img.goabase.net/images/flyer/full/20260313_tropical-groove-pre-st-patrick-s-day_20260202122928.png",
+        "bannerLocal": "/events/banners/116906.png"
+      },
+      "links": {
+        "goabase": "https://www.goabase.net/party/tropical-groove-pre-st-patrick-s-day/116906"
+      },
+      "source": {
+        "provider": "goabase",
+        "id": 116906,
+        "url": "https://www.goabase.net/party/tropical-groove-pre-st-patrick-s-day/116906",
+        "status": "Scheduled",
+        "dateCreated": "2026-02-02T12:22:43+01:00",
+        "dateModified": "2026-02-02T12:31:43+01:00"
+      }
+    },
+    {
+      "id": "116039",
+      "title": "Tropical Nomads Berlin with Avan7 and DJ Paula",
+      "type": "Club",
+      "dateStart": "2025-11-29T23:00:00+01:00",
+      "dateEnd": "2025-11-30T09:00:00+01:00",
+      "timezone": "Europe/Berlin",
+      "durationHours": 10,
+      "venue": {
+        "id": "berlin-germany",
+        "city": "Berlin",
+        "country": "Germany",
+        "isoCountry": "DE",
+        "geo": {
+          "lat": 52.5,
+          "lon": 13.4
+        }
+      },
+      "lineupRaw": "══════════════════════\r\n🌕 PSYTRANCE STAGE 🌕\r\n══════════════════════\r\nAVAN7 (BR) \r\nDIGITALK (BR) \r\nAstralica (DE) \r\nAfter June (BR) \r\nBlazin'G (BR)\r\nNhandeva (BR) \r\nShivaion (BR) \r\n3rd Vision (BR)\r\n\r\n══════════════════════\r\n🌑 DARK & HITECH STAGE 🌑\r\n══════════════════════\r\nDJ PAULA (BR) \r\nKARELL (BR) \r\nGunD (PL) \r\nNo Pressure (PL) \r\nPanchikarana (PL) \r\nTyusha (DE)",
+      "stages": [
+        {
+          "name": "PSYTRANCE STAGE 🌕",
+          "genres": [],
+          "artists": [
+            {
+              "name": "AVAN7 (BR)",
+              "stage": "PSYTRANCE STAGE 🌕"
+            },
+            {
+              "name": "DIGITALK (BR)",
+              "stage": "PSYTRANCE STAGE 🌕"
+            },
+            {
+              "name": "Astralica (DE)",
+              "stage": "PSYTRANCE STAGE 🌕"
+            },
+            {
+              "name": "After June (BR)",
+              "stage": "PSYTRANCE STAGE 🌕"
+            },
+            {
+              "name": "Blazin'G (BR)",
+              "stage": "PSYTRANCE STAGE 🌕"
+            },
+            {
+              "name": "Nhandeva (BR)",
+              "stage": "PSYTRANCE STAGE 🌕"
+            },
+            {
+              "name": "Shivaion (BR)",
+              "stage": "PSYTRANCE STAGE 🌕"
+            },
+            {
+              "name": "3rd Vision (BR)",
+              "stage": "PSYTRANCE STAGE 🌕"
+            }
+          ]
+        },
+        {
+          "name": "DARK & HITECH STAGE 🌑",
+          "genres": [],
+          "artists": [
+            {
+              "name": "DJ PAULA (BR)",
+              "stage": "DARK & HITECH STAGE 🌑"
+            },
+            {
+              "name": "KARELL (BR)",
+              "stage": "DARK & HITECH STAGE 🌑"
+            },
+            {
+              "name": "GunD (PL)",
+              "stage": "DARK & HITECH STAGE 🌑"
+            },
+            {
+              "name": "No Pressure (PL)",
+              "stage": "DARK & HITECH STAGE 🌑"
+            },
+            {
+              "name": "Panchikarana (PL)",
+              "stage": "DARK & HITECH STAGE 🌑"
+            },
+            {
+              "name": "Tyusha (DE)",
+              "stage": "DARK & HITECH STAGE 🌑"
+            }
+          ]
+        }
+      ],
+      "description": "Tropical Nomads Berlin lands at M-Bia on November 29th with two explosive stages — one dedicated to driving Psytrance and the other to intense Dark & Hitech vibes.\r\n\r\nFlying in directly from Brazil, AVAN7, DIGITALK, KARELL and DJ PAULA lead this gathering, joined by a strong lineup of Brazilian talents now based in Europe, alongside local and international friends.\r\n\r\nThis event is a celebration of music, unity and connection — a safe space where dancers from all backgrounds come together until sunrise.\r\n\r\nMore info\r\n► 2 floors: Psytrance & Dark/Hitech\r\n► 14 Artists\r\n► Funktion-One sound system\r\n► Psychedelic decoration\r\n► Good vibes",
+      "organizer": "After June",
+      "images": {
+        "small": "https://img.goabase.net/images/flyer/small/20251129_tropical-nomads-berlin-with-avan7-and-dj-paula_20251001134221.png",
+        "medium": "https://img.goabase.net/images/flyer/medium/20251129_tropical-nomads-berlin-with-avan7-and-dj-paula_20251001134221.png",
+        "large": "https://img.goabase.net/images/flyer/large/20251129_tropical-nomads-berlin-with-avan7-and-dj-paula_20251001134221.png",
+        "full": "https://img.goabase.net/images/flyer/full/20251129_tropical-nomads-berlin-with-avan7-and-dj-paula_20251001134221.png",
+        "bannerLocal": "/events/banners/116039.png"
+      },
+      "links": {
+        "goabase": "https://www.goabase.net/party/tropical-nomads-berlin-with-avan7-and-dj-paula/116039",
+        "instagram": [
+          "https://www.instagram.com/tropicalnomads.events/"
+        ]
+      },
+      "source": {
+        "provider": "goabase",
+        "id": 116039,
+        "url": "https://www.goabase.net/party/tropical-nomads-berlin-with-avan7-and-dj-paula/116039",
+        "status": "Scheduled",
+        "dateCreated": "2025-09-29T22:13:21+02:00",
+        "dateModified": "2025-09-29T22:16:25+02:00"
+      }
+    },
+    {
+      "id": "115995",
+      "title": "Tropical Groove: Pre-Halloween Party",
+      "type": "Club",
+      "dateStart": "2025-10-25T14:00:00+02:00",
+      "dateEnd": "2025-10-26T03:00:00+01:00",
+      "timezone": "Europe/Dublin",
+      "durationHours": 14,
+      "venue": {
+        "id": "dublin-ireland",
+        "city": "Dublin",
+        "country": "Ireland",
+        "isoCountry": "IE",
+        "geo": {
+          "lat": 53.3,
+          "lon": -6.3
+        }
+      },
+      "lineupRaw": "🎃 Halloween Mini Festival – Line Up 🎶\n🕑 Horário: 2PM – 3AM\n📍 The Bernard Shaw\n\n🌞 FREE – Eatyard (2PM – 10:30PM)\n14:00 – Katy Bnv (Afro House)\n15:30 – Plain4Jane (Underground House)\n16:30 – F.Hollow (Techno)\n17:30 – Campello b2b Niamh (Techno)\n18:30 – Phill Base b2b Nilaaa (Raw)\n20:00 – MhonoType (Techno)\n21:00 – Vinius (FullOn)\n22:00 – End\n\n🌙 PAID – Racket Space (11PM – 3AM)\n23:00 – Romanetto b2b Carol Stefaniak (Techno)\n00:00 – Shivaion (Fullon)\n01:00 – BlazinG (Fullon)\n02:00 – After June (Fullon / Night)\n\n🌌 PAID – Bernard Shaw (11PM – 3AM)\n23:00 – Kalinke (Minimal)\n00:00 – 2WINS (Tech House)\n01:00 – Zintek (Minimal Deep Tech)\n02:00 – The Drifter (Tech House / Minimal)\n\n✨ FREE ENTRY: 2PM – 10:30PM\n✨ PAID ENTRY: 11PM – 3AM",
+      "stages": [
+        {
+          "name": "Line-up",
+          "genres": [],
+          "artists": [
+            {
+              "name": "Halloween Mini Festival – Line Up 🎶",
+              "stage": "Line-up"
+            },
+            {
+              "name": "Horário: 2PM – 3AM",
+              "stage": "Line-up"
+            },
+            {
+              "name": "The Bernard Shaw",
+              "stage": "Line-up"
+            },
+            {
+              "name": "FREE – Eatyard (2PM – 10:30PM)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "14:00 – Katy Bnv (Afro House)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "15:30 – Plain4Jane (Underground House)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "16:30 – F.Hollow (Techno)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "17:30 – Campello b2b Niamh (Techno)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "18:30 – Phill Base b2b Nilaaa (Raw)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "20:00 – MhonoType (Techno)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "21:00 – Vinius (FullOn)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "22:00 – End",
+              "stage": "Line-up"
+            },
+            {
+              "name": "PAID – Racket Space (11PM – 3AM)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "23:00 – Romanetto b2b Carol Stefaniak (Techno)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "00:00 – Shivaion (Fullon)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "01:00 – BlazinG (Fullon)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "02:00 – After June (Fullon / Night)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "PAID – Bernard Shaw (11PM – 3AM)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "23:00 – Kalinke (Minimal)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "00:00 – 2WINS (Tech House)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "01:00 – Zintek (Minimal Deep Tech)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "02:00 – The Drifter (Tech House / Minimal)",
+              "stage": "Line-up"
+            },
+            {
+              "name": "FREE ENTRY: 2PM – 10:30PM",
+              "stage": "Line-up"
+            },
+            {
+              "name": "PAID ENTRY: 11PM – 3AM",
+              "stage": "Line-up"
+            }
+          ]
+        }
+      ],
+      "description": "🎃👻 Tropical Groove Pre Halloween 2025 👻🎃\n\nOn October 25th, 2025, The Bernard Shaw becomes the stage for an unforgettable Halloween marathon!\nThree crews unite – MaaD Houz, Tropical Nomads & Psy Groove – bringing you a triple journey of music and art across three dance floors and hours of non-stop celebration.\n\n🕑 Schedule\n✨ Daytime Gathering → 2pm – 10pm → Free Entry\n🌙 Night Ritual → 10pm – 3am\n• 🎟️ 1st Release: €12\n• 🎟️ 2nd Release: €15\n• 🎟️ 3rd Release: €17\n• 🎟️ Door: €20\n\n🔊 Main Styles: Psytrance, Tech House & Techno\n🎨 Bodypainting, handmade jewelry stands & many more surprises await!\n\nPrepare yourself for a psychedelic, dark and powerful night, with immersive music, vibrant art and a community vibe that will keep you dancing till the very end.\n\n👻 Dress code: peace & love vibes only.\n📍 Location: @thebernardshaw – Dublin",
+      "organizer": "After June",
+      "images": {
+        "small": "https://img.goabase.net/images/flyer/small/20251025_tropical-groove-pre-halloween-party_20250922230218.jpg",
+        "medium": "https://img.goabase.net/images/flyer/medium/20251025_tropical-groove-pre-halloween-party_20250922230218.jpg",
+        "large": "https://img.goabase.net/images/flyer/large/20251025_tropical-groove-pre-halloween-party_20250922230218.jpg",
+        "full": "https://img.goabase.net/images/flyer/full/20251025_tropical-groove-pre-halloween-party_20250922230218.jpg",
+        "bannerLocal": "/events/banners/115995.jpg"
+      },
+      "links": {
+        "goabase": "https://www.goabase.net/party/tropical-groove-pre-halloween-party/115995",
+        "instagram": [
+          "https://www.instagram.com/psy.groove/"
+        ]
+      },
+      "source": {
+        "provider": "goabase",
+        "id": 115995,
+        "url": "https://www.goabase.net/party/tropical-groove-pre-halloween-party/115995",
+        "status": "Scheduled",
+        "dateCreated": "2025-09-22T22:52:42+02:00",
+        "dateModified": "2025-09-22T23:02:56+02:00"
+      }
+    },
+    {
+      "id": "115553",
+      "title": "Psychedelic Warmup",
+      "type": "Club",
+      "dateStart": "2025-07-15T18:00:00+02:00",
+      "dateEnd": "2025-07-16T02:00:00+02:00",
+      "timezone": "Europe/Lisbon",
+      "durationHours": 8,
+      "venue": {
+        "id": "lisbon-portugal",
+        "city": "Lisbon",
+        "country": "Portugal",
+        "isoCountry": "PT",
+        "geo": {
+          "lat": 46.4,
+          "lon": -97.7
+        }
+      },
+      "lineupRaw": "18:00 → 19:00 - Tyusha - Progressive Psytrance\r\n19:00 → 20:00 - Sindy - Progressive Psytrance \r\n20:00 → 21:00 - DJ Rsn - Progressive Psytrance\r\n21:00 → 22:00 - Valar LIVE - Progressive Psytrance\r\n22:00 → 23:00 - Atohmic LIVE -  Progressive Psytrance\r\n23:00 → 00:00 - Nhandeva  -  Fullon\r\n00:00 → 1:00 - After June - Fullon / Fullon Night\r\n01:00 → 2:00 - Alien Noise LIVE - Fullon Night",
+      "stages": [
+        {
+          "name": "Line-up",
+          "genres": [],
+          "artists": [
+            {
+              "name": "18:00 → 19:00 - Tyusha - Progressive Psytrance",
+              "stage": "Line-up"
+            },
+            {
+              "name": "19:00 → 20:00 - Sindy - Progressive Psytrance",
+              "stage": "Line-up"
+            },
+            {
+              "name": "20:00 → 21:00 - DJ Rsn - Progressive Psytrance",
+              "stage": "Line-up"
+            },
+            {
+              "name": "21:00 → 22:00 - Valar LIVE - Progressive Psytrance",
+              "stage": "Line-up"
+            },
+            {
+              "name": "22:00 → 23:00 - Atohmic LIVE -  Progressive Psytrance",
+              "stage": "Line-up"
+            },
+            {
+              "name": "23:00 → 00:00 - Nhandeva  -  Fullon",
+              "stage": "Line-up"
+            },
+            {
+              "name": "00:00 → 1:00 - After June - Fullon / Fullon Night",
+              "stage": "Line-up"
+            },
+            {
+              "name": "01:00 → 2:00 - Alien Noise LIVE - Fullon Night",
+              "stage": "Line-up"
+            }
+          ]
+        }
+      ],
+      "description": "📅 SAVE THE DATE\r\n\r\n🇬🇧 English Version\r\n\r\nIn the spirit of psychedelia brought by Boom Festival, we’re gathering for a psychedelic warmup — a chance for everyone in Lisbon to get a taste of the upcoming experience and connect through music and good vibes.\r\n\r\n---\r\n\r\n🇵🇹 Versão em Português\r\n\r\nNo espírito da psicodelia trazido pelo Boom Festival, vamos nos reunir para um warmup psicodélico — uma oportunidade para quem está em Lisboa sentir a vibe do que vem aí e se conectar através da música e de boas energias.\r\n\r\n---\r\n\r\n🌀 Psychedelic Warmup\r\n🗓 15 de julho | 🕕 18:00 – 02:00\r\n📍 R. do Norte 111, 1200-365 Lisboa, Portugal\r\n🎶 Progressive, Fullon & Night Psytrance\r\n -------- FREE ENTRY  --------",
+      "organizer": "After June",
+      "images": {
+        "small": "https://img.goabase.net/images/flyer/small/20250715_psychedelic-warmup_20250707222520.png",
+        "medium": "https://img.goabase.net/images/flyer/medium/20250715_psychedelic-warmup_20250707222520.png",
+        "large": "https://img.goabase.net/images/flyer/large/20250715_psychedelic-warmup_20250707222520.png",
+        "full": "https://img.goabase.net/images/flyer/full/20250715_psychedelic-warmup_20250707222520.png",
+        "bannerLocal": "/events/banners/115553.png"
+      },
+      "links": {
+        "goabase": "https://www.goabase.net/party/psychedelic-warmup/115553",
+        "instagram": [
+          "https://www.instagram.com/tropicalnomads.events/"
+        ]
+      },
+      "source": {
+        "provider": "goabase",
+        "id": 115553,
+        "url": "https://www.goabase.net/party/psychedelic-warmup/115553",
+        "status": "Scheduled",
+        "dateCreated": "2025-07-07T22:11:37+02:00",
+        "dateModified": "2025-07-07T22:25:41+02:00"
+      }
+    }
+  ]
+}

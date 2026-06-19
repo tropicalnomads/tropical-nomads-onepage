@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-19T09:51:06.564Z",
+  "count": 5,
+  "venues": [
+    {
+      "id": "amsterdam-netherlands",
+      "city": "Amsterdam",
+      "country": "Netherlands",
+      "isoCountry": "NL",
+      "geo": {
+        "lat": 52.4,
+        "lon": 4.9
+      }
+    },
+    {
+      "id": "berlin-germany",
+      "city": "Berlin",
+      "country": "Germany",
+      "isoCountry": "DE",
+      "geo": {
+        "lat": 52.5,
+        "lon": 13.4
+      }
+    },
+    {
+      "id": "dublin-ireland",
+      "city": "Dublin",
+      "country": "Ireland",
+      "isoCountry": "IE",
+      "geo": {
+        "lat": 53.3,
+        "lon": -6.3
+      }
+    },
+    {
+      "id": "lisbon-portugal",
+      "city": "Lisbon",
+      "country": "Portugal",
+      "isoCountry": "PT",
+      "geo": {
+        "lat": 46.4,
+        "lon": -97.7
+      }
+    },
+    {
+      "id": "london-united-kingdom",
+      "city": "London",
+      "country": "United Kingdom",
+      "isoCountry": "GB",
+      "geo": {
+        "lat": 51.5,
+        "lon": -0.1
+      }
+    }
+  ]
+}

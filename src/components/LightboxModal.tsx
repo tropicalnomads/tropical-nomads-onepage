@@ -1,29 +1,33 @@
 import { useEffect } from 'react';
-import { X } from 'lucide-react';
-import type { PastEventItem } from '@/lib/data';
+import { ExternalLink, X } from 'lucide-react';
+import type { EventRecord } from '@/lib/data';
 
 interface LightboxModalProps {
-  item: PastEventItem | null;
+  event: EventRecord | null;
   onClose: () => void;
 }
 
-export function LightboxModal({ item, onClose }: LightboxModalProps): JSX.Element | null {
+function formatEventDate(dateStart: string): string {
+  return new Intl.DateTimeFormat('en', { dateStyle: 'full' }).format(new Date(dateStart));
+}
+
+export function LightboxModal({ event, onClose }: LightboxModalProps): JSX.Element | null {
   useEffect(() => {
-    if (!item) {
+    if (!event) {
       return undefined;
     }
 
-    const handleKeyDown = (event: KeyboardEvent): void => {
-      if (event.key === 'Escape') {
+    const handleKeyDown = (keyEvent: KeyboardEvent): void => {
+      if (keyEvent.key === 'Escape') {
         onClose();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [item, onClose]);
+  }, [event, onClose]);
 
-  if (!item) {
+  if (!event) {
     return null;
   }
 
@@ -32,30 +36,74 @@ export function LightboxModal({ item, onClose }: LightboxModalProps): JSX.Elemen
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
       role="dialog"
       aria-modal="true"
-      aria-label={`${item.title} preview`}
+      aria-label={`${event.title} details`}
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-3xl rounded-2xl border border-white/20 bg-ozora-navy p-4"
-        onClick={(event) => event.stopPropagation()}
+        className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-white/20 bg-ozora-navy p-4"
+        onClick={(clickEvent) => clickEvent.stopPropagation()}
       >
         <button
           type="button"
           onClick={onClose}
-          aria-label="Close media preview"
+          aria-label="Close details"
           className="absolute right-3 top-3 rounded-md bg-black/40 p-2 text-ozora-cream transition hover:bg-black/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow"
         >
           <X size={18} aria-hidden="true" />
         </button>
-        <h3 className="pr-10 text-lg font-semibold text-ozora-cream">{item.title}</h3>
-        <p className="mt-1 text-sm text-ozora-cream/70">{item.location}</p>
-        <div className="mt-4 overflow-hidden rounded-xl">
-          {item.type === 'video' ? (
-            <video src={item.mediaUrl} controls autoPlay className="w-full" aria-label={`${item.title} video preview`} />
-          ) : (
-            <img src={item.mediaUrl} alt={`${item.title} highlight`} className="h-auto w-full object-cover" />
-          )}
-        </div>
+
+        <h3 className="pr-10 text-xl font-semibold text-ozora-cream">{event.title}</h3>
+        <p className="mt-1 text-sm text-ozora-cream/70">
+          {formatEventDate(event.dateStart)} - {event.venue.city}, {event.venue.country}
+        </p>
+
+        {event.images.bannerLocal ? (
+          <div className="mt-4 overflow-hidden rounded-xl">
+            <img
+              src={event.images.full ?? event.images.bannerLocal}
+              alt={`${event.title} flyer`}
+              className="h-auto w-full object-contain"
+            />
+          </div>
+        ) : null}
+
+        {event.description ? (
+          <div className="mt-4 whitespace-pre-line text-sm leading-relaxed text-ozora-cream/85">
+            {event.description}
+          </div>
+        ) : null}
+
+        {event.stages.length > 0 ? (
+          <div className="mt-5 space-y-4">
+            {event.stages.map((stage) => (
+              <div key={stage.name}>
+                <h4 className="text-sm font-bold uppercase tracking-wide text-ozora-turquoise">
+                  {stage.name}
+                  {stage.genres.length > 0 ? (
+                    <span className="ml-2 font-medium normal-case text-ozora-cream/60">
+                      {stage.genres.join(', ')}
+                    </span>
+                  ) : null}
+                </h4>
+                <p className="mt-1 text-sm text-ozora-cream/80">
+                  {stage.artists
+                    .map((artist) => `${artist.countryFlag ? `${artist.countryFlag} ` : ''}${artist.name}`)
+                    .join(' \u00b7 ')}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : null}
+
+        <a
+          href={event.links.goabase}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="mt-6 inline-flex items-center gap-2 rounded-lg border border-ozora-turquoise/70 bg-ozora-turquoise/10 px-4 py-2 text-sm font-medium text-ozora-cream transition hover:bg-ozora-turquoise/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+        >
+          View on goabase
+          <ExternalLink size={16} aria-hidden="true" />
+        </a>
       </div>
     </div>
   );

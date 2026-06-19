@@ -1,33 +1,28 @@
 import { useEffect, useMemo, useState } from 'react';
+import { SiteHeader } from '@/components/SiteHeader';
 import { Footer } from '@/components/Footer';
 import { HeroSection } from '@/components/HeroSection';
-import { FeaturedEvents } from '@/components/FeaturedEvents';
 import { UpcomingEventsList } from '@/components/UpcomingEventsList';
 import { PastEventsGallery } from '@/components/PastEventsGallery';
 import { SocialLinks } from '@/components/SocialLinks';
 import { LightboxModal } from '@/components/LightboxModal';
 import { EmptyState } from '@/components/EmptyState';
 import {
-  getFeaturedUpcomingEvents,
-  isUpcomingEvent,
+  getPastEvents,
+  getUpcomingEvents,
   loadEvents,
-  loadPastEvents,
   loadSocialLinks,
-  sortEventsByDateAsc,
-  type EventItem,
-  type PastEventItem,
+  type EventRecord,
   type SocialLink,
 } from '@/lib/data';
 
 interface AppDataState {
-  events: EventItem[];
-  pastEvents: PastEventItem[];
+  events: EventRecord[];
   socialLinks: SocialLink[];
 }
 
 const initialDataState: AppDataState = {
   events: [],
-  pastEvents: [],
   socialLinks: [],
 };
 
@@ -35,7 +30,7 @@ export default function App(): JSX.Element {
   const [data, setData] = useState<AppDataState>(initialDataState);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [lightboxItem, setLightboxItem] = useState<PastEventItem | null>(null);
+  const [lightboxEvent, setLightboxEvent] = useState<EventRecord | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -44,11 +39,11 @@ export default function App(): JSX.Element {
       setIsLoading(true);
       setError(null);
       try {
-        const [events, pastEvents, socialLinks] = await Promise.all([loadEvents(), loadPastEvents(), loadSocialLinks()]);
+        const [events, socialLinks] = await Promise.all([loadEvents(), loadSocialLinks()]);
         if (!active) {
           return;
         }
-        setData({ events, pastEvents, socialLinks });
+        setData({ events, socialLinks });
       } catch {
         if (!active) {
           return;
@@ -73,19 +68,17 @@ export default function App(): JSX.Element {
     };
   }, []);
 
-  const upcomingEvents = useMemo(
-    () => sortEventsByDateAsc(data.events).filter((event) => isUpcomingEvent(event)),
-    [data.events],
-  );
-  const featuredEvents = useMemo(() => getFeaturedUpcomingEvents(data.events, 2), [data.events]);
+  const upcomingEvents = useMemo(() => getUpcomingEvents(data.events), [data.events]);
+  const pastEvents = useMemo(() => getPastEvents(data.events), [data.events]);
 
-  const handleExploreEvents = (): void => {
-    document.getElementById('upcoming-events')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const handleScrollTo = (id: string): void => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
     <div className="min-h-screen text-ozora-cream">
-      <HeroSection onExploreEvents={handleExploreEvents} />
+      <SiteHeader onNavigate={handleScrollTo} />
+      <HeroSection onExploreEvents={() => handleScrollTo('upcoming-events')} />
 
       {isLoading ? (
         <main className="safe-x mx-auto max-w-5xl px-4 pb-16 md:px-8">
@@ -97,15 +90,14 @@ export default function App(): JSX.Element {
         </main>
       ) : (
         <main className="space-y-4 pb-12">
-          <FeaturedEvents events={featuredEvents} />
           <UpcomingEventsList events={upcomingEvents} />
-          <PastEventsGallery items={data.pastEvents} onOpenPreview={setLightboxItem} />
+          <PastEventsGallery events={pastEvents} onOpenPreview={setLightboxEvent} />
           <SocialLinks links={data.socialLinks} />
         </main>
       )}
 
-      <Footer />
-      <LightboxModal item={lightboxItem} onClose={() => setLightboxItem(null)} />
+      <Footer onNavigate={handleScrollTo} />
+      <LightboxModal event={lightboxEvent} onClose={() => setLightboxEvent(null)} />
     </div>
   );
 }

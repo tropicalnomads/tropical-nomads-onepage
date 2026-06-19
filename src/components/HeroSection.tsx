@@ -4,7 +4,7 @@ interface HeroSectionProps {
 
 export function HeroSection({ onExploreEvents }: HeroSectionProps): JSX.Element {
   return (
-    <section className="safe-top safe-x px-4 pb-16 pt-14 md:px-8">
+    <section id="home" className="safe-x px-4 pb-16 pt-14 md:px-8">
       <div className="mx-auto max-w-5xl rounded-3xl border border-white/10 bg-black/30 p-8 backdrop-blur-sm md:p-12">
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-ozora-turquoise">Tropical Nomads</p>
         <h1 className="mt-4 text-4xl font-black tracking-tight text-ozora-cream md:text-6xl">

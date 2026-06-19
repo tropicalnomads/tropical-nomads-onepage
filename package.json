@@ -8,11 +8,12 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "start": "vite preview",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "events": "node scripts/fetch-goabase-events.mjs"
   },
   "dependencies": {
     "@fontsource-variable/outfit": "^5.2.8",
-    "lucide-react": "^1.21.0",
+    "lucide-react": "^0.453.0",
     "react": "18",
     "react-dom": "^18.3.1"
   },
