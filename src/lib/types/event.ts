@@ -106,6 +106,7 @@ export interface EventLinks {
   eventbrite?: string;
   tickets?: string;
   instagram?: string[];
+  instagramPost?: string;
 }
 
 export interface EventSource {
