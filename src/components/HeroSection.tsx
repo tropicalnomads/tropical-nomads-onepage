@@ -22,12 +22,8 @@ export function HeroSection({ onExploreEvents }: HeroSectionProps): JSX.Element 
           />
 
           <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-ozora-turquoise md:text-sm">
-            Brazilian psytrance crew
+          Psytrance with a Brazilian touch
           </p>
-
-          <h1 className="mx-auto mt-3 max-w-2xl text-3xl font-black tracking-tight text-ozora-cream md:text-5xl">
-            Psytrance with a Brazilian touch
-          </h1>
 
           <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-ozora-cream/85 md:text-lg">
             Tropical Nomads is a Brazilian crew based in Europe, carrying the warmth and energy of
