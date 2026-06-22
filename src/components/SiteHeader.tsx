@@ -76,6 +76,14 @@ export function SiteHeader({ onNavigate }: SiteHeaderProps): JSX.Element {
               {t[item.labelKey] as string}
             </button>
           ))}
+          <a
+            href="https://bookings.tropical-nomads.com"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="shrink-0 rounded-full px-3 py-1.5 text-sm font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+          >
+            {t.navBookings}
+          </a>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -99,6 +107,15 @@ export function SiteHeader({ onNavigate }: SiteHeaderProps): JSX.Element {
               {t[item.labelKey] as string}
             </button>
           ))}
+          <a
+            href="https://bookings.tropical-nomads.com"
+            target="_blank"
+            rel="noreferrer noopener"
+            onClick={() => setMenuOpen(false)}
+            className="rounded-lg px-3 py-2.5 text-left text-base font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+          >
+            {t.navBookings}
+          </a>
           <button
             type="button"
             onClick={() => handleNavigate('upcoming-events')}

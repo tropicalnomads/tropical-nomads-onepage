@@ -10,6 +10,7 @@ export interface TranslationDict {
   navGallery: string;
   navPartners: string;
   navSocials: string;
+  navBookings: string;
   tickets: string;
   homeAria: string;
   openMenuAria: string;
@@ -82,6 +83,7 @@ export const translations: Record<Language, TranslationDict> = {
     navGallery: 'Gallery',
     navPartners: 'Partners',
     navSocials: 'Socials',
+    navBookings: 'Bookings',
     tickets: 'Tickets',
     homeAria: 'Tropical Nomads home',
     openMenuAria: 'Open navigation menu',
@@ -145,6 +147,7 @@ export const translations: Record<Language, TranslationDict> = {
     navGallery: 'Galeria',
     navPartners: 'Parceiros',
     navSocials: 'Redes',
+    navBookings: 'Bookings',
     tickets: 'Ingressos',
     homeAria: 'Início da Tropical Nomads',
     openMenuAria: 'Abrir menu de navegação',
