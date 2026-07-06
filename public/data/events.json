@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-19T11:34:12.271Z",
+  "generatedAt": "2026-07-06T15:28:08.346Z",
   "source": {
     "provider": "goabase",
     "endpoint": "https://www.goabase.net/api/party/json"
   },
-  "count": 10,
+  "count": 11,
   "events": [
     {
       "id": "117712",
@@ -351,14 +351,16 @@
       }
     },
     {
-      "id": "tba-dublin-aug-2026",
-      "title": "Tropical Groove: TBA",
+      "id": "117914",
+      "title": "Tropical Groove: Bocara & Sabedoria",
       "partnerIds": [
         "psy-groove"
       ],
       "type": "Club",
-      "dateStart": "2026-08-14T20:00:00+01:00",
+      "dateStart": "2026-08-14T19:00:00+02:00",
+      "dateEnd": "2026-08-15T02:30:00+02:00",
       "timezone": "Europe/Dublin",
+      "durationHours": 8,
       "venue": {
         "id": "the-sound-house-dublin",
         "name": "The Sound House",
@@ -372,21 +374,117 @@
         },
         "mapUrl": "https://maps.app.goo.gl/EtfCwAWYFE9CAmhNA"
       },
-      "stages": [],
-      "description": "Lineup and tickets to be announced. Stay tuned!",
-      "images": {},
+      "lineupRaw": "SOUNDHOUSE STAGE\nBocara 🇧🇷 (Bom Shanka / Mundo de Oz)\nSabedoria 🇧🇷 (Sonitum Records/Alquimia Music)\nAfter June 🇧🇷 (Tropical Nomads/ Psy Groove)\nBlazin'G 🇧🇷 (Tropical Nomads/ Psy Groove)\nShivaion 🇧🇷 (Tropical Nomads/ Psy Groove)\n\nTHE TERRACE STAGE\nAndroid Prog 🇧🇷\nAraujah 🇧🇷\nSaight 🇧🇷\nUnderbeat 🇧🇷\nVinius 🇧🇷\nÖcto 🇧🇷",
+      "stages": [
+        {
+          "name": "SOUNDHOUSE STAGE",
+          "genres": [],
+          "artists": [
+            {
+              "name": "Bocara",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "SOUNDHOUSE STAGE"
+            },
+            {
+              "name": "Sabedoria",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "SOUNDHOUSE STAGE"
+            },
+            {
+              "name": "After June",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "SOUNDHOUSE STAGE"
+            },
+            {
+              "name": "Blazin'G",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "SOUNDHOUSE STAGE"
+            },
+            {
+              "name": "Shivaion",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "SOUNDHOUSE STAGE"
+            }
+          ]
+        },
+        {
+          "name": "THE TERRACE STAGE",
+          "genres": [],
+          "artists": [
+            {
+              "name": "Android Prog",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "THE TERRACE STAGE"
+            },
+            {
+              "name": "Araujah",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "THE TERRACE STAGE"
+            },
+            {
+              "name": "Saight",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "THE TERRACE STAGE"
+            },
+            {
+              "name": "Underbeat",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "THE TERRACE STAGE"
+            },
+            {
+              "name": "Vinius",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "THE TERRACE STAGE"
+            },
+            {
+              "name": "Öcto",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "THE TERRACE STAGE"
+            }
+          ]
+        }
+      ],
+      "cardArtists": [
+        "Bocara",
+        "Sabedoria",
+        "Shivaion",
+        "Blazin'G"
+      ],
+      "description": "Join Tropical Groove on August 14 at The Soundhouse, Dublin! 2 stages of Psytrance, psychedelic energy, and good vibes!\n\nGet ready to elevate your frequencies! Tropical Groove returns to The Sound House for a powerful psychedelic gathering across 2 floors of music, energy, and connection.\n\nWe are transforming the venue into a vibrant, neon-drenched playground filled with psytrance vibes, UV decoration, and an immersive dancefloor journey from start to finish. Expect a heavy Brazilian lineup bringing progressive, fullon, night and psychedelic energy throughout the night. 👽🌴✨\n\n🗓️ August 14th — 19:00\n📍 The Sound House\n👽 2 Floors\n⏱️ Over 7h of Party!\n⚠️ LIMITED CAPACITY\n\nCome early, bring your energy, and get ready for a proper Tropical Groove experience.",
+      "organizer": "After June",
+      "images": {
+        "small": "https://img.goabase.net/images/flyer/small/20260814_tropical-groove-presents-bocara-sabedoria_20260706152319.png",
+        "medium": "https://img.goabase.net/images/flyer/medium/20260814_tropical-groove-presents-bocara-sabedoria_20260706152319.png",
+        "large": "https://img.goabase.net/images/flyer/large/20260814_tropical-groove-presents-bocara-sabedoria_20260706152319.png",
+        "full": "https://img.goabase.net/images/flyer/full/20260814_tropical-groove-presents-bocara-sabedoria_20260706152319.png",
+        "bannerLocal": "/events/banners/117914.png"
+      },
       "links": {
-        "goabase": "",
+        "goabase": "https://www.goabase.net/party/tropical-groove-presents-bocara-sabedoria/117914",
+        "eventbrite": "https://www.eventbrite.ie/e/tropical-groove-presents-bocara-sabedoria-tickets-1993324939553",
         "instagram": [
           "https://www.instagram.com/tropicalnomads.events/",
           "https://www.instagram.com/psy.groove/"
         ]
       },
       "source": {
-        "provider": "manual",
-        "id": 0,
-        "url": "",
-        "status": "Tentative"
+        "provider": "goabase",
+        "id": 117914,
+        "url": "https://www.goabase.net/party/tropical-groove-presents-bocara-sabedoria/117914",
+        "status": "Scheduled",
+        "dateCreated": "2026-07-06T15:19:54+02:00",
+        "dateModified": "2026-07-06T15:23:42+02:00"
       }
     },
     {

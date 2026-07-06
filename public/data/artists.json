@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-19T12:36:59.148Z",
-  "count": 72,
+  "generatedAt": "2026-07-06T15:29:41.266Z",
+  "count": 76,
   "artists": [
     {
       "name": "+Ripley",
@@ -59,7 +59,14 @@
       ]
     },
     {
+      "name": "Android Prog",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷"
+    },
+    {
       "name": "Araujah",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
       "genres": [
         "Psytrance"
       ]
@@ -94,12 +101,17 @@
       ]
     },
     {
+      "name": "Bocara",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷"
+    },
+    {
       "name": "Brain Damage",
       "isoCountry": "BR",
       "countryFlag": "🇧🇷"
     },
     {
-      "name": "BURN IN NOISE",
+      "name": "Burn in Noise",
       "genres": [
         "Full-On"
       ]
@@ -149,12 +161,7 @@
       "countryFlag": "🇧🇷"
     },
     {
-      "name": "DIGITALK",
-      "isoCountry": "BR",
-      "countryFlag": "🇧🇷"
-    },
-    {
-      "name": "DJ PAULA",
+      "name": "Digitalk",
       "isoCountry": "BR",
       "countryFlag": "🇧🇷"
     },
@@ -240,7 +247,7 @@
       ]
     },
     {
-      "name": "KARELL",
+      "name": "Karell",
       "isoCountry": "BR",
       "countryFlag": "🇧🇷"
     },
@@ -304,6 +311,11 @@
       "countryFlag": "🇵🇱"
     },
     {
+      "name": "Paula",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷"
+    },
+    {
       "name": "Phill Base",
       "genres": [
         "Raw"
@@ -332,6 +344,16 @@
         "Peak Time",
         "Techno"
       ]
+    },
+    {
+      "name": "Sabedoria",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷"
+    },
+    {
+      "name": "Saight",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷"
     },
     {
       "name": "Shivaion",
@@ -395,6 +417,8 @@
     },
     {
       "name": "Underbeat",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
       "genres": [
         "Psytechno"
       ]
