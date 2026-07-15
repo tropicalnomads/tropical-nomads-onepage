@@ -432,7 +432,7 @@
     },
     {
       "id": "117914",
-      "title": "Tropical Groove: Bocara & Sabedoria",
+      "title": "Tropical Groove: Becker, Bocara & Sabedoria",
       "partnerIds": [
         "psy-groove"
       ],
@@ -536,18 +536,18 @@
         }
       ],
       "cardArtists": [
+        "Becker",
         "Bocara",
         "Sabedoria",
-        "Shivaion",
-        "Blazin'G"
+        "Alyverse"
       ],
       "description": "Join Tropical Groove on August 14 at The Soundhouse, Dublin! 2 stages of Psytrance, psychedelic energy, and good vibes!\n\nGet ready to elevate your frequencies! Tropical Groove returns to The Sound House for a powerful psychedelic gathering across 2 floors of music, energy, and connection.\n\nWe are transforming the venue into a vibrant, neon-drenched playground filled with psytrance vibes, UV decoration, and an immersive dancefloor journey from start to finish. Expect a heavy Brazilian lineup bringing progressive, fullon, night and psychedelic energy throughout the night. 👽🌴✨\n\n🗓️ August 14th — 19:00\n📍 The Sound House\n👽 2 Floors\n⏱️ Over 7h of Party!\n⚠️ LIMITED CAPACITY\n\nCome early, bring your energy, and get ready for a proper Tropical Groove experience.",
       "organizer": "After June",
       "images": {
-        "small": "https://img.goabase.net/images/flyer/small/20260814_tropical-groove-presents-bocara-sabedoria_20260706152319.png",
-        "medium": "https://img.goabase.net/images/flyer/medium/20260814_tropical-groove-presents-bocara-sabedoria_20260706152319.png",
-        "large": "https://img.goabase.net/images/flyer/large/20260814_tropical-groove-presents-bocara-sabedoria_20260706152319.png",
-        "full": "https://img.goabase.net/images/flyer/full/20260814_tropical-groove-presents-bocara-sabedoria_20260706152319.png",
+        "small": "/events/banners/117914.png",
+        "medium": "/events/banners/117914.png",
+        "large": "/events/banners/117914.png",
+        "full": "/events/banners/117914.png",
         "bannerLocal": "/events/banners/117914.png"
       },
       "links": {
