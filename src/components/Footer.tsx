@@ -30,6 +30,14 @@ export function Footer({ onNavigate }: FooterProps): JSX.Element {
         ))}
       </nav>
       <p>{t.footerTagline}</p>
+      <p className="mt-3">
+        <a
+          href="/privacy/"
+          className="font-semibold text-ozora-turquoise transition hover:text-ozora-yellow"
+        >
+          Privacy Policy
+        </a>
+      </p>
       <p className="mt-1 text-ozora-cream/50">
         &copy; {new Date().getFullYear()} Tropical Nomads
       </p>
