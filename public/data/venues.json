@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-07-06T15:29:41.266Z",
-  "count": 6,
+  "generatedAt": "2026-08-19T20:47:07.144Z",
+  "count": 8,
   "venues": [
     {
       "id": "toekomstmuziek-amsterdam",
@@ -16,6 +16,19 @@
       "mapUrl": "https://maps.app.goo.gl/Zp3PKsaYoqTaRQpH7"
     },
     {
+      "id": "it-club-athens",
+      "name": "IT Club",
+      "city": "Athens",
+      "country": "Greece",
+      "isoCountry": "GR",
+      "address": "Solomou 30 & Mpotasi 9, 106 82 Athens",
+      "geo": {
+        "lat": 38,
+        "lon": 23.7
+      },
+      "mapUrl": "https://maps.google.com/?q=IT+Club+Athens+Solomou+30"
+    },
+    {
       "id": "m-bia-berlin",
       "name": "M-Bia",
       "city": "Berlin",
@@ -26,6 +39,19 @@
         "lon": 13.4
       },
       "mapUrl": "https://maps.app.goo.gl/cBdLaFkzqKo3vMS26"
+    },
+    {
+      "id": "the-racket-space-dublin",
+      "name": "The Racket Space",
+      "city": "Dublin",
+      "country": "Ireland",
+      "isoCountry": "IE",
+      "address": "Cross Guns Bridge, Dublin 9, D09 XW44",
+      "geo": {
+        "lat": 53.3,
+        "lon": -6.3
+      },
+      "mapUrl": "https://maps.google.com/?q=The+Racket+Space,+Cross+Guns+Bridge,+Dublin"
     },
     {
       "id": "the-bernard-shaw-dublin",

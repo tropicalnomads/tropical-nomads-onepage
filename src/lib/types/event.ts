@@ -49,13 +49,20 @@ export interface LabelsFile {
   labels: AffiliationOrg[];
 }
 
+export interface PartnerInstagram {
+  handle: string;
+  url: string;
+}
+
 export interface Partner {
   id: string;
   name: string;
   city: string;
   handle: string;
   instagram: string;
+  instagrams?: PartnerInstagram[];
   logo?: string;
+  logoFit?: 'cover' | 'contain';
 }
 
 export interface PartnersFile {

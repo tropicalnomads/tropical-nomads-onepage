@@ -48,5 +48,23 @@
     "isoCountry": "PT",
     "address": "Rua do Norte 111, 1200-365 Lisboa",
     "mapUrl": "https://maps.app.goo.gl/KoCdexDUkmuoHbep7"
+  },
+  {
+    "id": "the-racket-space-dublin",
+    "name": "The Racket Space",
+    "city": "Dublin",
+    "country": "Ireland",
+    "isoCountry": "IE",
+    "address": "Cross Guns Bridge, Dublin 9, D09 XW44",
+    "mapUrl": "https://maps.google.com/?q=The+Racket+Space,+Cross+Guns+Bridge,+Dublin"
+  },
+  {
+    "id": "it-club-athens",
+    "name": "IT Club",
+    "city": "Athens",
+    "country": "Greece",
+    "isoCountry": "GR",
+    "address": "Solomou 30 & Mpotasi 9, 106 82 Athens",
+    "mapUrl": "https://maps.google.com/?q=IT+Club+Athens+Solomou+30"
   }
 ]

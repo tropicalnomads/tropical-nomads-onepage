@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-07-06T15:29:41.266Z",
-  "count": 76,
+  "generatedAt": "2026-08-19T20:47:07.144Z",
+  "count": 89,
   "artists": [
     {
       "name": "+Ripley",
@@ -19,6 +19,11 @@
       "name": "3rd Vision",
       "isoCountry": "BR",
       "countryFlag": "🇧🇷"
+    },
+    {
+      "name": "Abiotiq",
+      "isoCountry": "FR",
+      "countryFlag": "🇫🇷"
     },
     {
       "name": "Adrenaline Rush",
@@ -64,6 +69,15 @@
       "countryFlag": "🇧🇷"
     },
     {
+      "name": "ARAM",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Forest",
+        "Night"
+      ]
+    },
+    {
       "name": "Araujah",
       "isoCountry": "BR",
       "countryFlag": "🇧🇷",
@@ -88,12 +102,17 @@
       "countryFlag": "🇧🇷"
     },
     {
+      "name": "Azura",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷"
+    },
+    {
       "name": "Back to Mars",
       "isoCountry": "BR",
       "countryFlag": "🇧🇷"
     },
     {
-      "name": "Blazin'g",
+      "name": "Blazin'G",
       "isoCountry": "BR",
       "countryFlag": "🇧🇷",
       "genres": [
@@ -161,9 +180,19 @@
       "countryFlag": "🇧🇷"
     },
     {
+      "name": "Deutsch",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷"
+    },
+    {
       "name": "Digitalk",
       "isoCountry": "BR",
       "countryFlag": "🇧🇷"
+    },
+    {
+      "name": "Dirty Saffi",
+      "isoCountry": "GB",
+      "countryFlag": "🇬🇧"
     },
     {
       "name": "DJ Rsn",
@@ -199,6 +228,14 @@
       "name": "Frostbite",
       "isoCountry": "PT",
       "countryFlag": "🇵🇹"
+    },
+    {
+      "name": "Goide Moran",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Full-On"
+      ]
     },
     {
       "name": "GunD",
@@ -241,6 +278,11 @@
       "countryFlag": "🇧🇷"
     },
     {
+      "name": "Jungle Rumble",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷"
+    },
+    {
       "name": "Kalinke",
       "genres": [
         "Minimal"
@@ -267,6 +309,14 @@
       "name": "MaadHouz",
       "genres": [
         "Minimal"
+      ]
+    },
+    {
+      "name": "Mari Ventura",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Progressive"
       ]
     },
     {
@@ -301,9 +351,22 @@
       "countryFlag": "🇵🇱"
     },
     {
+      "name": "Octo",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷"
+    },
+    {
       "name": "Öcto",
       "isoCountry": "BR",
       "countryFlag": "🇧🇷"
+    },
+    {
+      "name": "OrganicJoy",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Full-On"
+      ]
     },
     {
       "name": "Panchikarana",
@@ -339,6 +402,11 @@
       "name": "PSYKADELICA"
     },
     {
+      "name": "Psymmetrix",
+      "isoCountry": "GB",
+      "countryFlag": "🇬🇧"
+    },
+    {
       "name": "Romanetto",
       "genres": [
         "Peak Time",
@@ -371,6 +439,14 @@
       ]
     },
     {
+      "name": "Shivapo",
+      "isoCountry": "IN",
+      "countryFlag": "🇮🇳",
+      "genres": [
+        "Full-On"
+      ]
+    },
+    {
       "name": "Sindy",
       "genres": [
         "Progressive Psytrance"
@@ -389,6 +465,15 @@
       ]
     },
     {
+      "name": "Technology",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Full-On",
+        "Night"
+      ]
+    },
+    {
       "name": "Teejota",
       "genres": [
         "Techno"
@@ -396,6 +481,8 @@
     },
     {
       "name": "Texo",
+      "isoCountry": "DE",
+      "countryFlag": "🇩🇪",
       "genres": [
         "Full-On"
       ]

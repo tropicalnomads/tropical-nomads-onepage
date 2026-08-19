@@ -16,7 +16,7 @@ interface PartnerAvatarProps {
 }
 
 const AVATAR_BASE =
-  'rounded-full border-2 border-white/25 shadow-lg shadow-black/50 ring-1 ring-inset ring-white/10 transition duration-200 group-hover:-translate-y-0.5 group-hover:scale-105 group-hover:border-ozora-pink/70 group-hover:shadow-xl group-hover:shadow-ozora-pink/30';
+  'overflow-hidden rounded-full shadow-lg shadow-black/50 transition duration-200 group-hover:-translate-y-0.5 group-hover:scale-105 group-hover:shadow-xl group-hover:shadow-ozora-pink/20';
 
 export function PartnerAvatar({
   partner,
@@ -24,13 +24,22 @@ export function PartnerAvatar({
   textClassName = 'text-2xl',
 }: PartnerAvatarProps): JSX.Element {
   if (partner.logo) {
+    const fitContain = partner.logoFit === 'contain';
     return (
-      <img
-        src={partner.logo}
-        alt={`${partner.name} logo`}
-        loading="lazy"
-        className={`${className} ${AVATAR_BASE} bg-ozora-ink object-cover`}
-      />
+      <span
+        className={`${className} ${AVATAR_BASE} block ${
+          fitContain
+            ? 'border border-amber-300/40 bg-[radial-gradient(circle_at_50%_38%,#17382b_0%,#07120e_58%,#020605_100%)] ring-2 ring-emerald-300/10'
+            : 'border-2 border-white/25 bg-ozora-ink ring-1 ring-inset ring-white/10'
+        }`}
+      >
+        <img
+          src={partner.logo}
+          alt={`${partner.name} logo`}
+          loading="lazy"
+          className={fitContain ? 'h-full w-full object-contain p-2' : 'h-full w-full object-cover'}
+        />
+      </span>
     );
   }
   return (

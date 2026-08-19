@@ -1,4 +1,10 @@
-import type { EventRecord, EventsFile, Partner, PartnersFile } from '@/lib/types/event';
+import type {
+  EventRecord,
+  EventsFile,
+  Partner,
+  PartnerInstagram,
+  PartnersFile,
+} from '@/lib/types/event';
 
 export type {
   EventRecord,
@@ -8,6 +14,7 @@ export type {
   EventMedia,
   MediaLink,
   Partner,
+  PartnerInstagram,
 } from '@/lib/types/event';
 
 export interface SocialLink {
@@ -92,4 +99,11 @@ export async function loadSocialLinks(): Promise<SocialLink[]> {
 export async function loadPartners(): Promise<Partner[]> {
   const file = await fetchJson<PartnersFile>('/data/partners.json');
   return file.partners;
+}
+
+export function getPartnerInstagrams(partner: Partner): PartnerInstagram[] {
+  if (partner.instagrams && partner.instagrams.length > 0) {
+    return partner.instagrams;
+  }
+  return [{ handle: partner.handle, url: partner.instagram }];
 }

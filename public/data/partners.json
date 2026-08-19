@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-07-06T15:29:41.266Z",
-  "count": 3,
+  "generatedAt": "2026-08-19T20:47:07.144Z",
+  "count": 4,
   "partners": [
     {
       "id": "psy-groove",
@@ -26,6 +26,25 @@
       "handle": "@psychedelicgratefulpunks",
       "instagram": "https://www.instagram.com/psychedelicgratefulpunks/",
       "logo": "/partners/pgp.png"
+    },
+    {
+      "id": "forest-shankara",
+      "name": "Forest Shankara",
+      "city": "Florianópolis",
+      "handle": "@forest.untd",
+      "instagram": "https://www.instagram.com/forest.untd/",
+      "logo": "/partners/forest-shankara.png",
+      "logoFit": "contain",
+      "instagrams": [
+        {
+          "handle": "@forest.untd",
+          "url": "https://www.instagram.com/forest.untd/"
+        },
+        {
+          "handle": "@shankarafestivalbr",
+          "url": "https://www.instagram.com/shankarafestivalbr/"
+        }
+      ]
     }
   ]
 }

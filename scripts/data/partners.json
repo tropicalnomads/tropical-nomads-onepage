@@ -25,5 +25,25 @@
     "instagram": "https://www.instagram.com/psychedelicgratefulpunks/",
     "igUsername": "psychedelicgratefulpunks",
     "logo": "/partners/pgp.png"
+  },
+  {
+    "id": "forest-shankara",
+    "name": "Forest Shankara",
+    "city": "Florianópolis",
+    "handle": "@forest.untd",
+    "instagram": "https://www.instagram.com/forest.untd/",
+    "igUsername": "forest.untd",
+    "logo": "/partners/forest-shankara.png",
+    "logoFit": "contain",
+    "instagrams": [
+      {
+        "handle": "@forest.untd",
+        "url": "https://www.instagram.com/forest.untd/"
+      },
+      {
+        "handle": "@shankarafestivalbr",
+        "url": "https://www.instagram.com/shankarafestivalbr/"
+      }
+    ]
   }
 ]

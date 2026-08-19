@@ -58,6 +58,14 @@ export interface TranslationDict {
   pastEventsSubtitle: string;
   noPastTitle: string;
   noPastBody: string;
+  searchPastEvents: string;
+  searchPastEventsPlaceholder: string;
+  clearSearch: string;
+  pastEventsResults: (shown: number, total: number) => string;
+  showMorePastEvents: (count: number) => string;
+  showLessPastEvents: string;
+  noPastSearchTitle: string;
+  noPastSearchBody: string;
   viewDetailsAria: (title: string) => string;
   openEventInstagramAria: (title: string) => string;
 
@@ -126,6 +134,17 @@ export const translations: Record<Language, TranslationDict> = {
     pastEventsSubtitle: 'A look back at our previous gatherings.',
     noPastTitle: 'No past events yet',
     noPastBody: 'Our history will appear here.',
+    searchPastEvents: 'Search past events',
+    searchPastEventsPlaceholder: 'Search by event, city, or artist',
+    clearSearch: 'Clear search',
+    pastEventsResults: (shown, total) =>
+      shown === total
+        ? `${total} event${total === 1 ? '' : 's'}`
+        : `Showing ${shown} of ${total} events`,
+    showMorePastEvents: (count) => `Show ${count} more`,
+    showLessPastEvents: 'Show less',
+    noPastSearchTitle: 'No matching events',
+    noPastSearchBody: 'Try another artist, city, or event name.',
     viewDetailsAria: (title) => `View details for ${title}`,
     openEventInstagramAria: (title) => `Open ${title} on Instagram`,
 
@@ -190,6 +209,17 @@ export const translations: Record<Language, TranslationDict> = {
     pastEventsSubtitle: 'Uma retrospectiva dos nossos encontros anteriores.',
     noPastTitle: 'Ainda sem eventos passados',
     noPastBody: 'Nosso histórico aparecerá aqui.',
+    searchPastEvents: 'Buscar eventos passados',
+    searchPastEventsPlaceholder: 'Busque por evento, cidade ou artista',
+    clearSearch: 'Limpar busca',
+    pastEventsResults: (shown, total) =>
+      shown === total
+        ? `${total} evento${total === 1 ? '' : 's'}`
+        : `Mostrando ${shown} de ${total} eventos`,
+    showMorePastEvents: (count) => `Mostrar mais ${count}`,
+    showLessPastEvents: 'Mostrar menos',
+    noPastSearchTitle: 'Nenhum evento encontrado',
+    noPastSearchBody: 'Tente outro artista, cidade ou nome de evento.',
     viewDetailsAria: (title) => `Ver detalhes de ${title}`,
     openEventInstagramAria: (title) => `Abrir ${title} no Instagram`,
 

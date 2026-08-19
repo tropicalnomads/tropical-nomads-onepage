@@ -29,12 +29,36 @@ const curatedDir = resolve(projectRoot, 'scripts/data');
 // Authoritative event set (from the goabase member "added events" page),
 // ordered by curation. Eventbrite overrides where ticket sales exist.
 const EVENT_SOURCES = [
+  {
+    id: 118148,
+    partnerIds: ['psy-groove'],
+    eventbrite: 'https://technology-aram.eventbrite.ie/',
+    instagram: [
+      'https://www.instagram.com/tropicalnomads.events/',
+      'https://www.instagram.com/psy.groove/',
+    ],
+  },
+  {
+    id: 118006,
+    partnerIds: ['forest-shankara'],
+    eventbrite: 'https://tropical-nomads-berlin.eventbrite.ie/',
+    instagram: [
+      'https://www.instagram.com/tropicalnomads.events/',
+      'https://www.instagram.com/forest.untd/',
+    ],
+  },
+  {
+    id: 118153,
+    eventbrite: 'https://tropical-nomads-athens-showcase.eventbrite.ie/',
+    instagram: ['https://www.instagram.com/tropicalnomads.events/'],
+  },
   { id: 117712, eventbrite: 'https://avan7amsterdam.eventbrite.ie' },
   { id: 117713, eventbrite: 'https://avan7dublin.eventbrite.ie' },
   {
     id: 117914,
     eventbrite:
       'https://www.eventbrite.ie/e/tropical-groove-presents-bocara-sabedoria-tickets-1993324939553',
+    instagramPost: 'https://www.instagram.com/p/DcO8aCRNM8O/',
   },
   {
     id: 116643,
@@ -58,7 +82,8 @@ const KNOWN_FLAGS = {
   GB: '\u{1F1EC}\u{1F1E7}',
   UK: '\u{1F1EC}\u{1F1E7}',
   PT: '\u{1F1F5}\u{1F1F9}',
-  ES: '\u{1F1EA}\u{1F1F8}',
+  IN: '\u{1F1EE}\u{1F1F3}',
+  GR: '\u{1F1EC}\u{1F1F7}',
 };
 
 function flagToIso(flag) {
@@ -165,6 +190,7 @@ function canonicalizeGenre(token) {
 
 const ARTIST_STOPWORDS = new Set([
   'end',
+  'fim',
   'venue',
   'terrace',
   'soundhouse',
@@ -459,7 +485,11 @@ async function buildPartners() {
       city: partner.city,
       handle: partner.handle,
       instagram: partner.instagram,
+      ...(Array.isArray(partner.instagrams) && partner.instagrams.length > 0
+        ? { instagrams: partner.instagrams }
+        : {}),
       ...(logo ? { logo } : {}),
+      ...(partner.logoFit ? { logoFit: partner.logoFit } : {}),
     });
     console.log(`Partner ${partner.name}${logo ? ` (logo${partner.logo ? ', curated' : ''})` : ' (no logo)'}`);
   }
@@ -485,7 +515,9 @@ function pickMedia(mediaOverride) {
 }
 
 function normalizeEvent(party, override, venueOverride, lineupOverride, mediaOverride) {
-  const stages = parseLineup(party.textLineUp);
+  const hasLineupRaw = Boolean(lineupOverride) && Object.prototype.hasOwnProperty.call(lineupOverride, 'lineupRaw');
+  const textLineUp = hasLineupRaw ? lineupOverride.lineupRaw : party.textLineUp;
+  const stages = parseLineup(textLineUp);
 
   // Curated lineup corrections: rename specific artists across all stages.
   const renameMap = lineupOverride?.rename;
@@ -520,9 +552,15 @@ function normalizeEvent(party, override, venueOverride, lineupOverride, mediaOve
         ...geo,
       };
 
+  const description =
+    lineupOverride && Object.prototype.hasOwnProperty.call(lineupOverride, 'description')
+      ? lineupOverride.description
+      : party.textMore;
+
   return {
     id: String(party.id),
-    title: party.nameParty,
+    title: lineupOverride?.title ?? party.nameParty,
+    ...(override?.partnerIds?.length ? { partnerIds: override.partnerIds } : {}),
     type: party.nameType,
     dateStart: party.dateStart,
     ...(party.dateEnd ? { dateEnd: party.dateEnd } : {}),
@@ -531,11 +569,11 @@ function normalizeEvent(party, override, venueOverride, lineupOverride, mediaOve
       ? { durationHours: computeDurationHours(party.dateStart, party.dateEnd) }
       : {}),
     venue,
-    ...(party.textLineUp ? { lineupRaw: party.textLineUp } : {}),
+    ...(textLineUp ? { lineupRaw: textLineUp } : {}),
     stages,
     ...(lineupOverride?.cardArtists?.length ? { cardArtists: lineupOverride.cardArtists } : {}),
     ...(pickMedia(mediaOverride) ? { media: pickMedia(mediaOverride) } : {}),
-    ...(party.textMore ? { description: party.textMore } : {}),
+    ...(description ? { description } : {}),
     ...(party.nameOrganizer ? { organizer: party.nameOrganizer } : {}),
     images: {
       ...(party.urlImageSmall ? { small: party.urlImageSmall } : {}),
@@ -547,9 +585,12 @@ function normalizeEvent(party, override, venueOverride, lineupOverride, mediaOve
       goabase: party.urlParty || party.urlPartyHtml,
       ...(override?.eventbrite ? { eventbrite: override.eventbrite } : {}),
       ...(override?.tickets ? { tickets: override.tickets } : {}),
-      ...(parseInstagramLinks(party.urlOrganizer).length
-        ? { instagram: parseInstagramLinks(party.urlOrganizer) }
-        : {}),
+      ...(override?.instagram?.length
+        ? { instagram: override.instagram }
+        : parseInstagramLinks(party.urlOrganizer).length
+          ? { instagram: parseInstagramLinks(party.urlOrganizer) }
+          : {}),
+      ...(override?.instagramPost ? { instagramPost: override.instagramPost } : {}),
     },
     source: {
       provider: 'goabase',
@@ -667,7 +708,7 @@ function buildVenueCatalog(events) {
 // Only runs when explicitly requested via --refresh / GOABASE_REFRESH=1, because
 // public/data/events.json is now the curated source of truth and must not be
 // clobbered (titles, lineups, media etc. are edited by hand).
-async function fetchEventsFromGoabase() {
+async function fetchEventsFromGoabase(sources = EVENT_SOURCES) {
   const curatedVenues = await readCuratedJson('venues.json', []);
   const eventVenueMap = await readCuratedJson('event-venues.json', {});
   const venueById = new Map(curatedVenues.map((venue) => [venue.id, venue]));
@@ -676,7 +717,7 @@ async function fetchEventsFromGoabase() {
 
   const events = [];
 
-  for (const sourceItem of EVENT_SOURCES) {
+  for (const sourceItem of sources) {
     const payload = await fetchJson(`${API_BASE}/${sourceItem.id}`);
     const party = payload.party ?? payload;
     if (!party || !party.id) {
@@ -726,11 +767,46 @@ async function main() {
   await mkdir(partnersDir, { recursive: true });
 
   const refresh = process.argv.includes('--refresh') || process.env.GOABASE_REFRESH === '1';
+  const mergeArg = process.argv.find((arg) => arg.startsWith('--merge='));
+  const mergeIds = mergeArg
+    ? mergeArg
+        .slice('--merge='.length)
+        .split(',')
+        .map((value) => Number(value.trim()))
+        .filter((value) => Number.isFinite(value))
+    : [];
 
   let events;
-  if (refresh) {
+  let wroteEvents = false;
+  if (mergeIds.length > 0) {
+    const existing = await loadExistingEvents();
+    const byId = new Map(existing.map((event) => [String(event.id), event]));
+    const sources = mergeIds.map((id) => EVENT_SOURCES.find((item) => item.id === id) ?? { id });
+    console.log(`Merging ${sources.length} event(s) from goabase into events.json...`);
+    const fetched = await fetchEventsFromGoabase(sources);
+    for (const event of fetched) {
+      const previous = byId.get(event.id);
+      if (previous) {
+        event.partnerIds = event.partnerIds ?? previous.partnerIds;
+        if (previous.links?.instagramPost && !event.links.instagramPost) {
+          event.links.instagramPost = previous.links.instagramPost;
+        }
+        if (previous.links?.instagram && !event.links.instagram) {
+          event.links.instagram = previous.links.instagram;
+        }
+      }
+      byId.set(event.id, event);
+    }
+    events = EVENT_SOURCES.map((item) => byId.get(String(item.id))).filter(Boolean);
+    for (const event of byId.values()) {
+      if (String(event.id).startsWith('tn-placeholder-')) continue;
+      if (!events.some((item) => item.id === event.id)) events.push(event);
+    }
+    wroteEvents = true;
+  } else if (refresh) {
     console.log('Refreshing events from goabase (one-time fetch)...');
     events = await fetchEventsFromGoabase();
+    wroteEvents = true;
   } else {
     events = await loadExistingEvents();
     console.log(
@@ -745,7 +821,7 @@ async function main() {
   const venues = buildVenueCatalog(events);
   const partners = await buildPartners();
 
-  if (refresh) {
+  if (wroteEvents) {
     const eventsFile = {
       schemaVersion: SCHEMA_VERSION,
       generatedAt,
@@ -789,7 +865,7 @@ async function main() {
     `\nWrote ${artists.length} artists, ${venues.length} venues, ` +
       `${affiliations.agencies.length} agencies, ${affiliations.labels.length} labels, ` +
       `${partners.length} partners` +
-      `${refresh ? `, ${events.length} events (events.json refreshed)` : ' (events.json left untouched)'}.`,
+      `${wroteEvents ? `, ${events.length} events (events.json updated)` : ' (events.json left untouched)'}.`,
   );
 }
 
