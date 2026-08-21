@@ -76,6 +76,7 @@ const EVENT_SOURCES = [
     timetableFestivalId: 'bom_shanka_london_2026',
     tickets:
       'https://www.skiddle.com/whats-on/London/Bar-A-Bar/Universe--Tropical-Nomads-Bom-Shanka-Label-night/41911407/',
+    instagramPost: 'https://www.instagram.com/p/DcRfogkspVc/',
   },
   { id: 117120 },
   { id: 117152 },
