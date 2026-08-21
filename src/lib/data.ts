@@ -70,6 +70,15 @@ export function hasTicketSales(event: EventRecord): boolean {
   return Boolean(event.links.eventbrite ?? event.links.tickets);
 }
 
+const TIMETABLE_ORIGIN = 'https://timetable.tropical-nomads.com';
+
+export function getEventTimetableUrl(event: EventRecord): string | null {
+  if (!event.timetableFestivalId) return null;
+  const url = new URL(TIMETABLE_ORIGIN);
+  url.searchParams.set('festival', event.timetableFestivalId);
+  return url.toString();
+}
+
 export function getStageSummary(event: EventRecord, maxArtists = 4): string {
   const stageArtists = event.stages.flatMap((stage) => stage.artists.map((artist) => artist.name));
   // Featured names shown first: curated cardArtists when present, else the lineup.

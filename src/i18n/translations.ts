@@ -49,7 +49,9 @@ export interface TranslationDict {
   buyTickets: string;
   eventDetails: string;
   comingSoon: string;
+  timetable: string;
   buyTicketsAria: (title: string) => string;
+  openTimetableAria: (title: string) => string;
   viewOnGoabaseAria: (title: string) => string;
   openOnMapsAria: (place: string) => string;
 
@@ -126,7 +128,9 @@ export const translations: Record<Language, TranslationDict> = {
     buyTickets: 'Buy tickets',
     eventDetails: 'Event details',
     comingSoon: 'Coming soon',
+    timetable: 'Timetable',
     buyTicketsAria: (title) => `Buy tickets for ${title}`,
+    openTimetableAria: (title) => `Open timetable for ${title}`,
     viewOnGoabaseAria: (title) => `View ${title} on goabase`,
     openOnMapsAria: (place) => `Open ${place} on Google Maps`,
 
@@ -201,7 +205,9 @@ export const translations: Record<Language, TranslationDict> = {
     buyTickets: 'Comprar ingressos',
     eventDetails: 'Detalhes do evento',
     comingSoon: 'Em breve',
+    timetable: 'Programação',
     buyTicketsAria: (title) => `Comprar ingressos para ${title}`,
+    openTimetableAria: (title) => `Abrir programação de ${title}`,
     viewOnGoabaseAria: (title) => `Ver ${title} no goabase`,
     openOnMapsAria: (place) => `Abrir ${place} no Google Maps`,
 

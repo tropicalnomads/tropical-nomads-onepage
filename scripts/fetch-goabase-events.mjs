@@ -31,6 +31,7 @@ const curatedDir = resolve(projectRoot, 'scripts/data');
 const EVENT_SOURCES = [
   {
     id: 118148,
+    timetableFestivalId: 'tropical_groove_dublin_technology_2026',
     partnerIds: ['psy-groove'],
     eventbrite: 'https://technology-aram.eventbrite.ie/',
     instagram: [
@@ -40,6 +41,7 @@ const EVENT_SOURCES = [
   },
   {
     id: 118006,
+    timetableFestivalId: 'tropical_nomads_berlin_2026',
     partnerIds: ['forest-shankara'],
     eventbrite: 'https://tropical-nomads-berlin.eventbrite.ie/',
     instagram: [
@@ -52,16 +54,26 @@ const EVENT_SOURCES = [
     eventbrite: 'https://tropical-nomads-athens-showcase.eventbrite.ie/',
     instagram: ['https://www.instagram.com/tropicalnomads.events/'],
   },
-  { id: 117712, eventbrite: 'https://avan7amsterdam.eventbrite.ie' },
-  { id: 117713, eventbrite: 'https://avan7dublin.eventbrite.ie' },
+  {
+    id: 117712,
+    timetableFestivalId: 'tropical_nomads_2026',
+    eventbrite: 'https://avan7amsterdam.eventbrite.ie',
+  },
+  {
+    id: 117713,
+    timetableFestivalId: 'tropical_groove_2026',
+    eventbrite: 'https://avan7dublin.eventbrite.ie',
+  },
   {
     id: 117914,
+    timetableFestivalId: 'tropical_groove_dublin_2026',
     eventbrite:
       'https://www.eventbrite.ie/e/tropical-groove-presents-bocara-sabedoria-tickets-1993324939553',
     instagramPost: 'https://www.instagram.com/p/DcO8aCRNM8O/',
   },
   {
     id: 116643,
+    timetableFestivalId: 'bom_shanka_london_2026',
     tickets:
       'https://www.skiddle.com/whats-on/London/Bar-A-Bar/Universe--Tropical-Nomads-Bom-Shanka-Label-night/41911407/',
   },
@@ -561,6 +573,7 @@ function normalizeEvent(party, override, venueOverride, lineupOverride, mediaOve
     id: String(party.id),
     title: lineupOverride?.title ?? party.nameParty,
     ...(override?.partnerIds?.length ? { partnerIds: override.partnerIds } : {}),
+    ...(override?.timetableFestivalId ? { timetableFestivalId: override.timetableFestivalId } : {}),
     type: party.nameType,
     dateStart: party.dateStart,
     ...(party.dateEnd ? { dateEnd: party.dateEnd } : {}),
@@ -788,6 +801,7 @@ async function main() {
       const previous = byId.get(event.id);
       if (previous) {
         event.partnerIds = event.partnerIds ?? previous.partnerIds;
+        event.timetableFestivalId = event.timetableFestivalId ?? previous.timetableFestivalId;
         if (previous.links?.instagramPost && !event.links.instagramPost) {
           event.links.instagramPost = previous.links.instagramPost;
         }

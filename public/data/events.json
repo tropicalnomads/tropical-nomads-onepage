@@ -13,6 +13,7 @@
       "partnerIds": [
         "psy-groove"
       ],
+      "timetableFestivalId": "tropical_groove_dublin_technology_2026",
       "type": "Club",
       "dateStart": "2026-09-19T17:00:00+02:00",
       "dateEnd": "2026-09-20T03:00:00+02:00",
@@ -170,6 +171,7 @@
       "partnerIds": [
         "forest-shankara"
       ],
+      "timetableFestivalId": "tropical_nomads_berlin_2026",
       "type": "Club",
       "dateStart": "2026-09-26T23:00:00+02:00",
       "dateEnd": "2026-09-27T09:30:00+02:00",
@@ -361,6 +363,7 @@
       "partnerIds": [
         "pgp"
       ],
+      "timetableFestivalId": "tropical_nomads_2026",
       "type": "Club",
       "dateStart": "2026-07-10T18:00:00+02:00",
       "dateEnd": "2026-07-11T03:00:00+02:00",
@@ -511,6 +514,7 @@
       "partnerIds": [
         "psy-groove"
       ],
+      "timetableFestivalId": "tropical_groove_2026",
       "type": "Club",
       "dateStart": "2026-07-11T14:00:00+02:00",
       "dateEnd": "2026-07-12T03:00:00+02:00",
@@ -643,6 +647,7 @@
       "partnerIds": [
         "psy-groove"
       ],
+      "timetableFestivalId": "tropical_groove_dublin_2026",
       "type": "Club",
       "dateStart": "2026-08-14T19:00:00+02:00",
       "dateEnd": "2026-08-15T02:30:00+02:00",
@@ -781,6 +786,7 @@
       "partnerIds": [
         "universe"
       ],
+      "timetableFestivalId": "bom_shanka_london_2026",
       "type": "Club",
       "dateStart": "2026-08-15T20:00:00+02:00",
       "dateEnd": "2026-08-16T05:00:00+02:00",

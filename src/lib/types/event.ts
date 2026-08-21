@@ -138,6 +138,8 @@ export interface EventRecord {
   stages: EventStage[];
   cardArtists?: string[];
   partnerIds?: string[];
+  /** PWA festival id when this event has a timetable on timetable.tropical-nomads.com */
+  timetableFestivalId?: string;
   media?: EventMedia;
   description?: string;
   organizer?: string;

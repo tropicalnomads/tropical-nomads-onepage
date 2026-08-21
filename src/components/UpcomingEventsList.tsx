@@ -1,6 +1,7 @@
 import type { JSX } from 'react';
-import { Calendar, Clock, ExternalLink, MapPin, Ticket } from 'lucide-react';
+import { Calendar, CalendarClock, Clock, ExternalLink, MapPin, Ticket } from 'lucide-react';
 import {
+  getEventTimetableUrl,
   getPrimaryTicketUrl,
   getStageSummary,
   hasTicketSales,
@@ -41,6 +42,7 @@ export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps
               const ticketUrl = getPrimaryTicketUrl(event);
               const ticketsAvailable = hasTicketSales(event);
               const hasLink = ticketsAvailable || Boolean(event.links.goabase);
+              const timetableUrl = getEventTimetableUrl(event);
               const eventPartners = (event.partnerIds ?? [])
                 .map((partnerId) => partnerById.get(partnerId))
                 .filter((partner): partner is Partner => Boolean(partner));
@@ -102,7 +104,7 @@ export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps
                     </p>
                     {summary ? <p className="mt-2 text-sm text-ozora-cream/70">{summary}</p> : null}
 
-                    <div className="mt-4 flex flex-wrap items-center justify-center gap-3 md:justify-start">
+                    <div className="mt-4 flex flex-col items-center gap-3 md:items-start">
                       {hasLink ? (
                         <a
                           href={ticketUrl}
@@ -137,6 +139,18 @@ export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps
                           {t.comingSoon}
                         </span>
                       )}
+                      {timetableUrl ? (
+                        <a
+                          href={timetableUrl}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          className="inline-flex items-center gap-2 rounded-lg border border-ozora-turquoise/70 bg-ozora-turquoise/10 px-4 py-2 text-sm font-semibold text-ozora-cream transition hover:bg-ozora-turquoise/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+                          aria-label={t.openTimetableAria(event.title)}
+                        >
+                          <CalendarClock size={16} aria-hidden="true" />
+                          {t.timetable}
+                        </a>
+                      ) : null}
                     </div>
                   </div>
 
