@@ -26,7 +26,8 @@ export interface SocialLink {
 }
 
 async function fetchJson<T>(path: string): Promise<T> {
-  const response = await fetch(path);
+  const url = `${path}?v=${__APP_VERSION__}`;
+  const response = await fetch(url, { cache: 'no-cache' });
   if (!response.ok) {
     throw new Error(`Failed to fetch ${path}`);
   }

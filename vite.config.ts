@@ -6,6 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 const packageJsonPath = fileURLToPath(new URL('./package.json', import.meta.url));
 const packageVersion = JSON.parse(readFileSync(packageJsonPath, 'utf8')).version as string;
+const buildId = process.env.AWS_COMMIT_ID ?? `${packageVersion}.${Date.now()}`;
 
 const SITE_ORIGIN = 'https://www.tropical-nomads.com';
 
@@ -92,7 +93,7 @@ function eventsSeoPlugin(): Plugin {
 
 export default defineConfig({
   define: {
-    __APP_VERSION__: JSON.stringify(packageVersion),
+    __APP_VERSION__: JSON.stringify(buildId),
   },
   resolve: {
     alias: {
@@ -104,6 +105,7 @@ export default defineConfig({
     eventsSeoPlugin(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: null,
       includeAssets: [
         'favicon.ico',
         'favicon-16x16.png',
@@ -155,9 +157,31 @@ export default defineConfig({
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2,json}'],
+        globPatterns: ['**/*.{js,css,svg,png,ico,woff2}'],
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
-        navigateFallback: '/index.html',
+        navigateFallback: null,
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) => request.mode === 'navigate',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'html-cache',
+              networkTimeoutSeconds: 3,
+              expiration: { maxEntries: 20 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            urlPattern: ({ url }) => url.pathname.startsWith('/data/') && url.pathname.endsWith('.json'),
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'data-cache',
+              networkTimeoutSeconds: 3,
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
       },
       devOptions: {
         enabled: false,
