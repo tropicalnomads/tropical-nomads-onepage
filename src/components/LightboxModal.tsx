@@ -138,7 +138,7 @@ export function LightboxModal({ event, onClose }: LightboxModalProps): JSX.Eleme
         {event.images.bannerLocal ? (
           <div className="mx-auto mt-5 max-w-md overflow-hidden rounded-2xl">
             <img
-              src={event.images.full ?? event.images.bannerLocal}
+              src={event.images.bannerLocal ?? event.images.full}
               alt={`${event.title} flyer`}
               className="h-auto w-full object-contain"
             />

@@ -751,7 +751,16 @@ async function fetchEventsFromGoabase(sources = EVENT_SOURCES) {
 
     const bannerSource =
       party.urlImageLarge || party.urlImageFull || party.urlImageMedium || party.urlImageSmall;
-    if (bannerSource) {
+    if (lineupOverride?.bannerKeepLocal) {
+      const localPath = `/events/banners/${party.id}.${pickImageExtension(event.images?.bannerLocal ?? bannerSource ?? '.jpg')}`;
+      event.images = {
+        small: localPath,
+        medium: localPath,
+        large: localPath,
+        full: localPath,
+        bannerLocal: localPath,
+      };
+    } else if (bannerSource) {
       try {
         event.images.bannerLocal = await downloadBanner(bannerSource, party.id);
       } catch (error) {
