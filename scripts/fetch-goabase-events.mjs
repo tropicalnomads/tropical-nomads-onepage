@@ -1,5 +1,6 @@
 // Generates the file-based events "backend" from the goabase JSON API.
-// Outputs:
+// Outputs (written only when the payload actually changed; generatedAt is ignored
+// for the comparison so a no-op run does not rewrite venues/partners/etc.):
 //   public/data/events.json    (versioned envelope of EventRecord[])
 //   public/data/artists.json   (deduped artist catalog, incl. agencies/labels)
 //   public/data/venues.json    (deduped venue catalog)
@@ -504,7 +505,6 @@ async function buildPartners() {
       ...(logo ? { logo } : {}),
       ...(partner.logoFit ? { logoFit: partner.logoFit } : {}),
     });
-    console.log(`Partner ${partner.name}${logo ? ` (logo${partner.logo ? ', curated' : ''})` : ' (no logo)'}`);
   }
   return partners;
 }
@@ -784,6 +784,44 @@ async function loadExistingEvents() {
   }
 }
 
+function omitGeneratedAt(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return value;
+  }
+  const { generatedAt: _generatedAt, ...rest } = value;
+  return rest;
+}
+
+function stableSerialize(value) {
+  if (Array.isArray(value)) {
+    return `[${value.map((item) => stableSerialize(item)).join(',')}]`;
+  }
+  if (value && typeof value === 'object') {
+    return `{${Object.keys(value)
+      .sort()
+      .map((key) => `${JSON.stringify(key)}:${stableSerialize(value[key])}`)
+      .join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+async function readJsonFile(path) {
+  try {
+    return JSON.parse(await readFile(path, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+async function writeJsonIfChanged(path, nextFile) {
+  const previous = await readJsonFile(path);
+  if (previous && stableSerialize(omitGeneratedAt(previous)) === stableSerialize(omitGeneratedAt(nextFile))) {
+    return false;
+  }
+  await writeFile(path, `${JSON.stringify(nextFile, null, 2)}\n`);
+  return true;
+}
+
 async function main() {
   await mkdir(dataDir, { recursive: true });
   await mkdir(bannersDir, { recursive: true });
@@ -845,52 +883,62 @@ async function main() {
   const venues = buildVenueCatalog(events);
   const partners = await buildPartners();
 
+  const catalogWrites = [];
   if (wroteEvents) {
-    const eventsFile = {
-      schemaVersion: SCHEMA_VERSION,
-      generatedAt,
-      source: { provider: 'goabase', endpoint: API_BASE },
-      count: events.length,
-      events,
-    };
-    await writeFile(resolve(dataDir, 'events.json'), `${JSON.stringify(eventsFile, null, 2)}\n`);
+    catalogWrites.push([
+      'events.json',
+      {
+        schemaVersion: SCHEMA_VERSION,
+        generatedAt,
+        source: { provider: 'goabase', endpoint: API_BASE },
+        count: events.length,
+        events,
+      },
+    ]);
+  }
+  catalogWrites.push(
+    ['artists.json', { schemaVersion: SCHEMA_VERSION, generatedAt, count: artists.length, artists }],
+    ['venues.json', { schemaVersion: SCHEMA_VERSION, generatedAt, count: venues.length, venues }],
+    [
+      'agencies.json',
+      {
+        schemaVersion: SCHEMA_VERSION,
+        generatedAt,
+        count: affiliations.agencies.length,
+        agencies: affiliations.agencies,
+      },
+    ],
+    [
+      'labels.json',
+      {
+        schemaVersion: SCHEMA_VERSION,
+        generatedAt,
+        count: affiliations.labels.length,
+        labels: affiliations.labels,
+      },
+    ],
+    ['partners.json', { schemaVersion: SCHEMA_VERSION, generatedAt, count: partners.length, partners }],
+  );
+
+  const written = [];
+  const skipped = [];
+  for (const [fileName, payload] of catalogWrites) {
+    const changed = await writeJsonIfChanged(resolve(dataDir, fileName), payload);
+    if (changed) {
+      written.push(fileName);
+    } else {
+      skipped.push(fileName);
+    }
   }
 
-  await writeFile(
-    resolve(dataDir, 'artists.json'),
-    `${JSON.stringify({ schemaVersion: SCHEMA_VERSION, generatedAt, count: artists.length, artists }, null, 2)}\n`,
-  );
-  await writeFile(
-    resolve(dataDir, 'venues.json'),
-    `${JSON.stringify({ schemaVersion: SCHEMA_VERSION, generatedAt, count: venues.length, venues }, null, 2)}\n`,
-  );
-  await writeFile(
-    resolve(dataDir, 'agencies.json'),
-    `${JSON.stringify(
-      { schemaVersion: SCHEMA_VERSION, generatedAt, count: affiliations.agencies.length, agencies: affiliations.agencies },
-      null,
-      2,
-    )}\n`,
-  );
-  await writeFile(
-    resolve(dataDir, 'labels.json'),
-    `${JSON.stringify(
-      { schemaVersion: SCHEMA_VERSION, generatedAt, count: affiliations.labels.length, labels: affiliations.labels },
-      null,
-      2,
-    )}\n`,
-  );
-  await writeFile(
-    resolve(dataDir, 'partners.json'),
-    `${JSON.stringify({ schemaVersion: SCHEMA_VERSION, generatedAt, count: partners.length, partners }, null, 2)}\n`,
-  );
-
-  console.log(
-    `\nWrote ${artists.length} artists, ${venues.length} venues, ` +
-      `${affiliations.agencies.length} agencies, ${affiliations.labels.length} labels, ` +
-      `${partners.length} partners` +
-      `${wroteEvents ? `, ${events.length} events (events.json updated)` : ' (events.json left untouched)'}.`,
-  );
+  if (written.length > 0) {
+    console.log(`\nUpdated ${written.join(', ')}.`);
+  } else {
+    console.log('\nNo catalog files needed updates.');
+  }
+  if (skipped.length > 0) {
+    console.log(`Left unchanged: ${skipped.join(', ')}.`);
+  }
 }
 
 main().catch((error) => {

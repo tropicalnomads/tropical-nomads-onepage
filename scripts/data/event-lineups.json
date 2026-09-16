@@ -8,11 +8,13 @@
   "118006": {
     "title": "Tropical Nomads presents: Technology & ARAM",
     "lineupRaw": "TROPICAL NOMADS STAGE (Progressive / Full-On / Psytrance)\n23:00 - Octo 🇧🇷\n00:30 - Deutsch 🇧🇷\n02:00 - Texo 🇩🇪\n03:30 - Technology 🇧🇷\n05:00 - Blazin'G 🇧🇷\n06:30 - Critical Communication 🇧🇷\n08:00 - Vinius 🇧🇷\n09:30 - FIM\n\nFOREST SHANKARA STAGE (Night / Twilight / Forest)\n00:00 - Azura 🇧🇷\n01:30 - Jungle Rumble 🇧🇷\n03:00 - After June 🇧🇷\n04:30 - ARAM 🇧🇷\n06:00 - FIM",
-    "cardArtists": ["Technology", "ARAM", "Deutsch", "After June"]
+    "cardArtists": ["Technology", "ARAM", "Deutsch", "After June"],
+    "bannerKeepLocal": true
   },
   "118153": {
     "title": "Tropical Nomads Showcase — Athens",
-    "lineupRaw": "",
+    "lineupRaw": "Sakra 🇬🇷\nBlazin'G 🇧🇷\nAfter June 🇧🇷",
+    "cardArtists": ["Sakra", "Blazin'G", "After June"],
     "bannerKeepLocal": true
   },
   "117712": {

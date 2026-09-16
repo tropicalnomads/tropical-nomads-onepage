@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-19T20:47:07.144Z",
-  "count": 89,
+  "generatedAt": "2026-09-16T12:49:24.623Z",
+  "count": 90,
   "artists": [
     {
       "name": "+Ripley",
@@ -422,6 +422,11 @@
       "name": "Saight",
       "isoCountry": "BR",
       "countryFlag": "🇧🇷"
+    },
+    {
+      "name": "Sakra",
+      "isoCountry": "GR",
+      "countryFlag": "🇬🇷"
     },
     {
       "name": "Shivaion",

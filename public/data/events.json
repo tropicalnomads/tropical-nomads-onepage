@@ -287,11 +287,11 @@
       "description": "After an unforgettable first edition at M-Bia Club in November, Tropical Nomads returns to Berlin for another full night of Brazilian psychedelic energy.\n\nThis time, we welcome TECHNOLOGY 🇧🇷, representing the legendary Nano Records. Known for his powerful productions, rolling basslines and highly energetic psychedelic sound, Technology brings the true spirit of Brazilian Full-On to the M-Bia dancefloor.\n\nFor this special edition, we are bringing together an entirely Brazilian lineup across two stages, covering a wide spectrum of psychedelic trance.\n\n\n🗓️ Saturday, September 26th, 2026\n⏰ 23:00–09:00\n📍 M-Bia Club, Berlin\n🎶 2 Stages\n🇧🇷 Local and International Artists\n🌴 Tropical Nomads Berlin\n\nCome early, stay until the morning and join the tribe for another psychedelic journey beneath the streets of Berlin.",
       "organizer": "After June",
       "images": {
-        "small": "https://img.goabase.net/images/flyer/small/20260926_tropical-nomads-presents-technology-nano-rec_20260819185500.png",
-        "medium": "https://img.goabase.net/images/flyer/medium/20260926_tropical-nomads-presents-technology-nano-rec_20260819185500.png",
-        "large": "https://img.goabase.net/images/flyer/large/20260926_tropical-nomads-presents-technology-nano-rec_20260819185500.png",
-        "full": "https://img.goabase.net/images/flyer/full/20260926_tropical-nomads-presents-technology-nano-rec_20260819185500.png",
-        "bannerLocal": "/events/banners/118006.png"
+        "small": "/events/banners/118006.jpg",
+        "medium": "/events/banners/118006.jpg",
+        "large": "/events/banners/118006.jpg",
+        "full": "/events/banners/118006.jpg",
+        "bannerLocal": "/events/banners/118006.jpg"
       },
       "links": {
         "goabase": "https://www.goabase.net/party/tropical-nomads-presents-technology-nano-rec/118006",
@@ -331,7 +331,38 @@
         },
         "mapUrl": "https://maps.google.com/?q=IT+Club+Athens+Solomou+30"
       },
-      "stages": [],
+      "lineupRaw": "Sakra 🇬🇷\nBlazin'G 🇧🇷\nAfter June 🇧🇷",
+      "stages": [
+        {
+          "name": "Line-up",
+          "genres": [],
+          "artists": [
+            {
+              "name": "Sakra",
+              "isoCountry": "GR",
+              "countryFlag": "🇬🇷",
+              "stage": "Line-up"
+            },
+            {
+              "name": "Blazin'G",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "Line-up"
+            },
+            {
+              "name": "After June",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "Line-up"
+            }
+          ]
+        }
+      ],
+      "cardArtists": [
+        "Sakra",
+        "Blazin'G",
+        "After June"
+      ],
       "description": "🗓️ Tropical Nomads Showcase — Athens\n📍 IT Club — Athens 🇬🇷\n🕛 23:59 – 06:00\n👽 6 Hours of Psytrance\n🌍 Tropical Nomads Showcase\n🎟️ Tickets: €10\n\nCome meet the tribe, discover our sound and join us for our first Tropical Nomads journey in Athens.\n\nOne night. One dancefloor. One tribe. 👽🌀",
       "organizer": "After June",
       "images": {
