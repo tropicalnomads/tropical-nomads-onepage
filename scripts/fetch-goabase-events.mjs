@@ -31,6 +31,15 @@ const curatedDir = resolve(projectRoot, 'scripts/data');
 // ordered by curation. Eventbrite overrides where ticket sales exist.
 const EVENT_SOURCES = [
   {
+    id: 118352,
+    partnerIds: ['psy-groove'],
+    eventbrite: 'https://prehalloween-tropical-groove.eventbrite.ie',
+    instagram: [
+      'https://www.instagram.com/tropicalnomads.events/',
+      'https://www.instagram.com/psy.groove/',
+    ],
+  },
+  {
     id: 118148,
     timetableFestivalId: 'tropical_groove_dublin_technology_2026',
     partnerIds: ['psy-groove'],

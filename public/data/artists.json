@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-16T12:49:24.623Z",
-  "count": 90,
+  "generatedAt": "2026-09-29T12:53:18.143Z",
+  "count": 92,
   "artists": [
     {
       "name": "+Ripley",
@@ -225,6 +225,11 @@
       ]
     },
     {
+      "name": "FNX",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷"
+    },
+    {
       "name": "Frostbite",
       "isoCountry": "PT",
       "countryFlag": "🇵🇹"
@@ -402,6 +407,11 @@
       "name": "PSYKADELICA"
     },
     {
+      "name": "Psyloverse",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷"
+    },
+    {
       "name": "Psymmetrix",
       "isoCountry": "GB",
       "countryFlag": "🇬🇧"
@@ -524,7 +534,9 @@
       ]
     },
     {
-      "name": "VALKYRIE"
+      "name": "Valkyrie",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷"
     },
     {
       "name": "Vinius",

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-19T20:47:07.144Z",
+  "generatedAt": "2026-09-29T12:53:18.143Z",
   "count": 8,
   "venues": [
     {
@@ -41,6 +41,19 @@
       "mapUrl": "https://maps.app.goo.gl/cBdLaFkzqKo3vMS26"
     },
     {
+      "id": "the-sound-house-dublin",
+      "name": "The Sound House",
+      "city": "Dublin",
+      "country": "Ireland",
+      "isoCountry": "IE",
+      "address": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44",
+      "geo": {
+        "lat": 53.3,
+        "lon": -6.3
+      },
+      "mapUrl": "https://maps.app.goo.gl/EtfCwAWYFE9CAmhNA"
+    },
+    {
       "id": "the-racket-space-dublin",
       "name": "The Racket Space",
       "city": "Dublin",
@@ -64,19 +77,6 @@
         "lon": -6.3
       },
       "mapUrl": "https://maps.app.goo.gl/H1G1BBd19o61SCwA8"
-    },
-    {
-      "id": "the-sound-house-dublin",
-      "name": "The Sound House",
-      "city": "Dublin",
-      "country": "Ireland",
-      "isoCountry": "IE",
-      "address": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44",
-      "geo": {
-        "lat": 53.4,
-        "lon": -6.3
-      },
-      "mapUrl": "https://maps.app.goo.gl/EtfCwAWYFE9CAmhNA"
     },
     {
       "id": "cargo-111-lisbon",

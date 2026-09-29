@@ -1,12 +1,149 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-19T20:47:07.144Z",
+  "generatedAt": "2026-09-29T12:53:18.143Z",
   "source": {
     "provider": "goabase",
     "endpoint": "https://www.goabase.net/api/party/json"
   },
-  "count": 14,
+  "count": 15,
   "events": [
+    {
+      "id": "118352",
+      "title": "Tropical Groove: Pre-Halloween 2nd Edition with FNX",
+      "partnerIds": [
+        "psy-groove"
+      ],
+      "type": "Club",
+      "dateStart": "2026-10-24T19:00:00+02:00",
+      "dateEnd": "2026-10-25T03:00:00+01:00",
+      "timezone": "Europe/Dublin",
+      "durationHours": 9,
+      "venue": {
+        "id": "the-sound-house-dublin",
+        "name": "The Sound House",
+        "city": "Dublin",
+        "country": "Ireland",
+        "isoCountry": "IE",
+        "address": "1st Floor, 28 Eden Quay, North City, Dublin D01 DE44",
+        "geo": {
+          "lat": 53.3,
+          "lon": -6.3
+        },
+        "mapUrl": "https://maps.app.goo.gl/EtfCwAWYFE9CAmhNA"
+      },
+      "lineupRaw": "TERRACE STAGE\nOcto 🇧🇷\nPsyloverse 🇧🇷\nUnderbeat 🇧🇷\nVinius 🇧🇷\nAraujah 🇧🇷\nBlazin'G 🇧🇷\n\nTHE SOUNDHOUSE STAGE\nFNX 🇧🇷\nValkyrie 🇧🇷\n3rd Vision 🇧🇷\nAfter June 🇧🇷\nShivaion 🇧🇷",
+      "stages": [
+        {
+          "name": "TERRACE STAGE",
+          "genres": [],
+          "artists": [
+            {
+              "name": "Octo",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "TERRACE STAGE"
+            },
+            {
+              "name": "Psyloverse",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "TERRACE STAGE"
+            },
+            {
+              "name": "Underbeat",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "TERRACE STAGE"
+            },
+            {
+              "name": "Vinius",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "TERRACE STAGE"
+            },
+            {
+              "name": "Araujah",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "TERRACE STAGE"
+            },
+            {
+              "name": "Blazin'G",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "TERRACE STAGE"
+            }
+          ]
+        },
+        {
+          "name": "THE SOUNDHOUSE STAGE",
+          "genres": [],
+          "artists": [
+            {
+              "name": "FNX",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "THE SOUNDHOUSE STAGE"
+            },
+            {
+              "name": "Valkyrie",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "THE SOUNDHOUSE STAGE"
+            },
+            {
+              "name": "3rd Vision",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "THE SOUNDHOUSE STAGE"
+            },
+            {
+              "name": "After June",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "THE SOUNDHOUSE STAGE"
+            },
+            {
+              "name": "Shivaion",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "THE SOUNDHOUSE STAGE"
+            }
+          ]
+        }
+      ],
+      "cardArtists": [
+        "FNX",
+        "Valkyrie",
+        "3rd Vision",
+        "After June"
+      ],
+      "description": "Tropical Groove returns to The Sound House, Dublin, on Saturday, 24 October 2026 for the second edition of our Pre-Halloween party.\n\nThis time, we're taking you on a carefully curated journey through Progressive Psy, Full-On and Night Psytrance, moving from deep progressive grooves into powerful psychedelic energy and darker late-night sounds.\n\n🗓️ Saturday, 24 October 2026\n📍 The Sound House, Dublin\n⏱️ 19:00 — 02:45\n👽 2 Areas\n🌀 Progressive Psy • Full-On • Night Psytrance\n🎨 Body Painting\n🌌 Psychedelic Decoration",
+      "organizer": "After June",
+      "images": {
+        "small": "https://img.goabase.net/images/flyer/small/20261024_tropical-groove-pre-halloween-2nd-edition-with-fnx_20260921161934.jpg",
+        "medium": "https://img.goabase.net/images/flyer/medium/20261024_tropical-groove-pre-halloween-2nd-edition-with-fnx_20260921161934.jpg",
+        "large": "https://img.goabase.net/images/flyer/large/20261024_tropical-groove-pre-halloween-2nd-edition-with-fnx_20260921161934.jpg",
+        "full": "https://img.goabase.net/images/flyer/full/20261024_tropical-groove-pre-halloween-2nd-edition-with-fnx_20260921161934.jpg",
+        "bannerLocal": "/events/banners/118352.jpg"
+      },
+      "links": {
+        "goabase": "https://www.goabase.net/party/tropical-groove-pre-halloween-2nd-edition-with-fnx/118352",
+        "eventbrite": "https://prehalloween-tropical-groove.eventbrite.ie",
+        "instagram": [
+          "https://www.instagram.com/tropicalnomads.events/",
+          "https://www.instagram.com/psy.groove/"
+        ]
+      },
+      "source": {
+        "provider": "goabase",
+        "id": 118352,
+        "url": "https://www.goabase.net/party/tropical-groove-pre-halloween-2nd-edition-with-fnx/118352",
+        "status": "Scheduled",
+        "dateCreated": "2026-09-21T16:11:44+02:00",
+        "dateModified": "2026-09-21T16:20:09+02:00"
+      }
+    },
     {
       "id": "118148",
       "title": "Tropical Groove presents: Technology & ARAM",
