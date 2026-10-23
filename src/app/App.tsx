@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { SiteHeader } from '@/components/SiteHeader';
 import { Footer } from '@/components/Footer';
 import { HeroSection } from '@/components/HeroSection';
+import { MerchSection } from '@/components/MerchSection';
 import { UpcomingEventsList } from '@/components/UpcomingEventsList';
 import { PastEventsGallery } from '@/components/PastEventsGallery';
 import { SocialLinks } from '@/components/SocialLinks';
@@ -89,22 +90,27 @@ export default function App(): JSX.Element {
       <SiteHeader onNavigate={handleScrollTo} />
       <HeroSection onExploreEvents={() => handleScrollTo('upcoming-events')} />
 
-      {isLoading ? (
-        <main className="mx-auto max-w-5xl px-5 py-8 md:px-8">
-          <EmptyState title="Loading events..." description="Fetching upcoming and past events." />
-        </main>
-      ) : error ? (
-        <main className="mx-auto max-w-5xl px-5 py-8 md:px-8">
-          <EmptyState title="Could not load content" description={error} />
-        </main>
-      ) : (
-        <main>
+      <main>
+        {isLoading ? (
+          <div className="mx-auto max-w-5xl px-5 py-8 md:px-8">
+            <EmptyState title="Loading events..." description="Fetching upcoming and past events." />
+          </div>
+        ) : error ? (
+          <div className="mx-auto max-w-5xl px-5 py-8 md:px-8">
+            <EmptyState title="Could not load content" description={error} />
+          </div>
+        ) : (
           <UpcomingEventsList events={upcomingEvents} partners={data.partners} />
-          <PastEventsGallery events={pastEvents} onOpenPreview={setLightboxEvent} />
-          <PartnersSection partners={data.partners} />
-          <SocialLinks links={data.socialLinks} />
-        </main>
-      )}
+        )}
+        <MerchSection />
+        {!isLoading && !error ? (
+          <>
+            <PastEventsGallery events={pastEvents} onOpenPreview={setLightboxEvent} />
+            <PartnersSection partners={data.partners} />
+            <SocialLinks links={data.socialLinks} />
+          </>
+        ) : null}
+      </main>
 
       <Footer onNavigate={handleScrollTo} />
       <LightboxModal event={lightboxEvent} onClose={() => setLightboxEvent(null)} />

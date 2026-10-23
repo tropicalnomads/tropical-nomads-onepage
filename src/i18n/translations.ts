@@ -11,6 +11,7 @@ export interface TranslationDict {
   navPartners: string;
   navSocials: string;
   navBookings: string;
+  navMerch: string;
   tickets: string;
   homeAria: string;
   openMenuAria: string;
@@ -82,6 +83,40 @@ export interface TranslationDict {
 
   // Language selector
   switchLanguageTo: (languageLabel: string) => string;
+
+  // Merch
+  merchTagline: string;
+  merchHeadline: string;
+  merchLead: string;
+  merchTotal: (count: number) => string;
+  merchReserveWhatsApp: string;
+  merchPiecesTitle: string;
+  merchPiecesSubtitle: string;
+  merchChipParty: string;
+  merchChipDrop: string;
+  merchMetaHw: string;
+  merchMetaPg: string;
+  merchSizes: string;
+  merchBookHw: string;
+  merchBookPg: string;
+  merchLeft: (count: number) => string;
+  merchLastRun: string;
+  merchMadeToOrder: string;
+  merchLastOne: string;
+  merchManyLeft: (count: number) => string;
+  merchHowTitle: string;
+  merchHowSubtitle: string;
+  merchStep1Title: string;
+  merchStep1Body: string;
+  merchStep2Title: string;
+  merchStep2Body: string;
+  merchStep2Sample: string;
+  merchCopyNumber: string;
+  merchCopied: string;
+  merchCopyFallback: string;
+  merchStep3Title: string;
+  merchStep3Body: string;
+  merchWhatsAppMessage: (item: string) => string;
 }
 
 export const translations: Record<Language, TranslationDict> = {
@@ -94,6 +129,7 @@ export const translations: Record<Language, TranslationDict> = {
     navPartners: 'Partners',
     navSocials: 'Socials',
     navBookings: 'Bookings',
+    navMerch: 'Merch',
     tickets: 'Tickets',
     homeAria: 'Tropical Nomads home',
     openMenuAria: 'Open navigation menu',
@@ -161,6 +197,41 @@ export const translations: Record<Language, TranslationDict> = {
     viewOnGoabase: 'View on goabase',
 
     switchLanguageTo: (languageLabel) => `Switch language to ${languageLabel}`,
+
+    merchTagline: 'Merch · Tropical Groove Halloween',
+    merchHeadline: 'Reserve your T-Shirt, pick it up at the party',
+    merchLead:
+      "UV-reactive embroidery, made in Portugal. Limited stock for Saturday's party at The Sound House. Reserve it and it's held under your name.",
+    merchTotal: (count) => `Only ${count} T-Shirts for the whole party`,
+    merchReserveWhatsApp: 'Reserve on WhatsApp',
+    merchPiecesTitle: 'Available T-Shirts',
+    merchPiecesSubtitle: 'Pick up at the party, Saturday 24/10. Stock updated today.',
+    merchChipParty: 'Party edition',
+    merchChipDrop: 'Drop 01',
+    merchMetaHw: 'Embroidered T-Shirt · glows under UV',
+    merchMetaPg: 'Embroidered T-Shirt · logo front, artwork back',
+    merchSizes: 'Sizes',
+    merchBookHw: 'Reserve the Halloween T-Shirt',
+    merchBookPg: 'Reserve the Psy Groove T-Shirt',
+    merchLeft: (count) => (count === 1 ? 'T-Shirt left' : 'T-Shirts left'),
+    merchLastRun: 'Last production run',
+    merchMadeToOrder: 'Then made to order only',
+    merchLastOne: 'last one',
+    merchManyLeft: (count) => `${count} left`,
+    merchHowTitle: 'How to reserve',
+    merchHowSubtitle: 'Three steps, takes a minute.',
+    merchStep1Title: 'Pick',
+    merchStep1Body: 'Your T-Shirt and size from the list above.',
+    merchStep2Title: 'Message us on WhatsApp',
+    merchStep2Body: 'T-Shirt, size and your name, like this:',
+    merchStep2Sample: 'Halloween · L · First Last',
+    merchCopyNumber: 'Copy number',
+    merchCopied: 'Number copied',
+    merchCopyFallback: 'Selected, copy it',
+    merchStep3Title: 'Pick it up at the party',
+    merchStep3Body: 'Saturday 24/10, The Sound House. Find us at the merch stand.',
+    merchWhatsAppMessage: (item) =>
+      `Hi! I'd like to reserve a T-Shirt to pick up at the party on 24/10:\nT-Shirt: ${item}\nSize: \nName: `,
   },
   pt: {
     dateLocale: 'pt-BR',
@@ -171,6 +242,7 @@ export const translations: Record<Language, TranslationDict> = {
     navPartners: 'Parceiros',
     navSocials: 'Redes',
     navBookings: 'Bookings',
+    navMerch: 'Merch',
     tickets: 'Ingressos',
     homeAria: 'Início da Tropical Nomads',
     openMenuAria: 'Abrir menu de navegação',
@@ -238,5 +310,40 @@ export const translations: Record<Language, TranslationDict> = {
     viewOnGoabase: 'Ver no goabase',
 
     switchLanguageTo: (languageLabel) => `Mudar idioma para ${languageLabel}`,
+
+    merchTagline: 'Merch · Tropical Groove Halloween',
+    merchHeadline: 'Reserva a tua camiseta e retira na festa',
+    merchLead:
+      'Bordado que brilha no UV, feito em Portugal. Estoque contado pra festa de sábado na Sound House. Reservou, tá guardada com teu nome.',
+    merchTotal: (count) => `Só ${count} camisetas pra festa inteira`,
+    merchReserveWhatsApp: 'Reservar no WhatsApp',
+    merchPiecesTitle: 'Peças disponíveis',
+    merchPiecesSubtitle: 'Retirada na festa de sábado, 24/10. Estoque atualizado hoje.',
+    merchChipParty: 'Edição da festa',
+    merchChipDrop: 'Drop 01',
+    merchMetaHw: 'Camiseta bordada · brilha no UV',
+    merchMetaPg: 'Camiseta bordada · logo na frente, arte nas costas',
+    merchSizes: 'Tamanhos',
+    merchBookHw: 'Reservar a Halloween',
+    merchBookPg: 'Reservar a Psy Groove',
+    merchLeft: (count) => (count === 1 ? 'peça restante' : 'peças restantes'),
+    merchLastRun: 'Última produção',
+    merchMadeToOrder: 'Depois só sob encomenda',
+    merchLastOne: 'última',
+    merchManyLeft: (count) => `${count} restam`,
+    merchHowTitle: 'Como reservar',
+    merchHowSubtitle: 'Três passos, leva um minuto.',
+    merchStep1Title: 'Escolhe',
+    merchStep1Body: 'A peça e o teu tamanho na lista acima.',
+    merchStep2Title: 'Manda no WhatsApp',
+    merchStep2Body: 'Peça, tamanho e teu nome, assim:',
+    merchStep2Sample: 'Halloween · G · Nome Sobrenome',
+    merchCopyNumber: 'Copiar número',
+    merchCopied: 'Número copiado',
+    merchCopyFallback: 'Selecionado, copie',
+    merchStep3Title: 'Retira na festa',
+    merchStep3Body: 'Sábado 24/10, The Sound House. Procura a gente no merch.',
+    merchWhatsAppMessage: (item) =>
+      `Fala! Quero reservar pra retirar na festa 24/10:\nPeça: ${item}\nTamanho: \nNome: `,
   },
 };

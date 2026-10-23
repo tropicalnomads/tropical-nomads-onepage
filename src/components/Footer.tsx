@@ -8,6 +8,7 @@ interface FooterProps {
 const FOOTER_LINKS: ReadonlyArray<{ id: string; labelKey: keyof TranslationDict }> = [
   { id: 'home', labelKey: 'navHome' },
   { id: 'upcoming-events', labelKey: 'navEvents' },
+  { id: 'merch', labelKey: 'navMerch' },
   { id: 'gallery', labelKey: 'navGallery' },
   { id: 'partners', labelKey: 'navPartners' },
   { id: 'socials', labelKey: 'navSocials' },
