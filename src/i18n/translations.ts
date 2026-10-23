@@ -129,7 +129,7 @@ export const translations: Record<Language, TranslationDict> = {
     navPartners: 'Partners',
     navSocials: 'Socials',
     navBookings: 'Bookings',
-    navMerch: 'Merch',
+    navMerch: 'Shop',
     tickets: 'Tickets',
     homeAria: 'Tropical Nomads home',
     openMenuAria: 'Open navigation menu',
@@ -198,7 +198,7 @@ export const translations: Record<Language, TranslationDict> = {
 
     switchLanguageTo: (languageLabel) => `Switch language to ${languageLabel}`,
 
-    merchTagline: 'Merch · Tropical Groove Halloween',
+    merchTagline: 'Shop · Tropical Groove Halloween',
     merchHeadline: 'Reserve your T-Shirt, pick it up at the party',
     merchLead:
       "UV-reactive embroidery, made in Portugal. Limited stock for Saturday's party at The Sound House. Reserve it and it's held under your name.",
