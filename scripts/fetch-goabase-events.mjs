@@ -876,7 +876,13 @@ async function main() {
     wroteEvents = true;
   } else if (refresh) {
     console.log('Refreshing events from goabase (one-time fetch)...');
-    events = await fetchEventsFromGoabase();
+    const existing = await loadExistingEvents();
+    const fetched = await fetchEventsFromGoabase();
+    const fetchedIds = new Set(fetched.map((event) => event.id));
+    const kept = existing.filter(
+      (event) => !fetchedIds.has(event.id) && !String(event.id).startsWith('tn-placeholder-'),
+    );
+    events = [...fetched, ...kept];
     wroteEvents = true;
   } else {
     events = await loadExistingEvents();
