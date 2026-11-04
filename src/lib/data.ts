@@ -80,6 +80,80 @@ export function getEventTimetableUrl(event: EventRecord): string | null {
   return url.toString();
 }
 
+function zonedCalendar(date: Date, timeZone: string): { key: string; hour: number } {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(date);
+  const value = (type: Intl.DateTimeFormatPartTypes): string =>
+    parts.find((part) => part.type === type)?.value ?? '';
+  const hour = Number(value('hour'));
+  return {
+    key: `${value('year')}-${value('month')}-${value('day')}`,
+    hour: Number.isFinite(hour) ? hour % 24 : 0,
+  };
+}
+
+/** True when the party occupies a second calendar day where it happens. */
+export function spansMultipleEventDays(
+  event: Pick<EventRecord, 'dateStart' | 'dateEnd' | 'timezone' | 'durationHours'>,
+): boolean {
+  if (!event.dateEnd) return false;
+  const timeZone = event.timezone || 'UTC';
+  const start = zonedCalendar(new Date(event.dateStart), timeZone);
+  const end = zonedCalendar(new Date(event.dateEnd), timeZone);
+  if (start.key === end.key) return false;
+  if ((event.durationHours ?? 0) >= 24) return true;
+  // Closing the next evening means the party occupied that day too.
+  return end.hour >= 18;
+}
+
+function formatSameMonthRange(
+  start: Date,
+  end: Date,
+  formatter: Intl.DateTimeFormat,
+): string {
+  const startParts = formatter.formatToParts(start);
+  const endParts = formatter.formatToParts(end);
+  const text = (parts: Intl.DateTimeFormatPart[], type: Intl.DateTimeFormatPartTypes): string =>
+    parts.find((part) => part.type === type)?.value ?? '';
+  const sameMonth = text(startParts, 'month') === text(endParts, 'month');
+  const sameYear = text(startParts, 'year') === text(endParts, 'year');
+  if (!sameMonth || !sameYear) {
+    return `${formatter.format(start)} – ${formatter.format(end)}`;
+  }
+  const endDay = text(endParts, 'day');
+  return startParts
+    .map((part) => (part.type === 'day' ? `${part.value}–${endDay}` : part.value))
+    .join('');
+}
+
+export function formatEventDate(
+  event: Pick<EventRecord, 'dateStart' | 'dateEnd' | 'timezone' | 'durationHours'>,
+  locale: string,
+  dateStyle: 'full' | 'long' | 'medium' | 'short' = 'long',
+): string {
+  const timeZone = event.timezone;
+  const options: Intl.DateTimeFormatOptions = {
+    dateStyle,
+    ...(timeZone ? { timeZone } : {}),
+  };
+  const formatter = new Intl.DateTimeFormat(locale, options);
+  const start = new Date(event.dateStart);
+  if (!event.dateEnd || !spansMultipleEventDays(event)) {
+    return formatter.format(start);
+  }
+  const end = new Date(event.dateEnd);
+  if (dateStyle === 'full') {
+    return `${formatter.format(start)} – ${formatter.format(end)}`;
+  }
+  return formatSameMonthRange(start, end, formatter);
+}
+
 export function getStageSummary(event: EventRecord, maxArtists = 4): string {
   const stageArtists = event.stages.flatMap((stage) => stage.artists.map((artist) => artist.name));
   // Featured names shown first: curated cardArtists when present, else the lineup.

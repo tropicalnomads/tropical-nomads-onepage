@@ -5,7 +5,7 @@
     "provider": "goabase",
     "endpoint": "https://www.goabase.net/api/party/json"
   },
-  "count": 16,
+  "count": 17,
   "events": [
     {
       "id": "118352",
@@ -300,6 +300,7 @@
       },
       "links": {
         "goabase": "",
+        "eventbrite": "https://tropicalgroove-kobot.eventbrite.ie",
         "instagram": [
           "https://www.instagram.com/tropicalnomads.events/",
           "https://www.instagram.com/psy.groove/"
@@ -311,6 +312,283 @@
         "url": "https://www.tropical-nomads.com/",
         "status": "Scheduled"
       }
+    },
+    {
+      "id": "forest-shankara-sacred-pulse-2026",
+      "title": "Forest Shankara #3 — Sacred Pulse",
+      "partnerIds": [
+        "forest-shankara"
+      ],
+      "type": "Open Air",
+      "dateStart": "2026-12-05T20:00:00-03:00",
+      "dateEnd": "2026-12-06T20:00:00-03:00",
+      "timezone": "America/Sao_Paulo",
+      "durationHours": 24,
+      "venue": {
+        "id": "florianopolis-brazil",
+        "city": "Florianópolis",
+        "country": "Brazil",
+        "isoCountry": "BR",
+        "mapUrl": "https://maps.app.goo.gl/PzrRkHoWQ1LyM9T3A"
+      },
+      "lineupRaw": "Elowinz 🇧🇷 (Forest / Psytrance)\nCyk 🇧🇷 (Forest)\nInside Mind 🇧🇷 (Full-On / Psytrance)\nFNX 🇧🇷 (Psytrance / Full-On)\nBlazin'G 🇧🇷 (Full-On / Night / Forest)\nAraucarian 🇧🇷 (Full-On / Psytrance)\nSabedoria 🇧🇷 (Progressive / Full-On)\nMárcio TPS 🇧🇷 (Psytrance / Full-On)\nKarell 🇧🇷 (Full-On / Night)\nDani Gehlen 🇧🇷 (Forest / Night)\nAlien Coffee 🇧🇷 (Forest / Dark Psy)\nOverleads 🇧🇷 (Dark Forest / Psytrance)\nPiettra 🇧🇷 (Dark Psy / Psytrance)\nImaiá 🇧🇷 (Hitech / Psytrance)\nTotal Illusion (High BPM / Hitech)\nDezzert 🇦🇷 (Full-On Night / Twilight)\nSektorlogic 🇧🇷 (Full-On / Night)\nAfter June 🇧🇷 (Full-On)\nSartor 🇧🇷 (Psytrance / Full-On)\nPsychological 🇧🇷\nBocara 🇧🇷 (Full-On Night / Psytrance)\nNakka 🇧🇷 (Full-On Night / Psytrance)",
+      "stages": [
+        {
+          "name": "Line-up",
+          "genres": [
+            "Forest",
+            "Full-On",
+            "Night",
+            "Hitech",
+            "Progressive",
+            "Psytrance"
+          ],
+          "artists": [
+            {
+              "name": "Elowinz",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Forest",
+                "Psytrance"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Cyk",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Forest"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Inside Mind",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Full-On",
+                "Psytrance"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "FNX",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Psytrance",
+                "Full-On"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Blazin'G",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Full-On",
+                "Night",
+                "Forest"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Araucarian",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Full-On",
+                "Psytrance"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Sabedoria",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Progressive",
+                "Full-On"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Márcio TPS",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Psytrance",
+                "Full-On"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Karell",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Full-On",
+                "Night"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Dani Gehlen",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Forest",
+                "Night"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Alien Coffee",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Forest",
+                "Dark Psy"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Overleads",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Dark Forest",
+                "Psytrance"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Piettra",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Dark Psy",
+                "Psytrance"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Imaiá",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Hitech",
+                "Psytrance"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Total Illusion",
+              "genres": [
+                "High BPM",
+                "Hitech"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Dezzert",
+              "isoCountry": "AR",
+              "countryFlag": "🇦🇷",
+              "genres": [
+                "Full-On Night",
+                "Twilight"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Sektorlogic",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Full-On",
+                "Night"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "After June",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Full-On"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Sartor",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Psytrance",
+                "Full-On"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Psychological",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "stage": "Line-up"
+            },
+            {
+              "name": "Bocara",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Full-On Night",
+                "Psytrance"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Nakka",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Full-On Night",
+                "Psytrance"
+              ],
+              "stage": "Line-up"
+            }
+          ]
+        }
+      ],
+      "description": "Forest Shankara returns to Florianópolis for Sacred Pulse, the third edition.\n\nA 24-hour open-air gathering on the island, with camping included, moving through forest, full-on, night, hitech and progressive psytrance.\n\n🗓️ 5–6 December 2026\n📍 Florianópolis, Brazil\n⏱️ Saturday 20:00 — Sunday 20:00\n🌀 Forest • Full-On • Night • Hitech • Progressive",
+      "organizer": "Forest Shankara",
+      "images": {
+        "small": "/events/banners/forest-shankara-sacred-pulse-2026.jpg",
+        "medium": "/events/banners/forest-shankara-sacred-pulse-2026.jpg",
+        "large": "/events/banners/forest-shankara-sacred-pulse-2026.jpg",
+        "full": "/events/banners/forest-shankara-sacred-pulse-2026.jpg",
+        "bannerLocal": "/events/banners/forest-shankara-sacred-pulse-2026.jpg"
+      },
+      "links": {
+        "goabase": "",
+        "tickets": "https://uticket.com.br/evento/forest-shankara-sacred-pulse/01LZ9CCY0UCE1W",
+        "instagram": [
+          "https://www.instagram.com/forest.untd/",
+          "https://www.instagram.com/shankarafestivalbr/"
+        ]
+      },
+      "source": {
+        "provider": "goabase",
+        "id": 20261205,
+        "url": "https://www.forestshankara.com/",
+        "status": "Scheduled"
+      },
+      "cardArtists": [
+        "Elowinz",
+        "Cyk",
+        "Inside Mind",
+        "FNX"
+      ]
     },
     {
       "id": "118148",

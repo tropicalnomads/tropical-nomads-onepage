@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-29T12:53:18.143Z",
-  "count": 8,
+  "generatedAt": "2026-11-04T09:16:53.464Z",
+  "count": 9,
   "venues": [
     {
       "id": "toekomstmuziek-amsterdam",
@@ -77,6 +77,13 @@
         "lon": -6.3
       },
       "mapUrl": "https://maps.app.goo.gl/H1G1BBd19o61SCwA8"
+    },
+    {
+      "id": "florianopolis-brazil",
+      "city": "Florianópolis",
+      "country": "Brazil",
+      "isoCountry": "BR",
+      "mapUrl": "https://maps.app.goo.gl/PzrRkHoWQ1LyM9T3A"
     },
     {
       "id": "cargo-111-lisbon",

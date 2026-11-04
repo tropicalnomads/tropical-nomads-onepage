@@ -1,6 +1,7 @@
 import type { JSX } from 'react';
 import { Calendar, CalendarClock, Clock, ExternalLink, MapPin, Ticket } from 'lucide-react';
 import {
+  formatEventDate,
   getEventTimetableUrl,
   getPrimaryTicketUrl,
   getStageSummary,
@@ -15,10 +16,6 @@ import { useI18n } from '@/i18n/I18nProvider';
 interface UpcomingEventsListProps {
   events: EventRecord[];
   partners: Partner[];
-}
-
-function formatEventDate(dateStart: string, locale: string): string {
-  return new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(new Date(dateStart));
 }
 
 export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps): JSX.Element {
@@ -80,7 +77,7 @@ export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps
                     <h3 className="text-lg font-semibold text-ozora-cream">{event.title}</h3>
                     <p className="mt-1 flex items-center gap-2 text-sm text-ozora-cream/75">
                       <Calendar size={16} aria-hidden="true" />
-                      {formatEventDate(event.dateStart, t.dateLocale)}
+                      {formatEventDate(event, t.dateLocale)}
                     </p>
                     <p className="mt-1 flex items-center gap-2 text-sm text-ozora-cream/75">
                       <MapPin size={16} aria-hidden="true" />

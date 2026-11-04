@@ -1,6 +1,6 @@
 import { useId, useMemo, useState, type JSX } from 'react';
 import { Calendar, MapPin, Music, Search, X } from 'lucide-react';
-import { getStageSummary, type EventRecord } from '@/lib/data';
+import { formatEventDate, getStageSummary, type EventRecord } from '@/lib/data';
 import { EmptyState } from '@/components/EmptyState';
 import { useI18n } from '@/i18n/I18nProvider';
 
@@ -14,10 +14,6 @@ const PAGE_SIZE = 6;
 
 const cardClassName =
   'group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-black/20 text-left transition hover:border-ozora-turquoise/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise';
-
-function formatEventDate(dateStart: string, locale: string): string {
-  return new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(dateStart));
-}
 
 function normalizeSearch(value: string): string {
   return value
@@ -66,7 +62,7 @@ function CardContent({ event, locale }: { event: EventRecord; locale: string }):
         </h3>
         <p className="flex items-center gap-2 text-sm text-ozora-cream/70">
           <Calendar size={14} aria-hidden="true" />
-          {formatEventDate(event.dateStart, locale)}
+          {formatEventDate(event, locale, 'medium')}
         </p>
         <p className="flex items-center gap-2 text-sm text-ozora-cream/70">
           <MapPin size={14} aria-hidden="true" />

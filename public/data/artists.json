@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-29T12:53:18.143Z",
-  "count": 92,
+  "generatedAt": "2026-11-04T09:26:13.874Z",
+  "count": 110,
   "artists": [
     {
       "name": "+Ripley",
@@ -36,6 +36,7 @@
       "isoCountry": "BR",
       "countryFlag": "🇧🇷",
       "genres": [
+        "Forest",
         "Full-On",
         "Full-On Night",
         "Night",
@@ -49,6 +50,15 @@
       "name": "Algorithmix",
       "genres": [
         "Psytrance"
+      ]
+    },
+    {
+      "name": "Alien Coffee",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Dark Psy",
+        "Forest"
       ]
     },
     {
@@ -78,10 +88,20 @@
       ]
     },
     {
+      "name": "Araucarian",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Full-On",
+        "Psytrance"
+      ]
+    },
+    {
       "name": "Araujah",
       "isoCountry": "BR",
       "countryFlag": "🇧🇷",
       "genres": [
+        "Progressive",
         "Psytrance"
       ]
     },
@@ -116,13 +136,19 @@
       "isoCountry": "BR",
       "countryFlag": "🇧🇷",
       "genres": [
-        "Full-On"
+        "Forest",
+        "Full-On",
+        "Night"
       ]
     },
     {
       "name": "Bocara",
       "isoCountry": "BR",
-      "countryFlag": "🇧🇷"
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Full-On Night",
+        "Psytrance"
+      ]
     },
     {
       "name": "Brain Damage",
@@ -180,9 +206,38 @@
       "countryFlag": "🇧🇷"
     },
     {
+      "name": "Cyk",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Forest"
+      ]
+    },
+    {
+      "name": "Dani Gehlen",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Forest",
+        "Night"
+      ]
+    },
+    {
       "name": "Deutsch",
       "isoCountry": "BR",
-      "countryFlag": "🇧🇷"
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Progressive"
+      ]
+    },
+    {
+      "name": "Dezzert",
+      "isoCountry": "AR",
+      "countryFlag": "🇦🇷",
+      "genres": [
+        "Full-On Night",
+        "Twilight"
+      ]
     },
     {
       "name": "Digitalk",
@@ -213,6 +268,15 @@
       ]
     },
     {
+      "name": "Elowinz",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Forest",
+        "Psytrance"
+      ]
+    },
+    {
       "name": "F.Hollow",
       "genres": [
         "Techno"
@@ -227,7 +291,11 @@
     {
       "name": "FNX",
       "isoCountry": "BR",
-      "countryFlag": "🇧🇷"
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Full-On",
+        "Psytrance"
+      ]
     },
     {
       "name": "Frostbite",
@@ -260,9 +328,27 @@
       "countryFlag": "🇳🇱"
     },
     {
+      "name": "Imaiá",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Hitech",
+        "Psytrance"
+      ]
+    },
+    {
       "name": "Imniamh",
       "genres": [
         "Peak Time"
+      ]
+    },
+    {
+      "name": "Inside Mind",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Full-On",
+        "Psytrance"
       ]
     },
     {
@@ -296,12 +382,24 @@
     {
       "name": "Karell",
       "isoCountry": "BR",
-      "countryFlag": "🇧🇷"
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Full-On",
+        "Night"
+      ]
     },
     {
       "name": "Katy Bnv",
       "genres": [
         "Afro House"
+      ]
+    },
+    {
+      "name": "Kobot",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Full-On"
       ]
     },
     {
@@ -317,6 +415,15 @@
       ]
     },
     {
+      "name": "Márcio TPS",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Full-On",
+        "Psytrance"
+      ]
+    },
+    {
       "name": "Mari Ventura",
       "isoCountry": "BR",
       "countryFlag": "🇧🇷",
@@ -328,6 +435,23 @@
       "name": "MhonoType",
       "genres": [
         "Techno"
+      ]
+    },
+    {
+      "name": "Middle-D",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Progressive"
+      ]
+    },
+    {
+      "name": "Nakka",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Full-On Night",
+        "Psytrance"
       ]
     },
     {
@@ -358,7 +482,10 @@
     {
       "name": "Octo",
       "isoCountry": "BR",
-      "countryFlag": "🇧🇷"
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Progressive"
+      ]
     },
     {
       "name": "Öcto",
@@ -371,6 +498,15 @@
       "countryFlag": "🇧🇷",
       "genres": [
         "Full-On"
+      ]
+    },
+    {
+      "name": "Overleads",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Dark Forest",
+        "Psytrance"
       ]
     },
     {
@@ -387,6 +523,15 @@
       "name": "Phill Base",
       "genres": [
         "Raw"
+      ]
+    },
+    {
+      "name": "Piettra",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Dark Psy",
+        "Psytrance"
       ]
     },
     {
@@ -417,6 +562,14 @@
       "countryFlag": "🇬🇧"
     },
     {
+      "name": "Respectmusic",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Progressive"
+      ]
+    },
+    {
       "name": "Romanetto",
       "genres": [
         "Peak Time",
@@ -426,7 +579,11 @@
     {
       "name": "Sabedoria",
       "isoCountry": "BR",
-      "countryFlag": "🇧🇷"
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Full-On",
+        "Progressive"
+      ]
     },
     {
       "name": "Saight",
@@ -439,11 +596,31 @@
       "countryFlag": "🇬🇷"
     },
     {
-      "name": "Shivaion",
+      "name": "Sartor",
       "isoCountry": "BR",
       "countryFlag": "🇧🇷",
       "genres": [
         "Full-On",
+        "Psytrance"
+      ]
+    },
+    {
+      "name": "Sektorlogic",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Full-On",
+        "Night"
+      ]
+    },
+    {
+      "name": "Shivaion",
+      "isoCountry": "BR",
+      "countryFlag": "🇧🇷",
+      "genres": [
+        "Forest",
+        "Full-On",
+        "Night",
         "Psytrance"
       ]
     },
@@ -507,6 +684,13 @@
       "genres": [
         "Minimal",
         "Tech House"
+      ]
+    },
+    {
+      "name": "Total Illusion",
+      "genres": [
+        "High BPM",
+        "Hitech"
       ]
     },
     {

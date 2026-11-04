@@ -1,16 +1,12 @@
 import { useEffect } from 'react';
 import { ExternalLink, Images, MapPin, Music, Video, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import type { EventRecord, MediaLink } from '@/lib/data';
+import { formatEventDate, type EventRecord, type MediaLink } from '@/lib/data';
 import { useI18n } from '@/i18n/I18nProvider';
 
 interface LightboxModalProps {
   event: EventRecord | null;
   onClose: () => void;
-}
-
-function formatEventDate(dateStart: string, locale: string): string {
-  return new Intl.DateTimeFormat(locale, { dateStyle: 'full' }).format(new Date(dateStart));
 }
 
 function hostFromUrl(url: string): string {
@@ -111,7 +107,7 @@ export function LightboxModal({ event, onClose }: LightboxModalProps): JSX.Eleme
 
       <div className="mx-auto max-w-4xl px-5 py-8 md:px-8">
         <h3 className="text-2xl font-bold text-ozora-cream md:text-3xl">{event.title}</h3>
-        <p className="mt-1 text-sm text-ozora-cream/70">{formatEventDate(event.dateStart, t.dateLocale)}</p>
+        <p className="mt-1 text-sm text-ozora-cream/70">{formatEventDate(event, t.dateLocale, 'full')}</p>
         <p className="mt-1 flex items-center gap-2 text-sm text-ozora-cream/70">
           <MapPin size={15} aria-hidden="true" />
           {event.venue.mapUrl ? (
