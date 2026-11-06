@@ -146,7 +146,7 @@
     },
     {
       "id": "tropical-groove-2026-11-20",
-      "title": "Tropical Groove",
+      "title": "Tropical Groove - Kobot, Middle-D & Deutsch",
       "partnerIds": [
         "psy-groove"
       ],
@@ -168,10 +168,10 @@
         },
         "mapUrl": "https://maps.app.goo.gl/EtfCwAWYFE9CAmhNA"
       },
-      "lineupRaw": "TERRACE STAGE — Tropical Nomads Crew\n19:00 - Respectmusic 🇧🇷 (Progressive)\n20:00 - Araujah 🇧🇷 (Progressive)\n21:00 - Octo 🇧🇷 (Progressive)\n22:00 - Vinius 🇧🇷 (Full-On)\n23:00 - After June 🇧🇷, Shivaion 🇧🇷 & Blazin'G 🇧🇷 (Full-On / Night / Forest)\n01:00 - END\n\nTHE SOUNDHOUSE STAGE\n23:00 - Deutsch 🇧🇷 (Progressive)\n00:30 - Middle-D 🇧🇷 (Progressive)\n01:30 - Kobot 🇧🇷 (Full-On)\n02:45 - END",
+      "lineupRaw": "After June 🇧🇷 (Full-On / Night / Forest)\nAraujah 🇧🇷 (Progressive)\nBlazin'G 🇧🇷 (Full-On / Night / Forest)\nDeutsch 🇧🇷 (Progressive)\nKobot 🇧🇷 (Full-On)\nMiddle-D 🇧🇷 (Progressive)\nOcto 🇧🇷 (Progressive)\nRespeter 🇧🇷 (Progressive)\nShivaion 🇧🇷 (Full-On / Night / Forest)\nVinius 🇧🇷 (Full-On)",
       "stages": [
         {
-          "name": "TERRACE STAGE",
+          "name": "Line-up",
           "genres": [
             "Progressive",
             "Full-On",
@@ -179,42 +179,6 @@
             "Forest"
           ],
           "artists": [
-            {
-              "name": "Respectmusic",
-              "isoCountry": "BR",
-              "countryFlag": "🇧🇷",
-              "genres": [
-                "Progressive"
-              ],
-              "stage": "TERRACE STAGE"
-            },
-            {
-              "name": "Araujah",
-              "isoCountry": "BR",
-              "countryFlag": "🇧🇷",
-              "genres": [
-                "Progressive"
-              ],
-              "stage": "TERRACE STAGE"
-            },
-            {
-              "name": "Octo",
-              "isoCountry": "BR",
-              "countryFlag": "🇧🇷",
-              "genres": [
-                "Progressive"
-              ],
-              "stage": "TERRACE STAGE"
-            },
-            {
-              "name": "Vinius",
-              "isoCountry": "BR",
-              "countryFlag": "🇧🇷",
-              "genres": [
-                "Full-On"
-              ],
-              "stage": "TERRACE STAGE"
-            },
             {
               "name": "After June",
               "isoCountry": "BR",
@@ -224,18 +188,16 @@
                 "Night",
                 "Forest"
               ],
-              "stage": "TERRACE STAGE"
+              "stage": "Line-up"
             },
             {
-              "name": "Shivaion",
+              "name": "Araujah",
               "isoCountry": "BR",
               "countryFlag": "🇧🇷",
               "genres": [
-                "Full-On",
-                "Night",
-                "Forest"
+                "Progressive"
               ],
-              "stage": "TERRACE STAGE"
+              "stage": "Line-up"
             },
             {
               "name": "Blazin'G",
@@ -246,17 +208,8 @@
                 "Night",
                 "Forest"
               ],
-              "stage": "TERRACE STAGE"
-            }
-          ]
-        },
-        {
-          "name": "THE SOUNDHOUSE STAGE",
-          "genres": [
-            "Progressive",
-            "Full-On"
-          ],
-          "artists": [
+              "stage": "Line-up"
+            },
             {
               "name": "Deutsch",
               "isoCountry": "BR",
@@ -264,16 +217,7 @@
               "genres": [
                 "Progressive"
               ],
-              "stage": "THE SOUNDHOUSE STAGE"
-            },
-            {
-              "name": "Middle-D",
-              "isoCountry": "BR",
-              "countryFlag": "🇧🇷",
-              "genres": [
-                "Progressive"
-              ],
-              "stage": "THE SOUNDHOUSE STAGE"
+              "stage": "Line-up"
             },
             {
               "name": "Kobot",
@@ -282,18 +226,71 @@
               "genres": [
                 "Full-On"
               ],
-              "stage": "THE SOUNDHOUSE STAGE"
+              "stage": "Line-up"
+            },
+            {
+              "name": "Middle-D",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Progressive"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Octo",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Progressive"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Respeter",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Progressive"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Shivaion",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Full-On",
+                "Night",
+                "Forest"
+              ],
+              "stage": "Line-up"
+            },
+            {
+              "name": "Vinius",
+              "isoCountry": "BR",
+              "countryFlag": "🇧🇷",
+              "genres": [
+                "Full-On"
+              ],
+              "stage": "Line-up"
             }
           ]
         }
       ],
       "cardArtists": [
         "After June",
-        "Shivaion",
+        "Araujah",
         "Blazin'G",
-        "Deutsch"
+        "Deutsch",
+        "Kobot",
+        "Middle-D",
+        "Octo",
+        "Respeter",
+        "Shivaion",
+        "Vinius"
       ],
-      "description": "Tropical Groove returns to The Sound House, Dublin, on Friday, 20 November 2026.\n\nThe Terrace is the Tropical Nomads crew, moving from progressive into full-on, night and forest. The Soundhouse opens at 23:00.\n\n🗓️ Friday, 20 November 2026\n📍 The Sound House, Dublin\n⏱️ 19:00 — 02:45\n👽 2 Areas\n🌀 Progressive • Full-On • Night • Forest",
+      "description": "Tropical Groove returns to The Sound House, Dublin, on Friday, 20 November 2026, with Kobot, Middle-D and Deutsch.\n\n🗓️ Friday, 20 November 2026\n📍 The Sound House, Dublin\n⏱️ 19:00 — 02:45\n🌀 Progressive • Full-On • Night • Forest",
       "organizer": "Tropical Nomads",
       "images": {
         "bannerLocal": "/events/banners/tropical-groove-2026-11-20.jpg"

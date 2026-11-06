@@ -35,7 +35,11 @@ export function UpcomingEventsList({ events, partners }: UpcomingEventsListProps
           <div className="mt-6 space-y-4">
             {events.map((event, index) => {
               const highlighted = index < 2;
-              const summary = getStageSummary(event);
+              const lineupCount = event.stages.reduce((count, stage) => count + stage.artists.length, 0);
+              const summary = getStageSummary(
+                event,
+                event.cardArtists && event.cardArtists.length >= lineupCount ? lineupCount : 4,
+              );
               const ticketUrl = getPrimaryTicketUrl(event);
               const ticketsAvailable = hasTicketSales(event);
               const hasLink = ticketsAvailable || Boolean(event.links.goabase);
