@@ -57,7 +57,7 @@ The Amplify, ECS, and RDS tickets are the deploy path for the first product, and
 | 14 | 1, product | [Payment interfaces](12-payment-interfaces.md) | 09, 10, 11, 28 | Pending traces and saved methods. No company and no confirmed charge. |
 | 15 | 1, product | [Payment decisions still open](21-payment-decisions.md) | 12 | Later payment questions. Euro and no refunds are already decided. The company is ticket 29. |
 | 16 | 1, product | [Tickets](13-tickets.md) | 08, 12, 20, 28 | Buy a ticket for a published party. The door copy is a QR code. |
-| 17 | 1, product | [Check-in](14-check-in.md) | 05, 10, 13, 20 | Door staff scan QR codes. They cannot configure events, tickets, or merch. |
+| 17 | 1, product | [Check-in](14-check-in.md) | 05, 10, 13, 20 | Admin and door pick an event, see sold tickets, search by name, and scan a QR code. One check-in. Admin guest lists. Door cannot edit the party. |
 | 18 | 1, product | [Merch store](15-merch-store.md) | 05, 10, 12, 20, 28 | Buyer catalog, starting from the two shirts on the page. |
 | 19 | 1, product | [Purchase and ticket history](26-purchase-history.md) | 09, 10, 13, 15, 20 | A user sees only their own purchases and tickets. |
 | 20 | 1, product | [Inventory](16-inventory.md) | 09, 15 | Admin adds merch and sets price, sizes, and stock. |

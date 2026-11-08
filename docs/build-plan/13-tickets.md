@@ -24,7 +24,7 @@ The site lists parties and then leaves. The product has to generate a ticket, st
 4. The buyer opens the ticket again from My Tickets in the web app, signed in.
 5. Mark the ticket `payable` only. Door validation in ticket 14 accepts it only after the trace is confirmed. With the stub adapter, a scan must refuse it as unpaid. That is the correct result until a provider is connected.
 6. Leave external links on events that are not switched. The one-pager keeps `getPrimaryTicketUrl`.
-7. Ask about comps, guest lists, transfers, re-entry, and cancellation before enforcing "already used". Record every issued ticket.
+7. Record every issued ticket. Guest lists and a second check-in are decided on ticket 14: an admin guest list can be checked in, and a checked ticket cannot be checked in again. Transfers and cancellation stay open.
 8. Do not write the secret into `public/data`.
 
 ## Acceptance criteria
