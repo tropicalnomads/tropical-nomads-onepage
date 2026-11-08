@@ -1,10 +1,11 @@
+import { locales, type Locale } from '../constants/locales.ts';
 import { fail, ok, type ParseResult } from './result.ts';
+
+export { locales };
+export type { Locale };
 
 export const roles = ['admin', 'door', 'user'] as const;
 export type Role = (typeof roles)[number];
-
-export const locales = ['en', 'pt'] as const;
-export type Locale = (typeof locales)[number];
 
 export const paymentPurposes = ['tickets', 'merch'] as const;
 export type PaymentPurpose = (typeof paymentPurposes)[number];

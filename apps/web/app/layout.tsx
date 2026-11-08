@@ -3,6 +3,7 @@ import '@fontsource-variable/outfit';
 import { brandStyleText } from '../src/brand';
 import { ShellFooter } from '../src/components/ShellFooter';
 import { ShellHeader } from '../src/components/ShellHeader';
+import { LanguageProvider } from '../src/i18n/provider';
 import './globals.css';
 
 export const metadata = {
@@ -18,9 +19,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <style>{brandStyleText()}</style>
       </head>
       <body className="font-sans">
-        <ShellHeader />
-        {children}
-        <ShellFooter />
+        <LanguageProvider>
+          <ShellHeader />
+          {children}
+          <ShellFooter />
+        </LanguageProvider>
       </body>
     </html>
   );

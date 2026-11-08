@@ -1,5 +1,7 @@
 export { textContract, textView } from './components/text.ts';
 export type { TextView } from './components/text.ts';
+export { acceptLocale, languageStorageKey, locales, normalizeLocale, selectLocale } from './constants/locales.ts';
+export type { Locale } from './constants/locales.ts';
 export { origins } from './constants/origins.ts';
 export { webAreas } from './navigation/areas.ts';
 export type { WebAreaId } from './navigation/areas.ts';

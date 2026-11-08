@@ -8,6 +8,7 @@ This folder holds short procedures for people working on Tropical Nomads.
 - [shared-client.md](shared-client.md) — ticket 4. The versioned shared package.
 - [types-and-schemas.md](types-and-schemas.md) — ticket 28. Record schemas and lookups in the shared package.
 - [web-app.md](web-app.md) — the web shell in `apps/web`. A phone uses it in the browser. It is not deployed.
+- [languages.md](languages.md) — ticket 20. English and Portuguese in the web shell.
 - [nextjs.md](nextjs.md) — Next.js lives in the web shell. The one-pager stays on Vite.
 - [turborepo.md](turborepo.md) — how package tasks run. pnpm stays the package manager.
 - [aws-sizes.md](aws-sizes.md) — where the AWS sizes live, and what the next ticket must not change.

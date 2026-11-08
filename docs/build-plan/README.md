@@ -11,8 +11,8 @@ Owner decisions already in this order:
 - Login and registration use Amazon Cognito, with Google and Apple sign-in.
 - A user profile holds identity, a billing address, an avatar, and payment methods. The payment company is ticket 29, after the not-live hosts, and is not named.
 - The access list has three roles. Admin creates parties and merch. Door staff only scan QR codes. Every other user sees their own purchase history and ticket history.
-- The product is English and Portuguese, with internationalization. The one-pager already has both.
-- The web shell is `apps/web`. The shared package is `packages/shared` at version `0.3.0`. The owner asked for both in this monorepo. The planning text described separate repositories, and those remotes were not created. Ticket 28 writes the schemas there. The shell does not invent fields.
+- The product is English and Portuguese, with internationalization. The one-pager already has both, and the web shell switches between them.
+- The web shell is `apps/web`. The shared package is `packages/shared` at version `0.4.0`. The owner asked for both in this monorepo. The planning text described separate repositories, and those remotes were not created. Ticket 28 writes the schemas there. The shell does not invent fields. The language codes are `en` and `pt`.
 - Before a future go-live, and still not live: the new frontend on its own Amplify app, the API as a Docker container on ECS, and a confirmation of Amazon RDS for PostgreSQL. Every AWS resource is in Frankfurt (`eu-central-1`). JSON stays the store until that confirmation. The one-pager keeps its existing Amplify deploy.
 - This repository still holds the one-pager, the API, Bookings, and the JSON. Bookings is not split into its own repo.
 - Email is one sender, with templates and a fixed message list. Marketing needs consent and can be stopped. No email vendor is chosen.
@@ -45,7 +45,7 @@ The Amplify, ECS, and RDS tickets are the deploy path for the first product, and
 | 4 | 1, base | [Shared client repo](04-shared-client-repo.md) | 02 | `packages/shared` at version 0.1.0. Theme, component contract, and the empty schema entry. |
 | 5 | 1, base | [Types and schemas](28-types-and-schemas.md) | 04 | Record schemas and lookups in `packages/shared`. No database. |
 | 6 | 1, base | [Web app repository](05-app-repos.md) | 03, 04, 28 | `apps/web` shell, usable in a phone browser. Not deployed. Schema fields stay in ticket 28. |
-| 7 | 1, base | [English and Portuguese](20-internationalization.md) | 04, 05 | Internationalization. The only languages are `en` and `pt`. |
+| 7 | 1, base | [English and Portuguese](20-internationalization.md) | 04, 05 | The web shell switches between `en` and `pt`. No third language. |
 | 8 | 1, base | [API reads published data](06-api-reads-published-data.md) | 02, 03, 28 | API over the JSON this repo already publishes. |
 | 9 | 1, base | [Shared catalog](07-shared-catalog.md) | 06, 28 | Published artists and parties. Agendas wait for the second iteration. |
 | 10 | 1, base | [Security baseline](09-security-baseline.md) | 01, 07 | Three roles: admin, door, and user. |
@@ -83,7 +83,7 @@ The Amplify, ECS, and RDS tickets are the deploy path for the first product, and
 | Bookings in this monorepo | 02 names the slot in the base. 17 brings the product in, in the second iteration. |
 | Admin party calendar | 18, second iteration |
 
-English and Portuguese are decided. Ticket 20 puts them in the web app. The one-pager already has them in `src/i18n/`.
+English and Portuguese are decided. The web shell switches between them. The one-pager already has them in `src/i18n/`.
 
 ## Gaps
 
@@ -100,7 +100,7 @@ Checked against the decisions so far. The access list is three roles on ticket 0
 | Bookings deploy, shared artists, parties, calendar | 02 names the slot. 17, 18, and 22 are the second iteration. |
 | Admin party calendar | 18, after the first product |
 | Security | 09, then the later tickets that enforce it |
-| English and Portuguese, with internationalization | 20. The one-pager already has `en` and `pt`. |
+| English and Portuguese, with internationalization | 20. The one-pager and the web shell use `en` and `pt`. |
 | JSON until a database exists | 11. Ticket 25 asks the owner to confirm RDS for PostgreSQL and does not migrate. Starting sizes are in [the AWS record](../devops/aws.md). |
 | One-pager keeps deploying | 03. Tickets 23, 24, and 25 are the later hosts and are not live yet. Region is Frankfurt (`eu-central-1`). |
 | Email | 27, in the first product, after purchases and the door invite. No vendor. |
