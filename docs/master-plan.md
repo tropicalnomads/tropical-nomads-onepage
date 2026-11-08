@@ -190,7 +190,7 @@ The [architecture index](architecture/README.md) holds the detail: the [system d
 - Package manager commands use **pnpm**. The current one-pager already uses pnpm: `pnpm-lock.yaml`, `amplify.yml`, `pnpm install`, `pnpm lint`, and `pnpm build`.
 - The **current one-pager stays as one package** inside that monorepo.
 - The **API package** is added later, in this same repository.
-- The **web app is its own repository**, plus a shared repository for theme colors, base components, types, schemas, and constants. Phones use that web app in the browser. iOS and Android repositories are optional and last, and they only create the repos. They call the API. They do not keep a copy of the event data.
+- The **web shell is `apps/web`**, and the shared package is `packages/shared`. The owner asked for both in this monorepo. The planning text described separate repositories. Those remotes were not created. Phones use the web shell in the browser. iOS and Android repositories are optional and last, and they only create the repos. They do not keep a copy of the event data.
 - **Bookings** is a package in the same monorepo, with its **own deploy**, still at `bookings.tropical-nomads.com`.
 - **Shared data** is artists, parties/events, and the calendar. The website/app and Bookings both read and write it.
 - The data store is **JSON files until the database recommendation is confirmed**. The recommendation is Amazon RDS for PostgreSQL. It is not a migration, and no database is created by this plan.
@@ -201,7 +201,7 @@ The [architecture index](architecture/README.md) holds the detail: the [system d
 | Piece | Role | Deploy |
 | --- | --- | --- |
 | One-pager package | The current site, kept as its own package | Its existing Amplify app, at www. `amplify.yml` publishes only `apps/one-pager/dist`. |
-| Web app repo, plus a shared repo | The product people use, including on a phone browser. Shared repo holds theme, components, types, schemas, and constants. | Later host is a separate Amplify app. It does not go live in the current tickets. |
+| Web shell `apps/web`, plus `packages/shared` | The product people use, including on a phone browser. The shared package holds theme, the component contract, area ids, and the empty schema entry. | Later host is a separate Amplify app. The shell is not live. |
 | iOS and Android repos | Optional. Create the repositories only. | Last in the build plan. No native implementation. |
 | API package | Reads and writes JSON for both products | Later host is a Docker container on ECS. It does not go live in the current tickets. |
 | Bookings package | Bookings, including the admin party calendar | `bookings.tropical-nomads.com` |
@@ -278,12 +278,12 @@ The owner defined the architecture.
 | Topic | Decision |
 | --- | --- |
 | Registration and login | Amazon Cognito, with Google and Apple. An Apple Services ID and a Google OAuth client are later work in ticket 10. They are not created here. |
-| Web app | Next.js. It is not installed here, and `src/` is not rewritten. |
+| Web app | Next.js, installed in `apps/web`. The one-pager `src/` is not rewritten. The shell is not deployed. |
 | Web frontend host | Amplify, when a later ticket is allowed to launch. A separate app from the one-pager. |
 | API host | A Docker container on ECS, when a later ticket is allowed to launch. The cluster is not created here. |
 | API style | REST. |
 | Phones | The web app in the browser. |
-| Repositories | A shared repo and a web app repo are required. iOS and Android repos are optional and last. Ticket 19 may create them. It does not implement native apps. This monorepo keeps the one-pager, the API, Bookings, and JSON. The monorepo uses Turborepo and pnpm. The one-pager package is `apps/one-pager`. The shared repo does not wait on a native component toolkit. |
+| Repositories | The shared package is `packages/shared`. The web shell is `apps/web`. Their GitHub remotes were not created. iOS and Android repos are optional and last. Ticket 19 may create them. It does not implement native apps. This monorepo keeps the one-pager, the API, Bookings, the web shell, and JSON. The monorepo uses Turborepo and pnpm. The one-pager package is `apps/one-pager`. |
 | Package manager | pnpm. The one-pager already uses it. |
 | Languages | English and Portuguese. |
 | Database | Amazon RDS for PostgreSQL is the recommendation. JSON stays the store until that database is confirmed. This ticket does not create it and does not migrate. The starting size is in [the AWS record](devops/aws.md): one `db.t4g.small`. |
@@ -304,11 +304,11 @@ Still open: ticket types, comps, guest lists, chargebacks, cancellation, transfe
 
 | Topic | Status | What stays attached to the question |
 | --- | --- | --- |
-| Tech stack | Decided | The record above. Cognito with Google and Apple. Next.js for the web app, not installed here. Amplify for the new frontend. A Docker container on ECS for the API. REST. RDS for PostgreSQL is the recommendation. JSON stays until that database is confirmed. The new app is not launched. |
+| Tech stack | Decided | The record above. Cognito with Google and Apple. Next.js for the web shell in `apps/web`. Amplify for the new frontend, not launched. A Docker container on ECS for the API. REST. RDS for PostgreSQL is the recommendation. JSON stays until that database is confirmed. The new app is not launched. |
 | Cloud vendor | Decided as a target | AWS is the platform, in Frankfurt (`eu-central-1`). The one-pager keeps its Amplify app. The new web app's Amplify app and the ECS cluster are not created here. Starting sizes are in [the AWS record](devops/aws.md). DevOps owns later changes. |
 | Payments provider | Chosen later | Ticket 29, last in the first iteration, after the not-live hosts. The company is not named. The currency is euro. There are no refunds. |
 | Ticket format | Decided for this iteration | Door staff scan a QR code. A wallet pass is later, and it is not in this iteration. |
-| Where the apps live | Decided | The web app and a shared repository are required. iOS and Android repositories are optional, last, and are not a native implementation. Phones use the web app in the browser. This repo still holds the one-pager, the API, Bookings, and the JSON data. The monorepo uses Turborepo. Commands use pnpm. The packages are `apps/one-pager`, `apps/api`, and `apps/bookings`. |
+| Where the apps live | Decided | The web shell is `apps/web` and the shared package is `packages/shared`. The owner asked for both in this monorepo. iOS and Android repositories are optional, last, and are not a native implementation. Phones use the web shell in the browser. This repo holds the one-pager, the API, Bookings, the web shell, and the JSON data. The monorepo uses Turborepo. Commands use pnpm. |
 | Who performs check-in | Decided | The access list has three roles. Door staff scan QR codes. Admins and users do not. Offline check-in is later, and it is not in this iteration. |
 | Languages | Decided | The product is English and Portuguese, with internationalization. The one-pager already has both in `src/i18n/`. The currency is euro. |
 | Email | Decided | One sender and a fixed message list. A ticket purchase email carries the QR code. Marketing for a new party, and the artist offer, need consent, a stated purpose, and a way to stop. Stopping marketing does not stop purchase or QR mail. No email vendor is chosen. |
@@ -337,7 +337,7 @@ This is a planning sequence. It is the order of decisions. It is not a build sch
 5. **Merch is pickup for now.** Shipping is later. Stock moves when a sale is real. Whether a shirt is paid inside this product waits on the payment company.
 6. **Split public JSON from private JSON,** including where writable files live. Do this before API work, so ticket secrets stay out of the public site bundle.
 7. **Languages are chosen.** The product is English and Portuguese, with internationalization. Countries are still open. The currency is euro.
-8. **Build shared UI components for the web app.** Theme tokens, types, schemas, and constants live in the shared repo. Native screens are not in the required path, so a Swift or Kotlin component toolkit is not a blocker.
+8. **Build shared UI components for the web app.** Theme tokens, the area ids, and the empty schema entry live in `packages/shared`. Ticket 28 still writes the schema fields. Native screens are not in the required path, so a Swift or Kotlin component toolkit is not a blocker.
 9. **The architecture is defined.** Cognito with Google and Apple, Next.js, Amplify, a Docker container on ECS, REST, and Amazon RDS for PostgreSQL as the recommendation. Every AWS resource is in Frankfurt (`eu-central-1`). Those hosts are not live yet. The one-pager deploy stays. The payment company is ticket 29 and is not named. JSON stays the store until the database is confirmed. Starting sizes for about five admins and parties of about 100–200 people are in [the AWS record](devops/aws.md).
 10. **Set the remaining implementation order** after those decisions. One constraint is already fixed. It sits below, separate from this list, so it is not mistaken for a full build plan.
 
@@ -345,7 +345,7 @@ This is a planning sequence. It is the order of decisions. It is not a build sch
 
 When the owner explicitly asks to start building, the **first build step** is to turn the Tropical Nomads page into a web app that can have an API.
 
-That step adds the API package beside the current one-pager, and a web app repository that can call it. JSON files are the data store. The [build plan](build-plan/README.md) splits that step, and everything after it, into tickets for review. This plan still does not build them.
+The web shell is `apps/web` and is not live. The API slot is `apps/api` and still ships nothing. JSON files are the data store. The [build plan](build-plan/README.md) splits the rest into tickets.
 
 ## 9. How this folder grows
 
