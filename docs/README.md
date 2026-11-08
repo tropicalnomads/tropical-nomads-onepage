@@ -30,9 +30,10 @@ These tickets describe work for the owner to accept before anyone builds. They d
 
 [`docs/skills/`](skills/README.md) is the shelf for repeatable team procedures.
 
-- [skills/README.md](skills/README.md) — what belongs here later. No skill files are stored yet.
+- [skills/README.md](skills/README.md) — what belongs in this folder.
+- [skills/ticket-delivery.md](skills/ticket-delivery.md) — how an accepted build-plan ticket is delivered: product manager, technical lead, developer, then QA, before the owner reviews.
 
-A skill file belongs here only after someone has done the task and can write steps another person can follow. Placeholder skills do not belong here. Product decisions and architecture notes do not belong here either.
+A skill file belongs here only when the procedure is real. Placeholder skills do not belong here. Product decisions and architecture notes do not belong here either.
 
 ## Status
 
