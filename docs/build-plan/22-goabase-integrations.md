@@ -19,7 +19,7 @@ Nothing depends on this ticket. It does not block the admin calendar.
 
 ## To-do
 
-1. Add an integrations tab to Bookings admin, team-only.
+1. Add an integrations tab for the admin role only. Door and user cannot open it.
 2. Store parties that exist, separately from `public/data/events.json`. A party in this list is not automatically a Tropical Nomads event on www.
 3. From that list, let the team email an offer of Tropical Nomads artists. The artist names come from the shared catalog.
 4. Keep `scripts/fetch-goabase-events.mjs` and `pnpm events` as the one-pager refresh. Do not delete them here and do not make this tab the writer of the public file.
@@ -28,7 +28,7 @@ Nothing depends on this ticket. It does not block the admin calendar.
 
 ## Acceptance criteria
 
-- Bookings admin shows the integrations tab and a party that is not on the public event list.
+- An admin sees the integrations tab and a party that is not on the public event list. Door and user do not.
 - An offer email names artists from the shared catalog and a party from the integrations list.
 - `public/data/events.json` is unchanged by saving that party.
 - No native screen was added.

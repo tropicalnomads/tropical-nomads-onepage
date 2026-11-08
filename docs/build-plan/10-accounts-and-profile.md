@@ -50,8 +50,8 @@ Account:
 
 - `createdAt`, `updatedAt`.
 - Status: active or disabled.
+- Role: `user`, `door`, or `admin`. Registration sets `user`. Ticket 14 grants `door`. The owner account is the first `admin`, from configuration, not from a password stored in the repo.
 - Locale preference, optional, and only `en` or `pt`. The product languages are already decided.
-- Door-staff grants are not fields on this profile. They are invites in ticket 14.
 
 Leave date of birth out unless the owner says events are age-restricted. Do not collect it "just in case".
 
@@ -62,7 +62,7 @@ Leave date of birth out unless the owner says events are age-restricted. Do not 
 3. Username rules: unique, stable enough to show at the door, rejected when taken. Unit-test the validator. Do not use the public event id as a username.
 4. Avatar upload stores an image reference on the profile. The bytes are not committed to git and not placed in `public/data`.
 5. The web app uses the shared profile schema. It does not invent fields.
-6. Sign-out works in the web app, including a phone browser. A disabled profile cannot obtain a door-staff session or start a purchase.
+6. Sign-out works in the web app, including a phone browser. A disabled profile cannot start a purchase or scan. Do not put party, merch, or scanner controls on the registration screen.
 7. Do not add the payment company's SDK. The payment-method list can be empty.
 8. Do not put profiles, emails, or avatars into `public/data`.
 

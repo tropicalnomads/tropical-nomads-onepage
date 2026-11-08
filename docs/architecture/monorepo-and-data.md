@@ -115,7 +115,7 @@ The API package is the reader and writer:
 
 - The web app asks the API to create an order, record a confirmed payment, issue a ticket, and check a ticket in.
 - The store asks the API for availability. A completed merch sale updates stock through the API.
-- Bookings admin asks the API to update artists, parties, and calendar entries. The public upcoming-events list reads the published result.
+- The admin role asks the API to update artists, parties, and calendar entries. The public upcoming-events list reads the published result. Door and user cannot.
 - While the one-pager is still the static site, it keeps reading the published reference JSON. This planning stage does not make it a writer of tickets.
 
 The website/app and Bookings both read and write the shared entities — artists, parties/events, and the calendar — through that API, so the two deploys do not keep two copies.

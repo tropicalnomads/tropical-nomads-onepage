@@ -20,7 +20,7 @@ Do not answer them in this ticket. Do not name a company.
 
 1. Which payment company connects to `markPaymentConfirmed`. The interfaces stay as they are until that choice.
 2. Which currencies `startPayment` may accept. The shirt on the page is €50. That price is not a decision that the product takes only euros.
-3. Ticket types and prices, and the merch price once it is no longer the constant `MERCH_PRICE_EUR`.
+3. An admin sets an event's ticket offers and a product's price in tickets 18 and 16. This list does not replace those prices with one global price, and it does not choose the payment company.
 4. What a refund and a chargeback do to the trace from `recordRefund`, and whether a cancelled order can still be checked in.
 5. Whether a comp or a guest ticket is a payment trace with no charge, or a different kind of issued ticket. Transfers and a second scan stay on the check-in ticket. They are not payment-company choices.
 6. When an event leaves Eventbrite, another tickets URL, or Goabase, and when the shirt leaves the WhatsApp reserve. Those links stay until that switch.

@@ -1,14 +1,14 @@
 # 09 — Security baseline
 
-**Status:** not started. Rules before accounts, money, and door invites. Cognito is the identity service. This ticket does not pick a payment company.
+**Status:** not started. The access list, before accounts, money, and door invites. Cognito is the identity service. This ticket does not pick a payment company.
 
 ## Outcome
 
-Visitors, signed-in buyers, invited door staff, merch customers, Bookings admins, and inventory admins have distinct permissions. An admin can grant the door-staff role. Public JSON stays free of ticket secrets, profiles, and payment traces.
+Signed-in people have one of three roles: admin, door, or user. A new account is a user. Public pages stay readable without an account. Public JSON stays free of ticket secrets, profiles, and payment traces. Later tickets enforce this list. They do not invent a fourth role.
 
 ## Why it exists
 
-The current site has no accounts and no admin. The first write must not land secrets in `public/data`. The owner decided door staff are people an admin invites, and that they scan QR codes. This ticket writes that rule. Ticket 10 builds Cognito. Ticket 14 builds the invite.
+The current site has no accounts and no admin. The owner decided the access list is three roles. Door staff only scan QR codes. Admins create parties and merch. Everyone else sees their own purchases and tickets. Bookings editing and stock editing are admin work, not separate roles.
 
 ## Depends on
 
@@ -17,26 +17,26 @@ The current site has no accounts and no admin. The first write must not land sec
 
 ## To-do
 
-1. Encode these rules, then enforce them on later writes:
-   - Visitor: read published events and the public store. No account required for that.
-   - Buyer: a Cognito user. Reads only their own tickets and payment traces. Must have a profile before purchase.
-   - Door staff: an admin-invited user. Scans QR codes for the events on their invite. Cannot issue tickets, change prices, edit the lineup, or change stock. Buyers are not door staff unless an admin invites them.
-   - Admin: the owner, and any later team member the owner marks as admin. Can invite and revoke door staff.
-   - Merch customer: the same buyer account. Cannot edit counts.
-   - Bookings admin and inventory admin: team only. Whether they are the same person as the product admin is still open. Keep the permissions distinct until the owner merges them.
-2. Public files may stay in the site bundle: the existing `public/data/*.json` and images. Never add ticket secrets, profiles, payment traces, check-in records, or credentials.
-3. Check-in asks the API. The client does not declare success.
-4. Payment status changes inside the payment interface, later from the provider. The app does not set it. No raw card numbers.
-5. Admin changes to money, tickets, stock, and door invites record who did it.
-6. Do not pick rate-limit numbers or build offline check-in. Offline stays open for ticket 14.
-7. Do not install a second identity product beside Cognito.
+1. Encode these three roles. One account has one role.
+   - Admin: create a party and set its description, image, and artists. Configure that event's tickets. Add merch and set its price, sizes, and stock. Invite and revoke door staff. Cannot use the door scanner as a shortcut around those limits.
+   - Door: check people in by scanning a QR code, for the events on their invite. Cannot create or edit a party, configure tickets, add merch, or set price, sizes, or stock.
+   - User: see their own purchase history and their own ticket history. Buy through the later purchase tickets. Cannot open admin tools or the door scanner.
+2. A person with no account can read published events and the public store. That is not a fourth role.
+3. Registration in ticket 10 creates a user. The owner is the first admin, recorded as configuration, not as a password in the repo. An admin may grant admin or door. A user cannot grant either.
+4. Public files may stay in the site bundle: the existing `public/data/*.json` and images. Never add ticket secrets, profiles, payment traces, check-in records, or credentials.
+5. Check-in asks the API. The client does not declare success. Payment status changes inside the payment interface. The app does not set it. No raw card numbers.
+6. An admin change to a party, a ticket offer, merch, stock, or a door invite records who did it.
+7. Do not pick rate-limit numbers or build offline check-in. Offline stays open for ticket 14.
+8. Do not install a second identity product beside Cognito.
+9. Do not keep a separate bookings-admin or inventory-admin role.
 
 ## Acceptance criteria
 
-- The permission matrix includes visitor, buyer, door staff, admin, bookings admin, and inventory admin.
-- Door staff cannot issue a ticket in the matrix.
-- A buyer without an invite cannot scan.
+- The matrix has admin, door, and user, and no other role.
+- Admin is allowed to create a party, configure that event's tickets, and set merch price and stock. Door and user are denied those actions.
+- Door is allowed to scan. Admin and user are denied.
+- User is allowed to read their own purchases and tickets. A read of someone else's id is denied. Door is denied the history tools.
 
 ## Tests
 
-Unit tests of the permission matrix: role plus action returns allow or deny for issue-ticket, scan-ticket, invite-door-staff, edit-stock, and edit-calendar. The implementer runs them. No Cognito call is required for the matrix test. One-pager `pnpm lint` and `pnpm build` still pass.
+Unit tests of the matrix: role plus action returns allow or deny for create-party, configure-event-tickets, set-merch, scan-ticket, read-own-purchases, and read-other-purchases. The implementer runs them. No Cognito call is required. One-pager `pnpm lint` and `pnpm build` still pass.

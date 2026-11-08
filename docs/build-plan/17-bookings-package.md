@@ -25,7 +25,7 @@ The header already links to Bookings. Its code is not here. The owner asked for 
 3. Deploy it only to `bookings.tropical-nomads.com`. Do not publish it to www. Do not deploy the web app to Amplify or the API to ECS as part of this.
 4. Replace any private copy of artists, parties, or calendars with the shared catalog through the API.
 5. Keep tickets, payments, profiles, and stock out of Bookings unless the owner expands sharing.
-6. Bookings admin stays team-only.
+6. Bookings writes stay on the admin role from ticket 09. Door and user cannot edit artists, parties, or the calendar.
 7. Leave `timetable.tropical-nomads.com` where it is. Do not build the Goabase integrations tab here. That is ticket 22.
 8. Verify www still serves the one-pager, the header link still opens Bookings, and a Bookings-only change does not deploy the client apps.
 

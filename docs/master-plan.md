@@ -71,7 +71,7 @@ Stock is controlled. A real sale changes the count. The team can see and correct
 
 ### 2.7 Abuse-resistant security
 
-Security is a capability that runs through the others. It is not a page. Visitors, buyers, the check-in role, and admins have different permissions. Tickets are hard to forge. Check-in is limited to people who are supposed to validate tickets. Payments leave a trace. Bookings admin and inventory admin are for the team. Section 6 states the outcomes. Those outcomes are goals for the new product. They are not an audit of the current websites.
+Security is a capability that runs through the others. It is not a page. Signed-in people have one of three roles: admin, door, or user. Tickets are hard to forge. Only door staff scan QR codes. Payments leave a trace. Section 6 states the outcomes. Those outcomes are goals for the new product. They are not an audit of the current websites.
 
 ### 2.8 Bookings in this monorepo
 
@@ -79,7 +79,7 @@ Tropical Nomads Bookings lives in this repository, deploys on its own, and stays
 
 ### 2.9 Admin party calendar
 
-Bookings admin includes a calendar of parties and festivals. The team uses it to assemble artists' agendas. Those parties are the same parties the public site can list. What an agenda contains, beyond an artist and the parties they play, is undecided.
+The admin role has a calendar of parties and festivals. An admin creates a party and sets its description, image, and artists, and configures that event's tickets. The same calendar is where agendas are assembled. Those parties are the same parties the public site can list. What an agenda contains, beyond an artist and the parties they play, is undecided.
 
 ## 3. How the areas connect
 
@@ -99,7 +99,7 @@ Bookings admin   →  Party calendar  →  Artist agendas
 - **Merch and inventory are a pair.** The store sells what inventory says is available. Inventory owns the count.
 - **Merch uses the same payment interfaces as tickets.** Connecting the provider comes later. Pickup versus shipping for a shirt is still open.
 - **Bookings and the public product share artists, parties/events, and the calendar.** Both products read and write those records. The admin party calendar is where agendas are assembled. Visitors see the published parties. A public lineup and an agenda in Bookings are two views of the same data.
-- **Security sits on every arrow.** A visitor can read published events. Writing a party, changing stock, issuing a ticket, or recording a check-in needs the matching permission.
+- **Security sits on every arrow.** A person with no account can read published events. Admin writes parties, ticket offers, and merch. Door staff only record a check-in. A user reads their own purchases and tickets.
 
 ### Information architecture
 
@@ -109,17 +109,16 @@ Areas the product needs. The names describe the job. They are not screen titles,
 | --- | --- | --- |
 | Public events | Visitor, buyer | Upcoming events, and enough detail to decide to go |
 | Ticket purchase | Buyer | Choose tickets, pay, receive the generated ticket |
-| My tickets | Buyer | Find the ticket again, and see what was paid |
-| Check-in | Check-in role | Validate a purchased ticket and record the result |
-| Merch store | Merch customer | Browse T-shirts and other products, and buy what is in stock |
-| Inventory | Inventory admin | See and correct stock |
-| Party calendar | Bookings admin | See parties and festivals, and build artist agendas |
+| My purchases and tickets | User | See that person's own purchase history and ticket history |
+| Check-in | Door | Scan a QR code and record the result. No event, ticket, or merch configuration |
+| Merch store | User | Browse T-shirts and other products, and buy what is in stock |
+| Merch admin | Admin | Add merch and set price, sizes, and stock |
+| Party calendar | Admin | Create parties, set description, image, and artists, configure that event's tickets, and build agendas |
 | Shared catalog | Website/app and Bookings, both reading and writing; visitors see the published view | Artists, parties/events, calendar |
-| Orders | Team | See ticket orders and payment traces |
 
-"My tickets" means the buyer can return to a purchase after they sign in. Registration uses Cognito, with Google and Apple.
+A user returns to their own purchases and tickets after they sign in. Registration uses Cognito, with Google and Apple, and starts as the user role.
 
-Bookings admin and inventory admin are both team-only. Whether they are one role or two is undecided. The areas stay separate because agendas and stock are different jobs.
+Admin is one role for parties and merch. Door is one role for the scanner. The jobs stay in different screens so a door session is not also the party editor.
 
 ## 4. Main flows
 
@@ -153,7 +152,7 @@ The owner decided this on 8 November 2026. An admin invites people to help at th
 3. The product checks that the ticket was issued, matches this event, matches a real payment, and is still valid under the rules. Re-entry and transfers are undecided.
 4. The product records the check-in: which ticket, which event, when, and who performed it.
 5. A refused check-in (unknown, unpaid, wrong event, or already used when the rules say so) is visible to this role, and the holder is not admitted.
-6. This role does not create tickets, edit the lineup, or change stock.
+6. This role does not create a party, configure tickets, add merch, or change price, sizes, or stock.
 
 ### Merch customer
 
@@ -165,28 +164,22 @@ The owner decided this on 8 November 2026. An admin invites people to help at th
 
 ### Admin
 
-Admin means the team. Two jobs are already named. Refunds, guest tickets, and similar team jobs are undecided.
+Admin is one role. Refunds, guest tickets, and similar money rules are still undecided.
 
-**Bookings admin**
+1. Sign in as admin.
+2. Create a party. Set its description, image, and artists.
+3. Configure that event's ticket offers.
+4. Add merch. Set its price, sizes, and stock.
+5. Invite door staff, and revoke the invite.
+6. Save parties through the shared catalog, so the public list and Bookings use the same records. Whether a draft party can stay off the public list is undecided (section 7).
+7. This role does not scan QR codes.
 
-1. Sign in to Bookings admin. It is a team area.
-2. Open the party calendar and see parties and festivals.
-3. Place artists on those parties and assemble each artist's agenda.
-4. Save. Shared artists, parties/events, and the calendar update, so the public product and Bookings use the same records.
-5. The public list shows the published view. Whether a draft party can stay off that list is undecided (section 7).
+### User
 
-**Inventory admin**
-
-1. Sign in to the inventory area. Team only.
-2. See products and counts.
-3. Adjust stock when goods arrive, when they sell, or when a count needs a correction.
-4. The store's availability follows the new counts.
-
-**Orders** — the team member who looks after ticket sales:
-
-1. See orders and the payment trace for each one.
-2. See which tickets were issued and which were checked in.
-3. Refunds, comps, and cancellations are undecided. The trace needs room to record them once those rules exist.
+1. Sign in. The account is the user role unless an admin has changed it.
+2. Buy a ticket or a shirt through the purchase flow.
+3. Open purchase history and ticket history. Only this account's rows are there.
+4. This role does not open the party editor, the merch editor, or the scanner.
 
 ## 5. Repository shape
 
@@ -221,15 +214,15 @@ These are the outcomes the product is designed for. They describe the future pro
 
 ### People and permissions
 
-- A **visitor** can read published events and the public store.
-- A **ticket buyer** can see and present their own tickets and their own payment traces.
-- A **check-in role** can validate tickets for events an admin invited them to handle, and can record the result. They scan QR codes. They cannot issue tickets or change prices. The admin can invite and remove these people.
-- A **merch customer** can buy what is in stock and cannot edit inventory.
-- **Bookings admin** can edit the party calendar, artists, and agendas. Team only.
-- **Inventory admin** can edit stock. Team only.
-- One person may hold more than one team role. The permissions stay distinct, so a check-in device is not also an editor of the catalog.
+Signed-in accounts have one of three roles.
 
-Sign-in is Amazon Cognito, with Google and Apple as the SSO providers. Buyers have accounts. The permission split above is the product rule Cognito groups and the API have to meet.
+- **Admin** creates parties and sets the description, image, and artists. Admin configures that event's tickets. Admin adds merch and sets price, sizes, and stock. Admin invites and removes door staff.
+- **Door** checks people in by scanning a QR code for an invited event. Door cannot configure events, tickets, or merch.
+- **User** sees their own purchase history and their own ticket history, and can buy. A user cannot open admin tools or the door scanner.
+
+A person with no account can read published events and the public store. That is not a fourth role. One account has one role, so a door session is not also the party editor.
+
+Sign-in is Amazon Cognito, with Google and Apple as the SSO providers. New accounts are users. The three roles are the rule Cognito groups and the API have to meet. Security is a requirement on every ticket.
 
 ### Tickets
 
@@ -242,7 +235,7 @@ Sign-in is Amazon Cognito, with Google and Apple as the SSO providers. Buyers ha
 
 ### Check-in
 
-- Only the check-in role can record a check-in.
+- Only the door role can record a check-in.
 - A recorded attempt names the ticket, the event, the time, and who performed it.
 - A run of invalid attempts is a fraud signal the product should be able to slow down. The thresholds belong to implementation, after the stack is chosen.
 - Doors with no network are an open question. Any later offline mode still syncs into the same check-in record, so two doors cannot both accept one ticket with the product unaware.
@@ -258,9 +251,8 @@ Sign-in is Amazon Cognito, with Google and Apple as the SSO providers. Buyers ha
 
 ### Admin access
 
-- Bookings admin and inventory admin are team-only.
-- Writes to artists, parties/events, and the calendar are team actions. The public site reads the published result.
-- Inventory changes are team actions, plus the stock movement a completed merch sale creates.
+- Party, ticket-offer, merch, and stock writes are admin actions. The public site reads the published result.
+- A completed merch sale also moves stock. That movement is not a door or user edit.
 - An admin action that changes money, tickets, or stock records who did it.
 
 ### Public files and private files
@@ -283,7 +275,7 @@ Status is per row. Decisions the owner added on 8 November 2026 are marked as de
 | Payments provider | Undecided | The provider is integrated later and is not named. Ticket 12 builds the interfaces now. Ticket 21 lists the remaining payment decisions: company, currencies, ticket types and prices, refunds and chargebacks, comps and guest tickets, and when external checkout links are retired. |
 | Ticket format | Partly decided | Door staff scan a QR code. A wallet pass or another extra format for the buyer is still open. |
 | Where the apps live | Decided | The web app and a shared repository are required. iOS and Android repositories are optional, last, and are not a native implementation. Phones use the web app in the browser. This repo still holds the one-pager, the API, Bookings, and the JSON data. |
-| Who performs check-in | Decided | An admin invites people to scan QR codes and help at the door. Buyers do not check themselves in. |
+| Who performs check-in | Decided | The access list has three roles. Door staff scan QR codes. Admins and users do not. |
 | Languages | Decided | The product is English and Portuguese, with internationalization. The one-pager already has both in `src/i18n/`. Countries are not decided by that. Currencies are on the payment-decisions list. |
 | Implementation order | Proposed for review | The recommended order is in [docs/build-plan/](build-plan/README.md). Each ticket ends with acceptance criteria and unit tests where the behavior is pure. |
 
@@ -297,7 +289,7 @@ Status is per row. Decisions the owner added on 8 November 2026 are marked as de
 - Whether a party can stay on the admin calendar and off the public list.
 - Whether `timetable.tropical-nomads.com` remains a separate surface. This plan leaves it where it is.
 - Goabase's new job is decided: an integrations tab, last in the product tickets, holding parties that exist so Bookings can email offers of Tropical Nomads artists. The one-pager refresh script stays until that ticket. It does not block the catalog or the calendar.
-- Whether Bookings admin, inventory admin, and the person who reviews orders are one role or several.
+- A team view of every customer's orders. Users see their own history. That does not add a fourth role.
 - Where writable JSON lives — in git, or in a private location the API updates — and how two deploys avoid overwriting the same file. The store is JSON until the owner confirms Amazon RDS for PostgreSQL.
 - Whether check-in has to work offline at the door.
 - The one-pager keeps its own Amplify deploy at www. Before a future go-live, and still not live: a separate Amplify app for the web frontend, a Docker container on ECS for the API, and a confirmation of Amazon RDS for PostgreSQL. None of those three is a public launch, and the database ticket is not a migration.
@@ -307,7 +299,7 @@ Status is per row. Decisions the owner added on 8 November 2026 are marked as de
 This is a planning sequence. It is the order of decisions. It is not a build schedule, and it is not the order to write code.
 
 1. **Confirm the restatement** in section 1, including all nine capabilities, and the boundary with today's one-pager, Bookings, and the timetable site.
-2. **Name the remaining actors.** Check-in is decided: admin-invited door staff. Buyers have accounts. Still open: whether Bookings admin, inventory admin, and order review are one team role or several.
+2. **The actors are named.** Signed-in people are admin, door, or user. Admin invites door staff. A user sees their own history.
 3. **Agree the shared records** well enough to sketch JSON later: event/party, artist, calendar entry, artist agenda. Include what Bookings writes, what the public list shows, and whether drafts stay private.
 4. **Agree ticket and payment outcomes** before format or provider: what the buyer receives, what check-in has to prove, and the rules for transfer, re-entry, comps, and refunds.
 5. **Agree merch and inventory rules:** the catalog, pickup versus shipping, and whether a shirt is paid inside this product. Stock moves when a sale is real.

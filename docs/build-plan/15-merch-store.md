@@ -31,6 +31,7 @@ The web app, including a phone browser, lists the two current T-shirts from cata
 5. Ask whether fulfillment stays pickup at The Sound House, becomes shipping, or is both. Do not guess. The product can be seen either way.
 6. Leave the one-pager WhatsApp reserve in place until the owner retires it. Do not copy the shop phone number into new public JSON.
 7. Leave `stockMeterPercent` as display. It is not the stock system.
+8. This ticket is the buyer store. Adding a product and setting price, sizes, or stock is ticket 16, and only the admin role can do it. A user or door session that calls those writes is denied.
 
 ## Acceptance criteria
 

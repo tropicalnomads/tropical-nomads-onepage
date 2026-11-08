@@ -4,7 +4,7 @@
 
 ## Outcome
 
-Bookings admin shows a calendar of parties and festivals. The team builds each artist's agenda from those parties. A party on the calendar is the same record the public upcoming list can show. Visitors see the published view only.
+The admin role can create a party and set its description, image, and artists, then configure that event's ticket offers. The same party is the one the public upcoming list can show. Agendas are still assembled here. Door and user cannot open the editor. Visitors see the published view only.
 
 ## Why it exists
 
@@ -13,22 +13,26 @@ Public lineups come from `stages`, `cardArtists`, and the Goabase refresh. There
 ## Depends on
 
 - [07 — Shared catalog](07-shared-catalog.md).
+- [09 — Security baseline](09-security-baseline.md).
+- [13 — Tickets](13-tickets.md). Ticket offers use the ticket record. This ticket does not rebuild checkout or the QR code.
 - [17 — Bookings package](17-bookings-package.md).
 
 ## To-do
 
-1. Add the calendar to Bookings admin, team-only. List parties from the shared events. Show `title`, `dateStart`, `dateEnd`, `timezone`, and `venue`.
-2. Place artists from the shared artist catalog onto a party and assemble an agenda. Use the contents accepted in ticket 07. If that answer is missing, stop.
-3. Save through the API into the shared JSON. Do not keep a second lineup inside Bookings.
-4. Apply the draft rule from ticket 07.
-5. The refresh script rewrites `public/data/events.json` from `EVENT_SOURCES`. Say which writer wins when the calendar and `pnpm events` touch the same id. Do not delete the script. Ticket 22 is the later integrations tab and is not this writer. Do not stop this ticket to wait for it.
-6. Do not build ticket sales, QR check-in, or stock into this calendar.
-7. Record who saved a calendar change.
-8. Verify on the Bookings host only.
+1. Add the calendar for the admin role only. Create a party with description, image, and artists from the shared catalog. Also keep `title`, `dateStart`, `dateEnd`, `timezone`, and `venue`. Deny create and edit to door and user.
+2. Configure that event's ticket offers: name and price on the event, saved with the party. Do not charge a buyer and do not generate a QR code here. Ticket 13 remains the purchase.
+3. Assemble an agenda from those parties. Use the contents accepted in ticket 07. If that answer is missing, stop only the agenda part. Creating the party does not wait on it.
+4. Save through the API into the shared JSON. Do not keep a second lineup inside Bookings.
+5. Apply the draft rule from ticket 07.
+6. The refresh script rewrites `public/data/events.json` from `EVENT_SOURCES`. Say which writer wins when the calendar and `pnpm events` touch the same id. Do not delete the script. Ticket 22 is the later integrations tab and is not this writer. Do not stop this ticket to wait for it.
+7. Do not build checkout, QR check-in, or stock into this calendar. Stock stays on ticket 16.
+8. Record who saved a calendar change.
+9. Verify on the Bookings host only.
 
 ## Acceptance criteria
 
-- A team member can place a party, attach an artist, save once, and see the published party on the upcoming list.
+- An admin can create a party with a description, an image, and artists, attach a ticket offer, save once, and see the published party on the upcoming list.
+- Door and user cannot create a party or configure its tickets.
 - A draft, if the accepted rule hides drafts, is visible in admin and absent from the public list.
 - The save is attributable.
 
@@ -37,6 +41,7 @@ Public lineups come from `stages`, `cardArtists`, and the Goabase refresh. There
 Unit tests on fixtures:
 
 - Saving an agenda points at an event id that exists.
+- Door and user are denied create-party and configure-event-tickets.
 - The published filter matches the draft rule from ticket 07.
 - A second save by another user keeps both actor ids in the change record.
 

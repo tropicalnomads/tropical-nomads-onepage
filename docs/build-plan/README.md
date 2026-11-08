@@ -10,7 +10,7 @@ Owner decisions already in this order:
 
 - Login and registration use Amazon Cognito, with Google and Apple sign-in.
 - A user profile holds identity, a billing address, an avatar, and payment methods. The payment company is listed for later and is not chosen.
-- An admin invites people who scan QR codes and help at the door.
+- The access list has three roles. Admin creates parties and merch. Door staff only scan QR codes. Every other user sees their own purchase history and ticket history.
 - The product is English and Portuguese, with internationalization. The one-pager already has both.
 - The web app is its own repository. A shared repository holds theme colors, base components, types, schemas, and constants.
 - Before a future go-live, and still not live: the new frontend on its own Amplify app, the API as a Docker container on ECS, and a confirmation of Amazon RDS for PostgreSQL. JSON stays the store until that confirmation. The one-pager keeps its existing Amplify deploy.
@@ -33,22 +33,23 @@ Still open: the payment company, the currencies and prices on the payment-decisi
 | 7 | [API reads published data](06-api-reads-published-data.md) | 02, 03 | API over the JSON this repo already publishes. |
 | 8 | [Shared catalog](07-shared-catalog.md) | 06 | Artists, parties/events, and calendar. |
 | 9 | [Upcoming events](08-upcoming-events.md) | 05, 06, 07, 20 | Capability: upcoming events. Public, no login required. |
-| 10 | [Security baseline](09-security-baseline.md) | 01, 07 | Roles, including admin invite of door staff. |
+| 10 | [Security baseline](09-security-baseline.md) | 01, 07 | Three roles: admin, door, and user. |
 | 11 | [Accounts and profile](10-accounts-and-profile.md) | 04, 05, 09, 20 | Cognito, Google, Apple, and the user record, in the web app. |
 | 12 | [Private operational data](11-private-operational-data.md) | 06, 09 | JSON for orders, tickets, check-ins, and stock, outside `public/data/`. |
 | 13 | [Payment interfaces](12-payment-interfaces.md) | 09, 10, 11 | Interfaces and user payment methods. This is the payment work that happens now. |
 | 14 | [Payment decisions still open](21-payment-decisions.md) | 12 | Lists the later payment choices. Does not pick a provider. Nothing else waits on it. |
 | 15 | [Tickets](13-tickets.md) | 08, 12, 20 | Buy a ticket. The door copy is a QR code. |
-| 16 | [Check-in](14-check-in.md) | 05, 10, 13, 20 | Admin invites door staff. They scan QR codes in the web app. |
-| 17 | [Merch store](15-merch-store.md) | 05, 10, 12, 20 | Merch, starting from the two shirts on the page. |
-| 18 | [Inventory](16-inventory.md) | 09, 15 | Stock control. Counts leave `src/lib/merch.ts`. |
-| 19 | [Bookings package](17-bookings-package.md) | 02, 03, 07, 09, 20 | Bookings in this monorepo, own deploy, shared data. |
-| 20 | [Admin party calendar](18-admin-party-calendar.md) | 07, 17 | Party calendar and artist agendas. |
-| 21 | [Web app on Amplify](23-amplify-frontend.md) | 03, 05 | Not live yet. A separate Amplify app. www stays the one-pager. |
-| 22 | [API container on ECS](24-ecs-backend.md) | 06, 23 | Not live yet. Docker on ECS. No public production API. |
-| 23 | [Confirm RDS for PostgreSQL](25-rds-recommendation.md) | 01, 11, 24 | Not live yet. Recommendation to confirm. Not a migration. |
-| 24 | [Goabase integrations tab](22-goabase-integrations.md) | 07, 17 | Last product ticket. Parties that exist, so Bookings can email artist offers. |
-| 25 | [iOS and Android repositories](19-ios-android-repos.md) | 04 | Optional. Last. Creates the two repos only. No native screens. |
+| 16 | [Check-in](14-check-in.md) | 05, 10, 13, 20 | Door staff scan QR codes. They cannot configure events, tickets, or merch. |
+| 17 | [Merch store](15-merch-store.md) | 05, 10, 12, 20 | Buyer catalog, starting from the two shirts on the page. |
+| 18 | [Purchase and ticket history](26-purchase-history.md) | 09, 10, 13, 15, 20 | A user sees only their own purchases and tickets. |
+| 19 | [Inventory](16-inventory.md) | 09, 15 | Admin adds merch and sets price, sizes, and stock. |
+| 20 | [Bookings package](17-bookings-package.md) | 02, 03, 07, 09, 20 | Bookings in this monorepo, own deploy, shared data. |
+| 21 | [Admin party calendar](18-admin-party-calendar.md) | 07, 09, 13, 17 | Admin creates parties, sets description, image, and artists, and configures that event's tickets. |
+| 22 | [Web app on Amplify](23-amplify-frontend.md) | 03, 05 | Not live yet. A separate Amplify app. www stays the one-pager. |
+| 23 | [API container on ECS](24-ecs-backend.md) | 06, 23 | Not live yet. Docker on ECS. No public production API. |
+| 24 | [Confirm RDS for PostgreSQL](25-rds-recommendation.md) | 01, 11, 24 | Not live yet. Recommendation to confirm. Not a migration. |
+| 25 | [Goabase integrations tab](22-goabase-integrations.md) | 07, 17 | Last product ticket. Parties that exist, so Bookings can email artist offers. |
+| 26 | [iOS and Android repositories](19-ios-android-repos.md) | 04 | Optional. Last. Creates the two repos only. No native screens. |
 
 ## Capabilities
 
@@ -60,7 +61,7 @@ Still open: the payment company, the currencies and prices on the payment-decisi
 | Payments | 12 now; 21 lists the later decisions and does not pick a provider |
 | Merch store | 15 |
 | Inventory | 16 |
-| Abuse-resistant security | 09, then again in 10–16 |
+| Abuse-resistant security | 09, then enforced on every later ticket |
 | Bookings in this monorepo | 02 names the slot; 17 brings the product in |
 | Admin party calendar | 18 |
 
@@ -68,13 +69,13 @@ English and Portuguese are decided. Ticket 20 puts them in the web app. The one-
 
 ## Gaps
 
-Checked against the decisions so far. Tickets 20–25 cover languages, the later payment list, Goabase, and the three hosts that are not live yet. Ticket 19 remains the optional native repos.
+Checked against the decisions so far. The access list is three roles on ticket 09. Ticket 26 is the user's own history. Tickets 16 and 18 are the admin tools. Ticket 14 is the door scanner. No second role system was added.
 
 | Decision | Where it is |
 | --- | --- |
 | Upcoming events | 08 |
 | Tickets and QR check-in | 13 and 14 |
-| Invited door staff | 09 for the role, 14 for the invite and the scan |
+| Three roles | 09. Admin tools are 16 and 18. Door scan is 14. Own history is 26. |
 | Payment interfaces now, provider later | 12 |
 | Merch and inventory | 15 and 16 |
 | Cognito with Google and Apple, profile and billing | 10 |
@@ -90,7 +91,7 @@ Order problem that this pass fixes: iOS and Android were step 5, in the same tic
 
 Not duplicates: ticket 09 writes who may scan. Ticket 14 builds the invite and the scanner. Ticket 11 is the JSON store. Ticket 01 only recommends the later database.
 
-None of the new decisions block an earlier ticket. English and Portuguese are step 6, after the shell, so tickets 01–05 do not wait. The payment-decisions list is step 14, and tickets, merch, and inventory do not depend on it. Goabase is step 24, and the catalog and the calendar do not wait for it. The Amplify, ECS, and RDS tickets are steps 21–23, not live, and the build tickets before them do not wait.
+The three-role decision does not block the stack, the web shell, or the public event list. Those have no role tools. It is in force from ticket 09 onward. History waits until tickets and merch exist, which is why it is step 18. Goabase is step 25, and the catalog does not wait for it. The Amplify, ECS, and RDS tickets are steps 22–24, not live, and the build tickets before them do not wait.
 
 Left open on purpose: the payment company and the rest of the list in ticket 21, API style, the timetable site, agenda contents, draft parties, pickup versus shipping, offline check-in, and a wallet pass. Tickets 23–25 do not create a public launch, and ticket 25 does not create a database.
 
@@ -109,6 +110,7 @@ Every ticket ends with acceptance criteria. When that ticket is built:
 - A dependency that is unfinished blocks the ticket.
 - A checkpoint stops the work until the owner answers it.
 - www stays up through every step.
+- Every ticket enforces the three-role list from ticket 09. A denied role gets none of that ticket's tools. Security is part of the ticket, not a later pass.
 - Ticket 03 is the deploy rule: client repos and the API are not published as part of the monorepo move.
 
 ## Repo facts these tickets rely on
