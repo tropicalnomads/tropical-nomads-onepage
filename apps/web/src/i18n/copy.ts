@@ -15,7 +15,44 @@ export interface ShellCopy {
   areas: Record<WebAreaId, string>;
   areaDescriptions: Record<WebAreaId, string>;
   events: EventCopy;
+  account: AccountCopy;
 }
+
+export interface AccountCopy {
+  signIn: string;
+  signOut: string;
+  register: string;
+  registerTitle: string;
+  signInTitle: string;
+  accountTitle: string;
+  intro: string;
+  email: string;
+  password: string;
+  username: string;
+  givenName: string;
+  familyName: string;
+  submitRegister: string;
+  submitSignIn: string;
+  continueGoogle: string;
+  continueApple: string;
+  billingLater: string;
+  noPaymentMethod: string;
+  disabled: string;
+  notices: Record<AccountNotice, string>;
+}
+
+export type AccountNotice =
+  | 'username-required'
+  | 'username-invalid'
+  | 'username-taken'
+  | 'name-required'
+  | 'email-invalid'
+  | 'password-short'
+  | 'password-long'
+  | 'password-rejected'
+  | 'cognito-not-configured'
+  | 'provider-not-allowed'
+  | 'not-signed-in';
 
 export interface EventCopy {
   subtitle: string;
@@ -77,6 +114,40 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       flyerAlt: '{title} flyer',
       dateLocale: 'en',
     },
+    account: {
+      signIn: 'Sign in',
+      signOut: 'Sign out',
+      register: 'Create account',
+      registerTitle: 'Create account',
+      signInTitle: 'Sign in',
+      accountTitle: 'Account',
+      intro: 'Email and password, Google, or Apple. Billing can wait until a ticket.',
+      email: 'Email',
+      password: 'Password',
+      username: 'Username',
+      givenName: 'Given name',
+      familyName: 'Family name',
+      submitRegister: 'Create account',
+      submitSignIn: 'Sign in',
+      continueGoogle: 'Continue with Google',
+      continueApple: 'Continue with Apple',
+      billingLater: 'A billing address is not required to create the account.',
+      noPaymentMethod: 'No payment method is saved.',
+      disabled: 'This account is disabled. It cannot buy or scan.',
+      notices: {
+        'username-required': 'Choose a username.',
+        'username-invalid': 'Usernames use letters, digits, and hyphens, and cannot be an event id.',
+        'username-taken': 'That username is already used.',
+        'name-required': 'Enter your given name and family name.',
+        'email-invalid': 'Enter an email address.',
+        'password-short': 'Use at least 12 characters.',
+        'password-long': 'That password is too long.',
+        'password-rejected': 'Choose a different password.',
+        'cognito-not-configured': 'Sign-in is not available yet. Cognito is not configured.',
+        'provider-not-allowed': 'That sign-in provider is not available.',
+        'not-signed-in': 'Sign in before changing the account.',
+      },
+    },
   },
   pt: {
     homeAria: 'Início da Tropical Nomads',
@@ -119,6 +190,40 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       flyerAlt: 'Cartaz de {title}',
       dateLocale: 'pt-BR',
     },
+    account: {
+      signIn: 'Entrar',
+      signOut: 'Sair',
+      register: 'Criar conta',
+      registerTitle: 'Criar conta',
+      signInTitle: 'Entrar',
+      accountTitle: 'Conta',
+      intro: 'E-mail e senha, Google ou Apple. O endereço de cobrança pode esperar.',
+      email: 'E-mail',
+      password: 'Senha',
+      username: 'Nome de usuário',
+      givenName: 'Nome',
+      familyName: 'Apelido',
+      submitRegister: 'Criar conta',
+      submitSignIn: 'Entrar',
+      continueGoogle: 'Continuar com Google',
+      continueApple: 'Continuar com Apple',
+      billingLater: 'O endereço de cobrança não é obrigatório para criar a conta.',
+      noPaymentMethod: 'Nenhum meio de pagamento foi salvo.',
+      disabled: 'Esta conta está desativada. Ela não pode comprar nem fazer a leitura.',
+      notices: {
+        'username-required': 'Escolha um nome de usuário.',
+        'username-invalid': 'Use letras, números e hífens. O nome não pode ser o id de um evento.',
+        'username-taken': 'Esse nome de usuário já está em uso.',
+        'name-required': 'Informe o nome e o apelido.',
+        'email-invalid': 'Informe um e-mail.',
+        'password-short': 'Use pelo menos 12 caracteres.',
+        'password-long': 'Essa senha é longa demais.',
+        'password-rejected': 'Escolha outra senha.',
+        'cognito-not-configured': 'A entrada ainda não está disponível. O Cognito não está configurado.',
+        'provider-not-allowed': 'Esse provedor de entrada não está disponível.',
+        'not-signed-in': 'Entre antes de alterar a conta.',
+      },
+    },
   },
 };
 
@@ -129,7 +234,7 @@ export function presentText(language: Locale, key: string, value: string | undef
   return value;
 }
 
-export function shellText<K extends keyof Omit<ShellCopy, 'areas' | 'areaDescriptions' | 'events'>>(
+export function shellText<K extends keyof Omit<ShellCopy, 'areas' | 'areaDescriptions' | 'events' | 'account'>>(
   language: Locale,
   key: K,
 ): string {
@@ -146,6 +251,14 @@ export function areaDescription(language: Locale, id: WebAreaId): string {
 
 export function eventText<K extends keyof EventCopy>(language: Locale, key: K): string {
   return presentText(language, `events.${key}`, shellCopy[language].events[key]);
+}
+
+export function accountText<K extends keyof Omit<AccountCopy, 'notices'>>(language: Locale, key: K): string {
+  return presentText(language, `account.${key}`, shellCopy[language].account[key]);
+}
+
+export function accountNotice(language: Locale, notice: AccountNotice): string {
+  return presentText(language, `account.${notice}`, shellCopy[language].account.notices[notice]);
 }
 
 export function switchLanguageLabel(language: Locale, option: string): string {

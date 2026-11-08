@@ -14,6 +14,7 @@ This folder holds short procedures for people working on Tropical Nomads.
 - [security-baseline.md](security-baseline.md) — ticket 09. The access list is admin, door, and user.
 - [private-operational-data.md](private-operational-data.md) — ticket 11. Empty private JSON outside `public/`. The cross-process lock waits.
 - [upcoming-events.md](upcoming-events.md) — ticket 08. The public upcoming list in the web app. Ticket links leave the app.
+- [accounts-and-profile.md](accounts-and-profile.md) — ticket 10. Profile rules and sign-in screens. Cognito is not called.
 - [hono.md](hono.md) — the REST library for `apps/api`. Hono on Node, loopback only.
 - [nextjs.md](nextjs.md) — Next.js lives in the web shell. The one-pager stays on Vite.
 - [turborepo.md](turborepo.md) — how package tasks run. pnpm stays the package manager.

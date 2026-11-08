@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
+import { cookies } from 'next/headers';
 import '@fontsource-variable/outfit';
+import { readSessionSub, sessionCookieName } from '../src/account/session';
 import { brandStyleText } from '../src/brand';
 import { ShellFooter } from '../src/components/ShellFooter';
 import { ShellHeader } from '../src/components/ShellHeader';
@@ -12,7 +14,9 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const jar = await cookies();
+  const signedIn = readSessionSub(jar.get(sessionCookieName)?.value) !== undefined;
   return (
     <html lang="en">
       <head>
@@ -20,7 +24,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body className="font-sans">
         <LanguageProvider>
-          <ShellHeader />
+          <ShellHeader signedIn={signedIn} />
           {children}
           <ShellFooter />
         </LanguageProvider>
