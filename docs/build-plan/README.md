@@ -2,19 +2,20 @@
 
 Recommended order for the owner to review before any build. Each file is one ticket. Do them one at a time, in this order, unless the owner reorders them. This folder does not implement the tickets.
 
-Two iterations. The first one starts with the technical base, then adds the public product. Bookings is the second iteration, after that first product is in place. Keep [www.tropical-nomads.com](https://www.tropical-nomads.com) shipping on its own throughout. Phones use the web app in the browser. Payment interfaces are built in the first iteration. The payment company is ticket 29, last in the first iteration, after the not-live hosts. No company is named. iOS and Android stay optional, after Bookings.
+Two iterations. The first one starts with the technical base, then adds the public product. Bookings is the second iteration, after that first product is in place. Keep [www.tropical-nomads.com](https://www.tropical-nomads.com) shipping on its own throughout. Phones use the web app in the browser. Payment interfaces are built in the first iteration. The database scripts repository is ticket 30, after the RDS confirmation and before the payment company. The payment company is ticket 29, last in the first iteration. No company is named. iOS and Android stay optional, after Bookings.
 
 The step column is the order. The file numbers are stable ids, so a ticket can sit earlier or later than its number.
 
 Owner decisions already in this order:
 
 - Login and registration use Amazon Cognito, with Google and Apple sign-in.
-- A user profile holds identity, a billing address, an avatar, and payment methods. The payment company is ticket 29, after the not-live hosts, and is not named.
+- A user profile holds identity, a billing address, an avatar, and payment methods. The payment company is ticket 29, last in the first iteration after ticket 30, and is not named.
 - The access list has three roles. Admin creates parties and merch. Door staff only scan QR codes. Every other user sees their own purchase history and ticket history.
 - The product is English and Portuguese, with internationalization. The one-pager already has both, and the web shell switches between them.
 - The web shell is `apps/web`. The shared package is `packages/shared` at version `0.4.0`. The owner asked for both in this monorepo. The planning text described separate repositories, and those remotes were not created. Ticket 28 writes the schemas there. The shell does not invent fields. The language codes are `en` and `pt`.
 - Before a future go-live, and still not live: the new frontend on its own Amplify app, the API as a Docker container on ECS, and a confirmation of Amazon RDS for PostgreSQL. Every AWS resource is in Frankfurt (`eu-central-1`). JSON stays the store until that confirmation. The one-pager keeps its existing Amplify deploy.
 - This repository still holds the one-pager, the API, Bookings, and the JSON. Bookings is not split into its own repo.
+- Migration scripts and seed scripts are named for a separate repository, `tropical-nomads-database` (ticket 30). The seeds are for unit tests, automation tests, and similar uses. The owner asked for that repository. It is named here and not created. Amazon RDS for PostgreSQL in Frankfurt stays the recommendation. JSON stays the store until that database is confirmed. Seeds stay synthetic, and the scripts hold no passwords, ticket secrets, card numbers, or connection strings.
 - Email is one sender, with templates and a fixed message list. Marketing needs consent and can be stopped. No email vendor is chosen.
 - The first iteration is the technical base, then the public product: upcoming events, accounts, payments, tickets, check-in, merch, history, inventory, and email. It reads parties that are already in the published JSON.
 - Bookings is the second iteration: the Bookings package, the admin party calendar, and the Goabase integrations tab. The first product does not wait for them.
@@ -33,7 +34,7 @@ The public product comes next, still in the first iteration. People can see the 
 
 Bookings is the second iteration: bring the existing Bookings product into this repo, then the admin calendar that creates parties and agendas, then the integrations tab that offers artists to outside parties. The first iteration does not wait on any of those.
 
-The Amplify, ECS, and RDS tickets are the deploy path for the first product, and they are not live. The payment-company ticket is last in that iteration, after those hosts, and it does not name a company. Bookings does not wait for the hosts or for the company.
+The Amplify, ECS, and RDS tickets are the deploy path for the first product, and they are not live. Ticket 30 comes next. It is the separate repository for migration scripts and for seeds used by unit tests, automation tests, and similar uses. The index keeps it there: ticket 25 confirms RDS and does not migrate, earlier tests still use JSON and the schemas, and the scripts ticket does not pick a new database. The payment-company ticket stays last in that iteration, after ticket 30, and it does not name a company. Bookings does not wait for the hosts, the scripts repository, or the company.
 
 ## Order
 
@@ -63,11 +64,12 @@ The Amplify, ECS, and RDS tickets are the deploy path for the first product, and
 | 22 | 1, host | [Web app on Amplify](23-amplify-frontend.md) | 03, 05 | Not live yet. A separate Amplify app. www stays the one-pager. |
 | 23 | 1, host | [API container on ECS](24-ecs-backend.md) | 06, 23 | Not live yet. Docker on ECS. No public production API. |
 | 24 | 1, host | [Confirm RDS for PostgreSQL](25-rds-recommendation.md) | 01, 11, 24 | Not live yet. Recommendation to confirm. Starting size is `db.t4g.small` in the AWS record. Not a migration. |
-| 25 | 1, last | [Choose the payment company](29-payment-company.md) | 12, 23, 24, 25 | After the not-live hosts. Does not name a company. |
-| 26 | 2, Bookings | [Bookings package](17-bookings-package.md) | 02, 03, 07, 09, 20 | Second iteration. Bookings in this monorepo, own deploy, shared data. |
-| 27 | 2, Bookings | [Admin party calendar](18-admin-party-calendar.md) | 07, 09, 13, 17, 27 | Admin creates parties and configures that event's tickets. |
-| 28 | 2, Bookings | [Goabase integrations tab](22-goabase-integrations.md) | 07, 17, 27, 28 | Outside parties, so Bookings can email artist offers. |
-| 29 | Later | [iOS and Android repositories](19-ios-android-repos.md) | 04 | Optional. Last. Creates the two repos only. No native screens. |
+| 25 | 1, data | [Database scripts repository](30-database-scripts.md) | 01, 11, 25, 28 | Separate repo for migrations and test seeds. Not created. RDS for PostgreSQL in Frankfurt stays the recommendation. JSON stays the store. |
+| 26 | 1, last | [Choose the payment company](29-payment-company.md) | 12, 23, 24, 25 | Last in iteration 1, after ticket 30. Does not name a company. |
+| 27 | 2, Bookings | [Bookings package](17-bookings-package.md) | 02, 03, 07, 09, 20 | Second iteration. Bookings in this monorepo, own deploy, shared data. |
+| 28 | 2, Bookings | [Admin party calendar](18-admin-party-calendar.md) | 07, 09, 13, 17, 27 | Admin creates parties and configures that event's tickets. |
+| 29 | 2, Bookings | [Goabase integrations tab](22-goabase-integrations.md) | 07, 17, 27, 28 | Outside parties, so Bookings can email artist offers. |
+| 30 | Later | [iOS and Android repositories](19-ios-android-repos.md) | 04 | Optional. Last. Creates the two repos only. No native screens. |
 
 ## Capabilities
 
@@ -99,9 +101,10 @@ Checked against the decisions so far. The access list is three roles on ticket 0
 | Cognito with Google and Apple, profile and billing | 10 |
 | Bookings deploy, shared artists, parties, calendar | 02 names the slot. 17, 18, and 22 are the second iteration. |
 | Admin party calendar | 18, after the first product |
-| Security | 09, then the later tickets that enforce it |
+| Security | 09, then the later tickets that enforce it. Ticket 30 requires synthetic seeds and keeps passwords, ticket secrets, card numbers, and connection strings out of the scripts repository. |
 | English and Portuguese, with internationalization | 20. The one-pager and the web shell use `en` and `pt`. |
-| JSON until a database exists | 11. Ticket 25 asks the owner to confirm RDS for PostgreSQL and does not migrate. Starting sizes are in [the AWS record](../devops/aws.md). |
+| JSON until a database exists | 11. Ticket 25 asks the owner to confirm RDS for PostgreSQL and does not migrate. Ticket 30 names the scripts repository and does not create it. Starting sizes are in [the AWS record](../devops/aws.md). |
+| Database scripts repository | 30, step 25, after ticket 25 and before ticket 29. Named `tropical-nomads-database`. The owner asked for it. Seeds are for unit tests, automation tests, and similar uses, and they stay synthetic. RDS for PostgreSQL in Frankfurt stays the recommendation. |
 | One-pager keeps deploying | 03. Tickets 23, 24, and 25 are the later hosts and are not live yet. Region is Frankfurt (`eu-central-1`). |
 | Email | 27, in the first product, after purchases and the door invite. No vendor. |
 | Goabase integrations | 22, in the second iteration with Bookings. The public refresh script stays. |
@@ -109,11 +112,11 @@ Checked against the decisions so far. The access list is three roles on ticket 0
 
 Order problem that this pass fixes: iOS and Android were step 5, in the same ticket as the required web shell, so the product could not move without native apps. They are now ticket 19, optional, and last. Nothing depends on them. Phones use the web app in the browser.
 
-Not duplicates: ticket 09 writes who may scan. Ticket 14 builds the invite and the scanner. Ticket 11 is the JSON store. Ticket 01 only recommends the later database. Ticket 04 creates the shared package. Ticket 28 writes the schemas.
+Not duplicates: ticket 09 writes who may scan. Ticket 14 builds the invite and the scanner. Ticket 11 is the JSON store. Ticket 01 only recommends the later database. Ticket 04 creates the shared package. Ticket 28 writes the schemas. Ticket 25 confirms that recommendation and does not migrate. Ticket 30 names the repository for migration scripts and test seeds. It does not create the repository, and it does not replace ticket 25.
 
-The three-role decision does not block the stack, the web shell, or the public event list. Those have no role tools. It is in force from ticket 09 onward. Types and schemas are step 5, before the feature tickets, and they include the Bookings records so the second iteration does not invent fields. History is step 19, after tickets and merch. Email is step 21, still in the first product. The Amplify, ECS, and RDS tickets are steps 22–24, not live. The payment company is step 25 and is not named. Bookings is steps 26–28. The catalog and the public product do not wait for it.
+The three-role decision does not block the stack, the web shell, or the public event list. Those have no role tools. It is in force from ticket 09 onward. Types and schemas are step 5, before the feature tickets, and they include the Bookings records so the second iteration does not invent fields. History is step 19, after tickets and merch. Email is step 21, still in the first product. The Amplify, ECS, and RDS tickets are steps 22–24, not live. The database scripts repository is step 25. The payment company is step 26 and is not named. Bookings is steps 27–29. iOS and Android are step 30. The catalog and the public product do not wait for Bookings.
 
-Left open on purpose: the timetable site and agenda contents. Ticket 21 lists later payment questions and does not name a company. Tickets 23–25 do not create a public launch, and ticket 25 does not create a database. Ticket 29 is the company choice and does not name one. Starting AWS sizes are in [the AWS record](../devops/aws.md). DevOps owns later changes.
+Left open on purpose: the timetable site and agenda contents. Ticket 21 lists later payment questions and does not name a company. Tickets 23–25 do not create a public launch, and ticket 25 does not create a database. Ticket 30 does not create a repository, a database, or a migration. Ticket 29 is the company choice and does not name one. Starting AWS sizes are in [the AWS record](../devops/aws.md). DevOps owns later changes.
 
 ## Acceptance criteria and tests
 
