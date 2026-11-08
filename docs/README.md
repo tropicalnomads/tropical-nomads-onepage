@@ -17,6 +17,7 @@ Structure and records live in [`docs/architecture/`](architecture/README.md).
 - [architecture/README.md](architecture/README.md) — the architecture index.
 - [architecture/system.md](architecture/system.md) — repositories, deploys, and who calls the API, with mermaid diagrams.
 - [architecture/models.md](architecture/models.md) — how the records point at each other, and the fields already named, with a mermaid diagram.
+- [architecture/indexes.md](architecture/indexes.md) — the lookup each feature needs, which keys are unique, and which keys stay out.
 - [architecture/monorepo-and-data.md](architecture/monorepo-and-data.md) — this repo keeps the one-pager, the API, Bookings, and JSON. The web app and a shared repo are separate. iOS and Android repos are optional and last. The one-pager keeps its Amplify deploy. The later hosts are Amplify for the web app and ECS for the API, and they are not live yet.
 
 Add a note here when it is about packages, deploys, or data. Vendor names and application code stay out of this folder until the owner has actually chosen them. A choice, once made, is a dated decision, and the matching open question in the master plan is updated with it.

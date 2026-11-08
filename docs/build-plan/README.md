@@ -29,7 +29,7 @@ Still open: the payment company, the currencies and prices on the payment-decisi
 | 2 | [Repository shape](02-repository-shape.md) | 01 | This monorepo keeps the one-pager, API, Bookings, and JSON. Shared and web repos are required. iOS and Android are named only. |
 | 3 | [Deployment change](03-deployment-change.md) | 02 | www keeps its Amplify deploy. The new web app and the API do not go live. |
 | 4 | [Shared client repo](04-shared-client-repo.md) | 02 | Theme, components, and the package that will hold the schemas. |
-| 5 | [Types and schemas](28-types-and-schemas.md) | 04 | Every field, before the feature tickets. |
+| 5 | [Types and schemas](28-types-and-schemas.md) | 04 | Every field and the lookups each feature needs, before the feature tickets. |
 | 6 | [Web app repository](05-app-repos.md) | 03, 04, 28 | Required web shell, usable in a phone browser. |
 | 7 | [English and Portuguese](20-internationalization.md) | 04, 05 | Internationalization. The only languages are `en` and `pt`. |
 | 8 | [API reads published data](06-api-reads-published-data.md) | 02, 03, 28 | API over the JSON this repo already publishes. |
@@ -90,7 +90,7 @@ Checked against the decisions so far. The access list is three roles on ticket 0
 | One-pager keeps deploying | 03. Tickets 23, 24, and 25 are the later hosts and are not live yet. |
 | Email | 27, after parties exist and before the Goabase offer. No vendor. |
 | Goabase integrations | 22, after email. The public refresh script stays. |
-| Types and schemas | 28, step 5, before the web app and the feature tickets. |
+| Types and schemas | 28, step 5, before the web app and the feature tickets. Lookups are on the architecture indexes page. |
 
 Order problem that this pass fixes: iOS and Android were step 5, in the same ticket as the required web shell, so the product could not move without native apps. They are now ticket 19, optional, and last. Nothing depends on them. Phones use the web app in the browser.
 

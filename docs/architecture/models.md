@@ -1,6 +1,6 @@
 # Models
 
-**Status:** planning only. This page names the records and the fields the tickets already require. Ticket 28 writes the schemas from this page before the feature tickets. It does not add a database.
+**Status:** planning only. This page names the records and the fields the tickets already require. The [lookups page](indexes.md) names the keys those features read by. Ticket 28 writes the schemas and those keys before the feature tickets. It does not add a database.
 
 Two stores stay separate. The published catalog is what a visitor can read. The private store is what the API writes when someone registers, pays, enters, or is invited.
 

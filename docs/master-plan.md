@@ -278,7 +278,7 @@ Status is per row. Decisions the owner added on 8 November 2026 are marked as de
 | Who performs check-in | Decided | The access list has three roles. Door staff scan QR codes. Admins and users do not. |
 | Languages | Decided | The product is English and Portuguese, with internationalization. The one-pager already has both in `src/i18n/`. Countries are not decided by that. Currencies are on the payment-decisions list. |
 | Email | Decided | One sender and a fixed message list. A ticket purchase email carries the QR code. Marketing for a new party, and the artist offer, need consent, a stated purpose, and a way to stop. Stopping marketing does not stop purchase or QR mail. No email vendor is chosen. |
-| Data model | Decided as a picture | Records and fields are in the architecture models page. Ticket 28 writes those schemas before the feature tickets. Open questions stay unfilled. |
+| Data model | Decided as a picture | Records and fields are in the architecture models page. The lookups each feature needs are on the architecture indexes page. Ticket 28 writes both before the feature tickets. Open questions stay unfilled. |
 | Implementation order | Proposed for review | The recommended order is in [docs/build-plan/](build-plan/README.md). Each ticket ends with acceptance criteria and unit tests where the behavior is pure. |
 
 ### Also undecided, and needed before implementation
