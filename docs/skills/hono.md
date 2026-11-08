@@ -10,7 +10,7 @@ Routes are GET. HEAD returns the same status and headers with an empty body. Any
 
 `secureHeaders` sets `X-Content-Type-Options: nosniff`. It does not set `Strict-Transport-Security`, because this listener is HTTP. Turn that header on when the ECS host is HTTPS. `Cache-Control` is `no-store`. There is no `Access-Control-Allow-Origin`.
 
-The events body is the stored file, including `source` and `images`. Do not pass it through `parseParty`. That parser drops those fields. Each catalog calls `publishedSchema`, so the route stays tied to the shared field list. A private key in a file is refused.
+The events body is the stored file, including `source` and `images`. Do not pass it through `parseParty`. That parser drops those fields. `/events` and `/artists` come from `src/catalog.ts`. See [shared-catalog.md](shared-catalog.md). A private key in a file is refused.
 
 Tests call `api.request()`. Run `pnpm --filter tropical-nomads-api test` and `pnpm --filter tropical-nomads-api lint`.
 
