@@ -6,7 +6,7 @@
 
 The stack note matches what the owner decided on 8 November 2026. The architecture is defined. The new app is not launched.
 
-Decided: Amazon Cognito with Google and Apple. Next.js for the web app. Amplify for the new frontend. A Docker container on ECS for the API. REST. English and Portuguese. Euro only, for now. Merch is pickup for now, and shipping is later. There are no refunds. A party can be a draft. Offline check-in and a wallet pass are later, and they are not in this iteration. Phones use the web app in the browser. iOS and Android repos stay optional and last.
+Decided: Amazon Cognito with Google and Apple. Next.js for the web app. Amplify for the new frontend. A Docker container on ECS for the API. REST. English and Portuguese. Euro only, for now. Merch is pickup for now, and shipping is later. There are no refunds. A party can be a draft. Offline check-in and a wallet pass are later, and they are not in this iteration. Phones use the web app in the browser. iOS and Android repos stay optional and last. The monorepo uses Turborepo. Package manager commands use pnpm. The one-pager already uses pnpm. The Turborepo config is not added here.
 
 Recommendation, not created: Amazon RDS for PostgreSQL. JSON stays the store until that database is confirmed.
 
@@ -64,7 +64,7 @@ None. This is the first ticket.
    - The payment company is chosen in ticket 29, after the not-live hosts. Do not name a company here.
    - DevOps owns the AWS sizes and holds the AWS skills. DevOps is not a product role.
    - Traffic: about five admins, and parties of about 100–200 people. The sizes are in the AWS record. Do not create them here.
-2. Record the repository split: shared repo and web app repo are required. iOS and Android repos are optional. This monorepo keeps the one-pager, the API, Bookings, and JSON.
+2. Record the repository split: shared repo and web app repo are required. iOS and Android repos are optional. This monorepo keeps the one-pager, the API, Bookings, and JSON. The monorepo uses Turborepo. Package manager commands use pnpm. The one-pager already uses pnpm (`pnpm-lock.yaml`, and `pnpm install`, `pnpm lint`, and `pnpm build`). Do not add the Turborepo config in this ticket.
 3. Do not install Next.js. Do not rewrite `src/`.
 4. Point the sizes at the AWS record. Do not create those resources. DevOps owns later changes to the numbers.
 5. Do not block the shared repo on a native component toolkit. The web app can use web components from the shared package. Native screens are out of scope.
@@ -78,6 +78,7 @@ None. This is the first ticket.
 - The master plan records euro, pickup for now, no refunds, draft parties, and offline check-in and a wallet pass as later.
 - The master plan records Frankfurt (`eu-central-1`) for every AWS resource, and ticket 29 as the payment-company choice. No company is named.
 - The master plan records DevOps as the owner of the AWS sizes, the traffic as about five admins and parties of about 100–200 people, and the starting sizes in the AWS record.
+- The master plan's repository-shape section records Turborepo for the monorepo and pnpm for package manager commands. The one-pager already uses pnpm. No Turborepo config was added.
 - No package was added to `package.json`. No RDS instance exists. No AWS account was connected.
 
 ## Tests

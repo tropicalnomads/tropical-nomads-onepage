@@ -186,7 +186,8 @@ Admin is one role. There are no refunds. Guest tickets and the other money rules
 The [architecture index](architecture/README.md) holds the detail: the [system diagram](architecture/system.md), the [model diagram](architecture/models.md), and the [monorepo notes](architecture/monorepo-and-data.md). What is already settled:
 
 - Later work stays in **this** repository. There is no new unrelated repository.
-- The repository becomes a **monorepo** when that conversion is requested. This plan does not convert it.
+- The repository becomes a **monorepo** when that conversion is requested. This plan does not convert it. The monorepo uses **Turborepo**. The Turborepo config is not added here.
+- Package manager commands use **pnpm**. The current one-pager already uses pnpm: `pnpm-lock.yaml`, `amplify.yml`, `pnpm install`, `pnpm lint`, and `pnpm build`.
 - The **current one-pager stays as one package** inside that monorepo.
 - The **API package** is added later, in this same repository.
 - The **web app is its own repository**, plus a shared repository for theme colors, base components, types, schemas, and constants. Phones use that web app in the browser. iOS and Android repositories are optional and last, and they only create the repos. They call the API. They do not keep a copy of the event data.
@@ -282,7 +283,8 @@ The owner defined the architecture.
 | API host | A Docker container on ECS, when a later ticket is allowed to launch. The cluster is not created here. |
 | API style | REST. |
 | Phones | The web app in the browser. |
-| Repositories | A shared repo and a web app repo are required. iOS and Android repos are optional and last. Ticket 19 may create them. It does not implement native apps. This monorepo keeps the one-pager, the API, Bookings, and JSON. The shared repo does not wait on a native component toolkit. |
+| Repositories | A shared repo and a web app repo are required. iOS and Android repos are optional and last. Ticket 19 may create them. It does not implement native apps. This monorepo keeps the one-pager, the API, Bookings, and JSON. The monorepo uses Turborepo. The Turborepo config is not added here. The shared repo does not wait on a native component toolkit. |
+| Package manager | pnpm. The one-pager already uses it. |
 | Languages | English and Portuguese. |
 | Database | Amazon RDS for PostgreSQL is the recommendation. JSON stays the store until that database is confirmed. This ticket does not create it and does not migrate. The starting size is in [the AWS record](devops/aws.md): one `db.t4g.small`. |
 | Region | Every AWS resource is in Frankfurt (`eu-central-1`). None are created here. |
@@ -306,7 +308,7 @@ Still open: ticket types, comps, guest lists, chargebacks, cancellation, transfe
 | Cloud vendor | Decided as a target | AWS is the platform, in Frankfurt (`eu-central-1`). The one-pager keeps its Amplify app. The new web app's Amplify app and the ECS cluster are not created here. Starting sizes are in [the AWS record](devops/aws.md). DevOps owns later changes. |
 | Payments provider | Chosen later | Ticket 29, last in the first iteration, after the not-live hosts. The company is not named. The currency is euro. There are no refunds. |
 | Ticket format | Decided for this iteration | Door staff scan a QR code. A wallet pass is later, and it is not in this iteration. |
-| Where the apps live | Decided | The web app and a shared repository are required. iOS and Android repositories are optional, last, and are not a native implementation. Phones use the web app in the browser. This repo still holds the one-pager, the API, Bookings, and the JSON data. |
+| Where the apps live | Decided | The web app and a shared repository are required. iOS and Android repositories are optional, last, and are not a native implementation. Phones use the web app in the browser. This repo still holds the one-pager, the API, Bookings, and the JSON data. The monorepo uses Turborepo. Commands use pnpm. The Turborepo config is not added here. |
 | Who performs check-in | Decided | The access list has three roles. Door staff scan QR codes. Admins and users do not. Offline check-in is later, and it is not in this iteration. |
 | Languages | Decided | The product is English and Portuguese, with internationalization. The one-pager already has both in `src/i18n/`. The currency is euro. |
 | Email | Decided | One sender and a fixed message list. A ticket purchase email carries the QR code. Marketing for a new party, and the artist offer, need consent, a stated purpose, and a way to stop. Stopping marketing does not stop purchase or QR mail. No email vendor is chosen. |
