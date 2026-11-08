@@ -42,7 +42,7 @@ The Amplify, ECS, and RDS tickets are the deploy path for the first product, and
 | 1 | 1, base | [Identify the stack](01-identify-stack.md) | None | Cognito, Next.js, Amplify, ECS, REST, and the RDS recommendation. Region is Frankfurt. |
 | 2 | 1, base | [Repository shape](02-repository-shape.md) | 01 | This monorepo keeps the one-pager, API, and Bookings. Turborepo and pnpm. Client repos are named only. |
 | 3 | 1, base | [Deployment change](03-deployment-change.md) | 02 | www publishes only `apps/one-pager`. The new web app and the API do not go live. |
-| 4 | 1, base | [Shared client repo](04-shared-client-repo.md) | 02 | Theme, components, and the package that will hold the schemas. |
+| 4 | 1, base | [Shared client repo](04-shared-client-repo.md) | 02 | `packages/shared` at version 0.1.0. Theme, component contract, and the empty schema entry. |
 | 5 | 1, base | [Types and schemas](28-types-and-schemas.md) | 04 | Every field and the lookups, including Bookings records, before the feature tickets. |
 | 6 | 1, base | [Web app repository](05-app-repos.md) | 03, 04, 28 | Required web shell, usable in a phone browser. |
 | 7 | 1, base | [English and Portuguese](20-internationalization.md) | 04, 05 | Internationalization. The only languages are `en` and `pt`. |
