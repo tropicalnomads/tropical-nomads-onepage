@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { accountCanPurchase } from 'tropical-nomads-shared';
 import { readAccounts } from 'tropical-nomads-api/accounts';
-import { listPaymentMethods, listTraces, readTraces } from 'tropical-nomads-api/payments';
+import { adminTraceRows, listPaymentMethods, listTraces, readTraces } from 'tropical-nomads-api/payments';
 import { readSessionSub, sessionCookieName } from '../../src/account/session';
 import { AccountHome, type AccountSummary } from '../../src/components/AccountHome';
 
@@ -24,6 +24,7 @@ export default async function AccountPage() {
         email: profile.email,
         status: profile.status,
         canPay: accountCanPurchase(profile),
+        hasAvatar: Boolean(profile.avatarKey),
         billing: billing ? { recipientName: billing.recipientName, country: billing.country } : null,
         methods: own
           ? listPaymentMethods(stored, own, profile.sub).map((method) => ({
@@ -43,6 +44,16 @@ export default async function AccountPage() {
               purpose: trace.purpose,
             }))
           : [],
+        teamTraces:
+          profile.role === 'admin' && profile.status === 'active'
+            ? adminTraceRows({ role: 'admin', actorId: profile.sub }, readTraces(), stored.profiles).map((trace) => ({
+                id: trace.id,
+                username: trace.username,
+                amount: trace.amount,
+                currency: trace.currency,
+                purpose: trace.purpose,
+              }))
+            : null,
       }
     : null;
   return <AccountHome profile={summary} />;

@@ -10,6 +10,7 @@ import {
   attachPaymentMethod,
   commitPayment,
   createCustomer,
+  adminTraceRows,
   listPaymentMethods,
   listTraces,
   markPaymentConfirmed,
@@ -120,6 +121,12 @@ describe('payment interfaces', () => {
     assert.deepEqual([first.status, second.status], ['pending_provider', 'pending_provider']);
     assert.equal(listTraces(caller(), traces, 'sub-ada').length, 2);
     assert.equal(listTraces({ role: 'admin', actorId: 'admin-1' }, traces, '').length, 2);
+    const rows = adminTraceRows({ role: 'admin', actorId: 'admin-1' }, traces, [{ sub: 'sub-ada', username: 'ada' }]);
+    assert.equal(rows.length, 2);
+    assert.equal(rows.every((row) => row.username === 'ada' && row.status === 'pending_provider'), true);
+    assert.equal(JSON.stringify(rows).includes('sub-ada'), false);
+    assert.throws(() => adminTraceRows(caller(), traces, []), /not allowed/);
+    assert.throws(() => adminTraceRows({ role: 'door', actorId: 'door-1' }, traces, []), /not allowed/);
     assert.throws(() => listTraces(caller(), traces, 'sub-grace'), /not allowed/);
     assert.throws(() => listTraces({ role: 'door', actorId: 'door-1' }, traces, 'door-1'), /not allowed/);
     const committed = readFileSync(new URL('../../../data/operational/payment-traces.json', import.meta.url), 'utf8');

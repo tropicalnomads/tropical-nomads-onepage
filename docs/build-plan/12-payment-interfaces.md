@@ -42,7 +42,7 @@ The owner wants the payment structure settled and the integration later. Users n
 - `markPaymentConfirmed` does not write and is not called from the web app. `recordRefund` does not write. Refund rules stay open.
 - A payment method stores the schema fields. A card number or a CVC is rejected and is not stored. The server chooses the method id and the provider references.
 - `startPayment` requires a billing address on an active user profile. The currency on the call is recorded. It is not taken from the shirt price.
-- A buyer reads only their own traces. An admin can read traces. Door cannot. Another person's payment methods stay private.
+- A buyer reads only their own traces on the account page. An admin reads every trace there, with the username and not the subject. Door cannot. Another person's payment methods stay private.
 - Eventbrite, Goabase, and the WhatsApp reserve link stay. Traces are not in `public/data`.
 
 ## Acceptance criteria

@@ -4,7 +4,7 @@ Ticket 11. Orders, payment traces, issued tickets, check-ins, door invites, and 
 
 The committed files are empty. A write refuses a private key, a card number, and a path outside that directory. The issued-ticket file is the one collection that may store a `secret` field. Orders and the other collections still refuse it. `MERCH_STOCK` stays in the one-pager until ticket 16. No database was added.
 
-`operationalWriterLock` is `waiting`. One process orders its own writes. Two processes can still drop an update. Do not invent a database lock here.
+`operationalWriterLock` is `waiting`. One process orders its own writes. Two processes can still drop an update. Do not invent a database lock here. The bundle test scans `apps/one-pager/public` on a clean tree, and scans `apps/one-pager/dist` when that build exists.
 
 Run `pnpm --filter tropical-nomads-api test`, then `pnpm --filter tropical-nomads-page build`, and check that `apps/one-pager/dist` has no `data/operational`.
 

@@ -21,9 +21,45 @@ function sign(body: string): string {
   return createHmac('sha256', sessionSecret()).update(body).digest('base64url');
 }
 
+export const sessionCookieMaxAge = lifetimeSeconds;
+
 export function createSessionToken(sub: string, now = Date.now()): string {
   const body = Buffer.from(JSON.stringify({ sub, exp: Math.floor(now / 1000) + lifetimeSeconds }), 'utf8').toString('base64url');
   return `${body}.${sign(body)}`;
+}
+
+export function sealPayload(payload: unknown, ttlSeconds: number, now = Date.now()): string {
+  const body = Buffer.from(JSON.stringify({ v: payload, exp: Math.floor(now / 1000) + ttlSeconds }), 'utf8').toString('base64url');
+  return `${body}.${sign(body)}`;
+}
+
+export function openPayload(token: string | undefined, now = Date.now()): unknown {
+  if (!token) {
+    return undefined;
+  }
+  const [body, mac] = token.split('.');
+  if (!body || !mac) {
+    return undefined;
+  }
+  const expected = sign(body);
+  const left = Buffer.from(mac);
+  const right = Buffer.from(expected);
+  if (left.length !== right.length || !timingSafeEqual(left, right)) {
+    return undefined;
+  }
+  try {
+    const parsed: unknown = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'));
+    if (typeof parsed !== 'object' || parsed === null) {
+      return undefined;
+    }
+    const record = parsed as { v?: unknown; exp?: unknown };
+    if (typeof record.exp !== 'number' || record.exp * 1000 <= now) {
+      return undefined;
+    }
+    return record.v;
+  } catch {
+    return undefined;
+  }
 }
 
 export function readSessionSub(token: string | undefined, now = Date.now()): string | undefined {

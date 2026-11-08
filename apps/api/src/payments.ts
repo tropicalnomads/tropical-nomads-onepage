@@ -235,6 +235,35 @@ export function listTraces(caller: PaymentCaller, traces: readonly PaymentTrace[
   return visible.map((trace) => ({ ...trace, status: 'pending_provider' as const }));
 }
 
+export interface AdminTraceRow {
+  id: string;
+  username: string;
+  amount: number;
+  currency: string;
+  purpose: PaymentPurpose;
+  status: 'pending_provider';
+}
+
+/** Every pending trace, for an admin. The username is the profile name, never the subject. */
+export function adminTraceRows(
+  caller: PaymentCaller,
+  traces: readonly PaymentTrace[],
+  profiles: readonly { sub: string; username: string }[],
+): AdminTraceRow[] {
+  if (caller.role !== 'admin') {
+    throw new Error('payment is not allowed');
+  }
+  const names = new Map(profiles.map((profile) => [profile.sub, profile.username]));
+  return listTraces(caller, traces, '').map((trace) => ({
+    id: trace.id,
+    username: names.get(trace.userId) ?? '',
+    amount: trace.amount,
+    currency: trace.currency,
+    purpose: trace.purpose,
+    status: 'pending_provider',
+  }));
+}
+
 function visibleTraces(caller: PaymentCaller, traces: readonly PaymentTrace[], subjectId: string): readonly PaymentTrace[] {
   switch (caller.role) {
     case 'admin':
