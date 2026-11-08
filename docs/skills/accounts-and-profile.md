@@ -18,4 +18,4 @@ The owner asked for Cognito with Google and Apple. A local password hash would b
 
 ## Cognito
 
-Email sign-in uses the deployed pool when `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` are set. The client has no secret. The password is sent to Cognito and is not stored. Google and Apple stay unconfigured, so those buttons still return `cognito-not-configured`. The values are set on the new Amplify app at deploy time and are not written into git.
+Email sign-in uses the deployed pool when `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` are set. The client has no secret. The password is sent to Cognito and is not stored. A confirmed sign-up and a verified ID token each write the profile, then set `tn:account:v1`. An unverified email does not. Google and Apple stay unconfigured, so those buttons still return `cognito-not-configured`. The pool id and client id are set at deploy time and are not written into git.

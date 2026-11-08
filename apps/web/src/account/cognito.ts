@@ -20,6 +20,7 @@ export interface IdClaims {
   emailVerified: true;
   givenName: string;
   familyName: string;
+  preferredUsername: string;
   provider: 'cognito' | 'google' | 'apple';
   providerSubject: string;
 }
@@ -150,7 +151,10 @@ export function verifyIdToken(
     return undefined;
   }
   const issuer = `https://cognito-idp.eu-central-1.amazonaws.com/${config.userPoolId}`;
-  if (payload.iss !== issuer || payload.aud !== config.clientId || payload.token_use !== 'id' || payload.nonce !== expectedNonce) {
+  if (payload.iss !== issuer || payload.aud !== config.clientId || payload.token_use !== 'id') {
+    return undefined;
+  }
+  if (expectedNonce !== '' && payload.nonce !== expectedNonce) {
     return undefined;
   }
   if (typeof payload.exp !== 'number' || payload.exp * 1000 <= now) {
@@ -173,6 +177,7 @@ export function verifyIdToken(
     emailVerified: true,
     givenName: typeof payload.given_name === 'string' ? payload.given_name.trim() : '',
     familyName: typeof payload.family_name === 'string' ? payload.family_name.trim() : '',
+    preferredUsername: typeof payload.preferred_username === 'string' ? payload.preferred_username.trim() : '',
     provider: federated?.provider ?? 'cognito',
     providerSubject: federated?.subject ?? payload.sub,
   };
@@ -196,7 +201,7 @@ export function verifiedSignInFromClaims(
   pending: PendingNames | undefined,
   existing: PendingNames | undefined,
 ): VerifiedSignIn | undefined {
-  const username = (existing?.username || pending?.username || '').trim();
+  const username = (existing?.username || pending?.username || claims.preferredUsername || '').trim();
   const givenName = (existing?.givenName || claims.givenName || pending?.givenName || '').trim();
   const familyName = (existing?.familyName || claims.familyName || pending?.familyName || '').trim();
   if (username === '' || givenName === '' || familyName === '') {
@@ -415,28 +420,8 @@ async function postCognito(target: CognitoTarget, action: string, payload: Recor
   return { ok: true, body };
 }
 
-function subFromIdToken(token: unknown): string | undefined {
-  if (typeof token !== 'string') {
-    return undefined;
-  }
-  const part = token.split('.')[1];
-  if (!part) {
-    return undefined;
-  }
-  try {
-    const payload: unknown = JSON.parse(Buffer.from(part, 'base64url').toString('utf8'));
-    if (typeof payload !== 'object' || payload === null) {
-      return undefined;
-    }
-    const sub = (payload as { sub?: unknown }).sub;
-    return typeof sub === 'string' && /^[A-Za-z0-9_-]{1,128}$/.test(sub) ? sub : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
 export async function registerWithCognito(
-  input: { email: string; password: string; givenName: string; familyName: string },
+  input: { email: string; username: string; password: string; givenName: string; familyName: string },
   target: CognitoTarget,
   fetchImpl: FetchLike = fetch,
 ): Promise<{ sub?: string; notice?: AccountNotice }> {
@@ -451,6 +436,7 @@ export async function registerWithCognito(
         { Name: 'email', Value: input.email },
         { Name: 'given_name', Value: input.givenName },
         { Name: 'family_name', Value: input.familyName },
+        { Name: 'preferred_username', Value: input.username },
       ],
     },
     fetchImpl,
@@ -470,7 +456,7 @@ export async function signInWithCognito(
   password: string,
   target: CognitoTarget,
   fetchImpl: FetchLike = fetch,
-): Promise<{ sub?: string; notice?: AccountNotice }> {
+): Promise<{ sub?: string; claims?: IdClaims; notice?: AccountNotice }> {
   const result = await postCognito(
     target,
     'InitiateAuth',
@@ -487,7 +473,25 @@ export async function signInWithCognito(
   if (!result.ok) {
     return { notice: result.notice };
   }
-  const body = result.body as { AuthenticationResult?: { IdToken?: unknown } };
-  const sub = subFromIdToken(body.AuthenticationResult?.IdToken);
-  return sub === undefined ? { notice: 'password-rejected' } : { sub };
+  const token = (result.body as { AuthenticationResult?: { IdToken?: unknown } }).AuthenticationResult?.IdToken;
+  if (typeof token !== 'string') {
+    return { notice: 'password-rejected' };
+  }
+  const jwks = await fetchJwks(
+    {
+      region: 'eu-central-1',
+      userPoolId: target.userPoolId,
+      clientId: target.clientId,
+      hostedDomain: 'unused.auth.eu-central-1.amazoncognito.com',
+      redirectUri: 'http://127.0.0.1/account/callback',
+      google: false,
+      apple: false,
+    },
+    fetchImpl as typeof fetch,
+  );
+  const claims = jwks ? verifyIdToken(token, { ...target, region: 'eu-central-1', hostedDomain: 'unused.auth.eu-central-1.amazoncognito.com', redirectUri: 'http://127.0.0.1/account/callback', google: false, apple: false }, jwks, '') : undefined;
+  if (!claims) {
+    return { notice: 'password-rejected' };
+  }
+  return { sub: claims.sub, claims };
 }

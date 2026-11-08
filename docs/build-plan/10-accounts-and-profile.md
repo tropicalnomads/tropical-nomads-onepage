@@ -101,4 +101,4 @@ Unit tests on the shared schema and the API validator:
 
 ## Not done
 
-The Cognito user pool is still not applied from this repo. Google and Apple stay off until a deploy passes the owner's ids. The web app creates a session only after a verified Cognito ID token. The account screen uploads an avatar into `data/operational/avatars/`.
+The Cognito user pool is still not applied from this repo, so a live sign-in cannot run until the owner sets `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID`. Google and Apple stay unconfigured. No client id or provider secret is in the repo. When Cognito confirms the email, the app writes the profile and then the session. The account screen uploads an avatar into `data/operational/avatars/`.

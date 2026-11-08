@@ -178,4 +178,56 @@ describe('cognito settings', () => {
     assert.equal(sent.includes('a-long-secret-phrase'), true);
     assert.equal(JSON.stringify(result).includes('a-long-secret-phrase'), false);
   });
+
+  it('creates a profile from a verified password sign-in and refuses an unsigned token', async () => {
+    const { publicKey, privateKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
+    const jwk = publicKey.export({ format: 'jwk' }) as JsonWebKey & { kid?: string };
+    jwk.kid = 'key-1';
+    const header = Buffer.from(JSON.stringify({ alg: 'RS256', kid: 'key-1' }), 'utf8').toString('base64url');
+    const payload = Buffer.from(
+      JSON.stringify({
+        iss: `https://cognito-idp.eu-central-1.amazonaws.com/${target.userPoolId}`,
+        aud: target.clientId,
+        token_use: 'id',
+        exp: Math.floor(Date.now() / 1000) + 120,
+        email_verified: true,
+        email: 'ada@example.com',
+        sub: 'sub-ada',
+        given_name: 'Ada',
+        family_name: 'Lovelace',
+        preferred_username: 'Ada',
+      }),
+      'utf8',
+    ).toString('base64url');
+    const signature = createSign('RSA-SHA256').update(`${header}.${payload}`).sign(privateKey).toString('base64url');
+    const token = `${header}.${payload}.${signature}`;
+    const signedIn = await signInWithCognito('ada@example.com', 'a-long-secret-phrase', target, async (url) => {
+      if (String(url).includes('jwks')) {
+        return { ok: true, status: 200, json: async () => ({ keys: [jwk] }) };
+      }
+      return { ok: true, status: 200, json: async () => ({ AuthenticationResult: { IdToken: token } }) };
+    });
+    assert.equal(signedIn.claims?.emailVerified, true);
+    assert.equal(signedIn.claims?.preferredUsername, 'Ada');
+    assert.ok(signedIn.claims);
+    const profile = verifiedSignInFromClaims(signedIn.claims, undefined, undefined);
+    assert.equal(profile?.username, 'Ada');
+    assert.ok(profile);
+    const root = mkdtempSync(join(tmpdir(), 'tn-password-signin-'));
+    writeAccounts(emptyAccounts(), root);
+    const sub = await establishVerifiedAccount(profile, {}, root);
+    const stored = readAccounts(root);
+    assert.equal(sub, 'sub-ada');
+    assert.equal(stored.profiles.length, 1);
+    assert.equal(stored.profiles[0]?.emailVerified, true);
+    assert.equal(JSON.stringify(stored).includes('a-long-secret-phrase'), false);
+    const forged = await signInWithCognito('ada@example.com', 'a-long-secret-phrase', target, async (url) => {
+      if (String(url).includes('jwks')) {
+        return { ok: true, status: 200, json: async () => ({ keys: [jwk] }) };
+      }
+      return { ok: true, status: 200, json: async () => ({ AuthenticationResult: { IdToken: `${header}.${payload}.not-a-signature` } }) };
+    });
+    assert.equal(forged.sub, undefined);
+    assert.equal(forged.claims, undefined);
+  });
 });
