@@ -107,7 +107,8 @@ describe('Frankfurt templates', () => {
     assert.match(task, /Cpu: "512"/);
     assert.match(task, /Memory: "1024"/);
     assert.equal(task.includes('DATABASE_URL'), false);
-    assert.equal(task.includes('secrets:'), false);
+    assert.match(task, /ValueFrom: !Sub "\$\{DbSecretArn\}:password::"/);
+    assert.match(task, /ValueFrom: !Sub "\$\{DbSecretArn\}:username::"/);
   });
 
   it('keeps the status page on loopback and away from secret values', () => {

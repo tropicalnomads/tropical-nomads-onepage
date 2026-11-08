@@ -76,8 +76,9 @@ describe('private operational data', () => {
     assert.match(amplify, /apps\/one-pager\/dist/);
     assert.equal(amplify.includes('data/operational'), false);
     assert.match(merch, /MERCH_STOCK/);
-    assert.equal(apiPackage.includes('pg'), false);
+    assert.equal(apiPackage.includes('"pg"'), true);
     assert.equal(apiPackage.includes('prisma'), false);
+    assert.equal(apiPackage.includes('password'), false);
 
     const publicDir = fileURLToPath(new URL('../../one-pager/public', import.meta.url));
     for (const path of walk(publicDir)) {

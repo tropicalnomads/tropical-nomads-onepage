@@ -1,6 +1,16 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: Amplify app for the new Tropical Nomads web app. No production domain and no repository token.
 
+Parameters:
+  CognitoUserPoolId:
+    Type: String
+    Description: Deployed user pool id. Do not commit the value.
+    NoEcho: true
+  CognitoClientId:
+    Type: String
+    Description: Deployed app client id. The client has no secret.
+    NoEcho: true
+
 Resources:
   WebApp:
     Type: AWS::Amplify::App
@@ -35,6 +45,10 @@ Resources:
           Value: apps/web
         - Name: NEXT_TELEMETRY_DISABLED
           Value: "1"
+        - Name: COGNITO_USER_POOL_ID
+          Value: !Ref CognitoUserPoolId
+        - Name: COGNITO_CLIENT_ID
+          Value: !Ref CognitoClientId
       Tags:
         - Key: Name
           Value: tropical-nomads-web

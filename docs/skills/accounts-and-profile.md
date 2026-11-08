@@ -15,3 +15,7 @@ The next ticket must not put a password or a card number in the profile file, re
 ## No local password
 
 The owner asked for Cognito with Google and Apple. A local password hash would be a second identity product, and a subject from the browser would be an account takeover. The screens still refuse when the hosted-UI settings are absent. They create a profile only from a verified ID token.
+
+## Cognito
+
+Email sign-in uses the deployed pool when `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` are set. The client has no secret. The password is sent to Cognito and is not stored. Google and Apple stay unconfigured, so those buttons still return `cognito-not-configured`. The values are set on the new Amplify app at deploy time and are not written into git.

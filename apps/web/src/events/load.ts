@@ -1,5 +1,6 @@
 import { decideAccess, eventSaleChoice, getEventTimetableUrl, publicHttpsUrl } from 'tropical-nomads-shared';
 import { api } from 'tropical-nomads-api';
+import { apiOrigin } from '../api-origin.ts';
 import { bannerSrc, partnerLogoSrc } from './assets.ts';
 import type { UpcomingEventCard, UpcomingPartner } from './types.ts';
 
@@ -109,17 +110,28 @@ function readEvent(value: unknown, partners: Map<string, UpcomingPartner>): Upco
   };
 }
 
+async function readCatalogJson(path: string): Promise<unknown> {
+  const origin = apiOrigin();
+  if (origin) {
+    const response = await fetch(`${origin}${path}`, { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error('upcoming events are unavailable');
+    }
+    return response.json();
+  }
+  const response = await api.request(path);
+  if (response.status !== 200) {
+    throw new Error('upcoming events are unavailable');
+  }
+  return response.json();
+}
+
 export async function loadUpcomingEvents(): Promise<UpcomingEventCard[]> {
   if (decideAccess({ action: 'read-published' }).effect !== 'allow') {
     return [];
   }
-  const eventsResponse = await api.request('/events/upcoming');
-  const partnersResponse = await api.request('/partners');
-  if (eventsResponse.status !== 200 || partnersResponse.status !== 200) {
-    throw new Error('upcoming events are unavailable');
-  }
-  const eventsBody: unknown = await eventsResponse.json();
-  const partnersBody: unknown = await partnersResponse.json();
+  const eventsBody = await readCatalogJson('/events/upcoming');
+  const partnersBody = await readCatalogJson('/partners');
   if (!isRecord(eventsBody) || !Array.isArray(eventsBody.events)) {
     throw new Error('upcoming events are unavailable');
   }
