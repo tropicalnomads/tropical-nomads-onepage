@@ -74,4 +74,5 @@ export {
 } from './commerce.ts';
 export { parseArtistOffer, parseEmailSend, parseEmailTemplate, parseMarketingConsent, parseOutsideParty } from './mail.ts';
 export { declareLookup, lookups } from './lookups.ts';
+export { containsCardNumber } from './result.ts';
 export { parseConsents, parseProfiles, parseStockCounts } from './unique.ts';

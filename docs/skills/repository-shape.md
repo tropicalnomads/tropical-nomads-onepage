@@ -1,6 +1,6 @@
 # Repository shape
 
-Ticket 2 moved the one-pager to `apps/one-pager` and left empty slots at `apps/api` and `apps/bookings`. Operational JSON is the empty directory `data/operational`. It is not published.
+Ticket 2 moved the one-pager to `apps/one-pager` and left empty slots at `apps/api` and `apps/bookings`. Operational JSON is `data/operational`. Ticket 11 put empty collections there. It is not published. The cross-process lock waits. See [private-operational-data.md](private-operational-data.md).
 
 From the repo root, run `pnpm install`, `pnpm lint`, and `pnpm build`. Those commands use pnpm. `pnpm build` builds only `tropical-nomads-page`.
 
