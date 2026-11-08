@@ -7,7 +7,8 @@
   "exports": {
     ".": "./src/app.ts",
     "./accounts": "./src/accounts.ts",
-    "./payments": "./src/payments.ts"
+    "./payments": "./src/payments.ts",
+    "./tickets": "./src/tickets.ts"
   },
   "scripts": {
     "dev": "node --experimental-strip-types src/main.ts",

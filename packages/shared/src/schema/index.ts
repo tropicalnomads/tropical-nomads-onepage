@@ -68,6 +68,7 @@ export {
   parsePaymentTrace,
   parseProduct,
   parseQrPayload,
+  qrPayloadText,
   parseStockCorrection,
   parseStockCount,
   ticketSecretMatches,

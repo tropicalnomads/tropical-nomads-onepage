@@ -5,6 +5,12 @@ export interface UpcomingPartner {
   logoSrc?: string;
 }
 
+export interface InAppOffer {
+  name: string;
+  amount: number;
+  currency: 'EUR';
+}
+
 export interface UpcomingEventCard {
   id: string;
   title: string;
@@ -18,6 +24,7 @@ export interface UpcomingEventCard {
   mapUrl?: string;
   cardArtists: string[];
   stages: { artists: string[] }[];
+  inAppOffers: InAppOffer[];
   ticketUrl?: string;
   ticketsOnSale: boolean;
   timetableUrl?: string;

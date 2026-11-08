@@ -2,6 +2,7 @@ import {
   fail,
   finish,
   isRecord,
+  ok,
   optionalString,
   readRecord,
   rejectSensitive,
@@ -232,6 +233,15 @@ export function parseQrPayload(input: unknown): ParseResult<QrPayload> {
   if (id && secret && secret === id) errors.push('secret must not be the public party id');
   if (!id || !secret) return fail(errors);
   return finish(errors, { id, secret });
+}
+
+/** JSON the QR code encodes. The keys are the ticket id and the secret, in that order. */
+export function qrPayloadText(input: unknown): ParseResult<string> {
+  const parsed = parseQrPayload(input);
+  if (!parsed.ok) {
+    return parsed;
+  }
+  return ok(JSON.stringify({ id: parsed.value.id, secret: parsed.value.secret }));
 }
 
 export function ticketSecretMatches(stored: string, presented: string): boolean {

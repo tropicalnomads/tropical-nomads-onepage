@@ -1,6 +1,6 @@
 # 13 — Tickets
 
-**Status:** not started. In-app purchase for events the owner switches over. The door presentation is a QR code.
+**Status:** done for the unpaid in-app ticket. A signed-in buyer with a billing address can hold a QR ticket for a published party with a euro offer. The trace stays `pending_provider`. The ticket is not valid for entry. No payment company is named.
 
 ## Outcome
 

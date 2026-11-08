@@ -98,11 +98,43 @@ function assertOperationalFile(name: OperationalCollection, value: unknown): Ope
   if (record.schemaVersion !== 1 || !Array.isArray(record.records)) {
     throw new Error('operational collection is not a file');
   }
-  assertNoPrivateFields(record);
-  if (containsCardNumber(record)) {
+  const file = { schemaVersion: 1 as const, records: record.records };
+  allowTicketSecret(name, file);
+  if (containsCardNumber(file)) {
     throw new Error('operational collection contains a card number');
   }
-  return { schemaVersion: 1, records: record.records };
+  return file;
+}
+
+/**
+ * A secret is stored only as the issued-ticket field.
+ * Every other collection still refuses that key.
+ */
+function allowTicketSecret(name: OperationalCollection, file: OperationalFile): void {
+  if (name !== 'issued-tickets') {
+    assertNoPrivateFields(file);
+    return;
+  }
+  const records = file.records.map((item) => {
+    if (typeof item !== 'object' || item === null || Array.isArray(item)) {
+      return item;
+    }
+    const ticket = item as Record<string, unknown>;
+    if (!Object.hasOwn(ticket, 'secret')) {
+      return ticket;
+    }
+    if (typeof ticket.secret !== 'string' || ticket.secret.trim() === '') {
+      throw new Error('operational collection contains a private field');
+    }
+    const rest: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(ticket)) {
+      if (key !== 'secret') {
+        rest[key] = value;
+      }
+    }
+    return rest;
+  });
+  assertNoPrivateFields({ schemaVersion: file.schemaVersion, records });
 }
 
 export function readOperational(name: OperationalCollection, root = operationalDirectory()): OperationalFile {

@@ -14,6 +14,7 @@ import {
   parseProfile,
   parseProfiles,
   parseQrPayload,
+  qrPayloadText,
   parseStockCounts,
   publishedSchemas,
   schemas,
@@ -170,9 +171,20 @@ describe('schemas', () => {
   });
 
   it('parses a ticket id plus secret and rejects a public party id alone', () => {
-    assert.equal(parseQrPayload({ id: 'ticket-1', secret: 'not-the-party' }).ok, true);
+    const parsed = parseQrPayload({ id: 'ticket-1', secret: 'not-the-party' });
+    assert.equal(parsed.ok, true);
+    if (parsed.ok) {
+      assert.deepEqual(parsed.value, { id: 'ticket-1', secret: 'not-the-party' });
+    }
     assert.equal(parseQrPayload({ partyId: 'party-1' }).ok, false);
     assert.equal(parseQrPayload({ id: 'party-1' }).ok, false);
+    const text = qrPayloadText({ id: 'ticket-1', secret: 'not-the-party' });
+    assert.equal(text.ok, true);
+    if (text.ok) {
+      assert.equal(text.value, '{"id":"ticket-1","secret":"not-the-party"}');
+    }
+    assert.equal(qrPayloadText({ partyId: 'party-1' }).ok, false);
+    assert.equal(qrPayloadText('party-1').ok, false);
     assert.equal(ticketSecretMatches('not-the-party', 'not-the-party'), true);
     assert.equal(ticketSecretMatches('not-the-party', 'other-secret'), false);
   });

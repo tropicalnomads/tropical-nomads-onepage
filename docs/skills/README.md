@@ -18,6 +18,8 @@ This folder holds short procedures for people working on Tropical Nomads.
 - [upcoming-events.md](upcoming-events.md) — ticket 08. The public upcoming list in the web app. Ticket links leave the app.
 - [accounts-and-profile.md](accounts-and-profile.md) — ticket 10. Profile rules and sign-in screens. Cognito is not called.
 - [payment-interfaces.md](payment-interfaces.md) — ticket 12. Pending traces and saved methods. No payment company.
+- [tickets.md](tickets.md) — ticket 13. An unpaid euro ticket and a QR code for a published party.
+- [qr-code.md](qr-code.md) — the SVG encoder for the ticket payload. Not a payment SDK.
 - [hono.md](hono.md) — the REST library for `apps/api`. Hono on Node, loopback only.
 - [nextjs.md](nextjs.md) — Next.js lives in the web shell. The one-pager stays on Vite.
 - [turborepo.md](turborepo.md) — how package tasks run. pnpm stays the package manager.
