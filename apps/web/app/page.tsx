@@ -1,8 +1,13 @@
+'use client';
+
 import { EmptyState } from '../../one-pager/src/components/EmptyState';
-import { areaDescription } from '../src/areas';
+import { areaDescription, areaText, shellText } from '../src/i18n/copy';
+import { useLanguage } from '../src/i18n/provider';
 import { navigation } from '../src/navigation';
 
 export default function HomePage() {
+  const { language } = useLanguage();
+
   return (
     <main>
       <section className="px-5 py-8 md:px-8">
@@ -18,10 +23,10 @@ export default function HomePage() {
               className="mx-auto h-16 w-auto object-contain md:h-20"
             />
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-ozora-turquoise md:text-sm">
-              Psytrance with a Brazilian touch
+              {shellText(language, 'tagline')}
             </p>
             <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-ozora-cream/85 md:text-lg">
-              The same parties, tickets, door, and shop. Nothing here is on sale yet.
+              {shellText(language, 'intro')}
             </p>
           </div>
         </div>
@@ -34,7 +39,7 @@ export default function HomePage() {
               href={item.href}
               className="block rounded-2xl transition hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow"
             >
-              <EmptyState title={item.label} description={areaDescription[item.id]} />
+              <EmptyState title={areaText(language, item.id)} description={areaDescription(language, item.id)} />
             </a>
           ))}
         </div>

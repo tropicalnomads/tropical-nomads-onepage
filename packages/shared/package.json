@@ -1,9 +1,9 @@
 {
   "name": "tropical-nomads-shared",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
-  "description": "Theme tokens, base component contract, constants, and the record schemas. No event data.",
+  "description": "Theme tokens, base component contract, constants, record schemas, and the en and pt language codes. No event data.",
   "exports": {
     ".": "./src/index.ts"
   },
