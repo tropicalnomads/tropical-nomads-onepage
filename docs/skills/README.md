@@ -3,6 +3,8 @@
 This folder holds short procedures for people working on Tropical Nomads.
 
 - [identify-stack.md](identify-stack.md) — ticket 1. Where the stack decision lives, and what the next ticket must not break.
+- [repository-shape.md](repository-shape.md) — ticket 2. Where the packages live, and what the next ticket must not break.
+- [turborepo.md](turborepo.md) — how package tasks run. pnpm stays the package manager.
 - [aws-sizes.md](aws-sizes.md) — where the AWS sizes live, and what the next ticket must not change.
 
 A file belongs here when the procedure is real. Product decisions stay in the [master plan](../master-plan.md). The delivery sequence and the notes template stay on tag `product-plan-v1`.
