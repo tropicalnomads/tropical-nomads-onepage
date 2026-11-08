@@ -9,13 +9,20 @@ These notes describe the future shape of this repository. The [master plan](../m
 Tropical Nomads stays in this repository, `tropical-nomads-onepage`. The repository becomes a monorepo when that conversion is requested. This document does not convert it.
 
 ```
-Monorepo: tropical-nomads-onepage
+This repository (monorepo): tropical-nomads-onepage
 ├── One-pager package     the current site, kept as one package
-├── Web app package       new frontend, added in a later build
 ├── API package           new API, added in a later build
 ├── Bookings package      separate deploy at bookings.tropical-nomads.com
 └── JSON data             shared and operational records, until a database is chosen
+
+Separate repositories for the customer apps (owner, 8 November 2026)
+├── Shared repo           theme colors, base components, types, schemas, constants
+├── Web app repo
+├── iOS app repo
+└── Android app repo
 ```
+
+The client repositories are separate because the owner asked for that. They stay one product by calling this API and by depending on the shared repo. Bookings and the JSON stay in this repository so the two deploys do not fork the catalog. Splitting Bookings out would copy the shared records. Splitting the apps out does not.
 
 Shared data, read and written by both the website/app and Bookings:
 
@@ -33,11 +40,13 @@ Directory names below are roles. Real folder names wait until the owner asks to 
 
 The current site: pages, assets, and the JSON it already publishes. It remains one package inside the monorepo. Through this planning stage its behavior stays as it is. It is the package the public site is built from today.
 
-### Web app package
+### Customer app repositories
 
-A new frontend for one product on web, iOS, and Android: events, ticket purchase, the buyer's ticket, the check-in area, and the merch store. How the iOS and Android apps are produced is undecided. The package does not exist yet. The proposed tickets are in the [build plan](../build-plan/README.md).
+Three app repositories (web, iOS, Android) and one shared repository. The shared repo holds theme colors, base components, types, schemas, and constants. None of these repositories exist yet. Tickets are in the [build plan](../build-plan/README.md).
 
-When the owner asks to start building, the first build step is to turn the Tropical Nomads page into a web app that can have an API. That step is what introduces this package and the API package. It is out of scope now.
+Theme tokens, types, schemas, and constants can be shared as data. A base component still needs a technology the three repos can consume. That technology is not chosen. Sign-in for the apps is Amazon Cognito, with Google and Apple.
+
+When the owner asks to start building, the first product step is an API in this repo and a web app repository that can call it. That step is out of scope for the planning documents.
 
 ### API package
 
@@ -55,7 +64,7 @@ A separate deploy is a separate published site from the same repository.
 
 | Publish target | What it runs | Where this stands |
 | --- | --- | --- |
-| `www.tropical-nomads.com` | The one-pager package today | Current. How this host relates to the new web app package is part of the later build, and it is undecided. |
+| `www.tropical-nomads.com` | The one-pager package | Stays this site's own deploy. The web app is a separate repository and is not published here by the early tickets. |
 | `bookings.tropical-nomads.com` | The Bookings package | Decided as its own deploy. The package is not in the repo yet. |
 | API host | The API package | Undecided. It may be its own hostname or attached to one of the sites. This note does not pick. |
 
@@ -67,7 +76,7 @@ This repository contains `amplify.yml`, which builds the static one-pager. That 
 
 - Artists, parties, and the calendar need one contract. This repository is where that contract lives, next to every package that reads and writes it.
 - Bookings can publish to its own domain from a package in the same repo. The deploy is per package. The git history is shared.
-- The owner asked to keep working in `tropical-nomads-onepage` and to add the new packages here.
+- The owner asked to keep the one-pager, the API, and Bookings in `tropical-nomads-onepage`. On 8 November 2026 the owner also asked for separate repositories for the web app, iOS, Android, and a shared client library. Those client repos consume this API. They are not a second copy of Bookings or of the JSON.
 - A second repository for Bookings, the web app, or the API would copy the shared records, or it would invent a third repository whose only job is those records. The current constraints give no reason to do that.
 
 A later split would need a written reason: a limit that a package plus its own deploy cannot meet. No such limit is known. This plan keeps the monorepo.

@@ -51,19 +51,19 @@ People can see the next events: what, when, and where, with the lineup and partn
 
 ### 2.2 Tickets
 
-A visitor can buy a ticket for an event, and the product generates that ticket. The purchase-to-ticket flow is: choose the event, pay, receive a ticket the product created, find that ticket again later, and present it for check-in. The ticket is tied to that purchase. Ticket format, ticket types, and the delivery channel are undecided (section 7).
+A visitor can buy a ticket for an event, and the product generates that ticket. The purchase-to-ticket flow is: choose the event, pay, receive a ticket the product created, find that ticket again later, and present it for check-in. The ticket is tied to that purchase. The door scans a QR code. Ticket types and any extra buyer format, such as a wallet pass, stay open (section 7).
 
 ### 2.3 Check-in
 
-The application has an area for checking in tickets that were purchased. Check-in accepts a genuine ticket for the right event and records the result. Who stands in that area — door staff, the buyer, or someone else — is undecided. The area exists either way. Section 4 describes the flow.
+The application has an area for checking in tickets that were purchased. An admin invites the people who scan QR codes at the door. Check-in accepts a genuine ticket for the right event and records the result. Section 4 describes the flow.
 
 ### 2.4 Payments
 
-Ticket purchases are paid, and the product keeps a trace of what was paid: who, how much, which tickets, and the status. The provider is undecided. The trace stays understandable after a provider is chosen.
+Ticket purchases are paid, and the product keeps a trace of what was paid: who, how much, which tickets, and the status. The payment interfaces, including a place for the user's payment methods, come first. Connecting a provider comes later. The same interfaces cover merch.
 
 ### 2.5 Merch store
 
-The product sells T-shirts and other merchandise. Today's page shows two shirts and a WhatsApp reservation. The product store is a catalog a customer can buy from. Which other products exist, and whether a shirt is paid through the same path as tickets, are undecided.
+The product sells T-shirts and other merchandise. Today's page shows two shirts and a WhatsApp reservation. The product store is a catalog a customer can buy from. Tickets and merch share payment interfaces. Connecting a provider comes later. Which other products exist, and pickup versus shipping, stay open.
 
 ### 2.6 Inventory
 
@@ -86,7 +86,7 @@ Bookings admin includes a calendar of parties and festivals. The team uses it to
 ```
 Upcoming events  →  Tickets  →  Payments  →  Issued ticket  →  Check-in
 
-Merch store      →  Inventory  →  payment path undecided
+Merch store      →  Inventory  →  same payment interfaces, provider later
 
 Bookings admin   →  Party calendar  →  Artist agendas
         \                                  /
@@ -97,7 +97,7 @@ Bookings admin   →  Party calendar  →  Artist agendas
 - **Tickets go with payment.** The product issues the ticket when that order's payment is complete. What "complete" means depends on the provider, which is undecided. The order and the payment trace stay together.
 - **Check-in uses the issued ticket.** Check-in does not create a ticket and does not take payment.
 - **Merch and inventory are a pair.** The store sells what inventory says is available. Inventory owns the count.
-- **Merch payment sits next to ticket payment, and it is a separate decision.** Ticket payment is required. Whether a shirt is paid inside this product is undecided.
+- **Merch uses the same payment interfaces as tickets.** Connecting the provider comes later. Pickup versus shipping for a shirt is still open.
 - **Bookings and the public product share artists, parties/events, and the calendar.** Both products read and write those records. The admin party calendar is where agendas are assembled. Visitors see the published parties. A public lineup and an agenda in Bookings are two views of the same data.
 - **Security sits on every arrow.** A visitor can read published events. Writing a party, changing stock, issuing a ticket, or recording a check-in needs the matching permission.
 
@@ -117,7 +117,7 @@ Areas the product needs. The names describe the job. They are not screen titles,
 | Shared catalog | Website/app and Bookings, both reading and writing; visitors see the published view | Artists, parties/events, calendar |
 | Orders | Team | See ticket orders and payment traces |
 
-"My tickets" means the buyer can return to a purchase. Whether that needs an account is undecided. The area can be named before that choice.
+"My tickets" means the buyer can return to a purchase after they sign in. Registration uses Cognito, with Google and Apple.
 
 Bookings admin and inventory admin are both team-only. Whether they are one role or two is undecided. The areas stay separate because agendas and stock are different jobs.
 
@@ -142,14 +142,14 @@ Today the ticket step leaves the site through an external link. In the product, 
 3. The product generates the ticket and gives it to the buyer.
 4. The buyer can open that ticket again and see what was paid.
 5. At the event, check-in validates that ticket.
-6. The buyer does not set the price and does not invent a ticket. The buyer records a check-in only if section 7's check-in decision later gives them that role.
+6. The buyer does not set the price and does not invent a ticket. Check-in is done by people the admin invites, not by the buyer.
 
 ### Door / check-in staff
 
-Who performs check-in is **undecided**. It may be door staff, the buyer, or another person the team names. This flow is the check-in role. If the owner later decides the buyer checks themselves in, the same validation applies and the staff label changes.
+The owner decided this on 8 November 2026. An admin invites people to help at the door. Those people scan the buyer's QR code. A buyer does not check themselves in.
 
 1. Open the check-in area, for an event this role is allowed to handle.
-2. Take the buyer's ticket, in whatever format is chosen later.
+2. Scan the QR code on the buyer's ticket.
 3. The product checks that the ticket was issued, matches this event, matches a real payment, and is still valid under the rules. Re-entry and transfers are undecided.
 4. The product records the check-in: which ticket, which event, when, and who performed it.
 5. A refused check-in (unknown, unpaid, wrong event, or already used when the rules say so) is visible to this role, and the holder is not admitted.
@@ -195,8 +195,8 @@ The [architecture notes](architecture/monorepo-and-data.md) hold the detail. Wha
 - Later work stays in **this** repository. There is no new unrelated repository.
 - The repository becomes a **monorepo** when that conversion is requested. This plan does not convert it.
 - The **current one-pager stays as one package** inside that monorepo.
-- A **new frontend package** is added later, for the web app.
-- A **new API package** is added later.
+- The **API package** is added later, in this same repository.
+- The **customer apps are separate repositories**: one for the web app, one for iOS, one for Android, plus a shared repository for theme colors, base components, types, schemas, and constants. They call the API. They do not each keep a copy of the event data.
 - **Bookings** is a package in the same monorepo, with its **own deploy**, still at `bookings.tropical-nomads.com`.
 - **Shared data** is artists, parties/events, and the calendar. The website/app and Bookings both read and write it.
 - The data store is **JSON files until a database is chosen**. No database is selected here.
@@ -207,7 +207,7 @@ The [architecture notes](architecture/monorepo-and-data.md) hold the detail. Wha
 | Piece | Role | Deploy |
 | --- | --- | --- |
 | One-pager package | The current site, kept as its own package | The current public site, until a later build changes that |
-| Web app package | New frontend for one product on web, iOS, and Android. How the iOS and Android apps are produced is undecided. | Introduced by the later build in section 8. Host details are undecided. The build plan's app-shell ticket does not deploy it. |
+| Web, iOS, and Android repos | One product, three repositories, plus a shared repo for theme, components, types, schemas, and constants | Not deployed by the build plan's early tickets. |
 | API package | Reads and writes JSON for both products | Host details are undecided. |
 | Bookings package | Bookings, including the admin party calendar | `bookings.tropical-nomads.com` |
 | JSON data | Shared records, and a separate set of operational records, until a database exists | The files are the store. They are not a third website. |
@@ -222,13 +222,13 @@ These are the outcomes the product is designed for. They describe the future pro
 
 - A **visitor** can read published events and the public store.
 - A **ticket buyer** can see and present their own tickets and their own payment traces.
-- A **check-in role** can validate tickets for events they are allowed to handle, and can record the result. They cannot issue tickets or change prices. Who holds the role is undecided.
+- A **check-in role** can validate tickets for events an admin invited them to handle, and can record the result. They scan QR codes. They cannot issue tickets or change prices. The admin can invite and remove these people.
 - A **merch customer** can buy what is in stock and cannot edit inventory.
 - **Bookings admin** can edit the party calendar, artists, and agendas. Team only.
 - **Inventory admin** can edit stock. Team only.
 - One person may hold more than one team role. The permissions stay distinct, so a check-in device is not also an editor of the catalog.
 
-The sign-in method is part of the undecided stack. Whether buyers need an account is its own open question. The permission split above is the product rule those mechanisms have to meet.
+Sign-in is Amazon Cognito, with Google and Apple as the SSO providers. Buyers have accounts. The permission split above is the product rule Cognito groups and the API have to meet.
 
 ### Tickets
 
@@ -271,24 +271,24 @@ The sign-in method is part of the undecided stack. Whether buyers need an accoun
 
 ## 7. Open questions
 
-Every row below is **undecided**. This plan does not pick an answer.
+Status is per row. Decisions the owner added on 8 November 2026 are marked as decided. Everything else stays open.
 
 ### Named by the owner
 
 | Topic | Status | What stays attached to the question |
 | --- | --- | --- |
-| Tech stack | Undecided | The owner leans toward Next.js for the new app frontend and AWS for backend, database, and platform tools. That lean is a preference to evaluate, recorded in the build plan, and it is not a lock. API style and auth stay open. The one-pager's Vite app is not the choice for the new packages. |
-| Cloud vendor | Undecided | AWS is the candidate, because the domain and a lot of hosting are already there. Which AWS services to use is open. `amplify.yml` describes the current static site only. |
-| Payments provider | Undecided | Ticket payments need a provider and a trace. The company is open. |
-| Ticket format | Undecided | QR code, wallet pass, or another format. The product still generates a ticket it can validate. The format is unchosen. |
-| How iOS and Android are produced | Undecided | Web, iOS, and Android are all in scope, as one product. Shared UI versus native UI is the open choice. The one-pager's PWA plugin is current site tooling, not that choice. |
-| Who performs check-in | Undecided | Door staff, the buyer, or someone else. Section 4 describes the role. |
+| Tech stack | Partly decided | Login and registration use Amazon Cognito, with Google and Apple sign-in. Next.js remains the lean for the web app, not a lock. The one-pager stays the Vite app. API style and the database stay open. |
+| Cloud vendor | Partly decided | AWS is the platform lean, and Cognito is the identity service. Other AWS services, including the database, stay open. `amplify.yml` still describes only the current static site. |
+| Payments provider | Undecided | The provider is integrated later. The payment interfaces, and a place on the user for payment methods, are settled first. The company stays unnamed. |
+| Ticket format | Partly decided | Door staff scan a QR code. A wallet pass or another extra format for the buyer is still open. |
+| Where the apps live | Decided | Separate repositories for the web app, iOS, and Android, plus a shared repository for theme colors, base components, types, schemas, and constants. This repo still holds the one-pager, the API, Bookings, and the JSON data. |
+| Who performs check-in | Decided | An admin invites people to scan QR codes and help at the door. Buyers do not check themselves in. |
 | Languages and markets | Undecided | The one-pager currently has English and Portuguese. That does not decide the product's languages, countries, or currencies. |
-| Implementation order | Proposed for review | A recommended ticket order is in [docs/build-plan/](build-plan/README.md). It is waiting for the owner. The first product step is still a web app with an API. |
+| Implementation order | Proposed for review | The recommended order is in [docs/build-plan/](build-plan/README.md). Each ticket ends with acceptance criteria and unit tests where the behavior is pure. |
 
 ### Also undecided, and needed before implementation
 
-- Whether a buyer needs an account, and how they get the ticket back (in the app, by email, or another channel).
+- Buyers do register and sign in. How a ticket is delivered besides being available in the app (for example email) is still open.
 - Ticket types, currencies, comps, guest lists, transfers, re-entry, refunds, and cancellation.
 - Whether merch uses the ticket payment capability, and whether fulfillment is pickup, shipping, or both. Today's page describes a WhatsApp reservation and pickup at The Sound House, Dublin.
 - Which products exist beyond T-shirts.
@@ -306,21 +306,21 @@ Every row below is **undecided**. This plan does not pick an answer.
 This is a planning sequence. It is the order of decisions. It is not a build schedule, and it is not the order to write code.
 
 1. **Confirm the restatement** in section 1, including all nine capabilities, and the boundary with today's one-pager, Bookings, and the timetable site.
-2. **Name the actors.** Especially who checks tickets in, and whether Bookings admin, inventory admin, and order review are one team role or several. Decide whether buyers need an account.
+2. **Name the remaining actors.** Check-in is decided: admin-invited door staff. Buyers have accounts. Still open: whether Bookings admin, inventory admin, and order review are one team role or several.
 3. **Agree the shared records** well enough to sketch JSON later: event/party, artist, calendar entry, artist agenda. Include what Bookings writes, what the public list shows, and whether drafts stay private.
 4. **Agree ticket and payment outcomes** before format or provider: what the buyer receives, what check-in has to prove, and the rules for transfer, re-entry, comps, and refunds.
 5. **Agree merch and inventory rules:** the catalog, pickup versus shipping, and whether a shirt is paid inside this product. Stock moves when a sale is real.
 6. **Split public JSON from private JSON,** including where writable files live. Do this before API work, so ticket secrets stay out of the public site bundle.
 7. **Choose languages and markets** for the product. English and Portuguese on the current page remain a fact about the one-pager while that choice is open.
-8. **Choose how iOS and Android are produced** — shared UI with the web app, or native UI on the same API. Web, iOS, and Android are already in scope as one product. The one-pager's PWA plugin stays a fact about the current site.
-9. **Choose stack details, cloud services, and the payment provider** once the flows and the data boundary are clear enough to compare options. The build plan's first ticket records the Next.js and AWS lean for evaluation and leaves API style, the database, auth, and the payment provider open. This document does not compare vendors.
+8. **Choose how shared UI components are built** for three separate app repositories. The repositories themselves are decided: web, iOS, Android, and a shared repo. Theme tokens, types, schemas, and constants share cleanly. A single component file does not compile unchanged as a Swift screen, a Kotlin screen, and a web screen, so the component technology is still open.
+9. **Choose the remaining stack details and the payment provider** once the flows and the data boundary are clear enough to compare options. Cognito with Google and Apple is decided. API style, the database, and the payment company stay open. Payment interfaces are built before any provider is connected.
 10. **Set the remaining implementation order** after those decisions. One constraint is already fixed. It sits below, separate from this list, so it is not mistaken for a full build plan.
 
 ### Later build constraint
 
 When the owner explicitly asks to start building, the **first build step** is to turn the Tropical Nomads page into a web app that can have an API.
 
-That step adds the new frontend package and the API package beside the current one-pager package, and it uses JSON files as the data store. The [build plan](build-plan/README.md) splits that step, and everything after it, into tickets for review. This plan still does not build them.
+That step adds the API package beside the current one-pager, and a web app repository that can call it. JSON files are the data store. The [build plan](build-plan/README.md) splits that step, and everything after it, into tickets for review. This plan still does not build them.
 
 ## 9. How this folder grows
 

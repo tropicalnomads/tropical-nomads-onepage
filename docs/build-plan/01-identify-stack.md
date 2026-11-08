@@ -1,18 +1,16 @@
 # 01 — Identify the stack
 
-**Status:** not started. This file records the lean and the work of recommending it. It does not install anything.
+**Status:** not started. Records decisions and the remaining lean. It does not install anything.
 
 ## Outcome
 
-A written recommendation the owner can accept or reject. The proposal under test is: Next.js for the new app's web frontend, and AWS for the backend, the database, and the other platform tools. The current one-pager stays the Vite package it is today. API style, the AWS database, auth, the payment provider, and how iOS and Android are produced stay open in that recommendation.
+The stack note matches what the owner has decided, and it still names what is open. Decided: Amazon Cognito for registration and login, with Google and Apple as SSO providers. Decided: separate repositories for the web app, iOS, and Android, plus a shared repo. Still a lean, not a lock: Next.js for the web app, and AWS for the rest of the platform. Still open: API style, which database, which payment company, and which technology compiles the shared UI components.
 
 ## Why it exists
 
-Later tickets need to know which lean they are building against, and which choices they must not invent. This repo is already specific: a Vite + React 18 + TypeScript site, Tailwind, pnpm, `vite-plugin-pwa`, and an Amplify static build. Treating that stack as the new product's stack would be a guess. Treating Next.js and AWS as already chosen would also be a guess. The owner has named them as the preference to evaluate, because the domain and a lot of the hosting are already on AWS.
+Later tickets have to build against Cognito and against four client repositories without pretending the rest of AWS, or a payment company, was chosen. The one-pager is Vite + React 18 + TypeScript + Tailwind + pnpm + `vite-plugin-pwa`, published by `amplify.yml`. `vite.config.ts` reads `AWS_COMMIT_ID`. That is evidence the current site is already on AWS. It is not a reason to rewrite the one-pager in Next.js.
 
-In this repo, that AWS footprint shows up as `amplify.yml` and as `AWS_COMMIT_ID` in `vite.config.ts`, which becomes the build id. The Amplify config comment also assumes CloudFront in front of the static files. That is evidence about the current site. It is not a service list for the API or the new app.
-
-The new product is one product for web, iOS, and Android. Next.js, even if accepted for the web frontend, does not by itself produce the iOS and Android apps.
+The owner wrote "cognitive". This plan reads that as Amazon Cognito, which supports hosted login plus Google and Apple.
 
 ## Depends on
 
@@ -20,30 +18,28 @@ None. This is the first ticket.
 
 ## To-do
 
-1. Write the recommendation next to the master plan's stack and cloud rows, dated, and marked as accepted only after the owner says so. Until then the status stays "lean, not decided".
-2. State the proposal in one place:
-   - Next.js is the candidate for the **new app frontend** (the web UI of the product).
-   - AWS is the candidate for the backend, the database, and the other platform tools.
-   - The one-pager package stays on Vite, React 18, TypeScript, Tailwind, and pnpm. Do not propose rewriting `src/` into Next.js.
-   - JSON files remain the data store. Recommending AWS does not turn on a database in this ticket.
-3. Tie the AWS lean to the facts above (`amplify.yml`, `AWS_COMMIT_ID`) and to the owner's reason (domain and hosting already on AWS). Do not audit or invent the rest of the AWS account.
-4. Record the three-platform requirement: web, iOS, and Android, one product. List the production choice as still open, with two families and no winner:
-   - Shared UI: one interface used on the web and shipped to iOS and Android.
-   - Native UI: iOS and Android screens written for those platforms, using the same API as the web app.
-   - The one-pager's PWA (`vite-plugin-pwa`, manifest name "Tropical Nomads Events" in `vite.config.ts`) is the current site's install behavior. It is not a vote for either family, and a PWA alone does not finish iOS and Android for the new product.
-5. Leave these items named and unanswered in the recommendation. Do not close them in this ticket:
+1. Write the decision record next to the master plan's stack rows, dated 8 November 2026:
+   - Registration and login: Amazon Cognito.
+   - SSO: Google and Apple, as Cognito identity providers.
+   - Passwords stay in Cognito. This product does not store them.
+   - The one-pager is not moved onto Cognito in this ticket. The new apps are.
+2. Record the repository split: web app, iOS, Android, and a shared repo. This monorepo keeps the one-pager, the API, Bookings, and JSON.
+3. Keep Next.js as the candidate for the web app only. Do not install it. Do not rewrite `src/`.
+4. Keep these items unanswered:
    - API style.
-   - Which database service on AWS, if a database is chosen later. No database is chosen here.
-   - How people sign in (auth).
-   - Payment provider.
-   - Which of the two iOS/Android families to use.
-   - Languages and markets.
-   - Ticket format.
-   - Who performs check-in.
-6. Also leave the AWS service list open: where an API would run, whether the new app would use Amplify or a different AWS entry, and which account or region. The existing Amplify app keeps building the one-pager only. Do not attach the new app to it in this ticket.
-7. Note the constraints any later payment provider has to meet, without naming a company: a trace of buyer, amount, currency, what was bought, status, time, and the provider reference; the browser does not get to mark a payment successful; raw card numbers stay out of our data. The provider itself stays unnamed.
-8. Do not add dependencies, scaffold Next.js, or create AWS resources. Identification is a document the owner accepts. Ticket 04 uses Next.js for the web shell only after that acceptance. If the owner rejects the lean, stop and correct tickets 04 and 05 before they start.
+   - Which AWS database, later. JSON remains the store until then.
+   - Which AWS services host the API. The existing Amplify app keeps building the one-pager only.
+   - The payment company. Ticket 12 builds interfaces first.
+   - The component technology inside the shared repo. Theme tokens, types, schemas, and constants do not need that choice. A button component does, because one source file is not simultaneously a Swift view, a Kotlin view, and a web component. Do not pick React Native, Flutter, or a copy-paste component per repo in this ticket. Leave the choice for the owner before ticket 04 adds real components.
+5. Note Apple and Google setup as later work inside ticket 10: an Apple Services ID and a Google OAuth client, both registered on the Cognito user pool. Do not create those accounts now.
+6. Do not add dependencies or create AWS resources.
 
-## Done when
+## Acceptance criteria
 
-The owner has either accepted the Next.js and AWS lean or replaced it in writing. The open list in the to-do above is still open. No package was added to `package.json`.
+- The master plan says Cognito, Google, and Apple are decided, and that the payment company, database, and API style are not.
+- The note says the one-pager stays on Vite.
+- No package was added to `package.json`.
+
+## Tests
+
+No unit test. The implementer re-reads the master plan and this ticket and checks they agree. `pnpm lint` and `pnpm build` in this repo still pass, because this ticket does not change the app.

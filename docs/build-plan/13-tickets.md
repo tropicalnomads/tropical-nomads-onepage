@@ -1,0 +1,45 @@
+# 13 — Tickets
+
+**Status:** not started. In-app purchase for events the owner switches over. The door presentation is a QR code.
+
+## Outcome
+
+A signed-in buyer with a billing address can choose a published event, start a payment through ticket 12, and receive a ticket the API generated. The ticket can be opened again in all three apps. The code the door scans is a QR code of that ticket. Events that still sell on Eventbrite or Goabase keep those links. Because the provider is not connected yet, the issued ticket stays tied to a `pending_provider` trace and is not valid for entry until confirmation exists. The QR can still be generated so the path is real.
+
+## Why it exists
+
+The site lists parties and then leaves. The product has to generate a ticket, store it privately, and hand the buyer a QR code. Public event ids in `events.json` are world-readable, so the QR secret cannot be that id.
+
+## Depends on
+
+- [08 — Upcoming events](08-upcoming-events.md).
+- [12 — Payment interfaces](12-payment-interfaces.md).
+
+## To-do
+
+1. Ask the owner for ticket types and prices before charging a real amount. The QR format is decided. A wallet pass on top of the QR is still open. Do not build a wallet pass in this ticket.
+2. For an event switched to in-app sales: create an order, call `startPayment` with purpose `tickets`, and write an issued ticket in the private store: event id, trace id, buyer id, a secret the API generated, and the time.
+3. The QR payload is the ticket id plus the secret. It is not the Goabase id alone. Render that QR in web, iOS, and Android from the shared payload schema.
+4. The buyer opens the ticket again from My Tickets on each app, signed in.
+5. Mark the ticket `payable` only. Door validation in ticket 14 accepts it only after the trace is confirmed. With the stub adapter, a scan must refuse it as unpaid. That is the correct result until a provider is connected.
+6. Leave external links on events that are not switched. The one-pager keeps `getPrimaryTicketUrl`.
+7. Ask about comps, guest lists, transfers, re-entry, and cancellation before enforcing "already used". Record every issued ticket.
+8. Do not write the secret into `public/data`.
+
+## Acceptance criteria
+
+- A signed-in buyer with a billing address can hold a ticket and a QR code for a switched event.
+- The QR payload does not equal the public event id.
+- A stub payment leaves the ticket unpaid, and the unpaid ticket is not a successful entry.
+- External ticket links still resolve for events that were not switched.
+
+## Tests
+
+Unit tests:
+
+- Secret generator output is not the event id and is not derived by concatenating the event id with the user id.
+- QR payload parse returns ticket id and secret, and rejects a payload that is only the public event id.
+- Issue refuses a profile with no billing address.
+- Issue linked to `pending_provider` is stored as not valid for entry.
+
+The implementer runs those tests and the one-pager build.
