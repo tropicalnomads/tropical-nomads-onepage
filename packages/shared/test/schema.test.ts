@@ -166,7 +166,8 @@ describe('schemas', () => {
       status: 'pending_provider',
     };
     assert.equal(parsePaymentTrace(trace).ok, true);
-    assert.equal(parsePaymentTrace({ ...trace, status: 'confirmed' }).ok, false);
+    assert.equal(parsePaymentTrace({ ...trace, status: 'confirmed' }).ok, true);
+    assert.equal(parsePaymentTrace({ ...trace, status: 'paid' }).ok, false);
     assert.equal(parseParty({ ...party, draft: true }).ok, false);
   });
 

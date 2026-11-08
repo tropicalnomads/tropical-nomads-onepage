@@ -81,12 +81,27 @@ export interface QrPayload {
 
 export interface CheckIn {
   id: string;
-  ticketId: string;
   partyId: string;
   at: string;
   actorId: string;
   result: CheckInResult;
   reason?: CheckInReason;
+  ticketId?: string;
+  guestId?: string;
+}
+
+export interface GuestPerson {
+  id: string;
+  name: string;
+  addedAt: string;
+}
+
+export interface GuestList {
+  id: string;
+  partyId: string;
+  name: string;
+  createdAt: string;
+  guests: readonly GuestPerson[];
 }
 
 export interface DoorInvite {
@@ -259,14 +274,17 @@ export function parseCheckIn(input: unknown, refs: SchemaRefs = {}): ParseResult
   const read = readRecord(input);
   if (!read.ok) return read;
   const errors: string[] = [];
-  rejectUnknown(read.value, ['id', 'ticketId', 'partyId', 'at', 'actorId', 'result', 'reason'], errors);
+  rejectUnknown(read.value, ['id', 'ticketId', 'guestId', 'partyId', 'at', 'actorId', 'result', 'reason'], errors);
   rejectSensitive(read.value, errors);
   const id = requireString(read.value, 'id', errors);
-  const ticketId = requireString(read.value, 'ticketId', errors);
+  const ticketId = optionalString(read.value, 'ticketId', errors);
+  const guestId = optionalString(read.value, 'guestId', errors);
   const partyId = requireString(read.value, 'partyId', errors);
   const at = requireString(read.value, 'at', errors);
   const actorId = requireString(read.value, 'actorId', errors);
+  if ((ticketId && guestId) || (!ticketId && !guestId)) errors.push('check-in needs a ticket or a guest');
   if (ticketId) requireRef(refs.ticketIds, ticketId, 'ticketId', errors);
+  if (guestId) requireRef(refs.guestIds, guestId, 'guestId', errors);
   if (partyId) requireRef(refs.partyIds, partyId, 'partyId', errors);
   if (actorId) requireRef(refs.profileIds, actorId, 'actorId', errors);
   const result = parseEnum(read.value.result, checkInResults, 'result');
@@ -279,10 +297,55 @@ export function parseCheckIn(input: unknown, refs: SchemaRefs = {}): ParseResult
   }
   if (result.ok && result.value === 'accepted' && reason) errors.push('reason is only for a refused scan');
   if (result.ok && result.value === 'refused' && !reason) errors.push('reason is required');
-  if (!id || !ticketId || !partyId || !at || !actorId || !result.ok) return fail(errors);
-  const checkIn: CheckIn = { id, ticketId, partyId, at, actorId, result: result.value };
+  if (!id || !partyId || !at || !actorId || !result.ok || (!ticketId && !guestId) || (ticketId && guestId)) return fail(errors);
+  const checkIn: CheckIn = { id, partyId, at, actorId, result: result.value };
+  if (ticketId) checkIn.ticketId = ticketId;
+  if (guestId) checkIn.guestId = guestId;
   if (reason) checkIn.reason = reason;
   return finish(errors, checkIn);
+}
+
+function personName(value: string, errors: string[], field: string): string | undefined {
+  const name = value.trim();
+  if (name === '' || name.length > 80 || /[\u0000-\u001f]/.test(name)) {
+    errors.push(`${field} is not a name`);
+    return undefined;
+  }
+  return name;
+}
+
+export function parseGuestList(input: unknown, refs: SchemaRefs = {}): ParseResult<GuestList> {
+  const read = readRecord(input);
+  if (!read.ok) return read;
+  const errors: string[] = [];
+  rejectUnknown(read.value, ['id', 'partyId', 'name', 'createdAt', 'guests'], errors);
+  rejectSensitive(read.value, errors);
+  const id = requireString(read.value, 'id', errors);
+  const partyId = requireString(read.value, 'partyId', errors);
+  const createdAt = requireString(read.value, 'createdAt', errors);
+  const rawName = requireString(read.value, 'name', errors);
+  const name = rawName ? personName(rawName, errors, 'name') : undefined;
+  if (partyId) requireRef(refs.partyIds, partyId, 'partyId', errors);
+  const guests: GuestPerson[] = [];
+  if (!Array.isArray(read.value.guests)) {
+    errors.push('guests is required');
+  } else {
+    for (const guest of read.value.guests) {
+      if (!isRecord(guest)) {
+        errors.push('guest must be an object');
+        continue;
+      }
+      rejectUnknown(guest, ['id', 'name', 'addedAt'], errors);
+      rejectSensitive(guest, errors);
+      const guestId = requireString(guest, 'id', errors);
+      const guestName = requireString(guest, 'name', errors);
+      const addedAt = requireString(guest, 'addedAt', errors);
+      const cleanName = guestName ? personName(guestName, errors, 'name') : undefined;
+      if (guestId && cleanName && addedAt) guests.push({ id: guestId, name: cleanName, addedAt });
+    }
+  }
+  if (!id || !partyId || !name || !createdAt || !Array.isArray(read.value.guests)) return fail(errors);
+  return finish(errors, { id, partyId, name, createdAt, guests });
 }
 
 export function parseDoorInvite(input: unknown, refs: SchemaRefs = {}): ParseResult<DoorInvite> {

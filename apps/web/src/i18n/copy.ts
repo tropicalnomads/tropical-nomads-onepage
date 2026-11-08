@@ -16,6 +16,7 @@ export interface ShellCopy {
   areaDescriptions: Record<WebAreaId, string>;
   events: EventCopy;
   tickets: TicketCopy;
+  checkIn: CheckInCopy;
   account: AccountCopy;
   payments: PaymentCopy;
 }
@@ -118,6 +119,35 @@ export interface TicketCopy {
   qrLabel: string;
 }
 
+export interface CheckInCopy {
+  signInTitle: string;
+  signInBody: string;
+  deniedTitle: string;
+  deniedBody: string;
+  chooseEvent: string;
+  searchLabel: string;
+  searchButton: string;
+  soldTitle: string;
+  guestsTitle: string;
+  unpaid: string;
+  checked: string;
+  ready: string;
+  checkIn: string;
+  scan: string;
+  cameraBlocked: string;
+  chooseImage: string;
+  admitted: string;
+  refused: string;
+  alreadyUsed: string;
+  wrongParty: string;
+  unknown: string;
+  listName: string;
+  guestName: string;
+  createList: string;
+  addGuest: string;
+  noPeople: string;
+}
+
 export const shellCopy: Record<Locale, ShellCopy> = {
   en: {
     homeAria: 'Tropical Nomads home',
@@ -140,7 +170,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
     areaDescriptions: {
       'upcoming-events': 'Published parties, with the date, the place, and who is playing.',
       'my-tickets': 'Your tickets and the QR code for the door. An unpaid ticket is not valid for entry.',
-      'check-in': 'Door check-in is not active in this shell. There is no scanner and no ticket entry.',
+      'check-in': 'Door staff and admins check in a published event. A checked person cannot enter again.',
       merch: 'The shop is not open in this shell.',
     },
     events: {
@@ -174,6 +204,34 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       open: 'Open ticket',
       back: 'All tickets',
       qrLabel: 'QR code for {title}',
+    },
+    checkIn: {
+      signInTitle: 'Sign in to check in',
+      signInBody: 'Check-in is for door staff and admins.',
+      deniedTitle: 'Check-in is closed',
+      deniedBody: 'A buyer cannot open this page.',
+      chooseEvent: 'Choose an event',
+      searchLabel: 'Search by name',
+      searchButton: 'Search',
+      soldTitle: 'Tickets sold',
+      guestsTitle: 'Guest list',
+      unpaid: 'Unpaid',
+      checked: 'Checked',
+      ready: 'Not checked',
+      checkIn: 'Check in',
+      scan: 'Scan QR code',
+      cameraBlocked: 'The camera is not available. Choose an image of the code instead.',
+      chooseImage: 'Choose an image',
+      admitted: 'Checked in.',
+      refused: 'Not admitted.',
+      alreadyUsed: 'Already checked in.',
+      wrongParty: 'Wrong event.',
+      unknown: 'Code not recognized.',
+      listName: 'List name',
+      guestName: 'Person name',
+      createList: 'Create guest list',
+      addGuest: 'Add person',
+      noPeople: 'No one matches that name.',
     },
     payments: {
       section: 'Payment',
@@ -264,7 +322,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
     areaDescriptions: {
       'upcoming-events': 'Festas publicadas, com a data, o lugar e quem toca.',
       'my-tickets': 'Os seus ingressos e o QR da porta. Um ingresso não pago não vale para entrar.',
-      'check-in': 'O check-in da porta não está ativo neste app. Não há leitor e não há entrada de ingresso.',
+      'check-in': 'A porta e os admins fazem o check-in de uma festa publicada. Quem já entrou não entra de novo.',
       merch: 'A loja não está aberta neste app.',
     },
     events: {
@@ -298,6 +356,34 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       open: 'Abrir ingresso',
       back: 'Todos os ingressos',
       qrLabel: 'QR de {title}',
+    },
+    checkIn: {
+      signInTitle: 'Entre para fazer o check-in',
+      signInBody: 'O check-in é para a equipe da porta e para admins.',
+      deniedTitle: 'Check-in fechado',
+      deniedBody: 'Quem comprou o ingresso não abre esta página.',
+      chooseEvent: 'Escolha um evento',
+      searchLabel: 'Buscar por nome',
+      searchButton: 'Buscar',
+      soldTitle: 'Ingressos vendidos',
+      guestsTitle: 'Lista de convidados',
+      unpaid: 'Não pago',
+      checked: 'Check-in feito',
+      ready: 'Sem check-in',
+      checkIn: 'Fazer check-in',
+      scan: 'Ler QR code',
+      cameraBlocked: 'A câmera não está disponível. Escolha uma imagem do código.',
+      chooseImage: 'Escolher imagem',
+      admitted: 'Check-in feito.',
+      refused: 'Não entrou.',
+      alreadyUsed: 'Já fez check-in.',
+      wrongParty: 'Evento errado.',
+      unknown: 'Código não reconhecido.',
+      listName: 'Nome da lista',
+      guestName: 'Nome da pessoa',
+      createList: 'Criar lista de convidados',
+      addGuest: 'Adicionar pessoa',
+      noPeople: 'Ninguém com esse nome.',
     },
     payments: {
       section: 'Pagamento',
@@ -376,7 +462,7 @@ export function presentText(language: Locale, key: string, value: string | undef
   return value;
 }
 
-export function shellText<K extends keyof Omit<ShellCopy, 'areas' | 'areaDescriptions' | 'events' | 'tickets' | 'account' | 'payments'>>(
+export function shellText<K extends keyof Omit<ShellCopy, 'areas' | 'areaDescriptions' | 'events' | 'tickets' | 'checkIn' | 'account' | 'payments'>>(
   language: Locale,
   key: K,
 ): string {
@@ -397,6 +483,10 @@ export function eventText<K extends keyof EventCopy>(language: Locale, key: K): 
 
 export function ticketText<K extends keyof TicketCopy>(language: Locale, key: K): string {
   return presentText(language, `tickets.${key}`, shellCopy[language].tickets[key]);
+}
+
+export function checkInText<K extends keyof CheckInCopy>(language: Locale, key: K): string {
+  return presentText(language, `checkIn.${key}`, shellCopy[language].checkIn[key]);
 }
 
 export function accountText<K extends keyof Omit<AccountCopy, 'notices'>>(language: Locale, key: K): string {
