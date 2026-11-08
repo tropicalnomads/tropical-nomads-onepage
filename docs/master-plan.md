@@ -222,6 +222,8 @@ Signed-in accounts have one of three roles.
 
 A person with no account can read published events and the public store. That is not a fourth role. One account has one role, so a door session is not also the party editor.
 
+DevOps is a person on the building team. They choose instance sizes and hold the AWS skills. They are not a signed-in role.
+
 Sign-in is Amazon Cognito, with Google and Apple as the SSO providers. New accounts are users. The three roles are the rule Cognito groups and the API have to meet. Security is a requirement on every ticket.
 
 ### Tickets
@@ -282,8 +284,10 @@ The owner defined the architecture.
 | Phones | The web app in the browser. |
 | Repositories | A shared repo and a web app repo are required. iOS and Android repos are optional and last. Ticket 19 may create them. It does not implement native apps. This monorepo keeps the one-pager, the API, Bookings, and JSON. The shared repo does not wait on a native component toolkit. |
 | Languages | English and Portuguese. |
-| Database | Amazon RDS for PostgreSQL is the recommendation. JSON stays the store until that database is confirmed. This ticket does not create it and does not migrate. Instance size is not chosen. |
+| Database | Amazon RDS for PostgreSQL is the recommendation. JSON stays the store until that database is confirmed. This ticket does not create it and does not migrate. DevOps chooses the instance size. This record does not name one. |
 | Region | Every AWS resource is in Frankfurt (`eu-central-1`). None are created here. |
+| DevOps | A person on the building team. They decide instance sizes and hold the AWS skills. They are not a fourth product role. |
+| Traffic | About five admins. A party is about 100–200 people. The audience is small. DevOps sizes instances for that. |
 | Payment company | Chosen in ticket 29, last in the first iteration, after the not-live hosts. No company is named. |
 | Currency | Euro only, for now. |
 | Merch | Pickup for now. Shipping is later. |
@@ -292,14 +296,14 @@ The owner defined the architecture.
 | Offline check-in | Later. Not in this iteration. |
 | Wallet pass | Later. Not in this iteration. |
 
-Still open: ticket types, comps, guest lists, chargebacks, cancellation, transfers, re-entry, which products exist beyond T-shirts, what an agenda contains, and RDS instance size.
+Still open: ticket types, comps, guest lists, chargebacks, cancellation, transfers, re-entry, which products exist beyond T-shirts, and what an agenda contains.
 
 ### Named by the owner
 
 | Topic | Status | What stays attached to the question |
 | --- | --- | --- |
 | Tech stack | Decided | The record above. Cognito with Google and Apple. Next.js for the web app, not installed here. Amplify for the new frontend. A Docker container on ECS for the API. REST. RDS for PostgreSQL is the recommendation. JSON stays until that database is confirmed. The new app is not launched. |
-| Cloud vendor | Decided as a target | AWS is the platform, in Frankfurt (`eu-central-1`). The one-pager keeps its Amplify app. The new web app's Amplify app and the ECS cluster are not created here. Instance size stays open. |
+| Cloud vendor | Decided as a target | AWS is the platform, in Frankfurt (`eu-central-1`). The one-pager keeps its Amplify app. The new web app's Amplify app and the ECS cluster are not created here. DevOps chooses instance sizes for about five admins and parties of about 100–200 people. This plan does not name a size. |
 | Payments provider | Chosen later | Ticket 29, last in the first iteration, after the not-live hosts. The company is not named. The currency is euro. There are no refunds. |
 | Ticket format | Decided for this iteration | Door staff scan a QR code. A wallet pass is later, and it is not in this iteration. |
 | Where the apps live | Decided | The web app and a shared repository are required. iOS and Android repositories are optional, last, and are not a native implementation. Phones use the web app in the browser. This repo still holds the one-pager, the API, Bookings, and the JSON data. |
@@ -325,14 +329,14 @@ Still open: ticket types, comps, guest lists, chargebacks, cancellation, transfe
 This is a planning sequence. It is the order of decisions. It is not a build schedule, and it is not the order to write code.
 
 1. **Confirm the restatement** in section 1, including all nine capabilities, and the boundary with today's one-pager, Bookings, and the timetable site.
-2. **The actors are named.** Signed-in people are admin, door, or user. Admin invites door staff. A user sees their own history.
+2. **The actors are named.** Signed-in people are admin, door, or user. Admin invites door staff. A user sees their own history. DevOps is on the building team and is not a signed-in role.
 3. **The shared records are sketched** in the plan on tag `product-plan-v1`. A party can be a draft, and a draft is not on the public list. What an agenda contains stays open.
 4. **Ticket and payment outcomes.** The buyer receives a QR code in this iteration. There are no refunds. The currency is euro. Transfer, re-entry, and comps stay open. The payment company is ticket 29, after the not-live hosts, and it is not named.
 5. **Merch is pickup for now.** Shipping is later. Stock moves when a sale is real. Whether a shirt is paid inside this product waits on the payment company.
 6. **Split public JSON from private JSON,** including where writable files live. Do this before API work, so ticket secrets stay out of the public site bundle.
 7. **Languages are chosen.** The product is English and Portuguese, with internationalization. Countries are still open. The currency is euro.
 8. **Build shared UI components for the web app.** Theme tokens, types, schemas, and constants live in the shared repo. Native screens are not in the required path, so a Swift or Kotlin component toolkit is not a blocker.
-9. **The architecture is defined.** Cognito with Google and Apple, Next.js, Amplify, a Docker container on ECS, REST, and Amazon RDS for PostgreSQL as the recommendation. Every AWS resource is in Frankfurt (`eu-central-1`). Those hosts are not live yet. The one-pager deploy stays. The payment company is ticket 29 and is not named. JSON stays the store until the database is confirmed.
+9. **The architecture is defined.** Cognito with Google and Apple, Next.js, Amplify, a Docker container on ECS, REST, and Amazon RDS for PostgreSQL as the recommendation. Every AWS resource is in Frankfurt (`eu-central-1`). Those hosts are not live yet. The one-pager deploy stays. The payment company is ticket 29 and is not named. JSON stays the store until the database is confirmed. DevOps chooses instance sizes for about five admins and parties of about 100–200 people. This plan does not name a size.
 10. **Set the remaining implementation order** after those decisions. One constraint is already fixed. It sits below, separate from this list, so it is not mistaken for a full build plan.
 
 ### Later build constraint

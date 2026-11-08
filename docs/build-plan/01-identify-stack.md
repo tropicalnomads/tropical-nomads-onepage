@@ -14,7 +14,9 @@ Region: every AWS resource is in Frankfurt (`eu-central-1`). None are created he
 
 The payment company is chosen in [ticket 29](29-payment-company.md), last in the first iteration, after the not-live hosts. This ticket does not name a company.
 
-Still open: RDS instance size.
+DevOps is a person on the building team. They decide instance sizes and hold the AWS skills. They are not a fourth product role. Signed-in people stay admin, door, or user.
+
+Traffic to size for: about five admins, and parties of about 100–200 people. The audience is small. This ticket does not name an instance size.
 
 ## Why it exists
 
@@ -33,7 +35,7 @@ Why this engine fits:
 - PostgreSQL can store the current JSON documents in `jsonb` during a later move, so the file shapes do not need a second database.
 - The API is a container on ECS, which is a normal client of RDS on a private network.
 - DynamoDB makes those links and the single-decrement update harder than this product needs.
-- Aurora PostgreSQL is the same engine with capacity this product has not asked for. Instance size stays open.
+- Aurora PostgreSQL is the same engine with capacity this product has not asked for. DevOps chooses the instance size for about five admins and parties of about 100–200 people. This ticket does not name a size.
 
 JSON files remain the store until the owner confirms this recommendation. Ticket 11 still builds the private JSON location.
 
@@ -60,9 +62,11 @@ None. This is the first ticket.
    - Database recommendation: Amazon RDS for PostgreSQL, with the reasons above. Status: to confirm. JSON stays until then.
    - Region: Frankfurt (`eu-central-1`) for every AWS resource. Do not create those resources here.
    - The payment company is chosen in ticket 29, after the not-live hosts. Do not name a company here.
+   - DevOps decides instance sizes and holds the AWS skills. DevOps is not a product role.
+   - Traffic: about five admins, and parties of about 100–200 people. Do not name an instance size here.
 2. Record the repository split: shared repo and web app repo are required. iOS and Android repos are optional. This monorepo keeps the one-pager, the API, Bookings, and JSON.
 3. Do not install Next.js. Do not rewrite `src/`.
-4. Keep RDS instance size unanswered.
+4. Do not name an instance size. That choice belongs to DevOps.
 5. Do not block the shared repo on a native component toolkit. The web app can use web components from the shared package. Native screens are out of scope.
 6. Note Apple and Google setup as later work inside ticket 10: an Apple Services ID and a Google OAuth client on the Cognito user pool, for the web app client. Do not create those accounts now.
 7. Do not add dependencies, create AWS resources, connect to AWS, or migrate data.
@@ -73,7 +77,7 @@ None. This is the first ticket.
 - The master plan records Amazon RDS for PostgreSQL as the recommendation to confirm, and JSON as the store until then.
 - The master plan records euro, pickup for now, no refunds, draft parties, and offline check-in and a wallet pass as later.
 - The master plan records Frankfurt (`eu-central-1`) for every AWS resource, and ticket 29 as the payment-company choice. No company is named.
-- RDS instance size is still open.
+- The master plan records DevOps as the person who chooses instance sizes, and the traffic as about five admins and parties of about 100–200 people. No size is named.
 - No package was added to `package.json`. No RDS instance exists. No AWS account was connected.
 
 ## Tests
