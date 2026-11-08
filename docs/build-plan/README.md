@@ -50,7 +50,7 @@ The Amplify, ECS, and RDS tickets are the deploy path for the first product, and
 | 9 | 1, base | [Shared catalog](07-shared-catalog.md) | 06, 28 | Every published party and artist. No agenda and no draft filter. |
 | 10 | 1, base | [Security baseline](09-security-baseline.md) | 01, 07 | Admin, door, and user. No fourth role. |
 | 11 | 1, base | [Private operational data](11-private-operational-data.md) | 06, 09, 28 | Empty private JSON in `data/operational`. No database. The lock waits. |
-| 12 | 1, product | [Upcoming events](08-upcoming-events.md) | 05, 06, 07, 20 | Capability: upcoming events. Public, no login required. |
+| 12 | 1, product | [Upcoming events](08-upcoming-events.md) | 05, 06, 07, 20 | Public list in the web app. Outbound ticket links. No payment. |
 | 13 | 1, product | [Accounts and profile](10-accounts-and-profile.md) | 04, 05, 09, 20, 28 | Cognito, Google, Apple, and the user record, in the web app. |
 | 14 | 1, product | [Payment interfaces](12-payment-interfaces.md) | 09, 10, 11, 28 | Interfaces and user payment methods. This is the payment work that happens now. |
 | 15 | 1, product | [Payment decisions still open](21-payment-decisions.md) | 12 | Later payment questions. Euro and no refunds are already decided. The company is ticket 29. |

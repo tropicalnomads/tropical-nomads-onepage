@@ -1,8 +1,29 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { sortByDateAsc } from 'tropical-nomads-shared';
 import { schemas } from './schemas.ts';
 
-const dataDirectory = join(import.meta.dirname, '../../one-pager/public/data');
+function publishedDataDirectory(): string {
+  try {
+    const here = typeof import.meta.dirname === 'string' ? import.meta.dirname : dirname(fileURLToPath(import.meta.url));
+    const besideApi = join(here, '../../one-pager/public/data');
+    if (existsSync(besideApi)) {
+      return besideApi;
+    }
+  } catch {
+    // The web bundle does not keep this file's directory.
+  }
+  const fromWeb = resolve(process.cwd(), '../one-pager/public/data');
+  if (existsSync(fromWeb)) {
+    return fromWeb;
+  }
+  const fromRepo = resolve(process.cwd(), 'apps/one-pager/public/data');
+  if (existsSync(fromRepo)) {
+    return fromRepo;
+  }
+  throw new Error('published catalog is unavailable');
+}
 
 export const publishedFiles = {
   events: 'events.json',
@@ -129,7 +150,7 @@ function isJsonValue(value: unknown): value is JsonValue {
 
 function readPublishedFile(catalog: PublishedCatalog): JsonValue {
   const fileName = publishedFiles[catalog];
-  const filePath = join(dataDirectory, fileName);
+  const filePath = join(publishedDataDirectory(), fileName);
   const parsed: unknown = JSON.parse(readFileSync(filePath, 'utf8'));
   assertNoPrivateFields(parsed);
   if (!isJsonValue(parsed)) {
@@ -187,7 +208,7 @@ export function isUpcomingEvent(event: Pick<PublishedEvent, 'dateStart'>, today:
 }
 
 export function upcomingEvents(events: readonly PublishedEvent[], today: Date): PublishedEvent[] {
-  return events.filter((event) => isUpcomingEvent(event, today));
+  return sortByDateAsc(events.filter((event) => isUpcomingEvent(event, today)));
 }
 
 export function pastEvents(events: readonly PublishedEvent[], today: Date): PublishedEvent[] {

@@ -60,7 +60,10 @@ describe('published events', () => {
     assert.equal(upcomingToday({ query: { today: '2020-01-01' } }), '2020-01-01');
 
     const allUpcoming = await api.request('/events/upcoming?today=2020-01-01');
-    assert.equal(((await allUpcoming.json()) as UpcomingBody).events.length, readEvents().events.length);
+    const allUpcomingBody = (await allUpcoming.json()) as UpcomingBody;
+    assert.equal(allUpcomingBody.events.length, readEvents().events.length);
+    const stamps = allUpcomingBody.events.map((event) => new Date(event.dateStart).getTime());
+    assert.deepEqual(stamps, [...stamps].sort((left, right) => left - right));
 
     const upcoming = await api.request('/events/upcoming?today=2030-01-01');
     assert.equal(upcoming.status, 200);

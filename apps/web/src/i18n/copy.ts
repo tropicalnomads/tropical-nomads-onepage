@@ -14,6 +14,25 @@ export interface ShellCopy {
   switchLanguage: string;
   areas: Record<WebAreaId, string>;
   areaDescriptions: Record<WebAreaId, string>;
+  events: EventCopy;
+}
+
+export interface EventCopy {
+  subtitle: string;
+  emptyTitle: string;
+  emptyBody: string;
+  nextUp: string;
+  buyTickets: string;
+  buyTicketsAria: string;
+  eventDetails: string;
+  eventDetailsAria: string;
+  comingSoon: string;
+  timetable: string;
+  timetableAria: string;
+  mapsAria: string;
+  partnerAria: string;
+  flyerAlt: string;
+  dateLocale: string;
 }
 
 export const shellCopy: Record<Locale, ShellCopy> = {
@@ -36,10 +55,27 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       merch: 'Merch',
     },
     areaDescriptions: {
-      'upcoming-events': 'Events are not loaded in this shell.',
+      'upcoming-events': 'Published parties, with the date, the place, and who is playing.',
       'my-tickets': 'Tickets are not listed in this shell.',
       'check-in': 'Door check-in is not active in this shell. There is no scanner and no ticket entry.',
       merch: 'The shop is not open in this shell.',
+    },
+    events: {
+      subtitle: 'The next parties. Ticket links leave this app.',
+      emptyTitle: 'No upcoming events',
+      emptyBody: 'Check back soon for newly announced dates.',
+      nextUp: 'Next up',
+      buyTickets: 'Buy tickets',
+      buyTicketsAria: 'Buy tickets for {title} on the seller site',
+      eventDetails: 'Event details',
+      eventDetailsAria: 'Open event details for {title}',
+      comingSoon: 'Coming soon',
+      timetable: 'Timetable',
+      timetableAria: 'Open timetable for {title}',
+      mapsAria: 'Open {place} on maps',
+      partnerAria: 'Open {name} on Instagram',
+      flyerAlt: '{title} flyer',
+      dateLocale: 'en',
     },
   },
   pt: {
@@ -61,10 +97,27 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       merch: 'Merch',
     },
     areaDescriptions: {
-      'upcoming-events': 'Os eventos não estão carregados neste app.',
+      'upcoming-events': 'Festas publicadas, com a data, o lugar e quem toca.',
       'my-tickets': 'Os ingressos não estão listados neste app.',
       'check-in': 'O check-in da porta não está ativo neste app. Não há leitor e não há entrada de ingresso.',
       merch: 'A loja não está aberta neste app.',
+    },
+    events: {
+      subtitle: 'As próximas festas. Os links de ingresso saem deste app.',
+      emptyTitle: 'Nenhum evento futuro',
+      emptyBody: 'Volte em breve para novas datas anunciadas.',
+      nextUp: 'A seguir',
+      buyTickets: 'Comprar ingressos',
+      buyTicketsAria: 'Comprar ingressos para {title} no site do vendedor',
+      eventDetails: 'Detalhes do evento',
+      eventDetailsAria: 'Abrir detalhes de {title}',
+      comingSoon: 'Em breve',
+      timetable: 'Programação',
+      timetableAria: 'Abrir a programação de {title}',
+      mapsAria: 'Abrir {place} no mapa',
+      partnerAria: 'Abrir {name} no Instagram',
+      flyerAlt: 'Cartaz de {title}',
+      dateLocale: 'pt-BR',
     },
   },
 };
@@ -76,7 +129,7 @@ export function presentText(language: Locale, key: string, value: string | undef
   return value;
 }
 
-export function shellText<K extends keyof Omit<ShellCopy, 'areas' | 'areaDescriptions'>>(
+export function shellText<K extends keyof Omit<ShellCopy, 'areas' | 'areaDescriptions' | 'events'>>(
   language: Locale,
   key: K,
 ): string {
@@ -89,6 +142,10 @@ export function areaText(language: Locale, id: WebAreaId): string {
 
 export function areaDescription(language: Locale, id: WebAreaId): string {
   return presentText(language, `${id}.description`, shellCopy[language].areaDescriptions[id]);
+}
+
+export function eventText<K extends keyof EventCopy>(language: Locale, key: K): string {
+  return presentText(language, `events.${key}`, shellCopy[language].events[key]);
 }
 
 export function switchLanguageLabel(language: Locale, option: string): string {
