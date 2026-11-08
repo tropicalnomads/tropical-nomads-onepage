@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Frankfurt hosts</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --navy: #042f2e;
+      --deep: #021d1c;
+      --card: #053b38;
+      --cream: #fff8e7;
+      --green: #009b77;
+      --yellow: #fad02e;
+      --coral: #ff7f50;
+      --muted: #d7efe8;
+      --line: rgba(255, 248, 231, 0.16);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #0b4a45, var(--deep) 55%);
+      color: var(--cream);
+      font-family: Georgia, "Iowan Old Style", serif;
+    }
+    header, main { width: min(1080px, calc(100% - 32px)); margin: 0 auto; }
+    header { display: flex; justify-content: space-between; gap: 16px; align-items: end; padding: 32px 0 20px; }
+    h1 { margin: 0; font-size: 40px; font-weight: 500; }
+    p { margin: 8px 0 0; color: var(--muted); font-family: "Avenir Next", "Segoe UI", sans-serif; }
+    button {
+      border: 0;
+      border-radius: 999px;
+      background: var(--yellow);
+      color: var(--navy);
+      font: 600 14px/1 "Avenir Next", "Segoe UI", sans-serif;
+      padding: 10px 16px;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.6; cursor: wait; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; padding-bottom: 40px; }
+    article {
+      background: rgba(5, 59, 56, 0.92);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+    }
+    article header { width: auto; margin: 0; padding: 0 0 12px; align-items: center; }
+    h2 { margin: 0; font-size: 22px; font-weight: 500; }
+    .status { margin: 0 0 12px; font-family: "Avenir Next", "Segoe UI", sans-serif; font-weight: 700; }
+    .ready { color: var(--green); }
+    .pending { color: var(--yellow); }
+    .missing { color: var(--muted); }
+    .problem { color: var(--coral); }
+    dl { margin: 0; display: grid; gap: 8px; }
+    div.row { display: grid; grid-template-columns: 110px 1fr; gap: 8px; font-family: "Avenir Next", "Segoe UI", sans-serif; font-size: 14px; }
+    dt { color: var(--muted); }
+    dd { margin: 0; overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Frankfurt hosts</h1>
+      <p>Each refresh runs one read-only AWS CLI check in eu-central-1. Nothing here changes the hosts.</p>
+    </div>
+    <button type="button" id="refresh-all">Refresh all</button>
+  </header>
+  <main class="grid" id="board"></main>
+  <script>
+    const checks = [
+      ["identity", "Caller"],
+      ["stacks", "CloudFormation"],
+      ["network", "Network"],
+      ["security-groups", "Security groups"],
+      ["database", "Database"],
+      ["secret", "Database secret"],
+      ["cognito", "Cognito"],
+      ["amplify", "Amplify"],
+      ["repository", "Image repository"],
+      ["load-balancer", "Load balancer"],
+      ["api", "API service"],
+      ["logs", "Logs"]
+    ];
+
+    const board = document.querySelector("#board");
+
+    function card(id, title) {
+      const article = document.createElement("article");
+      article.dataset.check = id;
+      article.innerHTML = `<header><h2></h2><button type="button">Refresh</button></header><p class="status missing">Not checked</p><dl></dl>`;
+      article.querySelector("h2").textContent = title;
+      article.querySelector("button").addEventListener("click", () => refresh(id));
+      return article;
+    }
+
+    function render(id, body) {
+      const article = document.querySelector(`[data-check="${id}"]`);
+      const status = article.querySelector(".status");
+      status.className = `status ${body.tone || "problem"}`;
+      status.textContent = body.status || "error";
+      const list = article.querySelector("dl");
+      list.replaceChildren();
+      for (const line of body.lines || []) {
+        const row = document.createElement("div");
+        row.className = "row";
+        const label = document.createElement("dt");
+        const value = document.createElement("dd");
+        label.textContent = line.label;
+        value.textContent = line.value;
+        row.append(label, value);
+        list.append(row);
+      }
+    }
+
+    async function refresh(id) {
+      const button = document.querySelector(`[data-check="${id}"] button`);
+      button.disabled = true;
+      try {
+        const response = await fetch(`/api/${id}`);
+        render(id, await response.json());
+      } catch (error) {
+        render(id, { tone: "problem", status: "error", lines: [{ label: "Detail", value: String(error) }] });
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    for (const [id, title] of checks) board.append(card(id, title));
+    document.querySelector("#refresh-all").addEventListener("click", () => {
+      for (const [id] of checks) refresh(id);
+    });
+    for (const [id] of checks) refresh(id);
+  </script>
+</body>
+</html>

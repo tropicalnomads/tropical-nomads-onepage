@@ -6,7 +6,7 @@ The API in `apps/api` is Hono `4.13.17` with `@hono/node-server` `2.1.6`. The ow
 
 Routes are GET. HEAD returns the same status and headers with an empty body. Any other method is 405. An unknown path is 404. A thrown error is 500 `{ error: 'catalog unavailable' }`. The body does not include the file path or a secret.
 
-`src/server.ts` calls `serve` from `@hono/node-server` with `hostname: '127.0.0.1'`. Do not omit `hostname`. The adapter's default listens more widely than loopback. The port is `8787`, or `API_PORT`.
+`src/server.ts` calls `serve` from `@hono/node-server` and always sets `hostname`. The default is `127.0.0.1`. `API_HOSTNAME=0.0.0.0` is accepted for the private ECS task and is refused for any other address. Do not change the default. The port is `8787`, or `API_PORT`.
 
 `secureHeaders` sets `X-Content-Type-Options: nosniff`. It does not set `Strict-Transport-Security`, because this listener is HTTP. Turn that header on when the ECS host is HTTPS. `Cache-Control` is `no-store`. There is no `Access-Control-Allow-Origin`.
 
@@ -14,4 +14,4 @@ The events body is the stored file, including `source` and `images`. Do not pass
 
 Tests call `api.request()`. Run `pnpm --filter tropical-nomads-api test` and `pnpm --filter tropical-nomads-api lint`.
 
-The next change must not deploy this API, bind `0.0.0.0`, add CORS for every origin, add ticket, order, payment, or stock routes, or install a second schema library.
+The next change must not change the default bind to `0.0.0.0`, add CORS for every origin, add ticket, order, payment, or stock routes, or install a second schema library. The ECS task is the only place that sets `API_HOSTNAME=0.0.0.0`.

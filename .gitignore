@@ -10,4 +10,6 @@ dev-dist
 .vscode/*
 !.vscode/extensions.json
 .idea
+__pycache__/
+*.pyc
 data/operational/avatars/

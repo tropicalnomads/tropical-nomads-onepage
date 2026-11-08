@@ -1,0 +1,119 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Frankfurt security groups. The database accepts 5432 only from the API. The API accepts its port only from the load balancer.
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+
+Resources:
+  AlbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: tropical-nomads-alb
+      GroupDescription: Load balancer for the Tropical Nomads API. Inbound HTTPS only.
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+          Description: HTTPS from the internet
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 1
+          ToPort: 1
+          CidrIp: 127.0.0.1/32
+          Description: Replace the default allow-all egress
+      Tags:
+        - Key: Name
+          Value: tropical-nomads-alb
+
+  ApiSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: tropical-nomads-api
+      GroupDescription: Tropical Nomads API task. Inbound only from the load balancer.
+      VpcId: !Ref VpcId
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 1
+          ToPort: 1
+          CidrIp: 127.0.0.1/32
+          Description: Replace the default allow-all egress
+      Tags:
+        - Key: Name
+          Value: tropical-nomads-api
+
+  DbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: tropical-nomads-db
+      GroupDescription: Tropical Nomads PostgreSQL. Inbound 5432 only from the API.
+      VpcId: !Ref VpcId
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 1
+          ToPort: 1
+          CidrIp: 127.0.0.1/32
+          Description: No outbound network. PostgreSQL does not initiate connections.
+      Tags:
+        - Key: Name
+          Value: tropical-nomads-db
+
+  AlbToApi:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref AlbSecurityGroup
+      IpProtocol: tcp
+      FromPort: 8787
+      ToPort: 8787
+      DestinationSecurityGroupId: !Ref ApiSecurityGroup
+      Description: API container port
+
+  ApiFromAlb:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref ApiSecurityGroup
+      IpProtocol: tcp
+      FromPort: 8787
+      ToPort: 8787
+      SourceSecurityGroupId: !Ref AlbSecurityGroup
+      Description: Load balancer to the API
+
+  ApiToHttps:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref ApiSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: 0.0.0.0/0
+      Description: HTTPS through the NAT gateway
+
+  ApiToDatabase:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref ApiSecurityGroup
+      IpProtocol: tcp
+      FromPort: 5432
+      ToPort: 5432
+      DestinationSecurityGroupId: !Ref DbSecurityGroup
+      Description: PostgreSQL
+
+  DatabaseFromApi:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref DbSecurityGroup
+      IpProtocol: tcp
+      FromPort: 5432
+      ToPort: 5432
+      SourceSecurityGroupId: !Ref ApiSecurityGroup
+      Description: API to PostgreSQL
+
+Outputs:
+  AlbSecurityGroupId:
+    Value: !Ref AlbSecurityGroup
+  ApiSecurityGroupId:
+    Value: !Ref ApiSecurityGroup
+  DbSecurityGroupId:
+    Value: !Ref DbSecurityGroup

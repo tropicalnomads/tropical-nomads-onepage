@@ -29,7 +29,13 @@ Passwords stay in Amazon Cognito. The database password, when a database exists,
 | Secrets Manager secret | 1, when the database is confirmed | The database credential only. No value is written here. |
 | Certificate | 1, when the API hostname exists | In Frankfurt, on the load balancer. The hostname is not chosen here. |
 
-PostgreSQL's version is chosen when the database is confirmed. The API container port is chosen when the API package exists. The load balancer forwards 443 to that port.
+PostgreSQL 16.15 is the version in the Frankfurt template. The API container port is `8787`. The load balancer is meant to forward 443 to that port. Its certificate waits until a hostname is chosen, so the template has no listener.
+
+## Templates
+
+The files in `infra/frankfurt` are one CloudFormation template per resource, at the sizes above. `deploy.sh` applies them in `eu-central-1` and stops if the caller is not the tropical-nomads user in `EXPECTED_AWS_ACCOUNT`. The database password is created by RDS in Secrets Manager. No password, connection string, or account id is in the files.
+
+Applying the VPC needs permission to allocate and release an address and to delete a NAT gateway. Until those actions are allowed, the templates are not applied. JSON stays the store. Google and Apple are not in the user pool template. www stays on the one-pager.
 
 ## What each piece is for
 

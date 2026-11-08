@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: API log group for Tropical Nomads. Logs are kept for 30 days and do not store passwords.
+
+Resources:
+  ApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /tropical-nomads/api
+      RetentionInDays: 30
+      Tags:
+        - Key: Name
+          Value: tropical-nomads-api
+
+Outputs:
+  LogGroupName:
+    Value: !Ref ApiLogGroup
