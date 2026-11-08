@@ -6,7 +6,7 @@ The names are the VPC `tropical-nomads`, the database `tropical-nomads-frankfurt
 
 Run `node --experimental-strip-types --test infra/frankfurt/test/templates.test.ts` and `pnpm --filter tropical-nomads-api test`.
 
-The templates are not applied yet. Allocating an address, releasing an address, and deleting a NAT gateway are not allowed for this user. The next change must not open port 5432 to the internet, put a password in git, attach www to the new Amplify app, point the API at the database, or add Google or Apple without the owner's client ids.
+Check the live hosts with the local status page in [host-status.md](host-status.md). The next change must not open port 5432 to the internet, put a password in git, attach www to the new Amplify app, point the API at the database, or add Google or Apple without the owner's client ids.
 
 ## Decisions
 

@@ -24,6 +24,8 @@ describe('Frankfurt templates', () => {
       ...templates(),
       join(repo, 'apps/api/Dockerfile'),
       join(repo, '.dockerignore'),
+      join(frankfurt, 'status/server.py'),
+      join(frankfurt, 'status/index.html'),
     ];
     for (const path of paths) {
       const text = read(path);
@@ -103,6 +105,15 @@ describe('Frankfurt templates', () => {
     assert.match(task, /Memory: "1024"/);
     assert.equal(task.includes('DATABASE_URL'), false);
     assert.equal(task.includes('secrets:'), false);
+  });
+
+  it('keeps the status page on loopback and away from secret values', () => {
+    const server = read(join(frankfurt, 'status/server.py'));
+    const page = read(join(frankfurt, 'status/index.html'));
+    assert.match(server, /HOST = "127\.0\.0\.1"/);
+    assert.equal(server.includes('get-secret-value'), false);
+    assert.match(page, /Refresh all/);
+    assert.match(page, /\/api\/\$\{id\}/);
   });
 
   it('keeps operational data and the one-pager build out of the image', () => {

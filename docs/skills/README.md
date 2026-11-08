@@ -19,6 +19,7 @@ This folder holds short procedures for people working on Tropical Nomads.
 - [turborepo.md](turborepo.md) — how package tasks run. pnpm stays the package manager.
 - [aws-sizes.md](aws-sizes.md) — where the AWS sizes live, and what the next ticket must not change.
 - [frankfurt-hosts.md](frankfurt-hosts.md) — the Frankfurt host templates, and what the next change must not break.
+- [host-status.md](host-status.md) — the local page that reads the Frankfurt host status.
 - [cloudformation.md](cloudformation.md) — one template per resource, applied from `infra/frankfurt/deploy.sh`.
 - [cognito.md](cognito.md) — the web app user pool. Email sign-in. Google and Apple are not configured.
 - [rds-postgresql.md](rds-postgresql.md) — the private `db.t4g.small` PostgreSQL template.
