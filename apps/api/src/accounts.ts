@@ -1,6 +1,5 @@
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, resolve, sep } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import {
   attachVerifiedSignIn,
   containsCardNumber,
@@ -14,6 +13,7 @@ import {
   type VerifiedSignIn,
 } from 'tropical-nomads-shared';
 import { readPartyCatalog } from './catalog.ts';
+import { operationalDirectory } from './operational.ts';
 import { assertNoPrivateFields } from './published.ts';
 
 export interface AccountFile {
@@ -37,20 +37,7 @@ function queueWriter<T>(work: () => Promise<T>): Promise<T> {
 }
 
 function accountRoot(): string {
-  try {
-    const here = typeof import.meta.dirname === 'string' ? import.meta.dirname : dirname(fileURLToPath(import.meta.url));
-    const besideApi = resolve(here, '../../../data/operational');
-    if (existsSync(besideApi)) {
-      return besideApi;
-    }
-  } catch {
-    // The web bundle does not keep this file's directory.
-  }
-  const fromWeb = resolve(process.cwd(), '../../data/operational');
-  if (existsSync(fromWeb)) {
-    return fromWeb;
-  }
-  return resolve(process.cwd(), 'data/operational');
+  return operationalDirectory();
 }
 
 function accountPath(root: string): string {

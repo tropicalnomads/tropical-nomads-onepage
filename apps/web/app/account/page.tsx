@@ -1,5 +1,7 @@
 import { cookies } from 'next/headers';
+import { accountCanPurchase } from 'tropical-nomads-shared';
 import { readAccounts } from 'tropical-nomads-api/accounts';
+import { listPaymentMethods, listTraces, readTraces } from 'tropical-nomads-api/payments';
 import { readSessionSub, sessionCookieName } from '../../src/account/session';
 import { AccountHome, type AccountSummary } from '../../src/components/AccountHome';
 
@@ -11,6 +13,9 @@ export default async function AccountPage() {
   const sub = readSessionSub(jar.get(sessionCookieName)?.value);
   const stored = readAccounts();
   const profile = stored.profiles.find((item) => item.sub === sub);
+  const own = profile?.role === 'user' ? { role: 'user' as const, actorId: profile.sub } : undefined;
+  const billingId = profile?.billingAddressId;
+  const billing = billingId ? stored.billingAddresses.find((address) => address.id === billingId) : undefined;
   const summary: AccountSummary | null = profile
     ? {
         username: profile.username,
@@ -18,7 +23,26 @@ export default async function AccountPage() {
         familyName: profile.familyName,
         email: profile.email,
         status: profile.status,
-        paymentMethods: stored.paymentMethods.filter((method) => method.userId === profile.sub).length,
+        canPay: accountCanPurchase(profile),
+        billing: billing ? { recipientName: billing.recipientName, country: billing.country } : null,
+        methods: own
+          ? listPaymentMethods(stored, own, profile.sub).map((method) => ({
+              id: method.id,
+              type: method.type,
+              brand: method.brand,
+              last4: method.last4,
+              expiryMonth: method.expiryMonth,
+              expiryYear: method.expiryYear,
+            }))
+          : [],
+        traces: own
+          ? listTraces(own, readTraces(), profile.sub).map((trace) => ({
+              id: trace.id,
+              amount: trace.amount,
+              currency: trace.currency,
+              purpose: trace.purpose,
+            }))
+          : [],
       }
     : null;
   return <AccountHome profile={summary} />;

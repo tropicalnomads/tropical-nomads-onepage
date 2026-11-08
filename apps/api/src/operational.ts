@@ -1,5 +1,6 @@
-import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
-import { dirname, join, resolve, sep } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { dirname, resolve, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { containsCardNumber, schemas } from 'tropical-nomads-shared';
 import { assertNoPrivateFields } from './published.ts';
 
@@ -27,7 +28,36 @@ export interface OperationalFile {
   records: unknown[];
 }
 
-const operationalRoot = join(import.meta.dirname, '../../../data/operational');
+export function operationalDirectory(): string {
+  const override = process.env.TROPICAL_NOMADS_OPERATIONAL_ROOT?.trim();
+  if (override) {
+    if (!override.startsWith('/')) {
+      throw new Error('operational root is not absolute');
+    }
+    const directory = resolve(override);
+    if (directory.includes(`${sep}public${sep}`) || directory.endsWith(`${sep}public`)) {
+      throw new Error('operational root is public');
+    }
+    if (!existsSync(directory)) {
+      throw new Error('operational root is missing');
+    }
+    return directory;
+  }
+  try {
+    const here = typeof import.meta.dirname === 'string' ? import.meta.dirname : dirname(fileURLToPath(import.meta.url));
+    const besideApi = resolve(here, '../../../data/operational');
+    if (existsSync(besideApi)) {
+      return besideApi;
+    }
+  } catch {
+    // The web bundle does not keep this file's directory.
+  }
+  const fromWeb = resolve(process.cwd(), '../../data/operational');
+  if (existsSync(fromWeb)) {
+    return fromWeb;
+  }
+  return resolve(process.cwd(), 'data/operational');
+}
 
 let writerTail: Promise<void> = Promise.resolve();
 
@@ -75,13 +105,13 @@ function assertOperationalFile(name: OperationalCollection, value: unknown): Ope
   return { schemaVersion: 1, records: record.records };
 }
 
-export function readOperational(name: OperationalCollection, root = operationalRoot): OperationalFile {
+export function readOperational(name: OperationalCollection, root = operationalDirectory()): OperationalFile {
   const filePath = collectionPath(name, root);
   const parsed: unknown = JSON.parse(readFileSync(filePath, 'utf8'));
   return assertOperationalFile(name, parsed);
 }
 
-export function writeOperational(name: OperationalCollection, file: OperationalFile, root = operationalRoot): void {
+export function writeOperational(name: OperationalCollection, file: OperationalFile, root = operationalDirectory()): void {
   const checked = assertOperationalFile(name, file);
   const filePath = collectionPath(name, root);
   mkdirSync(dirname(filePath), { recursive: true });
@@ -93,7 +123,7 @@ export function writeOperational(name: OperationalCollection, file: OperationalF
 export function updateOperational(
   name: OperationalCollection,
   change: (current: OperationalFile) => OperationalFile,
-  root = operationalRoot,
+  root = operationalDirectory(),
 ): Promise<OperationalFile> {
   return queueWriter(async () => {
     const next = change(readOperational(name, root));

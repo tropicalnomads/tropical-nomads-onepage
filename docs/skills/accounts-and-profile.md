@@ -8,6 +8,8 @@ Passwords are not stored. Google and Apple do not trust a subject sent by the br
 
 Run `pnpm --filter tropical-nomads-shared test`, `pnpm --filter tropical-nomads-api test`, and `pnpm --filter tropical-nomads-web test`. The one-pager `pnpm lint` and `pnpm build` still pass. The web shell is not deployed.
 
+Payment methods on the profile keep the last 4 digits. A card number is rejected. See [payment-interfaces.md](payment-interfaces.md).
+
 The next ticket must not put a password or a card number in the profile file, require a login for the upcoming list, or treat a browser-supplied provider subject as verified.
 
 ## Cognito is not called

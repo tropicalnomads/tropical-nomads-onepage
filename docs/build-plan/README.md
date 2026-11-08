@@ -53,7 +53,7 @@ The Amplify, ECS, and RDS tickets are the deploy path for the first product, and
 | 11 | 1, base | [Private operational data](11-private-operational-data.md) | 06, 09, 28 | Empty private JSON in `data/operational`. No database. The lock waits. |
 | 12 | 1, product | [Upcoming events](08-upcoming-events.md) | 05, 06, 07, 20 | Public list in the web app. Outbound ticket links. No payment. |
 | 13 | 1, product | [Accounts and profile](10-accounts-and-profile.md) | 04, 05, 09, 20, 28 | Profile rules and sign-in screens. Cognito is not called. |
-| 14 | 1, product | [Payment interfaces](12-payment-interfaces.md) | 09, 10, 11, 28 | Interfaces and user payment methods. This is the payment work that happens now. |
+| 14 | 1, product | [Payment interfaces](12-payment-interfaces.md) | 09, 10, 11, 28 | Pending traces and saved methods. No company and no confirmed charge. |
 | 15 | 1, product | [Payment decisions still open](21-payment-decisions.md) | 12 | Later payment questions. Euro and no refunds are already decided. The company is ticket 29. |
 | 16 | 1, product | [Tickets](13-tickets.md) | 08, 12, 20, 28 | Buy a ticket for a published party. The door copy is a QR code. |
 | 17 | 1, product | [Check-in](14-check-in.md) | 05, 10, 13, 20 | Door staff scan QR codes. They cannot configure events, tickets, or merch. |

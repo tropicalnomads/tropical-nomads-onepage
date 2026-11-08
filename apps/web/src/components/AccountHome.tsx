@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { signOutAction } from '../account/actions';
 import { accountText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
+import { PaymentSection, type BillingSummary, type PendingTrace, type SavedMethod } from './PaymentSection';
 
 export interface AccountSummary {
   username: string;
@@ -11,7 +12,10 @@ export interface AccountSummary {
   familyName: string;
   email: string;
   status: 'active' | 'disabled';
-  paymentMethods: number;
+  canPay: boolean;
+  billing: BillingSummary | null;
+  methods: readonly SavedMethod[];
+  traces: readonly PendingTrace[];
 }
 
 function Frame({ title, children }: { title: string; children: ReactNode }) {
@@ -70,7 +74,7 @@ export function AccountHome({ profile }: { profile: AccountSummary | null }) {
         </div>
       </dl>
       {profile.status === 'disabled' ? <p className="mt-4 text-sm text-ozora-yellow">{accountText(language, 'disabled')}</p> : null}
-      {profile.paymentMethods === 0 ? <p className="mt-4 text-sm text-ozora-cream/70">{accountText(language, 'noPaymentMethod')}</p> : null}
+      <PaymentSection canPay={profile.canPay} billing={profile.billing} methods={profile.methods} traces={profile.traces} />
       <form action={signOutAction} className="mt-6">
         <button
           type="submit"
