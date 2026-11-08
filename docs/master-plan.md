@@ -38,7 +38,7 @@ These are facts about the current one-pager, so the restatement stays honest. Th
 
 - Implementing or scaffolding the app, the API, or a monorepo layout.
 - Adding dependencies, or changing how the one-pager behaves.
-- Choosing a payment company. The stack decision in section 7 names the architecture. It does not install it or create cloud resources.
+- Choosing a payment company. That choice is ticket 29, last in the first iteration. This plan does not name a company, and it does not install a provider or create cloud resources.
 - The first build step in section 8.
 
 ## 2. The nine capabilities
@@ -282,7 +282,9 @@ The owner defined the architecture.
 | Phones | The web app in the browser. |
 | Repositories | A shared repo and a web app repo are required. iOS and Android repos are optional and last. Ticket 19 may create them. It does not implement native apps. This monorepo keeps the one-pager, the API, Bookings, and JSON. The shared repo does not wait on a native component toolkit. |
 | Languages | English and Portuguese. |
-| Database | Amazon RDS for PostgreSQL is the recommendation. JSON stays the store until that database is confirmed. This ticket does not create it and does not migrate. Instance size, Multi-AZ, and region are not chosen. |
+| Database | Amazon RDS for PostgreSQL is the recommendation. JSON stays the store until that database is confirmed. This ticket does not create it and does not migrate. Instance size is not chosen. |
+| Region | Every AWS resource is in Frankfurt (`eu-central-1`). None are created here. |
+| Payment company | Chosen in ticket 29, last in the first iteration, after the not-live hosts. No company is named. |
 | Currency | Euro only, for now. |
 | Merch | Pickup for now. Shipping is later. |
 | Refunds | There are no refunds. |
@@ -290,22 +292,22 @@ The owner defined the architecture.
 | Offline check-in | Later. Not in this iteration. |
 | Wallet pass | Later. Not in this iteration. |
 
-Still open: the payment company, ticket types, comps, guest lists, chargebacks, cancellation, transfers, re-entry, which products exist beyond T-shirts, what an agenda contains, and RDS instance size, Multi-AZ, and region.
+Still open: ticket types, comps, guest lists, chargebacks, cancellation, transfers, re-entry, which products exist beyond T-shirts, what an agenda contains, and RDS instance size.
 
 ### Named by the owner
 
 | Topic | Status | What stays attached to the question |
 | --- | --- | --- |
 | Tech stack | Decided | The record above. Cognito with Google and Apple. Next.js for the web app, not installed here. Amplify for the new frontend. A Docker container on ECS for the API. REST. RDS for PostgreSQL is the recommendation. JSON stays until that database is confirmed. The new app is not launched. |
-| Cloud vendor | Decided as a target | AWS is the platform. The one-pager keeps its Amplify app. The new web app's Amplify app and the ECS cluster are not created here. Region, instance size, and Multi-AZ stay open. |
-| Payments provider | Undecided | The company is not named. The currency is euro. There are no refunds. |
+| Cloud vendor | Decided as a target | AWS is the platform, in Frankfurt (`eu-central-1`). The one-pager keeps its Amplify app. The new web app's Amplify app and the ECS cluster are not created here. Instance size stays open. |
+| Payments provider | Chosen later | Ticket 29, last in the first iteration, after the not-live hosts. The company is not named. The currency is euro. There are no refunds. |
 | Ticket format | Decided for this iteration | Door staff scan a QR code. A wallet pass is later, and it is not in this iteration. |
 | Where the apps live | Decided | The web app and a shared repository are required. iOS and Android repositories are optional, last, and are not a native implementation. Phones use the web app in the browser. This repo still holds the one-pager, the API, Bookings, and the JSON data. |
 | Who performs check-in | Decided | The access list has three roles. Door staff scan QR codes. Admins and users do not. Offline check-in is later, and it is not in this iteration. |
 | Languages | Decided | The product is English and Portuguese, with internationalization. The one-pager already has both in `src/i18n/`. The currency is euro. |
 | Email | Decided | One sender and a fixed message list. A ticket purchase email carries the QR code. Marketing for a new party, and the artist offer, need consent, a stated purpose, and a way to stop. Stopping marketing does not stop purchase or QR mail. No email vendor is chosen. |
 | Data model | Decided as a picture | Records and fields are in the architecture models page, on tag `product-plan-v1`. Ticket 28 writes the schemas before the feature tickets. A party can be a draft, and a draft is not public. |
-| Implementation order | Proposed for review | The first iteration is the technical base, then the public product, then the not-live host tickets. Bookings, the admin calendar, and the Goabase integrations tab are the second iteration. The order is on tag `product-plan-v1`. |
+| Implementation order | Proposed for review | The first iteration is the technical base, then the public product, then the not-live host tickets, then the payment-company ticket. Bookings is the second iteration. The order is in [docs/build-plan/](build-plan/README.md). |
 
 ### Also undecided, and needed before implementation
 
@@ -325,12 +327,12 @@ This is a planning sequence. It is the order of decisions. It is not a build sch
 1. **Confirm the restatement** in section 1, including all nine capabilities, and the boundary with today's one-pager, Bookings, and the timetable site.
 2. **The actors are named.** Signed-in people are admin, door, or user. Admin invites door staff. A user sees their own history.
 3. **The shared records are sketched** in the plan on tag `product-plan-v1`. A party can be a draft, and a draft is not on the public list. What an agenda contains stays open.
-4. **Ticket and payment outcomes.** The buyer receives a QR code in this iteration. There are no refunds. The currency is euro. Transfer, re-entry, and comps stay open. The payment company stays open.
+4. **Ticket and payment outcomes.** The buyer receives a QR code in this iteration. There are no refunds. The currency is euro. Transfer, re-entry, and comps stay open. The payment company is ticket 29, after the not-live hosts, and it is not named.
 5. **Merch is pickup for now.** Shipping is later. Stock moves when a sale is real. Whether a shirt is paid inside this product waits on the payment company.
 6. **Split public JSON from private JSON,** including where writable files live. Do this before API work, so ticket secrets stay out of the public site bundle.
 7. **Languages are chosen.** The product is English and Portuguese, with internationalization. Countries are still open. The currency is euro.
 8. **Build shared UI components for the web app.** Theme tokens, types, schemas, and constants live in the shared repo. Native screens are not in the required path, so a Swift or Kotlin component toolkit is not a blocker.
-9. **The architecture is defined.** Cognito with Google and Apple, Next.js, Amplify, a Docker container on ECS, REST, and Amazon RDS for PostgreSQL as the recommendation. Those hosts are not live yet. The one-pager deploy stays. The payment company stays open. JSON stays the store until the database is confirmed.
+9. **The architecture is defined.** Cognito with Google and Apple, Next.js, Amplify, a Docker container on ECS, REST, and Amazon RDS for PostgreSQL as the recommendation. Every AWS resource is in Frankfurt (`eu-central-1`). Those hosts are not live yet. The one-pager deploy stays. The payment company is ticket 29 and is not named. JSON stays the store until the database is confirmed.
 10. **Set the remaining implementation order** after those decisions. One constraint is already fixed. It sits below, separate from this list, so it is not mistaken for a full build plan.
 
 ### Later build constraint

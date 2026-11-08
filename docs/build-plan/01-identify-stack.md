@@ -10,7 +10,11 @@ Decided: Amazon Cognito with Google and Apple. Next.js for the web app. Amplify 
 
 Recommendation, not created: Amazon RDS for PostgreSQL. JSON stays the store until that database is confirmed.
 
-Still open: the payment company, and RDS instance size, Multi-AZ, and region.
+Region: every AWS resource is in Frankfurt (`eu-central-1`). None are created here.
+
+The payment company is chosen in [ticket 29](29-payment-company.md), last in the first iteration, after the not-live hosts. This ticket does not name a company.
+
+Still open: RDS instance size.
 
 ## Why it exists
 
@@ -29,7 +33,7 @@ Why this engine fits:
 - PostgreSQL can store the current JSON documents in `jsonb` during a later move, so the file shapes do not need a second database.
 - The API is a container on ECS, which is a normal client of RDS on a private network.
 - DynamoDB makes those links and the single-decrement update harder than this product needs.
-- Aurora PostgreSQL is the same engine with capacity this product has not asked for. Instance size and Multi-AZ stay open.
+- Aurora PostgreSQL is the same engine with capacity this product has not asked for. Instance size stays open.
 
 JSON files remain the store until the owner confirms this recommendation. Ticket 11 still builds the private JSON location.
 
@@ -54,11 +58,11 @@ None. This is the first ticket.
    - Offline check-in and a wallet pass are later. They are not in this iteration.
    - Phones use the web app in the browser. Ticket 19 may create iOS and Android repos later. It does not implement native apps.
    - Database recommendation: Amazon RDS for PostgreSQL, with the reasons above. Status: to confirm. JSON stays until then.
+   - Region: Frankfurt (`eu-central-1`) for every AWS resource. Do not create those resources here.
+   - The payment company is chosen in ticket 29, after the not-live hosts. Do not name a company here.
 2. Record the repository split: shared repo and web app repo are required. iOS and Android repos are optional. This monorepo keeps the one-pager, the API, Bookings, and JSON.
 3. Do not install Next.js. Do not rewrite `src/`.
-4. Keep these items unanswered:
-   - The payment company. Ticket 12 builds interfaces first.
-   - RDS instance size, Multi-AZ, and region.
+4. Keep RDS instance size unanswered.
 5. Do not block the shared repo on a native component toolkit. The web app can use web components from the shared package. Native screens are out of scope.
 6. Note Apple and Google setup as later work inside ticket 10: an Apple Services ID and a Google OAuth client on the Cognito user pool, for the web app client. Do not create those accounts now.
 7. Do not add dependencies, create AWS resources, connect to AWS, or migrate data.
@@ -68,7 +72,8 @@ None. This is the first ticket.
 - The master plan says the architecture is defined: Cognito, Next.js, Amplify for the web frontend, ECS for the API container, and REST. The new app is not launched by this ticket.
 - The master plan records Amazon RDS for PostgreSQL as the recommendation to confirm, and JSON as the store until then.
 - The master plan records euro, pickup for now, no refunds, draft parties, and offline check-in and a wallet pass as later.
-- The payment company, and RDS instance size, Multi-AZ, and region, are still open.
+- The master plan records Frankfurt (`eu-central-1`) for every AWS resource, and ticket 29 as the payment-company choice. No company is named.
+- RDS instance size is still open.
 - No package was added to `package.json`. No RDS instance exists. No AWS account was connected.
 
 ## Tests
