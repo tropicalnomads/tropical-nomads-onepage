@@ -2,7 +2,7 @@
 
 Ticket 09. The access list lives in `packages/shared/src/access/matrix.ts`. The roles are `admin`, `door`, and `user`. Call `decideAccess` for a request. `roleAllows` is the role matrix only.
 
-Admin actions return the actor id so a later write can record who did it. An empty actor id is denied. Door can scan when the invite was loaded by the API, is not revoked, and includes that party. Do not take the invite from the browser. User can read purchases only when the subject id is their own actor id. Every role is denied someone else's purchases. Admin and user cannot scan.
+Admin actions return the actor id so a later write can record who did it. An empty actor id is denied. An admin can scan a published party without an invite. Door can scan when the invite was loaded by the API, is not revoked, and includes that party. Do not take the invite from the browser. User can read purchases only when the subject id is their own actor id. Every role is denied someone else's purchases. A user cannot scan.
 
 `read-published` is allowed with no account. It is not a role. `roleForNewAccount` returns `user`. The first admin is `INITIAL_ADMIN_SUB` in the environment. Do not put a credential in the repo.
 

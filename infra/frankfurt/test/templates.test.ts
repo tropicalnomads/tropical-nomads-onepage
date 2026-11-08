@@ -73,13 +73,16 @@ describe('Frankfurt templates', () => {
     assert.match(vpc, /DestinationCidrBlock: 0\.0\.0\.0\/0/);
   });
 
-  it('leaves Google and Apple unconfigured', () => {
+  it('adds Google and Apple only when parameters are set', () => {
     const pool = read(join(frankfurt, 'cognito-user-pool.yaml'));
-    assert.match(pool, /SupportedIdentityProviders:\n        - COGNITO/);
-    assert.equal(pool.includes('AWS::Cognito::UserPoolIdentityProvider'), false);
-    assert.equal(pool.includes('SignInWithApple'), false);
-    assert.equal(pool.includes('accounts.google.com'), false);
+    assert.match(pool, /Condition: UseGoogle/);
+    assert.match(pool, /Condition: UseApple/);
+    assert.match(pool, /GoogleClientId:/);
+    assert.match(pool, /Default: ""/);
+    assert.match(pool, /- COGNITO/);
     assert.match(pool, /GenerateSecret: false/);
+    assert.equal(pool.includes('accounts.google.com'), false);
+    assert.equal(pool.includes('BEGIN PRIVATE'), false);
   });
 
   it('creates a separate Amplify app with no domain and no token', () => {

@@ -1,5 +1,46 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Cognito user pool for the new Tropical Nomads web app. Email sign-in. Google and Apple are not configured.
+Description: Cognito user pool for the new Tropical Nomads web app. Email sign-in. Google, Apple, and the hosted UI are created only when their parameters are set.
+
+Parameters:
+  DomainPrefix:
+    Type: String
+    Default: ""
+    AllowedPattern: "^$|^[a-z0-9-]{1,63}$"
+  CallbackUrl:
+    Type: String
+    Default: ""
+  GoogleClientId:
+    Type: String
+    Default: ""
+  GoogleClientSecret:
+    Type: String
+    NoEcho: true
+    Default: ""
+  AppleServicesId:
+    Type: String
+    Default: ""
+  AppleTeamId:
+    Type: String
+    Default: ""
+  AppleKeyId:
+    Type: String
+    Default: ""
+  ApplePrivateKey:
+    Type: String
+    NoEcho: true
+    Default: ""
+
+Conditions:
+  UseDomain: !Not [!Equals [!Ref DomainPrefix, ""]]
+  UseHostedUi: !Not [!Equals [!Ref CallbackUrl, ""]]
+  UseGoogle: !And
+    - !Not [!Equals [!Ref GoogleClientId, ""]]
+    - !Not [!Equals [!Ref GoogleClientSecret, ""]]
+  UseApple: !And
+    - !Not [!Equals [!Ref AppleServicesId, ""]]
+    - !Not [!Equals [!Ref AppleTeamId, ""]]
+    - !Not [!Equals [!Ref AppleKeyId, ""]]
+    - !Not [!Equals [!Ref ApplePrivateKey, ""]]
 
 Resources:
   UserPool:
@@ -38,6 +79,45 @@ Resources:
       UserPoolTags:
         Name: tropical-nomads-web
 
+  HostedDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Condition: UseDomain
+    Properties:
+      Domain: !Ref DomainPrefix
+      UserPoolId: !Ref UserPool
+
+  GoogleProvider:
+    Type: AWS::Cognito::UserPoolIdentityProvider
+    Condition: UseGoogle
+    Properties:
+      ProviderName: Google
+      ProviderType: Google
+      UserPoolId: !Ref UserPool
+      ProviderDetails:
+        client_id: !Ref GoogleClientId
+        client_secret: !Ref GoogleClientSecret
+        authorize_scopes: openid email profile
+      AttributeMapping:
+        email: email
+        given_name: given_name
+        family_name: family_name
+
+  AppleProvider:
+    Type: AWS::Cognito::UserPoolIdentityProvider
+    Condition: UseApple
+    Properties:
+      ProviderName: SignInWithApple
+      ProviderType: SignInWithApple
+      UserPoolId: !Ref UserPool
+      ProviderDetails:
+        client_id: !Ref AppleServicesId
+        team_id: !Ref AppleTeamId
+        key_id: !Ref AppleKeyId
+        private_key: !Ref ApplePrivateKey
+        authorize_scopes: email name
+      AttributeMapping:
+        email: email
+
   WebClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
@@ -48,9 +128,35 @@ Resources:
       ExplicitAuthFlows:
         - ALLOW_USER_SRP_AUTH
         - ALLOW_REFRESH_TOKEN_AUTH
-      SupportedIdentityProviders:
-        - COGNITO
-      AllowedOAuthFlowsUserPoolClient: false
+      SupportedIdentityProviders: !If
+        - UseGoogle
+        - !If
+          - UseApple
+          - - COGNITO
+            - !Ref GoogleProvider
+            - !Ref AppleProvider
+          - - COGNITO
+            - !Ref GoogleProvider
+        - !If
+          - UseApple
+          - - COGNITO
+            - !Ref AppleProvider
+          - - COGNITO
+      CallbackURLs: !If
+        - UseHostedUi
+        - - !Ref CallbackUrl
+        - !Ref AWS::NoValue
+      AllowedOAuthFlowsUserPoolClient: !If [UseHostedUi, true, false]
+      AllowedOAuthFlows: !If
+        - UseHostedUi
+        - - code
+        - !Ref AWS::NoValue
+      AllowedOAuthScopes: !If
+        - UseHostedUi
+        - - openid
+          - email
+          - profile
+        - !Ref AWS::NoValue
       EnableTokenRevocation: true
       AuthSessionValidity: 3
       AccessTokenValidity: 1

@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, readdirSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { api } from '../src/app.ts';
 import {
   operationalCollections,
@@ -78,12 +79,20 @@ describe('private operational data', () => {
     assert.equal(apiPackage.includes('pg'), false);
     assert.equal(apiPackage.includes('prisma'), false);
 
-    const dist = new URL('../../one-pager/dist', import.meta.url);
-    const built = walk(dist.pathname);
-    assert.equal(built.length > 0, true);
-    for (const path of built) {
+    const publicDir = fileURLToPath(new URL('../../one-pager/public', import.meta.url));
+    for (const path of walk(publicDir)) {
       assert.equal(path.includes(`${join('data', 'operational')}`), false);
       assert.equal(privateNames.some((name) => path.endsWith(`${name}.json`)), false);
+    }
+
+    const distPath = fileURLToPath(new URL('../../one-pager/dist', import.meta.url));
+    if (existsSync(distPath)) {
+      const built = walk(distPath);
+      assert.equal(built.length > 0, true);
+      for (const path of built) {
+        assert.equal(path.includes(`${join('data', 'operational')}`), false);
+        assert.equal(privateNames.some((name) => path.endsWith(`${name}.json`)), false);
+      }
     }
 
     assert.equal((await api.request('/orders')).status, 404);

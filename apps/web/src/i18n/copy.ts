@@ -41,6 +41,9 @@ export interface AccountCopy {
   billingLater: string;
   noPaymentMethod: string;
   disabled: string;
+  avatarTitle: string;
+  avatarHelp: string;
+  saveAvatar: string;
   notices: Record<AccountNotice, string>;
 }
 
@@ -65,6 +68,9 @@ export interface PaymentCopy {
   notACharge: string;
   pending: string;
   billingSaved: string;
+  teamTitle: string;
+  teamEmpty: string;
+  unknownAccount: string;
   types: Record<PaymentMethodType, string>;
   purposes: Record<'tickets' | 'merch', string>;
   notices: Record<PaymentNotice, string>;
@@ -83,7 +89,37 @@ export type AccountNotice =
   | 'password-rejected'
   | 'cognito-not-configured'
   | 'provider-not-allowed'
-  | 'not-signed-in';
+  | 'not-signed-in'
+  | 'avatar-rejected'
+  | 'avatar-saved';
+
+const accountNotices: readonly AccountNotice[] = [
+  'username-required',
+  'username-invalid',
+  'username-taken',
+  'name-required',
+  'email-invalid',
+  'password-short',
+  'password-long',
+  'password-rejected',
+  'cognito-not-configured',
+  'provider-not-allowed',
+  'not-signed-in',
+  'avatar-rejected',
+  'avatar-saved',
+];
+
+export function knownAccountNotice(value: string | undefined): AccountNotice | null {
+  if (!value) {
+    return null;
+  }
+  for (const notice of accountNotices) {
+    if (notice === value) {
+      return notice;
+    }
+  }
+  return null;
+}
 
 export interface EventCopy {
   subtitle: string;
@@ -254,6 +290,9 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       notACharge: 'A saved method is not a charge. Nothing is paid until a provider confirms it.',
       pending: 'Pending provider',
       billingSaved: 'Billing address saved.',
+      teamTitle: 'All payment traces',
+      teamEmpty: 'No payment traces.',
+      unknownAccount: 'Unknown account',
       types: { card: 'Card', apple_pay: 'Apple Pay', google_pay: 'Google Pay', other: 'Other' },
       purposes: { tickets: 'Tickets', merch: 'Merch' },
       notices: {
@@ -286,6 +325,9 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       billingLater: 'A billing address is not required to create the account.',
       noPaymentMethod: 'No payment method is saved.',
       disabled: 'This account is disabled. It cannot buy or scan.',
+      avatarTitle: 'Profile photo',
+      avatarHelp: 'JPEG, PNG, or WebP. At most 1 MB.',
+      saveAvatar: 'Save photo',
       notices: {
         'username-required': 'Choose a username.',
         'username-invalid': 'Usernames use letters, digits, and hyphens, and cannot be an event id.',
@@ -298,6 +340,8 @@ export const shellCopy: Record<Locale, ShellCopy> = {
         'cognito-not-configured': 'Sign-in is not available yet. Cognito is not configured.',
         'provider-not-allowed': 'That sign-in provider is not available.',
         'not-signed-in': 'Sign in before changing the account.',
+        'avatar-rejected': 'That photo was not saved.',
+        'avatar-saved': 'Profile photo saved.',
       },
     },
   },
@@ -406,6 +450,9 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       notACharge: 'Um meio salvo não é uma cobrança. Nada é pago até um provedor confirmar.',
       pending: 'Pendente do provedor',
       billingSaved: 'Endereço de cobrança salvo.',
+      teamTitle: 'Todos os pagamentos',
+      teamEmpty: 'Nenhum pagamento registrado.',
+      unknownAccount: 'Conta desconhecida',
       types: { card: 'Cartão', apple_pay: 'Apple Pay', google_pay: 'Google Pay', other: 'Outro' },
       purposes: { tickets: 'Ingressos', merch: 'Merch' },
       notices: {
@@ -438,6 +485,9 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       billingLater: 'O endereço de cobrança não é obrigatório para criar a conta.',
       noPaymentMethod: 'Nenhum meio de pagamento foi salvo.',
       disabled: 'Esta conta está desativada. Ela não pode comprar nem fazer a leitura.',
+      avatarTitle: 'Foto do perfil',
+      avatarHelp: 'JPEG, PNG ou WebP. No máximo 1 MB.',
+      saveAvatar: 'Salvar foto',
       notices: {
         'username-required': 'Escolha um nome de usuário.',
         'username-invalid': 'Use letras, números e hífens. O nome não pode ser o id de um evento.',
@@ -450,6 +500,8 @@ export const shellCopy: Record<Locale, ShellCopy> = {
         'cognito-not-configured': 'A entrada ainda não está disponível. O Cognito não está configurado.',
         'provider-not-allowed': 'Esse provedor de entrada não está disponível.',
         'not-signed-in': 'Entre antes de alterar a conta.',
+        'avatar-rejected': 'Essa foto não foi salva.',
+        'avatar-saved': 'Foto do perfil salva.',
       },
     },
   },

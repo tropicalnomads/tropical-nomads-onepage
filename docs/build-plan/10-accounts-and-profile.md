@@ -101,4 +101,4 @@ Unit tests on the shared schema and the API validator:
 
 ## Not done
 
-The Cognito user pool, the web app client, and the Google and Apple providers were not created. A sign-in against Cognito was not recorded. Avatar bytes are not uploaded from the screen. The key, when a later session exists, has to stay under `data/operational/avatars/`.
+The Cognito user pool is still not applied from this repo. Google and Apple stay off until a deploy passes the owner's ids. The web app creates a session only after a verified Cognito ID token. The account screen uploads an avatar into `data/operational/avatars/`.

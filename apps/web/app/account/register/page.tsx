@@ -1,25 +1,19 @@
-'use client';
+import { hasVerifiedClaims } from '../../../src/account/cognito-actions';
+import { readCognitoConfig } from '../../../src/account/cognito';
+import { RegisterScreen } from '../../../src/components/AccountForms';
+import { knownAccountNotice } from '../../../src/i18n/copy';
 
-import { RegisterForm } from '../../../src/components/AccountForms';
-import { accountText } from '../../../src/i18n/copy';
-import { useLanguage } from '../../../src/i18n/provider';
-
-export default function RegisterPage() {
-  const { language } = useLanguage();
+export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ notice?: string }> }) {
+  const params = await searchParams;
+  const config = readCognitoConfig();
+  const needsUsername = await hasVerifiedClaims();
   return (
-    <main>
-      <section className="px-5 py-8 md:px-8">
-        <div className="mx-auto max-w-lg">
-          <h1 className="text-2xl font-bold text-ozora-cream md:text-3xl">{accountText(language, 'registerTitle')}</h1>
-          <p className="mt-2 text-sm text-ozora-cream/75">{accountText(language, 'intro')}</p>
-          <RegisterForm />
-          <p className="mt-6 text-sm text-ozora-cream/70">
-            <a href="/account/sign-in" className="text-ozora-turquoise underline-offset-2 hover:underline">
-              {accountText(language, 'signIn')}
-            </a>
-          </p>
-        </div>
-      </section>
-    </main>
+    <RegisterScreen
+      hosted={config !== undefined}
+      google={config?.google ?? false}
+      apple={config?.apple ?? false}
+      needsUsername={needsUsername}
+      initialNotice={knownAccountNotice(params.notice)}
+    />
   );
 }

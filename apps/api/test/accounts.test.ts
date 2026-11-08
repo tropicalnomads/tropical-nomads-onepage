@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
@@ -7,8 +7,11 @@ import type { VerifiedSignIn } from 'tropical-nomads-shared';
 import { api } from '../src/app.ts';
 import {
   emptyAccounts,
+  inspectAvatar,
   readAccounts,
+  readAvatar,
   registerVerifiedAccount,
+  saveAvatarFile,
   saveAvatarKey,
   saveDefaultBillingAddress,
   updateAccounts,
@@ -83,5 +86,22 @@ describe('accounts', () => {
     const avatar = saveAvatarKey(saved, 'sub-ada', 'avatars/0123456789abcdef.jpg', now);
     assert.equal(avatar.profiles.find((profile) => profile.sub === 'sub-ada')?.avatarKey, 'avatars/0123456789abcdef.jpg');
     assert.throws(() => saveAvatarKey(saved, 'sub-ada', '../public/data/secret.jpg', now));
+    const jpeg = new Uint8Array(32);
+    jpeg[0] = 0xff;
+    jpeg[1] = 0xd8;
+    jpeg[2] = 0xff;
+    assert.equal(inspectAvatar(jpeg), 'jpg');
+    assert.equal(inspectAvatar(new Uint8Array([0x3c, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74])), undefined);
+    const storedFile = saveAvatarFile(saved, 'sub-ada', jpeg, now, root);
+    const key = storedFile.profiles.find((profile) => profile.sub === 'sub-ada')?.avatarKey ?? '';
+    assert.match(key, /^avatars\/[a-f0-9]{32}\.jpg$/);
+    assert.equal(existsSync(join(root, key)), true);
+    assert.equal(readAvatar(key, root)?.length, jpeg.length);
+    assert.equal(readAvatar('../public/secret.jpg', root), undefined);
+    const disabled = {
+      ...saved,
+      profiles: saved.profiles.map((profile) => ({ ...profile, status: 'disabled' as const })),
+    };
+    assert.throws(() => saveAvatarFile(disabled, 'sub-ada', jpeg, now, root));
   });
 });

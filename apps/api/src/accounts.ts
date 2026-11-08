@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, resolve, sep } from 'node:path';
 import {
@@ -152,6 +153,84 @@ export function saveDefaultBillingAddress(file: AccountFile, sub: string, input:
   const billingAddresses = [...file.billingAddresses.filter((address) => address.id !== parsed.value.id), parsed.value];
   const profiles = file.profiles.map((item) => (item.sub === sub ? { ...item, billingAddressId: parsed.value.id, updatedAt: now } : item));
   return assertAccountFile({ ...file, profiles, billingAddresses });
+}
+
+const avatarLimit = 1_000_000;
+
+export function inspectAvatar(bytes: Uint8Array): 'jpg' | 'png' | 'webp' | undefined {
+  if (bytes.length < 12 || bytes.length > avatarLimit) {
+    return undefined;
+  }
+  if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) {
+    return 'jpg';
+  }
+  if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) {
+    return 'png';
+  }
+  if (
+    bytes[0] === 0x52 &&
+    bytes[1] === 0x49 &&
+    bytes[2] === 0x46 &&
+    bytes[3] === 0x46 &&
+    bytes[8] === 0x57 &&
+    bytes[9] === 0x45 &&
+    bytes[10] === 0x42 &&
+    bytes[11] === 0x50
+  ) {
+    return 'webp';
+  }
+  return undefined;
+}
+
+function avatarDirectory(root: string): string {
+  const directory = resolve(root);
+  if (directory.includes(`${sep}public${sep}`) || directory.endsWith(`${sep}public`)) {
+    throw new Error('avatar is not an image');
+  }
+  return resolve(directory, 'avatars');
+}
+
+export function storeAvatar(bytes: Uint8Array, root = accountRoot()): string {
+  const ext = inspectAvatar(bytes);
+  if (!ext) {
+    throw new Error('avatar is not an image');
+  }
+  const id = randomBytes(16).toString('hex');
+  const key = `avatars/${id}.${ext}`;
+  const directory = avatarDirectory(root);
+  const filePath = resolve(directory, `${id}.${ext}`);
+  if (!filePath.startsWith(`${directory}${sep}`)) {
+    throw new Error('avatar is not an image');
+  }
+  mkdirSync(directory, { recursive: true });
+  writeFileSync(filePath, bytes);
+  return key;
+}
+
+export function readAvatar(key: string, root = accountRoot()): Uint8Array | undefined {
+  if (!/^avatars\/[a-f0-9]{16,}\.(?:jpg|png|webp)$/.test(key)) {
+    return undefined;
+  }
+  const directory = avatarDirectory(root);
+  const filePath = resolve(root, key);
+  if (!filePath.startsWith(`${directory}${sep}`)) {
+    return undefined;
+  }
+  try {
+    const bytes = new Uint8Array(readFileSync(filePath));
+    return inspectAvatar(bytes) ? bytes : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function saveAvatarFile(file: AccountFile, sub: string, bytes: Uint8Array, now: string, root = accountRoot()): AccountFile {
+  const profile = file.profiles.find((item) => item.sub === sub);
+  if (!profile || profile.status !== 'active') {
+    throw new Error('profile is not active');
+  }
+  const key = storeAvatar(bytes, root);
+  return saveAvatarKey(file, sub, key, now);
 }
 
 export function saveAvatarKey(file: AccountFile, sub: string, avatarKey: string, now: string): AccountFile {

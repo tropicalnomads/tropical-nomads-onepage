@@ -18,6 +18,8 @@ const notices: AccountNotice[] = [
   'cognito-not-configured',
   'provider-not-allowed',
   'not-signed-in',
+  'avatar-rejected',
+  'avatar-saved',
 ];
 
 describe('accounts', () => {
