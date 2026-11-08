@@ -35,7 +35,7 @@ The current site: pages, assets, and the JSON it already publishes. It remains o
 
 ### Web app package
 
-A new frontend for the product application: events, ticket purchase, the buyer's ticket, the check-in area, and the merch store. It does not exist yet.
+A new frontend for one product on web, iOS, and Android: events, ticket purchase, the buyer's ticket, the check-in area, and the merch store. How the iOS and Android apps are produced is undecided. The package does not exist yet. The proposed tickets are in the [build plan](../build-plan/README.md).
 
 When the owner asks to start building, the first build step is to turn the Tropical Nomads page into a web app that can have an API. That step is what introduces this package and the API package. It is out of scope now.
 

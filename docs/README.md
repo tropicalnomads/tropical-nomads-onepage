@@ -18,6 +18,14 @@ High-level structure lives in [`docs/architecture/`](architecture/monorepo-and-d
 
 Add a note here when it is about packages, deploys, or data. Vendor names and application code stay out of this folder until the owner has actually chosen them. A choice, once made, is a dated decision, and the matching open question in the master plan is updated with it.
 
+## Build plan
+
+Reviewable implementation tickets live in [`docs/build-plan/`](build-plan/README.md).
+
+- [build-plan/README.md](build-plan/README.md) — the recommended order, one step at a time, and which ticket covers each capability.
+
+These tickets describe work for the owner to accept before anyone builds. They do not add packages, dependencies, or a deploy. Stack, cloud service details, payment provider, ticket format, who checks people in, and languages stay open. Next.js and AWS appear there as the owner's lean, still to be confirmed.
+
 ## Skills
 
 [`docs/skills/`](skills/README.md) is the shelf for repeatable team procedures.
@@ -28,6 +36,6 @@ A skill file belongs here only after someone has done the task and can write ste
 
 ## Status
 
-6 November 2026. Planning only.
+8 November 2026. Planning only.
 
-Still undecided, on purpose: tech stack, cloud vendor, payments provider, ticket format, native app versus PWA versus both, who performs check-in, languages and markets, and implementation order. The master plan lists each one with the context that has to stay attached to it.
+Still undecided, on purpose: the stack (Next.js and AWS are a lean to evaluate), which AWS services, the payment provider, ticket format, how iOS and Android are produced, who performs check-in, and languages. Web, iOS, and Android are all in scope as one product. A recommended ticket order is in the build plan, waiting for review. The master plan keeps the full open-question list.

@@ -207,7 +207,7 @@ The [architecture notes](architecture/monorepo-and-data.md) hold the detail. Wha
 | Piece | Role | Deploy |
 | --- | --- | --- |
 | One-pager package | The current site, kept as its own package | The current public site, until a later build changes that |
-| Web app package | New frontend for the product application | Introduced by the later build in section 8. Host details are undecided. |
+| Web app package | New frontend for one product on web, iOS, and Android. How the iOS and Android apps are produced is undecided. | Introduced by the later build in section 8. Host details are undecided. The build plan's app-shell ticket does not deploy it. |
 | API package | Reads and writes JSON for both products | Host details are undecided. |
 | Bookings package | Bookings, including the admin party calendar | `bookings.tropical-nomads.com` |
 | JSON data | Shared records, and a separate set of operational records, until a database exists | The files are the store. They are not a third website. |
@@ -277,14 +277,14 @@ Every row below is **undecided**. This plan does not pick an answer.
 
 | Topic | Status | What stays attached to the question |
 | --- | --- | --- |
-| Tech stack | Undecided | Framework, API style, and how people sign in. The one-pager's current tools are not a choice for the new packages. |
-| Cloud vendor | Undecided | `amplify.yml` describes the current static site only. |
+| Tech stack | Undecided | The owner leans toward Next.js for the new app frontend and AWS for backend, database, and platform tools. That lean is a preference to evaluate, recorded in the build plan, and it is not a lock. API style and auth stay open. The one-pager's Vite app is not the choice for the new packages. |
+| Cloud vendor | Undecided | AWS is the candidate, because the domain and a lot of hosting are already there. Which AWS services to use is open. `amplify.yml` describes the current static site only. |
 | Payments provider | Undecided | Ticket payments need a provider and a trace. The company is open. |
 | Ticket format | Undecided | QR code, wallet pass, or another format. The product still generates a ticket it can validate. The format is unchosen. |
-| Native app, PWA, or both | Undecided | The one-pager already uses a PWA plugin. That is current site tooling. |
+| How iOS and Android are produced | Undecided | Web, iOS, and Android are all in scope, as one product. Shared UI versus native UI is the open choice. The one-pager's PWA plugin is current site tooling, not that choice. |
 | Who performs check-in | Undecided | Door staff, the buyer, or someone else. Section 4 describes the role. |
 | Languages and markets | Undecided | The one-pager currently has English and Portuguese. That does not decide the product's languages, countries, or currencies. |
-| Implementation order | Undecided | One later constraint is already set, in section 8: the first build step is a web app with an API. The order of tickets, check-in, merch, inventory, and moving Bookings after that step is unset. |
+| Implementation order | Proposed for review | A recommended ticket order is in [docs/build-plan/](build-plan/README.md). It is waiting for the owner. The first product step is still a web app with an API. |
 
 ### Also undecided, and needed before implementation
 
@@ -312,20 +312,21 @@ This is a planning sequence. It is the order of decisions. It is not a build sch
 5. **Agree merch and inventory rules:** the catalog, pickup versus shipping, and whether a shirt is paid inside this product. Stock moves when a sale is real.
 6. **Split public JSON from private JSON,** including where writable files live. Do this before API work, so ticket secrets stay out of the public site bundle.
 7. **Choose languages and markets** for the product. English and Portuguese on the current page remain a fact about the one-pager while that choice is open.
-8. **Choose the app form** — native, PWA, or both — once the flows are stable. At this level of detail the flows are the same for any of those forms.
-9. **Choose stack, cloud, and payment provider** after the flows and the data boundary are clear enough to compare options. This document does not compare them.
+8. **Choose how iOS and Android are produced** — shared UI with the web app, or native UI on the same API. Web, iOS, and Android are already in scope as one product. The one-pager's PWA plugin stays a fact about the current site.
+9. **Choose stack details, cloud services, and the payment provider** once the flows and the data boundary are clear enough to compare options. The build plan's first ticket records the Next.js and AWS lean for evaluation and leaves API style, the database, auth, and the payment provider open. This document does not compare vendors.
 10. **Set the remaining implementation order** after those decisions. One constraint is already fixed. It sits below, separate from this list, so it is not mistaken for a full build plan.
 
 ### Later build constraint
 
 When the owner explicitly asks to start building, the **first build step** is to turn the Tropical Nomads page into a web app that can have an API.
 
-That step adds the new frontend package and the API package beside the current one-pager package, and it uses JSON files as the data store. The step is **out of scope for this plan**. This change does not do it. What is built after that step has no agreed order.
+That step adds the new frontend package and the API package beside the current one-pager package, and it uses JSON files as the data store. The [build plan](build-plan/README.md) splits that step, and everything after it, into tickets for review. This plan still does not build them.
 
 ## 9. How this folder grows
 
 - Product decisions and open questions stay in `docs/`, starting with this file.
 - Structure of packages, deploys, and data stays in `docs/architecture/`.
+- Reviewable implementation tickets live in `docs/build-plan/`. See [build-plan/README.md](build-plan/README.md).
 - Repeatable procedures go in `docs/skills/` once they are real. That folder is empty of skills on purpose. See [skills/README.md](skills/README.md).
 - A future database replaces the JSON store. It does not create a second product, and it is not chosen here.
 - A later note that says the monorepo cannot hold Bookings has to explain why. Until that explanation exists, Bookings stays a package in this repository with its own deploy.
