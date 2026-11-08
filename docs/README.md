@@ -31,7 +31,8 @@ These tickets describe work for the owner to accept before anyone builds. They d
 [`docs/skills/`](skills/README.md) is the shelf for repeatable team procedures.
 
 - [skills/README.md](skills/README.md) — what belongs in this folder.
-- [skills/ticket-delivery.md](skills/ticket-delivery.md) — how an accepted build-plan ticket is delivered: product manager, technical lead, developer, then QA. QA tests the ticket’s acceptance criteria, including unit tests when they can cover the change. The owner reviews after QA.
+- [skills/ticket-delivery.md](skills/ticket-delivery.md) — how an accepted build-plan ticket is delivered: product manager, technical lead, developer, then QA. The developer writes implementation notes before QA. QA tests the ticket’s acceptance criteria, including unit tests when they can cover the change. The owner reviews after QA.
+- [skills/implementation-notes.md](skills/implementation-notes.md) — the notes the developer writes after implementation and before QA: one short skill for the ticket, and one skill per new tool or feature.
 
 A skill file belongs here only when the procedure is real. Placeholder skills do not belong here. Product decisions and architecture notes do not belong here either.
 

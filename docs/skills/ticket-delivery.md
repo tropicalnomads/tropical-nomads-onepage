@@ -14,7 +14,7 @@ One pull request for that ticket, reviewed in this order: product manager, techn
 
 1. Product manager confirms the outcome, what is out of scope, and that the ticket order still makes sense.
 2. Technical lead chooses the approach and the limits. The current site keeps deploying. The new app does not go live until a ticket explicitly says so.
-3. Developer implements only that ticket.
+3. Developer implements only that ticket, then writes the notes in `workflows/implementation-notes.md`: a short skill for the ticket, and one skill per new tool or feature.
 4. QA tests the ticket’s acceptance criteria, including unit tests when they can cover the change, and sends failures back to the developer before the owner is asked to review.
 
 ## Exceptions

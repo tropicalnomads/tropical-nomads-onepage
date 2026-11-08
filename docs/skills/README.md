@@ -2,7 +2,8 @@
 
 This folder holds short procedures for people working on Tropical Nomads.
 
-- [ticket-delivery.md](ticket-delivery.md) — how an accepted build-plan ticket is delivered. The order is product manager, technical lead, developer, then QA. QA tests the acceptance criteria, including unit tests when they can cover the change. The owner reviews after QA. Planning docs do not start this sequence.
+- [ticket-delivery.md](ticket-delivery.md) — how an accepted build-plan ticket is delivered. The order is product manager, technical lead, developer, then QA. The developer writes implementation notes before QA. QA tests the acceptance criteria, including unit tests when they can cover the change. The owner reviews after QA. Planning docs do not start this sequence.
+- [implementation-notes.md](implementation-notes.md) — what the developer writes after a ticket is implemented and before QA: one short skill for the ticket, and one skill per new tool or feature.
 
 A file belongs here when the procedure is real. Product decisions stay in the [master plan](../master-plan.md). Package, deploy, and data structure stay in [architecture](../architecture/monorepo-and-data.md). The [documentation index](../README.md) says which folder to use.
 
