@@ -80,6 +80,7 @@ export type AccountNotice =
   | 'password-long'
   | 'password-rejected'
   | 'cognito-not-configured'
+  | 'email-unconfirmed'
   | 'provider-not-allowed'
   | 'not-signed-in';
 
@@ -206,6 +207,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
         'password-long': 'That password is too long.',
         'password-rejected': 'Choose a different password.',
         'cognito-not-configured': 'Sign-in is not available yet. Cognito is not configured.',
+        'email-unconfirmed': 'Confirm the message sent to your email, then sign in.',
         'provider-not-allowed': 'That sign-in provider is not available.',
         'not-signed-in': 'Sign in before changing the account.',
       },
@@ -315,6 +317,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
         'password-long': 'Essa senha é longa demais.',
         'password-rejected': 'Escolha outra senha.',
         'cognito-not-configured': 'A entrada ainda não está disponível. O Cognito não está configurado.',
+        'email-unconfirmed': 'Confirme a mensagem enviada ao seu e-mail e depois entre.',
         'provider-not-allowed': 'Esse provedor de entrada não está disponível.',
         'not-signed-in': 'Entre antes de alterar a conta.',
       },

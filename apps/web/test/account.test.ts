@@ -16,6 +16,7 @@ const notices: AccountNotice[] = [
   'password-long',
   'password-rejected',
   'cognito-not-configured',
+  'email-unconfirmed',
   'provider-not-allowed',
   'not-signed-in',
 ];

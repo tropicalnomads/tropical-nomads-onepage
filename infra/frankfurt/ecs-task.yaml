@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: One Fargate task for the Tropical Nomads API. 0.5 vCPU and 1 GB. The database secret is not injected.
+Description: One Fargate task for the Tropical Nomads API. 0.5 vCPU and 1 GB. The database password comes from Secrets Manager.
 
 Parameters:
   ExecutionRoleArn:
@@ -12,6 +12,14 @@ Parameters:
     NoEcho: true
   LogGroupName:
     Type: String
+  DbSecretArn:
+    Type: String
+    Description: RDS secret ARN. Do not commit the value.
+    NoEcho: true
+  DbHost:
+    Type: String
+    Description: RDS endpoint hostname. Do not commit the value.
+    NoEcho: true
 
 Resources:
   TaskDefinition:
@@ -41,6 +49,17 @@ Resources:
               Value: 0.0.0.0
             - Name: API_PORT
               Value: "8787"
+            - Name: DB_HOST
+              Value: !Ref DbHost
+            - Name: DB_PORT
+              Value: "5432"
+            - Name: DB_NAME
+              Value: postgres
+          Secrets:
+            - Name: DB_USER
+              ValueFrom: !Sub "${DbSecretArn}:username::"
+            - Name: DB_PASSWORD
+              ValueFrom: !Sub "${DbSecretArn}:password::"
           LogConfiguration:
             LogDriver: awslogs
             Options:

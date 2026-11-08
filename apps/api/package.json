@@ -17,10 +17,12 @@
   "dependencies": {
     "@hono/node-server": "2.1.6",
     "hono": "4.13.17",
+    "pg": "8.13.3",
     "tropical-nomads-shared": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^26.0.0",
+    "@types/pg": "8.11.11",
     "typescript": "^6.0.3"
   }
 }

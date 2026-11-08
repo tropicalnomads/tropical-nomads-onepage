@@ -12,6 +12,6 @@ Payment methods on the profile keep the last 4 digits. A card number is rejected
 
 The next ticket must not put a password or a card number in the profile file, require a login for the upcoming list, or treat a browser-supplied provider subject as verified.
 
-## Cognito is not called
+## Cognito
 
-The ticket asks for a Cognito user pool with Google and Apple, and this environment has no AWS credentials and no provider secrets. A local password hash, or a button that trusts a subject from the browser, would have produced a sign-in. A local hash is a second identity product, and a browser-supplied subject is an account takeover. The screens check the fields and then refuse.
+Email sign-in uses the deployed pool when `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` are set. The client has no secret. The password is sent to Cognito and is not stored. Google and Apple stay unconfigured, so those buttons still return `cognito-not-configured`. The values are set on the new Amplify app at deploy time and are not written into git.

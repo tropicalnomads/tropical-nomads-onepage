@@ -93,8 +93,11 @@ db_sg=$(stack_output tn-frankfurt-security-groups DbSecurityGroupId)
 
 deploy_stack tn-frankfurt-logs "$root/log-group.yaml"
 deploy_stack tn-frankfurt-cognito "$root/cognito-user-pool.yaml"
+pool_id=$(stack_output tn-frankfurt-cognito UserPoolId)
+client_id=$(stack_output tn-frankfurt-cognito UserPoolClientId)
 deploy_stack tn-frankfurt-ecr "$root/ecr-api.yaml"
-deploy_stack tn-frankfurt-amplify "$root/amplify-web-app.yaml"
+deploy_stack tn-frankfurt-amplify "$root/amplify-web-app.yaml" \
+  --parameter-overrides "CognitoUserPoolId=${pool_id}" "CognitoClientId=${client_id}"
 deploy_stack tn-frankfurt-ecs-cluster "$root/ecs-cluster.yaml"
 deploy_stack tn-frankfurt-alb "$root/load-balancer.yaml" \
   --parameter-overrides "VpcId=${vpc_id}" "PublicSubnetA=${public_a}" "PublicSubnetB=${public_b}" "AlbSecurityGroupId=${alb_sg}"
@@ -120,8 +123,9 @@ else
   echo "api image ${tag} already exists"
 fi
 
+db_host=$(aws_ff rds describe-db-instances --db-instance-identifier tropical-nomads-frankfurt --query 'DBInstances[0].Endpoint.Address' --output text)
 deploy_stack tn-frankfurt-ecs-task "$root/ecs-task.yaml" \
-  --parameter-overrides "ExecutionRoleArn=${execution_role}" "TaskRoleArn=${task_role}" "Image=${image}" "LogGroupName=${log_group}"
+  --parameter-overrides "ExecutionRoleArn=${execution_role}" "TaskRoleArn=${task_role}" "Image=${image}" "LogGroupName=${log_group}" "DbSecretArn=${secret_arn}" "DbHost=${db_host}"
 task_arn=$(stack_output tn-frankfurt-ecs-task TaskDefinitionArn)
 cluster=$(stack_output tn-frankfurt-ecs-cluster ClusterName)
 

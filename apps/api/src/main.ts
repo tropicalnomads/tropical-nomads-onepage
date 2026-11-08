@@ -1,4 +1,5 @@
-import { listen } from './server.ts';
+import { databaseReachable, databaseSettings } from './database.ts';
+import { apiHostname, listen } from './server.ts';
 
 const port = Number(process.env.API_PORT ?? 8787);
 
@@ -7,8 +8,15 @@ if (!Number.isInteger(port) || port < 1 || port > 65535) {
   process.exit(1);
 }
 
-const server = await listen(port);
+const hostname = apiHostname();
+const server = await listen(port, hostname);
 server.on('close', () => {
   process.stdout.write('API stopped\n');
 });
-process.stdout.write(`API listening on 127.0.0.1:${port}\n`);
+process.stdout.write(`API listening on ${hostname}:${port}\n`);
+
+const database = databaseSettings();
+if (database) {
+  const connected = await databaseReachable(database);
+  process.stdout.write(connected ? 'database connected\n' : 'database unavailable\n');
+}
