@@ -20,8 +20,8 @@ Owner decisions already in this order:
 - Bookings is the second iteration: the Bookings package, the admin party calendar, and the Goabase integrations tab. The first product does not wait for them.
 - Goabase in that second iteration is a list of parties that exist, so Bookings can email offers of Tropical Nomads artists. That offer uses the email ticket. The one-pager refresh stays.
 - iOS and Android repositories are optional and last. Ticket 19 creates them only. It does not implement native apps.
-- DevOps is a person on the building team. They decide instance sizes and hold the AWS skills. They are not a product role. Signed-in people stay admin, door, or user.
-- Traffic to size for: about five admins, and parties of about 100–200 people. The audience is small. No instance size is named.
+- DevOps is a person on the building team. They own the AWS sizes and hold the AWS skills. They are not a product role. Signed-in people stay admin, door, or user.
+- Traffic to size for: about five admins, and parties of about 100–200 people. The starting sizes are in [the AWS record](../devops/aws.md). Nothing there is created yet.
 
 The API is REST. The currency is euro. Next.js is the web app and is not installed here. Languages are not open. The payment company is not named.
 
@@ -62,7 +62,7 @@ The Amplify, ECS, and RDS tickets are the deploy path for the first product, and
 | 21 | 1, product | [Email](27-email.md) | 09, 10, 13, 14, 15, 20, 28 | Sending, templates, and every product message. No vendor. |
 | 22 | 1, host | [Web app on Amplify](23-amplify-frontend.md) | 03, 05 | Not live yet. A separate Amplify app. www stays the one-pager. |
 | 23 | 1, host | [API container on ECS](24-ecs-backend.md) | 06, 23 | Not live yet. Docker on ECS. No public production API. |
-| 24 | 1, host | [Confirm RDS for PostgreSQL](25-rds-recommendation.md) | 01, 11, 24 | Not live yet. Recommendation to confirm. DevOps chooses the size. Not a migration. |
+| 24 | 1, host | [Confirm RDS for PostgreSQL](25-rds-recommendation.md) | 01, 11, 24 | Not live yet. Recommendation to confirm. Starting size is `db.t4g.small` in the AWS record. Not a migration. |
 | 25 | 1, last | [Choose the payment company](29-payment-company.md) | 12, 23, 24, 25 | After the not-live hosts. Does not name a company. |
 | 26 | 2, Bookings | [Bookings package](17-bookings-package.md) | 02, 03, 07, 09, 20 | Second iteration. Bookings in this monorepo, own deploy, shared data. |
 | 27 | 2, Bookings | [Admin party calendar](18-admin-party-calendar.md) | 07, 09, 13, 17, 27 | Admin creates parties and configures that event's tickets. |
@@ -101,7 +101,7 @@ Checked against the decisions so far. The access list is three roles on ticket 0
 | Admin party calendar | 18, after the first product |
 | Security | 09, then the later tickets that enforce it |
 | English and Portuguese, with internationalization | 20. The one-pager already has `en` and `pt`. |
-| JSON until a database exists | 11. Ticket 25 asks the owner to confirm RDS for PostgreSQL and does not migrate. DevOps chooses the instance size for about five admins and parties of about 100–200 people. |
+| JSON until a database exists | 11. Ticket 25 asks the owner to confirm RDS for PostgreSQL and does not migrate. Starting sizes are in [the AWS record](../devops/aws.md). |
 | One-pager keeps deploying | 03. Tickets 23, 24, and 25 are the later hosts and are not live yet. Region is Frankfurt (`eu-central-1`). |
 | Email | 27, in the first product, after purchases and the door invite. No vendor. |
 | Goabase integrations | 22, in the second iteration with Bookings. The public refresh script stays. |
@@ -113,7 +113,7 @@ Not duplicates: ticket 09 writes who may scan. Ticket 14 builds the invite and t
 
 The three-role decision does not block the stack, the web shell, or the public event list. Those have no role tools. It is in force from ticket 09 onward. Types and schemas are step 5, before the feature tickets, and they include the Bookings records so the second iteration does not invent fields. History is step 19, after tickets and merch. Email is step 21, still in the first product. The Amplify, ECS, and RDS tickets are steps 22–24, not live. The payment company is step 25 and is not named. Bookings is steps 26–28. The catalog and the public product do not wait for it.
 
-Left open on purpose: the timetable site and agenda contents. Ticket 21 lists later payment questions and does not name a company. Tickets 23–25 do not create a public launch, and ticket 25 does not create a database. Ticket 29 is the company choice and does not name one. DevOps chooses instance sizes. This plan does not name one.
+Left open on purpose: the timetable site and agenda contents. Ticket 21 lists later payment questions and does not name a company. Tickets 23–25 do not create a public launch, and ticket 25 does not create a database. Ticket 29 is the company choice and does not name one. Starting AWS sizes are in [the AWS record](../devops/aws.md). DevOps owns later changes.
 
 ## Acceptance criteria and tests
 

@@ -3,6 +3,7 @@
 This folder holds short procedures for people working on Tropical Nomads.
 
 - [identify-stack.md](identify-stack.md) — ticket 1. Where the stack decision lives, and what the next ticket must not break.
+- [aws-sizes.md](aws-sizes.md) — where the AWS sizes live, and what the next ticket must not change.
 
 A file belongs here when the procedure is real. Product decisions stay in the [master plan](../master-plan.md). The delivery sequence and the notes template stay on tag `product-plan-v1`.
 

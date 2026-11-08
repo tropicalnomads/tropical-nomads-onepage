@@ -4,7 +4,7 @@ Ticket 1 records the stack in [the master plan](../master-plan.md) and in [ticke
 
 Read those two files and check that they name the same decisions. In this repo, run `pnpm lint` and `pnpm build`. Both should pass.
 
-The next ticket must not install Next.js, rewrite `src/`, connect to AWS, create a cloud resource, store a password, publish a draft party, add a second currency, add shipping, add a refund, add offline check-in, add a wallet pass, name a payment company, name an instance size, or add a fourth product role. AWS resources, when a later ticket creates them, are in Frankfurt (`eu-central-1`). DevOps chooses the sizes.
+The next ticket must not install Next.js, rewrite `src/`, connect to AWS, create a cloud resource, store a password, publish a draft party, add a second currency, add shipping, add a refund, add offline check-in, add a wallet pass, name a payment company, change a size in [the AWS record](../devops/aws.md), or add a fourth product role. AWS resources, when a later ticket creates them, are in Frankfurt (`eu-central-1`).
 
 ## Decisions
 
@@ -25,5 +25,5 @@ The owner asked for each of these.
 - Offline check-in and a wallet pass are later, not in this iteration.
 - Every AWS resource is in Frankfurt (`eu-central-1`).
 - The payment company is chosen in ticket 29, last in the first iteration. No company is named.
-- DevOps is on the building team. They decide instance sizes and hold the AWS skills. They are not a product role.
-- Traffic is about five admins, and parties of about 100–200 people. No instance size is named.
+- DevOps is on the building team. They own the AWS sizes and hold the AWS skills. They are not a product role.
+- Traffic is about five admins, and parties of about 100–200 people. The sizes are in [the AWS record](../devops/aws.md).
