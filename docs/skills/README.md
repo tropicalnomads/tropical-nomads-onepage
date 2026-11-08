@@ -2,6 +2,8 @@
 
 This folder holds short procedures for people working on Tropical Nomads.
 
+- [ticket-delivery.md](ticket-delivery.md) — how an accepted build-plan ticket is delivered. The order is product manager, technical lead, developer, then QA. The developer writes implementation notes before QA. QA tests the acceptance criteria, including unit tests when they can cover the change. The owner reviews after QA. Planning docs do not start this sequence.
+- [implementation-notes.md](implementation-notes.md) — what the developer writes after a ticket is implemented and before QA: one short skill for the ticket, and one skill per new tool or feature.
 - [identify-stack.md](identify-stack.md) — ticket 1. Where the stack decision lives, and what the next ticket must not break.
 - [repository-shape.md](repository-shape.md) — ticket 2. Where the packages live, and what the next ticket must not break.
 - [deployment-change.md](deployment-change.md) — ticket 3. www publishes only the one-pager.
@@ -19,7 +21,7 @@ This folder holds short procedures for people working on Tropical Nomads.
 - [turborepo.md](turborepo.md) — how package tasks run. pnpm stays the package manager.
 - [aws-sizes.md](aws-sizes.md) — where the AWS sizes live, and what the next ticket must not change.
 
-A file belongs here when the procedure is real. Product decisions stay in the [master plan](../master-plan.md). The delivery sequence and the notes template stay on tag `product-plan-v1`.
+A file belongs here when the procedure is real. Product decisions stay in the [master plan](../master-plan.md). Package, deploy, and data structure stay in [architecture](../architecture/monorepo-and-data.md). The [documentation index](../README.md) says which folder to use. The delivery sequence is [ticket-delivery.md](ticket-delivery.md) and the notes template is [implementation-notes.md](implementation-notes.md). Those two files are the procedures that were on tag `product-plan-v1`.
 
 The kind of note that can land here later, once the steps are true:
 
