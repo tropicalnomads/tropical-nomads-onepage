@@ -46,7 +46,7 @@ The Amplify, ECS, and RDS tickets are the deploy path for the first product, and
 | 5 | 1, base | [Types and schemas](28-types-and-schemas.md) | 04 | Record schemas and lookups in `packages/shared`. No database. |
 | 6 | 1, base | [Web app repository](05-app-repos.md) | 03, 04, 28 | `apps/web` shell, usable in a phone browser. Not deployed. Schema fields stay in ticket 28. |
 | 7 | 1, base | [English and Portuguese](20-internationalization.md) | 04, 05 | The web shell switches between `en` and `pt`. No third language. |
-| 8 | 1, base | [API reads published data](06-api-reads-published-data.md) | 02, 03, 28 | API over the JSON this repo already publishes. |
+| 8 | 1, base | [API reads published data](06-api-reads-published-data.md) | 02, 03, 28 | Local read of the published JSON. No public host. |
 | 9 | 1, base | [Shared catalog](07-shared-catalog.md) | 06, 28 | Published artists and parties. Agendas wait for the second iteration. |
 | 10 | 1, base | [Security baseline](09-security-baseline.md) | 01, 07 | Three roles: admin, door, and user. |
 | 11 | 1, base | [Private operational data](11-private-operational-data.md) | 06, 09, 28 | JSON for orders, tickets, check-ins, and stock, outside `public/data/`. |

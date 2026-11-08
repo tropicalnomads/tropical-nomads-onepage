@@ -345,7 +345,7 @@ This is a planning sequence. It is the order of decisions. It is not a build sch
 
 When the owner explicitly asks to start building, the **first build step** is to turn the Tropical Nomads page into a web app that can have an API.
 
-The web shell is `apps/web` and is not live. The API slot is `apps/api` and still ships nothing. JSON files are the data store. The [build plan](build-plan/README.md) splits the rest into tickets.
+The web shell is `apps/web` and is not live. The API in `apps/api` reads the published JSON on `127.0.0.1` and is not live. JSON files are the data store. The [build plan](build-plan/README.md) splits the rest into tickets.
 
 ## 9. How this folder grows
 
