@@ -11,6 +11,7 @@ This folder holds short procedures for people working on Tropical Nomads.
 - [languages.md](languages.md) — ticket 20. English and Portuguese in the web shell.
 - [api-reads.md](api-reads.md) — ticket 06. The local API reads the published JSON. It has no public host.
 - [shared-catalog.md](shared-catalog.md) — ticket 07. Every published party and artist. No agenda and no draft filter.
+- [security-baseline.md](security-baseline.md) — ticket 09. The access list is admin, door, and user.
 - [hono.md](hono.md) — the REST library for `apps/api`. Hono on Node, loopback only.
 - [nextjs.md](nextjs.md) — Next.js lives in the web shell. The one-pager stays on Vite.
 - [turborepo.md](turborepo.md) — how package tasks run. pnpm stays the package manager.

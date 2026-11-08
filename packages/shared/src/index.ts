@@ -1,3 +1,13 @@
+export {
+  accessActions,
+  configuredAdminId,
+  decideAccess,
+  isRole,
+  roleAllows,
+  roleForNewAccount,
+  roles,
+} from './access/matrix.ts';
+export type { AccessAction, AccessDecision, AccessRequest, DoorInviteScope, Role } from './access/matrix.ts';
 export { textContract, textView } from './components/text.ts';
 export type { TextView } from './components/text.ts';
 export { acceptLocale, languageStorageKey, locales, normalizeLocale, selectLocale } from './constants/locales.ts';
