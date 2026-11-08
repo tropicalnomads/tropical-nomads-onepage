@@ -1,6 +1,8 @@
+import { existsSync, readFileSync } from 'node:fs';
 import pg from 'pg';
 
 const { Client } = pg;
+const rdsCaPath = '/etc/ssl/rds-global-bundle.pem';
 
 export interface DatabaseSettings {
   host: string;
@@ -30,14 +32,19 @@ export async function databaseReachable(settings: DatabaseSettings): Promise<boo
     user: settings.user,
     password: settings.password,
     database: settings.database,
-    ssl: { rejectUnauthorized: true },
-    connectionTimeoutMillis: 4000,
+    ssl: {
+      rejectUnauthorized: true,
+      ...(existsSync(rdsCaPath) ? { ca: readFileSync(rdsCaPath, 'utf8') } : {}),
+    },
+    connectionTimeoutMillis: 8000,
   });
   try {
     await client.connect();
     await client.query('select 1');
     return true;
-  } catch {
+  } catch (error) {
+    const code = typeof error === 'object' && error !== null && 'code' in error ? String((error as { code?: unknown }).code) : 'unknown';
+    process.stdout.write(`database unavailable ${code}\n`);
     return false;
   } finally {
     await client.end().catch(() => undefined);

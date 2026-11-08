@@ -18,5 +18,7 @@ process.stdout.write(`API listening on ${hostname}:${port}\n`);
 const database = databaseSettings();
 if (database) {
   const connected = await databaseReachable(database);
-  process.stdout.write(connected ? 'database connected\n' : 'database unavailable\n');
+  if (connected) {
+    process.stdout.write('database connected\n');
+  }
 }

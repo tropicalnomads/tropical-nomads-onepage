@@ -1,6 +1,9 @@
 # API image only. The one-pager build and operational JSON are not copied.
 FROM node:22-bookworm-slim
 
+ADD https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem /etc/ssl/rds-global-bundle.pem
+RUN chmod 644 /etc/ssl/rds-global-bundle.pem
+
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
 
