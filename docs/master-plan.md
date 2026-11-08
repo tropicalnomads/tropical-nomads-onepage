@@ -200,7 +200,7 @@ The [architecture index](architecture/README.md) holds the detail: the [system d
 
 | Piece | Role | Deploy |
 | --- | --- | --- |
-| One-pager package | The current site, kept as its own package | Its existing Amplify app, at www. It keeps deploying. |
+| One-pager package | The current site, kept as its own package | Its existing Amplify app, at www. `amplify.yml` publishes only `apps/one-pager/dist`. |
 | Web app repo, plus a shared repo | The product people use, including on a phone browser. Shared repo holds theme, components, types, schemas, and constants. | Later host is a separate Amplify app. It does not go live in the current tickets. |
 | iOS and Android repos | Optional. Create the repositories only. | Last in the build plan. No native implementation. |
 | API package | Reads and writes JSON for both products | Later host is a Docker container on ECS. It does not go live in the current tickets. |
