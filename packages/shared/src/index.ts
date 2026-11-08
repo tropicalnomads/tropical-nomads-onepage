@@ -8,7 +8,7 @@ export {
 } from './account/identity.ts';
 export type { AttachedProfile, VerifiedSignIn } from './account/identity.ts';
 export type { BillingAddress, PaymentMethod, Profile } from './schema/account.ts';
-export type { PaymentTrace } from './schema/commerce.ts';
+export type { IssuedTicket, Order, PaymentTrace, QrPayload } from './schema/commerce.ts';
 export type { PaymentMethodType, PaymentPurpose } from './schema/values.ts';
 export {
   accessActions,
@@ -36,6 +36,8 @@ export {
   spansMultipleEventDays,
 } from './events/public-list.ts';
 export type { PublicEventLinks, PublicEventLineup, PublicEventWhen } from './events/public-list.ts';
+export { euroTicketOffers, eventSaleChoice, isPayableAmount, readTicketOffers } from './events/ticket-offer.ts';
+export type { EuroTicketOffer, EventSaleChoice, TicketOfferInput } from './events/ticket-offer.ts';
 export { webAreas } from './navigation/areas.ts';
 export type { WebAreaId } from './navigation/areas.ts';
 export {
@@ -64,6 +66,7 @@ export {
   parseProfile,
   parseProfiles,
   parseQrPayload,
+  qrPayloadText,
   parseSocialLink,
   parseStockCorrection,
   parseStockCount,

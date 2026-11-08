@@ -18,6 +18,7 @@ describe('upcoming events', () => {
       assert.equal(JSON.stringify(event).includes('secret'), false);
       assert.equal(JSON.stringify(event).includes('cardNumber'), false);
       assert.equal('price' in event, false);
+      assert.equal(event.inAppOffers.length, 0);
       if (event.ticketUrl) {
         assert.equal(new URL(event.ticketUrl).protocol, 'https:');
       }
@@ -61,7 +62,12 @@ describe('upcoming events', () => {
       }
     }
     const page = readFileSync(new URL('../src/components/UpcomingEvents.tsx', import.meta.url), 'utf8');
-    assert.equal(page.includes('<form'), false);
+    const onePagerList = readFileSync(new URL('../../one-pager/src/components/UpcomingEventsList.tsx', import.meta.url), 'utf8');
+    assert.equal(page.includes('issueTicketAction'), true);
     assert.equal(page.includes('checkout'), false);
+    assert.equal(page.includes('markPaymentConfirmed'), false);
+    assert.equal(page.includes('recordRefund'), false);
+    assert.equal(onePagerList.includes('issueTicketAction'), false);
+    assert.equal(onePagerList.includes('<form'), false);
   });
 });

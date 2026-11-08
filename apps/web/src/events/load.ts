@@ -1,4 +1,4 @@
-import { decideAccess, getEventTimetableUrl, getPrimaryTicketUrl, hasTicketSales, publicHttpsUrl } from 'tropical-nomads-shared';
+import { decideAccess, eventSaleChoice, getEventTimetableUrl, publicHttpsUrl } from 'tropical-nomads-shared';
 import { api } from 'tropical-nomads-api';
 import { bannerSrc, partnerLogoSrc } from './assets.ts';
 import type { UpcomingEventCard, UpcomingPartner } from './types.ts';
@@ -82,7 +82,7 @@ function readEvent(value: unknown, partners: Map<string, UpcomingPartner>): Upco
   const venueName = readString(venue.name);
   const city = readString(venue.city);
   const country = readString(venue.country);
-  const ticketUrl = getPrimaryTicketUrl(publicLinks);
+  const sale = eventSaleChoice(publicLinks, value.offers);
   const timetableUrl = getEventTimetableUrl(readString(value.timetableFestivalId));
   const flyer = bannerSrc(readString(images.bannerLocal));
   const mapUrl = publicHttpsUrl(readString(venue.mapUrl));
@@ -100,8 +100,9 @@ function readEvent(value: unknown, partners: Map<string, UpcomingPartner>): Upco
     ...(mapUrl ? { mapUrl } : {}),
     cardArtists,
     stages,
-    ...(ticketUrl ? { ticketUrl } : {}),
-    ticketsOnSale: hasTicketSales(publicLinks),
+    inAppOffers: [...sale.inAppOffers],
+    ...(sale.ticketUrl ? { ticketUrl: sale.ticketUrl } : {}),
+    ticketsOnSale: sale.ticketsOnSale,
     ...(timetableUrl ? { timetableUrl } : {}),
     ...(flyer ? { bannerSrc: flyer } : {}),
     partners: matched,

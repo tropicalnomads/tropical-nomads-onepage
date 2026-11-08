@@ -15,6 +15,7 @@ export interface ShellCopy {
   areas: Record<WebAreaId, string>;
   areaDescriptions: Record<WebAreaId, string>;
   events: EventCopy;
+  tickets: TicketCopy;
   account: AccountCopy;
   payments: PaymentCopy;
 }
@@ -90,6 +91,10 @@ export interface EventCopy {
   nextUp: string;
   buyTickets: string;
   buyTicketsAria: string;
+  buyInApp: string;
+  buyInAppAria: string;
+  inAppNote: string;
+  viewTickets: string;
   eventDetails: string;
   eventDetailsAria: string;
   comingSoon: string;
@@ -99,6 +104,18 @@ export interface EventCopy {
   partnerAria: string;
   flyerAlt: string;
   dateLocale: string;
+}
+
+export interface TicketCopy {
+  signInTitle: string;
+  signInBody: string;
+  emptyTitle: string;
+  emptyBody: string;
+  unpaid: string;
+  notValid: string;
+  open: string;
+  back: string;
+  qrLabel: string;
 }
 
 export const shellCopy: Record<Locale, ShellCopy> = {
@@ -122,17 +139,21 @@ export const shellCopy: Record<Locale, ShellCopy> = {
     },
     areaDescriptions: {
       'upcoming-events': 'Published parties, with the date, the place, and who is playing.',
-      'my-tickets': 'Tickets are not listed in this shell.',
+      'my-tickets': 'Your tickets and the QR code for the door. An unpaid ticket is not valid for entry.',
       'check-in': 'Door check-in is not active in this shell. There is no scanner and no ticket entry.',
       merch: 'The shop is not open in this shell.',
     },
     events: {
-      subtitle: 'The next parties. Ticket links leave this app.',
+      subtitle: 'The next parties. A party with a euro offer can be bought here. The others keep their seller link.',
       emptyTitle: 'No upcoming events',
       emptyBody: 'Check back soon for newly announced dates.',
       nextUp: 'Next up',
       buyTickets: 'Buy tickets',
       buyTicketsAria: 'Buy tickets for {title} on the seller site',
+      buyInApp: 'Buy ticket',
+      buyInAppAria: 'Buy a euro ticket for {title}. Payment is not confirmed.',
+      inAppNote: 'The amount is in euro. Nothing is charged until a provider confirms it.',
+      viewTickets: 'View my tickets',
       eventDetails: 'Event details',
       eventDetailsAria: 'Open event details for {title}',
       comingSoon: 'Coming soon',
@@ -142,6 +163,17 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       partnerAria: 'Open {name} on Instagram',
       flyerAlt: '{title} flyer',
       dateLocale: 'en',
+    },
+    tickets: {
+      signInTitle: 'Sign in to see your tickets',
+      signInBody: 'Tickets stay on your account. The QR code is not on this page until you sign in.',
+      emptyTitle: 'No tickets yet',
+      emptyBody: 'A ticket you buy for a published party will show up here.',
+      unpaid: 'Payment is not confirmed.',
+      notValid: 'This ticket is not valid for entry.',
+      open: 'Open ticket',
+      back: 'All tickets',
+      qrLabel: 'QR code for {title}',
     },
     payments: {
       section: 'Payment',
@@ -231,17 +263,21 @@ export const shellCopy: Record<Locale, ShellCopy> = {
     },
     areaDescriptions: {
       'upcoming-events': 'Festas publicadas, com a data, o lugar e quem toca.',
-      'my-tickets': 'Os ingressos não estão listados neste app.',
+      'my-tickets': 'Os seus ingressos e o QR da porta. Um ingresso não pago não vale para entrar.',
       'check-in': 'O check-in da porta não está ativo neste app. Não há leitor e não há entrada de ingresso.',
       merch: 'A loja não está aberta neste app.',
     },
     events: {
-      subtitle: 'As próximas festas. Os links de ingresso saem deste app.',
+      subtitle: 'As próximas festas. Uma festa com oferta em euro pode ser comprada aqui. As outras mantêm o link do vendedor.',
       emptyTitle: 'Nenhum evento futuro',
       emptyBody: 'Volte em breve para novas datas anunciadas.',
       nextUp: 'A seguir',
       buyTickets: 'Comprar ingressos',
       buyTicketsAria: 'Comprar ingressos para {title} no site do vendedor',
+      buyInApp: 'Comprar ingresso',
+      buyInAppAria: 'Comprar um ingresso em euro para {title}. O pagamento não está confirmado.',
+      inAppNote: 'O valor é em euro. Nada é cobrado até um provedor confirmar.',
+      viewTickets: 'Ver meus ingressos',
       eventDetails: 'Detalhes do evento',
       eventDetailsAria: 'Abrir detalhes de {title}',
       comingSoon: 'Em breve',
@@ -251,6 +287,17 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       partnerAria: 'Abrir {name} no Instagram',
       flyerAlt: 'Cartaz de {title}',
       dateLocale: 'pt-BR',
+    },
+    tickets: {
+      signInTitle: 'Entre para ver seus ingressos',
+      signInBody: 'Os ingressos ficam na sua conta. O QR não aparece nesta página antes de entrar.',
+      emptyTitle: 'Nenhum ingresso ainda',
+      emptyBody: 'Um ingresso comprado para uma festa publicada aparece aqui.',
+      unpaid: 'O pagamento não está confirmado.',
+      notValid: 'Este ingresso não vale para entrar.',
+      open: 'Abrir ingresso',
+      back: 'Todos os ingressos',
+      qrLabel: 'QR de {title}',
     },
     payments: {
       section: 'Pagamento',
@@ -329,7 +376,7 @@ export function presentText(language: Locale, key: string, value: string | undef
   return value;
 }
 
-export function shellText<K extends keyof Omit<ShellCopy, 'areas' | 'areaDescriptions' | 'events' | 'account' | 'payments'>>(
+export function shellText<K extends keyof Omit<ShellCopy, 'areas' | 'areaDescriptions' | 'events' | 'tickets' | 'account' | 'payments'>>(
   language: Locale,
   key: K,
 ): string {
@@ -346,6 +393,10 @@ export function areaDescription(language: Locale, id: WebAreaId): string {
 
 export function eventText<K extends keyof EventCopy>(language: Locale, key: K): string {
   return presentText(language, `events.${key}`, shellCopy[language].events[key]);
+}
+
+export function ticketText<K extends keyof TicketCopy>(language: Locale, key: K): string {
+  return presentText(language, `tickets.${key}`, shellCopy[language].tickets[key]);
 }
 
 export function accountText<K extends keyof Omit<AccountCopy, 'notices'>>(language: Locale, key: K): string {

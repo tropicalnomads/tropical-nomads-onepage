@@ -1,10 +1,12 @@
 'use client';
 
 import { Calendar, CalendarClock, Clock, ExternalLink, MapPin, Ticket } from 'lucide-react';
+import { useState, type FormEvent } from 'react';
 import { formatEventDate, getStageSummary } from 'tropical-nomads-shared';
 import type { UpcomingEventCard } from '../events/types';
-import { areaText, eventText } from '../i18n/copy';
+import { accountText, areaText, eventText, paymentNotice, paymentText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
+import { issueTicketAction, type TicketActionResult } from '../tickets/actions';
 import { EmptyState } from '../../../one-pager/src/components/EmptyState';
 
 function fill(template: string, values: Record<string, string>): string {
@@ -95,7 +97,9 @@ export function UpcomingEvents({ events }: { events: readonly UpcomingEventCard[
                     ) : null}
                     {summary ? <p className="mt-2 text-sm text-ozora-cream/70">{summary}</p> : null}
                     <div className="mt-4 flex flex-col items-center gap-3 md:items-start">
-                      {event.ticketUrl ? (
+                      {event.inAppOffers.length > 0 ? (
+                        <TicketPurchase event={event} />
+                      ) : event.ticketUrl ? (
                         <a
                           href={event.ticketUrl}
                           target="_blank"
@@ -173,6 +177,73 @@ export function UpcomingEvents({ events }: { events: readonly UpcomingEventCard[
         )}
       </div>
     </section>
+  );
+}
+
+function euroAmount(amount: number, language: string): string {
+  return new Intl.NumberFormat(language === 'pt' ? 'pt-PT' : 'en-IE', { style: 'currency', currency: 'EUR' }).format(amount);
+}
+
+function TicketPurchase({ event }: { event: UpcomingEventCard }) {
+  const { language } = useLanguage();
+  const [result, setResult] = useState<TicketActionResult | null>(null);
+  const single = event.inAppOffers.length === 1 ? event.inAppOffers[0] : undefined;
+
+  async function onSubmit(formEvent: FormEvent<HTMLFormElement>): Promise<void> {
+    formEvent.preventDefault();
+    setResult(await issueTicketAction(new FormData(formEvent.currentTarget)));
+  }
+
+  return (
+    <form onSubmit={onSubmit} className="flex w-full max-w-xs flex-col gap-2">
+      <input type="hidden" name="partyId" value={event.id} />
+      {single ? (
+        <input type="hidden" name="offerName" value={single.name} />
+      ) : (
+        <label className="text-sm text-ozora-cream">
+          <span className="sr-only">{eventText(language, 'buyInApp')}</span>
+          <select
+            name="offerName"
+            className="w-full rounded-lg border border-white/15 bg-black/30 px-3 py-2 text-sm text-ozora-cream outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+          >
+            {event.inAppOffers.map((offer) => (
+              <option key={offer.name} value={offer.name}>
+                {offer.name} · {euroAmount(offer.amount, language)}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      <button
+        type="submit"
+        className="inline-flex items-center justify-center gap-2 rounded-lg bg-ozora-coral px-4 py-2 text-sm font-semibold text-ozora-ink hover:bg-ozora-yellow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow"
+        aria-label={fill(eventText(language, 'buyInAppAria'), { title: event.title })}
+      >
+        <Ticket size={16} aria-hidden="true" />
+        {single ? `${eventText(language, 'buyInApp')} · ${euroAmount(single.amount, language)}` : eventText(language, 'buyInApp')}
+      </button>
+      <p className="text-xs text-ozora-cream/70">{eventText(language, 'inAppNote')}</p>
+      {result ? (
+        <p role="status" className="text-sm text-ozora-yellow">
+          {paymentNotice(language, result.notice)}
+        </p>
+      ) : null}
+      {result?.notice === 'pending-provider' && result.ticketId ? (
+        <a href={`/my-tickets?ticket=${result.ticketId}`} className="text-sm font-semibold text-ozora-turquoise underline-offset-2 hover:underline">
+          {eventText(language, 'viewTickets')}
+        </a>
+      ) : null}
+      {result?.notice === 'not-signed-in' ? (
+        <a href="/account/sign-in" className="text-sm font-semibold text-ozora-turquoise underline-offset-2 hover:underline">
+          {accountText(language, 'signIn')}
+        </a>
+      ) : null}
+      {result?.notice === 'billing-required' ? (
+        <a href="/account" className="text-sm font-semibold text-ozora-turquoise underline-offset-2 hover:underline">
+          {paymentText(language, 'billingTitle')}
+        </a>
+      ) : null}
+    </form>
   );
 }
 
