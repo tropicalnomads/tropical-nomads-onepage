@@ -13,6 +13,17 @@ export type { TextView } from './components/text.ts';
 export { acceptLocale, languageStorageKey, locales, normalizeLocale, selectLocale } from './constants/locales.ts';
 export type { Locale } from './constants/locales.ts';
 export { origins } from './constants/origins.ts';
+export {
+  formatEventDate,
+  getEventTimetableUrl,
+  getPrimaryTicketUrl,
+  getStageSummary,
+  hasTicketSales,
+  publicHttpsUrl,
+  sortByDateAsc,
+  spansMultipleEventDays,
+} from './events/public-list.ts';
+export type { PublicEventLinks, PublicEventLineup, PublicEventWhen } from './events/public-list.ts';
 export { webAreas } from './navigation/areas.ts';
 export type { WebAreaId } from './navigation/areas.ts';
 export {

@@ -1,9 +1,14 @@
-import { AreaSection } from '../../src/components/AreaSection';
+import { UpcomingEvents } from '../../src/components/UpcomingEvents';
+import { loadUpcomingEvents } from '../../src/events/load';
 
-export default function UpcomingEventsPage() {
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
+export default async function UpcomingEventsPage() {
+  const events = await loadUpcomingEvents();
   return (
     <main>
-      <AreaSection id="upcoming-events" />
+      <UpcomingEvents events={events} />
     </main>
   );
 }
