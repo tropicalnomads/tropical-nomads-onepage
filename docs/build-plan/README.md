@@ -12,7 +12,7 @@ Owner decisions already in this order:
 - A user profile holds identity, a billing address, an avatar, and payment methods. The payment company is ticket 29, after the not-live hosts, and is not named.
 - The access list has three roles. Admin creates parties and merch. Door staff only scan QR codes. Every other user sees their own purchase history and ticket history.
 - The product is English and Portuguese, with internationalization. The one-pager already has both.
-- The web app is its own repository. A shared repository holds theme colors, base components, types, schemas, and constants. Ticket 28 writes every schema before the feature tickets.
+- The web shell is `apps/web`. The shared package is `packages/shared`. The owner asked for both in this monorepo. The planning text described separate repositories, and those remotes were not created. Ticket 28 still writes every schema. The shell does not write those fields.
 - Before a future go-live, and still not live: the new frontend on its own Amplify app, the API as a Docker container on ECS, and a confirmation of Amazon RDS for PostgreSQL. Every AWS resource is in Frankfurt (`eu-central-1`). JSON stays the store until that confirmation. The one-pager keeps its existing Amplify deploy.
 - This repository still holds the one-pager, the API, Bookings, and the JSON. Bookings is not split into its own repo.
 - Email is one sender, with templates and a fixed message list. Marketing needs consent and can be stopped. No email vendor is chosen.
@@ -23,7 +23,7 @@ Owner decisions already in this order:
 - DevOps is a person on the building team. They own the AWS sizes and hold the AWS skills. They are not a product role. Signed-in people stay admin, door, or user.
 - Traffic to size for: about five admins, and parties of about 100–200 people. The starting sizes are in [the AWS record](../devops/aws.md). Nothing there is created yet.
 
-The API is REST. The currency is euro. Next.js is the web app and is not installed here. Languages are not open. The payment company is not named.
+The API is REST. The currency is euro. Next.js is installed in `apps/web` and is not the one-pager. Languages are not open. The payment company is not named.
 
 ## Why this order
 
@@ -44,7 +44,7 @@ The Amplify, ECS, and RDS tickets are the deploy path for the first product, and
 | 3 | 1, base | [Deployment change](03-deployment-change.md) | 02 | www publishes only `apps/one-pager`. The new web app and the API do not go live. |
 | 4 | 1, base | [Shared client repo](04-shared-client-repo.md) | 02 | `packages/shared` at version 0.1.0. Theme, component contract, and the empty schema entry. |
 | 5 | 1, base | [Types and schemas](28-types-and-schemas.md) | 04 | Every field and the lookups, including Bookings records, before the feature tickets. |
-| 6 | 1, base | [Web app repository](05-app-repos.md) | 03, 04, 28 | Required web shell, usable in a phone browser. |
+| 6 | 1, base | [Web app repository](05-app-repos.md) | 03, 04, 28 | `apps/web` shell, usable in a phone browser. Not deployed. Schema fields stay in ticket 28. |
 | 7 | 1, base | [English and Portuguese](20-internationalization.md) | 04, 05 | Internationalization. The only languages are `en` and `pt`. |
 | 8 | 1, base | [API reads published data](06-api-reads-published-data.md) | 02, 03, 28 | API over the JSON this repo already publishes. |
 | 9 | 1, base | [Shared catalog](07-shared-catalog.md) | 06, 28 | Published artists and parties. Agendas wait for the second iteration. |
@@ -105,7 +105,7 @@ Checked against the decisions so far. The access list is three roles on ticket 0
 | One-pager keeps deploying | 03. Tickets 23, 24, and 25 are the later hosts and are not live yet. Region is Frankfurt (`eu-central-1`). |
 | Email | 27, in the first product, after purchases and the door invite. No vendor. |
 | Goabase integrations | 22, in the second iteration with Bookings. The public refresh script stays. |
-| Types and schemas | 28, step 5, before the web app and the feature tickets. Lookups are on the architecture indexes page. |
+| Types and schemas | 28, step 5. Still open. The owner asked for the web shell before this ticket. The shell does not write the fields. Lookups are on the architecture indexes page. |
 
 Order problem that this pass fixes: iOS and Android were step 5, in the same ticket as the required web shell, so the product could not move without native apps. They are now ticket 19, optional, and last. Nothing depends on them. Phones use the web app in the browser.
 

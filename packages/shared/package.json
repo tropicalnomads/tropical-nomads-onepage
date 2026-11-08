@@ -1,6 +1,6 @@
 {
   "name": "tropical-nomads-shared",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "Theme tokens, base component contract, constants, and the empty schema entry. No event data.",
