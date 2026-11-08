@@ -4,13 +4,13 @@
 
 ## Outcome
 
-The one-pager still deploys on its own to [www.tropical-nomads.com](https://www.tropical-nomads.com). A change to that package can still be published. The API, the web app, iOS, and Android are not deployed. `bookings.tropical-nomads.com` is untouched.
+The one-pager still deploys on its own, on its existing Amplify app, to [www.tropical-nomads.com](https://www.tropical-nomads.com). A change to that package can still be published. The new web app is not given an Amplify app yet. The API is not given an ECS service yet. Those are the later hosts, and this ticket does not create them. `bookings.tropical-nomads.com` is untouched.
 
 ## Why it exists
 
 `amplify.yml` assumes the site is the repo root. It installs pnpm 9, runs `pnpm install --frozen-lockfile`, runs `pnpm build`, and publishes `dist/`. A workspace root where `pnpm build` builds every package would either stop updating www or publish the wrong artifact. The cache headers exist because Amplify's default would keep HTML, the service worker, and JSON for a year. Hashed files under `/assets/**` stay immutable. `vite.config.ts` uses `AWS_COMMIT_ID` as the cache-busting query on JSON.
 
-Creating other git repositories must not retarget this Amplify app.
+Creating other git repositories must not retarget this Amplify app. The owner has named the later hosts: Amplify for the web app, and a Docker container on ECS for the API. This ticket writes that down and does not build either host.
 
 ## Depends on
 
@@ -30,7 +30,7 @@ Creating other git repositories must not retarget this Amplify app.
 
 ### Must not go live
 
-8. Do not create a production host, domain, Amplify app, TestFlight, App Store, or Play listing for the web, iOS, or Android repos.
+8. Do not create a second Amplify app, a production domain, an ECS cluster, or a Docker service for the new web app or the API. Record the targets in the pipeline notes: web app on Amplify, API container on ECS.
 9. Do not create a public production URL for the API.
 10. Do not point www at the web app repo, and do not publish a Next.js output as the www artifact.
 11. Do not deploy Bookings, and do not change its host.
@@ -48,7 +48,7 @@ Creating other git repositories must not retarget this Amplify app.
 ## Acceptance criteria
 
 - www updates from the one-pager package alone.
-- The new app repositories and the API have no production deploy at the end of this ticket.
+- The new web app has no Amplify app and the API has no ECS service at the end of this ticket. The notes name those as the later hosts.
 - Cache headers and the event JSON path behave as they do now.
 
 ## Tests

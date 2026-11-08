@@ -14,7 +14,7 @@ Add a document here when the topic is what the product is, or what the owner has
 
 High-level structure lives in [`docs/architecture/`](architecture/monorepo-and-data.md).
 
-- [architecture/monorepo-and-data.md](architecture/monorepo-and-data.md) — this repo keeps the one-pager, the API, Bookings, and JSON. Web, iOS, and Android are separate repos, plus a shared repo for theme, components, types, schemas, and constants. The one-pager keeps its own deploy.
+- [architecture/monorepo-and-data.md](architecture/monorepo-and-data.md) — this repo keeps the one-pager, the API, Bookings, and JSON. The web app and a shared repo are separate. iOS and Android repos are optional and last. The one-pager keeps its Amplify deploy. The later hosts are Amplify for the web app and ECS for the API, and they are not live yet.
 
 Add a note here when it is about packages, deploys, or data. Vendor names and application code stay out of this folder until the owner has actually chosen them. A choice, once made, is a dated decision, and the matching open question in the master plan is updated with it.
 
@@ -40,4 +40,4 @@ A skill file belongs here only when the procedure is real. Placeholder skills do
 
 8 November 2026. Planning only.
 
-Decided on 8 November 2026: Amazon Cognito login with Google and Apple, admin-invited door staff who scan QR codes, and separate repositories for the web app, iOS, Android, and a shared theme and types repo. Still open: the payment company (interfaces come first), which other AWS services, the database, languages, and how shared UI components are built across those three app repos. The build plan holds the recommended order.
+Decided: Amazon Cognito login with Google and Apple, admin-invited door staff who scan QR codes, a required web app plus a shared repo, Amplify as the later web host, and a Docker container on ECS as the later API host. Phones use the web app in the browser. Amazon RDS for PostgreSQL is the database recommendation to confirm. JSON stays until then. iOS and Android repos are optional and last, with no native implementation. Still open: the payment company (interfaces come first), API style, and languages. The new app does not go live yet. The build plan holds the recommended order.

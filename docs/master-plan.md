@@ -196,21 +196,22 @@ The [architecture notes](architecture/monorepo-and-data.md) hold the detail. Wha
 - The repository becomes a **monorepo** when that conversion is requested. This plan does not convert it.
 - The **current one-pager stays as one package** inside that monorepo.
 - The **API package** is added later, in this same repository.
-- The **customer apps are separate repositories**: one for the web app, one for iOS, one for Android, plus a shared repository for theme colors, base components, types, schemas, and constants. They call the API. They do not each keep a copy of the event data.
+- The **web app is its own repository**, plus a shared repository for theme colors, base components, types, schemas, and constants. Phones use that web app in the browser. iOS and Android repositories are optional and last, and they only create the repos. They call the API. They do not keep a copy of the event data.
 - **Bookings** is a package in the same monorepo, with its **own deploy**, still at `bookings.tropical-nomads.com`.
 - **Shared data** is artists, parties/events, and the calendar. The website/app and Bookings both read and write it.
-- The data store is **JSON files until a database is chosen**. No database is selected here.
+- The data store is **JSON files until the database recommendation is confirmed**. The recommendation is Amazon RDS for PostgreSQL. It is not a migration, and no database is created by this plan.
 - One repository can carry this. Bookings can have its own deploy without its own repository. A split into unrelated repositories is not the plan. The architecture note says why the monorepo holds.
 
 ### How the pieces relate
 
 | Piece | Role | Deploy |
 | --- | --- | --- |
-| One-pager package | The current site, kept as its own package | The current public site, until a later build changes that |
-| Web, iOS, and Android repos | One product, three repositories, plus a shared repo for theme, components, types, schemas, and constants | Not deployed by the build plan's early tickets. |
-| API package | Reads and writes JSON for both products | Host details are undecided. |
+| One-pager package | The current site, kept as its own package | Its existing Amplify app, at www. It keeps deploying. |
+| Web app repo, plus a shared repo | The product people use, including on a phone browser. Shared repo holds theme, components, types, schemas, and constants. | Later host is a separate Amplify app. It does not go live in the current tickets. |
+| iOS and Android repos | Optional. Create the repositories only. | Last in the build plan. No native implementation. |
+| API package | Reads and writes JSON for both products | Later host is a Docker container on ECS. It does not go live in the current tickets. |
 | Bookings package | Bookings, including the admin party calendar | `bookings.tropical-nomads.com` |
-| JSON data | Shared records, and a separate set of operational records, until a database exists | The files are the store. They are not a third website. |
+| JSON data | Shared records, and a separate set of operational records | The files are the store until RDS for PostgreSQL is confirmed. They are not a third website. |
 
 Operational records — tickets, payment traces, check-ins, and live stock — are JSON too, until a database exists. They are a different set of files from the public event JSON the site already ships. Publishing ticket secrets under `public/data/` would make them world-readable, which section 6 rules out.
 
@@ -277,11 +278,11 @@ Status is per row. Decisions the owner added on 8 November 2026 are marked as de
 
 | Topic | Status | What stays attached to the question |
 | --- | --- | --- |
-| Tech stack | Partly decided | Login and registration use Amazon Cognito, with Google and Apple sign-in. Next.js remains the lean for the web app, not a lock. The one-pager stays the Vite app. API style and the database stay open. |
-| Cloud vendor | Partly decided | AWS is the platform lean, and Cognito is the identity service. Other AWS services, including the database, stay open. `amplify.yml` still describes only the current static site. |
+| Tech stack | Partly decided | Login and registration use Amazon Cognito, with Google and Apple sign-in. Next.js remains the lean for the web app, not a lock. The one-pager stays the Vite app. The web frontend deploys on Amplify. The API deploys as a Docker container on ECS. API style stays open. Amazon RDS for PostgreSQL is the database recommendation to confirm. JSON stays until then. |
+| Cloud vendor | Partly decided | AWS is the platform. Cognito is identity. Amplify hosts the one-pager now and is the later host for the web app. ECS is the later host for the API container. RDS for PostgreSQL is recommended and not created. Region, instance size, and other services stay open. `amplify.yml` still describes only the current static site. |
 | Payments provider | Undecided | The provider is integrated later. The payment interfaces, and a place on the user for payment methods, are settled first. The company stays unnamed. |
 | Ticket format | Partly decided | Door staff scan a QR code. A wallet pass or another extra format for the buyer is still open. |
-| Where the apps live | Decided | Separate repositories for the web app, iOS, and Android, plus a shared repository for theme colors, base components, types, schemas, and constants. This repo still holds the one-pager, the API, Bookings, and the JSON data. |
+| Where the apps live | Decided | The web app and a shared repository are required. iOS and Android repositories are optional, last, and are not a native implementation. Phones use the web app in the browser. This repo still holds the one-pager, the API, Bookings, and the JSON data. |
 | Who performs check-in | Decided | An admin invites people to scan QR codes and help at the door. Buyers do not check themselves in. |
 | Languages and markets | Undecided | The one-pager currently has English and Portuguese. That does not decide the product's languages, countries, or currencies. |
 | Implementation order | Proposed for review | The recommended order is in [docs/build-plan/](build-plan/README.md). Each ticket ends with acceptance criteria and unit tests where the behavior is pure. |
@@ -290,16 +291,16 @@ Status is per row. Decisions the owner added on 8 November 2026 are marked as de
 
 - Buyers do register and sign in. How a ticket is delivered besides being available in the app (for example email) is still open.
 - Ticket types, currencies, comps, guest lists, transfers, re-entry, refunds, and cancellation.
-- Whether merch uses the ticket payment capability, and whether fulfillment is pickup, shipping, or both. Today's page describes a WhatsApp reservation and pickup at The Sound House, Dublin.
+- Whether merch fulfillment is pickup, shipping, or both. Merch uses the same payment interfaces as tickets. Today's page describes a WhatsApp reservation and pickup at The Sound House, Dublin.
 - Which products exist beyond T-shirts.
 - What an artist agenda contains, and how much of it the public site shows.
 - Whether a party can stay on the admin calendar and off the public list.
 - Whether `timetable.tropical-nomads.com` remains a separate surface. This plan leaves it where it is.
 - Whether Goabase, or any external party list, remains an input. Today it is how event JSON is refreshed.
 - Whether Bookings admin, inventory admin, and the person who reviews orders are one role or several.
-- Where writable JSON lives — in git, or in a private location the API updates — and how two deploys avoid overwriting the same file. The store is JSON either way until a database is chosen. The database engine is undecided too.
+- Where writable JSON lives — in git, or in a private location the API updates — and how two deploys avoid overwriting the same file. The store is JSON until the owner confirms Amazon RDS for PostgreSQL.
 - Whether check-in has to work offline at the door.
-- How `www` is served once the one-pager package and the new web app package both exist. That question belongs to the later build in section 8.
+- The one-pager keeps its own Amplify deploy at www. The new web app's Amplify app is a later host and is not created yet.
 
 ## 8. What to decide first
 
@@ -312,8 +313,8 @@ This is a planning sequence. It is the order of decisions. It is not a build sch
 5. **Agree merch and inventory rules:** the catalog, pickup versus shipping, and whether a shirt is paid inside this product. Stock moves when a sale is real.
 6. **Split public JSON from private JSON,** including where writable files live. Do this before API work, so ticket secrets stay out of the public site bundle.
 7. **Choose languages and markets** for the product. English and Portuguese on the current page remain a fact about the one-pager while that choice is open.
-8. **Choose how shared UI components are built** for three separate app repositories. The repositories themselves are decided: web, iOS, Android, and a shared repo. Theme tokens, types, schemas, and constants share cleanly. A single component file does not compile unchanged as a Swift screen, a Kotlin screen, and a web screen, so the component technology is still open.
-9. **Choose the remaining stack details and the payment provider** once the flows and the data boundary are clear enough to compare options. Cognito with Google and Apple is decided. API style, the database, and the payment company stay open. Payment interfaces are built before any provider is connected.
+8. **Build shared UI components for the web app.** Theme tokens, types, schemas, and constants live in the shared repo. Native screens are not in the required path, so a Swift or Kotlin component toolkit is not a blocker.
+9. **Confirm the database recommendation and choose the payment provider** once the flows and the data boundary are clear. Cognito with Google and Apple is decided. Amplify and ECS are the later hosts and are not launched yet. Amazon RDS for PostgreSQL is recommended and not created. API style and the payment company stay open. Payment interfaces are built before any provider is connected. JSON stays the store until the database is confirmed.
 10. **Set the remaining implementation order** after those decisions. One constraint is already fixed. It sits below, separate from this list, so it is not mistaken for a full build plan.
 
 ### Later build constraint

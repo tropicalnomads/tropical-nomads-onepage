@@ -33,7 +33,8 @@ One pull request for that ticket, reviewed in this order: product manager, techn
 ## References
 
 - Build tickets live in `docs/build-plan/` on the planning pull request.
-- Web, iOS, and Android are separate repositories. A shared repository holds theme, base components, types, schemas, constants, and other shared code.
+- Web, iOS, and Android are separate repositories. A shared repository holds theme, base components, types, schemas, constants, and other shared code. iOS and Android are optional and last: create the repos only, and do not implement the native apps. Phones use the web app in the browser.
+- The web frontend deploys on Amplify. The backend deploys as a Docker container on ECS. The database is an AWS database chosen for this app.
 - Accounts use Amazon Cognito, with Google and Apple sign-in.
 - An admin invites door staff, who check people in by scanning QR codes.
 - The payment provider comes later. Payment interfaces and user billing fields are planned first.

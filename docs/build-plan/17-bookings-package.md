@@ -21,7 +21,7 @@ The header already links to Bookings. Its code is not here. The owner asked for 
 
 1. Find where `bookings.tropical-nomads.com` is built. If that source cannot be found, stop and ask the owner. Do not write a new Bookings product.
 2. Bring that source into the Bookings package in this repo. Do not create a new remote for it.
-3. Deploy it only to `bookings.tropical-nomads.com`. Do not publish it to www. Do not deploy the web, iOS, or Android repos as part of this.
+3. Deploy it only to `bookings.tropical-nomads.com`. Do not publish it to www. Do not deploy the web app to Amplify or the API to ECS as part of this.
 4. Replace any private copy of artists, parties, or calendars with the shared catalog through the API.
 5. Keep tickets, payments, profiles, and stock out of Bookings unless the owner expands sharing.
 6. Bookings admin stays team-only.

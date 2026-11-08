@@ -1,6 +1,6 @@
 # Architecture notes
 
-**Status:** planning only. High level. No vendors, no new packages, no application code.
+**Status:** planning only. High level. No new packages, no application code. Hosts and the database recommendation are recorded. Nothing is created.
 
 These notes describe the future shape of this repository. The [master plan](../master-plan.md) is the product description. This page is how the repository, the deploys, and the data fit together. The [documentation index](../README.md) explains where new notes go.
 
@@ -13,13 +13,13 @@ This repository (monorepo): tropical-nomads-onepage
 ├── One-pager package     the current site, kept as one package
 ├── API package           new API, added in a later build
 ├── Bookings package      separate deploy at bookings.tropical-nomads.com
-└── JSON data             shared and operational records, until a database is chosen
+└── JSON data             shared and operational records, until RDS for PostgreSQL is confirmed
 
-Separate repositories for the customer apps (owner, 8 November 2026)
+Separate repositories
 ├── Shared repo           theme colors, base components, types, schemas, constants
-├── Web app repo
-├── iOS app repo
-└── Android app repo
+├── Web app repo          required. Phones use this in the browser.
+├── iOS app repo          optional, last, repo only
+└── Android app repo      optional, last, repo only
 ```
 
 The client repositories are separate because the owner asked for that. They stay one product by calling this API and by depending on the shared repo. Bookings and the JSON stay in this repository so the two deploys do not fork the catalog. Splitting Bookings out would copy the shared records. Splitting the apps out does not.
@@ -42,15 +42,15 @@ The current site: pages, assets, and the JSON it already publishes. It remains o
 
 ### Customer app repositories
 
-Three app repositories (web, iOS, Android) and one shared repository. The shared repo holds theme colors, base components, types, schemas, and constants. None of these repositories exist yet. Tickets are in the [build plan](../build-plan/README.md).
+The web app repository and one shared repository are required. The shared repo holds theme colors, base components, types, schemas, and constants the web app can render. iOS and Android repositories are optional and last, and they do not get native screens in this plan. None of these repositories exist yet. Tickets are in the [build plan](../build-plan/README.md).
 
-Theme tokens, types, schemas, and constants can be shared as data. A base component still needs a technology the three repos can consume. That technology is not chosen. Sign-in for the apps is Amazon Cognito, with Google and Apple.
+Sign-in for the web app is Amazon Cognito, with Google and Apple. A phone uses that sign-in in the browser.
 
 When the owner asks to start building, the first product step is an API in this repo and a web app repository that can call it. That step is out of scope for the planning documents.
 
 ### API package
 
-A new package that reads and writes JSON for the web app and for Bookings. It is how two deploys share one set of records. It does not exist yet. Host, protocol, and framework are undecided.
+A new package that reads and writes JSON for the web app and for Bookings. It is how two deploys share one set of records. It does not exist yet. Its later host is a Docker container on ECS. Protocol and framework are still open. The container is not created by this plan.
 
 ### Bookings package
 
@@ -64,26 +64,27 @@ A separate deploy is a separate published site from the same repository.
 
 | Publish target | What it runs | Where this stands |
 | --- | --- | --- |
-| `www.tropical-nomads.com` | The one-pager package | Stays this site's own deploy. The web app is a separate repository and is not published here by the early tickets. |
-| `bookings.tropical-nomads.com` | The Bookings package | Decided as its own deploy. The package is not in the repo yet. |
-| API host | The API package | Undecided. It may be its own hostname or attached to one of the sites. This note does not pick. |
+| `www.tropical-nomads.com` | The one-pager package | Its existing Amplify app. It keeps deploying. The new web app is not published here. |
+| Web app | The web app repository | Later host is a separate Amplify app. It does not go live yet. |
+| API | The API package | Later host is a Docker container on ECS. It does not go live yet. |
+| `bookings.tropical-nomads.com` | The Bookings package | Its own deploy. The package is not in the repo yet. |
 
 `timetable.tropical-nomads.com` is a site the one-pager already links to for some events. It stays outside this diagram until the owner decides otherwise.
 
-This repository contains `amplify.yml`, which builds the static one-pager. That file describes the current site. It is not a cloud choice for the API or for Bookings.
+This repository contains `amplify.yml`, which builds the static one-pager. That file stays the one-pager's deploy. The web app's Amplify app, when it exists, is a different app. The API does not deploy through `amplify.yml`.
 
 ## Why one repository holds this
 
 - Artists, parties, and the calendar need one contract. This repository is where that contract lives, next to every package that reads and writes it.
 - Bookings can publish to its own domain from a package in the same repo. The deploy is per package. The git history is shared.
-- The owner asked to keep the one-pager, the API, and Bookings in `tropical-nomads-onepage`. On 8 November 2026 the owner also asked for separate repositories for the web app, iOS, Android, and a shared client library. Those client repos consume this API. They are not a second copy of Bookings or of the JSON.
-- A second repository for Bookings, the web app, or the API would copy the shared records, or it would invent a third repository whose only job is those records. The current constraints give no reason to do that.
+- The owner asked to keep the one-pager, the API, and Bookings in `tropical-nomads-onepage`. The web app and the shared library are separate repositories and consume this API. iOS and Android repos are optional. They are not a second copy of Bookings or of the JSON.
+- A second repository for Bookings or the API would copy the shared records. The web app is separate because it is a client, not because it owns the catalog.
 
 A later split would need a written reason: a limit that a package plus its own deploy cannot meet. No such limit is known. This plan keeps the monorepo.
 
 ## How JSON files sit until a database is chosen
 
-The store is JSON files. No database engine is selected. When a database is chosen, the same entities move and the product boundaries stay.
+The store is JSON files. Amazon RDS for PostgreSQL is the recommendation to confirm. This note does not create it and does not move the files. When it is confirmed, the same entities move and the product boundaries stay.
 
 There are two kinds of JSON, because one kind is already public.
 
@@ -123,8 +124,8 @@ The website/app and Bookings both read and write the shared entities — artists
 
 - Directory names and whether each entity is one file or many.
 - Whether published reference JSON stays in git, which is how the one-pager works today.
-- Where operational JSON lives. A file that changes on every sale, and that contains a ticket secret, is a poor fit for the public site bundle and a poor fit for a public git history. The store is still JSON. The private location, and how two writes at once (two doors, or a door and an admin) avoid losing an update, depend on the stack and the cloud. Both are undecided, and both have to be settled before implementation.
-- The database that later replaces both kinds of JSON: engine, host, and migration.
+- Where operational JSON lives. A file that changes on every sale, and that contains a ticket secret, is a poor fit for the public site bundle and a poor fit for a public git history. The store is still JSON. The private location, and how two writes at once (two doors, or a door and an admin) avoid losing an update, still have to be settled before implementation.
+- Confirming Amazon RDS for PostgreSQL, then migrating. The recommendation is recorded. The files stay until the owner confirms.
 
 ### Shared write, public read
 
@@ -132,11 +133,11 @@ Bookings and the web app both write shared entities. The public site reads a pub
 
 ## What a later database changes
 
-The entities stay: artists, parties/events, calendar, agendas, tickets, orders, payment traces, check-ins, products, and stock. The API remains the door the web app and Bookings use. The JSON files stop being the store. Choosing the database is a later decision.
+The entities stay: artists, parties/events, calendar, agendas, tickets, orders, payment traces, check-ins, products, and stock. The API remains the door the web app and Bookings use. The JSON files stop being the store only after the owner confirms Amazon RDS for PostgreSQL. This plan does not migrate them.
 
 ## What these notes leave alone
 
 - Packages, workspace config, and dependencies.
-- Cloud, framework, database, and payment provider.
+- Creating AWS resources, choosing a web framework beyond the Next.js lean, and choosing a payment provider. Amplify, ECS, and the RDS recommendation are already written above.
 - API routes, field-level schemas, and ticket encoding.
 - The one-pager's runtime behavior.

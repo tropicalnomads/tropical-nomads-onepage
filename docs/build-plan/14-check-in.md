@@ -12,7 +12,7 @@ The owner wants to invite helpers for the door, not to let every buyer scan thei
 
 ## Depends on
 
-- [05 — App repositories](05-app-repos.md).
+- [05 — Web app repository](05-app-repos.md).
 - [10 — Accounts and profile](10-accounts-and-profile.md).
 - [13 — Tickets](13-tickets.md).
 
@@ -20,7 +20,7 @@ The owner wants to invite helpers for the door, not to let every buyer scan thei
 
 1. Admin invites by email, attaching one or more event ids from the shared catalog. The invite grants the door-staff role for those events only. A helper for one party cannot scan another party's tickets.
 2. The invited person registers or signs in through Cognito if they do not already have an account. The invite attaches to that profile. Revoking the invite removes the role immediately.
-3. The check-in area on web, iOS, and Android scans a QR code and sends the payload to the API. The API checks that the ticket was issued, the secret matches, the event is one this person may scan, and the payment trace is confirmed.
+3. The check-in area in the web app scans a QR code, including from a phone browser, and sends the payload to the API. The API checks that the ticket was issued, the secret matches, the event is one this person may scan, and the payment trace is confirmed. Do not build a native scanner.
 4. With the stub provider, confirmed traces do not exist yet, so a scan of a real QR returns unpaid and does not admit. That is success for this ticket, not a broken scanner.
 5. Write a private check-in record: ticket, event, time, actor, and result.
 6. Show the result to the door staff. Unknown, unpaid, wrong event, or wrong secret does not admit.

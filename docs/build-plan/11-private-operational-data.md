@@ -8,7 +8,7 @@ Orders, payment traces, issued tickets, check-in records, door invites, and live
 
 ## Why it exists
 
-`public/data/events.json` is fetched by the browser and baked into SEO. Ticket secrets and invites cannot follow that path. Merch counts are still `MERCH_STOCK` in `src/lib/merch.ts`. The database is not chosen.
+`public/data/events.json` is fetched by the browser and baked into SEO. Ticket secrets and invites cannot follow that path. Merch counts are still `MERCH_STOCK` in `src/lib/merch.ts`. Ticket 01 recommends Amazon RDS for PostgreSQL. That recommendation is not adopted here. JSON remains the store.
 
 ## Depends on
 
@@ -18,7 +18,7 @@ Orders, payment traces, issued tickets, check-in records, door invites, and live
 ## To-do
 
 1. Propose a private JSON location. The API can write it. The one-pager bundle cannot. Public git is a poor fit for secrets and for a file that changes on every sale. The owner accepts the place before any secret is written.
-2. Do not name an AWS storage product unless ticket 01 already did. Do not add a database.
+2. Do not create the RDS instance from ticket 01. Do not migrate these collections into it. The private store is still JSON.
 3. Create empty collections for orders, payment traces, issued tickets, check-ins, door invites, and stock counts. No sample secrets and no real customer data.
 4. Two writers must not drop each other's updates. Record that the locking mechanism waits on the stack. Do not invent a database lock.
 5. Keep `public/data/*.json` as the published catalog.
