@@ -1,6 +1,6 @@
 # 17 — Bookings in this monorepo
 
-**Status:** not started. Moves the existing Bookings product into this repo. Does not invent a replacement, and does not put Bookings in its own new repository.
+**Status:** not started. Second iteration, after the first product is in place. Moves the existing Bookings product into this repo. Does not invent a replacement, and does not put Bookings in its own new repository.
 
 ## Outcome
 
@@ -8,7 +8,7 @@ Bookings lives in this repository, deploys only to [bookings.tropical-nomads.com
 
 ## Why it exists
 
-The header already links to Bookings. Its code is not here. The owner asked for separate repos for the customer apps, not for a separate Bookings codebase. Shared data is why Bookings stays beside the API.
+The header already links to Bookings. Its code is not here. The owner asked for separate repos for the customer apps, not for a separate Bookings codebase. Shared data is why Bookings stays beside the API. The public product reads parties that are already published, so this package waits until that product is in place.
 
 ## Depends on
 

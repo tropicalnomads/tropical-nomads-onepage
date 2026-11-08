@@ -8,9 +8,9 @@ The product has one way to send email, templates in English and Portuguese, and 
 
 ## Why it exists
 
-Registration, a purchase, the QR code, and a new party each need a message. Ticket 14 already invites door staff by email. Ticket 22 already emails an offer of Tropical Nomads artists. Those two must use this sender. A second sender would split consent and the stop switch.
+Registration, a purchase, the QR code, and a door invite each need a message in the first product. A new party and an artist offer need the same sender later. Ticket 18 sends the new-party message when an admin publishes. Ticket 22 sends the artist offer. A second sender would split consent and the stop switch.
 
-The ticket sits after accounts, ticket and merch purchases, the door invite, and party creation. Those are the events the messages describe. It sits before the Goabase offer so that offer does not bring its own mailer.
+This ticket sits in the first iteration, after accounts, ticket and merch purchases, and the door invite. The templates for the second iteration are created here. A fixture party id is enough to test them. The first product does not wait for Bookings.
 
 ## Depends on
 
@@ -19,7 +19,6 @@ The ticket sits after accounts, ticket and merch purchases, the door invite, and
 - [13 — Tickets](13-tickets.md). The purchase and the QR code.
 - [14 — Check-in invites and QR scan](14-check-in.md). The door invite.
 - [15 — Merch store](15-merch-store.md). The merch purchase.
-- [18 — Admin party calendar](18-admin-party-calendar.md). A new party is what marketing announces.
 - [20 — English and Portuguese](20-internationalization.md). Each template has both languages.
 
 ## Messages
@@ -50,7 +49,8 @@ Refund mail is not on this list. Ticket 21 still has refunds as an open decision
 6. Only the admin role may send the new-party message or the artist offer. Door and user are denied.
 7. Keep recipient addresses and consent out of `public/data`.
 8. Do not put vendor credentials in the repo.
-9. Tests use a fixture recipient. Do not send to a real address.
+9. Tests use a fixture recipient and, for the new-party template, a fixture party id. Do not send to a real address. Do not require the Bookings calendar to exist.
+10. Ticket 18 calls the new-party template. Ticket 22 calls the artist-offer template. Do not send those two from this ticket's own screen.
 
 ## Acceptance criteria
 

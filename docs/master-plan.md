@@ -279,7 +279,7 @@ Status is per row. Decisions the owner added on 8 November 2026 are marked as de
 | Languages | Decided | The product is English and Portuguese, with internationalization. The one-pager already has both in `src/i18n/`. Countries are not decided by that. Currencies are on the payment-decisions list. |
 | Email | Decided | One sender and a fixed message list. A ticket purchase email carries the QR code. Marketing for a new party, and the artist offer, need consent, a stated purpose, and a way to stop. Stopping marketing does not stop purchase or QR mail. No email vendor is chosen. |
 | Data model | Decided as a picture | Records and fields are in the architecture models page. The lookups each feature needs are on the architecture indexes page. Ticket 28 writes both before the feature tickets. Open questions stay unfilled. |
-| Implementation order | Proposed for review | The recommended order is in [docs/build-plan/](build-plan/README.md). Each ticket ends with acceptance criteria and unit tests where the behavior is pure. |
+| Implementation order | Proposed for review | The first iteration is the technical base, then the public product, then the not-live host tickets. Bookings, the admin calendar, and the Goabase integrations tab are the second iteration. The order is in [docs/build-plan/](build-plan/README.md). |
 
 ### Also undecided, and needed before implementation
 
@@ -290,7 +290,7 @@ Status is per row. Decisions the owner added on 8 November 2026 are marked as de
 - What an artist agenda contains, and how much of it the public site shows.
 - Whether a party can stay on the admin calendar and off the public list.
 - Whether `timetable.tropical-nomads.com` remains a separate surface. This plan leaves it where it is.
-- Goabase's new job is decided: an integrations tab, last in the product tickets, holding parties that exist so Bookings can email offers of Tropical Nomads artists. The one-pager refresh script stays until that ticket. It does not block the catalog or the calendar.
+- Goabase's new job is decided: an integrations tab in the second iteration, with Bookings, holding parties that exist so Bookings can email offers of Tropical Nomads artists. The one-pager refresh script stays until that ticket. It does not block the catalog or the first product.
 - A team view of every customer's orders. Users see their own history. That does not add a fourth role.
 - Where writable JSON lives — in git, or in a private location the API updates — and how two deploys avoid overwriting the same file. The store is JSON until the owner confirms Amazon RDS for PostgreSQL.
 - Whether check-in has to work offline at the door.

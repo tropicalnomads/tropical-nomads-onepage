@@ -2,7 +2,7 @@
 
 Recommended order for the owner to review before any build. Each file is one ticket. Do them one at a time, in this order, unless the owner reorders them. This folder does not implement the tickets.
 
-Settle the repository split first, keep [www.tropical-nomads.com](https://www.tropical-nomads.com) shipping on its own, then share the theme package, then write every type and schema, then stand up the web app in English and Portuguese, then the API, then accounts, then the purchase path. Phones use that web app in the browser. Payment interfaces are built now. The provider is not chosen. The three host tickets at the end of the required path are not live yet. Goabase and the native repos come after them.
+Two iterations. The first one starts with the technical base, then adds the public product. Bookings is the second iteration, after that first product is in place. Keep [www.tropical-nomads.com](https://www.tropical-nomads.com) shipping on its own throughout. Phones use the web app in the browser. Payment interfaces are built in the first iteration. The provider is not chosen. The three host tickets close the first iteration and are not live yet. iOS and Android stay optional, after Bookings.
 
 The step column is the order. The file numbers are stable ids, so a ticket can sit earlier or later than its number.
 
@@ -16,43 +16,55 @@ Owner decisions already in this order:
 - Before a future go-live, and still not live: the new frontend on its own Amplify app, the API as a Docker container on ECS, and a confirmation of Amazon RDS for PostgreSQL. JSON stays the store until that confirmation. The one-pager keeps its existing Amplify deploy.
 - This repository still holds the one-pager, the API, Bookings, and the JSON. Bookings is not split into its own repo.
 - Email is one sender, with templates and a fixed message list. Marketing needs consent and can be stopped. No email vendor is chosen.
-- Goabase is an integrations tab at the end: a list of parties that exist, so Bookings can email offers of Tropical Nomads artists. That offer uses the email ticket. The one-pager refresh stays.
+- The first iteration is the technical base, then the public product: upcoming events, accounts, payments, tickets, check-in, merch, history, inventory, and email. It reads parties that are already in the published JSON.
+- Bookings is the second iteration: the Bookings package, the admin party calendar, and the Goabase integrations tab. The first product does not wait for them.
+- Goabase in that second iteration is a list of parties that exist, so Bookings can email offers of Tropical Nomads artists. That offer uses the email ticket. The one-pager refresh stays.
 - iOS and Android repositories are optional and last. Ticket 19 creates them only. It does not implement native apps.
 
 Still open: the payment company, the currencies and prices on the payment-decisions list, and API style. Next.js stays the lean for the web app, not a lock. Languages are not open.
 
+## Why this order
+
+The technical base comes first because every later ticket sits on it: the repo split, the shared package, the schemas and lookups, the web shell, both languages, the API read path, the three roles, and the private store. Product screens before that base would invent their own shapes.
+
+The public product comes next, still in the first iteration. People can see the parties already in the published JSON, register, pay through the interfaces, hold a ticket, get checked in, buy a shirt, see their own history, and receive the email for those actions. Creating parties in a Bookings calendar is not required for that. The one-pager already has the events.
+
+Bookings is the second iteration: bring the existing Bookings product into this repo, then the admin calendar that creates parties and agendas, then the integrations tab that offers artists to outside parties. The first iteration does not wait on any of those.
+
+The Amplify, ECS, and RDS tickets stay at the end of the first iteration. They are the deploy path for that product, and they are not live. Bookings does not have to wait for them to be switched on, and the first product does not wait for Bookings.
+
 ## Order
 
-| Step | Ticket | Depends on | What it covers |
-| --- | --- | --- | --- |
-| 1 | [Identify the stack](01-identify-stack.md) | None | Cognito, Amplify, ECS, and the RDS recommendation. Leaves API style and the payment company open. |
-| 2 | [Repository shape](02-repository-shape.md) | 01 | This monorepo keeps the one-pager, API, Bookings, and JSON. Shared and web repos are required. iOS and Android are named only. |
-| 3 | [Deployment change](03-deployment-change.md) | 02 | www keeps its Amplify deploy. The new web app and the API do not go live. |
-| 4 | [Shared client repo](04-shared-client-repo.md) | 02 | Theme, components, and the package that will hold the schemas. |
-| 5 | [Types and schemas](28-types-and-schemas.md) | 04 | Every field and the lookups each feature needs, before the feature tickets. |
-| 6 | [Web app repository](05-app-repos.md) | 03, 04, 28 | Required web shell, usable in a phone browser. |
-| 7 | [English and Portuguese](20-internationalization.md) | 04, 05 | Internationalization. The only languages are `en` and `pt`. |
-| 8 | [API reads published data](06-api-reads-published-data.md) | 02, 03, 28 | API over the JSON this repo already publishes. |
-| 9 | [Shared catalog](07-shared-catalog.md) | 06, 28 | Artists, parties/events, and calendar. |
-| 10 | [Upcoming events](08-upcoming-events.md) | 05, 06, 07, 20 | Capability: upcoming events. Public, no login required. |
-| 11 | [Security baseline](09-security-baseline.md) | 01, 07 | Three roles: admin, door, and user. |
-| 12 | [Accounts and profile](10-accounts-and-profile.md) | 04, 05, 09, 20, 28 | Cognito, Google, Apple, and the user record, in the web app. |
-| 13 | [Private operational data](11-private-operational-data.md) | 06, 09, 28 | JSON for orders, tickets, check-ins, and stock, outside `public/data/`. |
-| 14 | [Payment interfaces](12-payment-interfaces.md) | 09, 10, 11, 28 | Interfaces and user payment methods. This is the payment work that happens now. |
-| 15 | [Payment decisions still open](21-payment-decisions.md) | 12 | Lists the later payment choices. Does not pick a provider. Nothing else waits on it. |
-| 16 | [Tickets](13-tickets.md) | 08, 12, 20, 28 | Buy a ticket. The door copy is a QR code. |
-| 17 | [Check-in](14-check-in.md) | 05, 10, 13, 20 | Door staff scan QR codes. They cannot configure events, tickets, or merch. |
-| 18 | [Merch store](15-merch-store.md) | 05, 10, 12, 20, 28 | Buyer catalog, starting from the two shirts on the page. |
-| 19 | [Purchase and ticket history](26-purchase-history.md) | 09, 10, 13, 15, 20 | A user sees only their own purchases and tickets. |
-| 20 | [Inventory](16-inventory.md) | 09, 15 | Admin adds merch and sets price, sizes, and stock. |
-| 21 | [Bookings package](17-bookings-package.md) | 02, 03, 07, 09, 20 | Bookings in this monorepo, own deploy, shared data. |
-| 22 | [Admin party calendar](18-admin-party-calendar.md) | 07, 09, 13, 17 | Admin creates parties, sets description, image, and artists, and configures that event's tickets. |
-| 23 | [Email](27-email.md) | 09, 10, 13, 14, 15, 18, 20, 28 | Sending, templates, and every product message. No vendor. |
-| 24 | [Web app on Amplify](23-amplify-frontend.md) | 03, 05 | Not live yet. A separate Amplify app. www stays the one-pager. |
-| 25 | [API container on ECS](24-ecs-backend.md) | 06, 23 | Not live yet. Docker on ECS. No public production API. |
-| 26 | [Confirm RDS for PostgreSQL](25-rds-recommendation.md) | 01, 11, 24 | Not live yet. Recommendation to confirm. Not a migration. |
-| 27 | [Goabase integrations tab](22-goabase-integrations.md) | 07, 17, 27, 28 | Last product ticket. Artist offers go through the email ticket. |
-| 28 | [iOS and Android repositories](19-ios-android-repos.md) | 04 | Optional. Last. Creates the two repos only. No native screens. |
+| Step | Iteration | Ticket | Depends on | What it covers |
+| --- | --- | --- | --- | --- |
+| 1 | 1, base | [Identify the stack](01-identify-stack.md) | None | Cognito, Amplify, ECS, and the RDS recommendation. Leaves API style and the payment company open. |
+| 2 | 1, base | [Repository shape](02-repository-shape.md) | 01 | This monorepo keeps the one-pager, API, Bookings, and JSON. Shared and web repos are required. iOS and Android are named only. |
+| 3 | 1, base | [Deployment change](03-deployment-change.md) | 02 | www keeps its Amplify deploy. The new web app and the API do not go live. |
+| 4 | 1, base | [Shared client repo](04-shared-client-repo.md) | 02 | Theme, components, and the package that will hold the schemas. |
+| 5 | 1, base | [Types and schemas](28-types-and-schemas.md) | 04 | Every field and the lookups, including Bookings records, before the feature tickets. |
+| 6 | 1, base | [Web app repository](05-app-repos.md) | 03, 04, 28 | Required web shell, usable in a phone browser. |
+| 7 | 1, base | [English and Portuguese](20-internationalization.md) | 04, 05 | Internationalization. The only languages are `en` and `pt`. |
+| 8 | 1, base | [API reads published data](06-api-reads-published-data.md) | 02, 03, 28 | API over the JSON this repo already publishes. |
+| 9 | 1, base | [Shared catalog](07-shared-catalog.md) | 06, 28 | Published artists and parties. Agendas wait for the second iteration. |
+| 10 | 1, base | [Security baseline](09-security-baseline.md) | 01, 07 | Three roles: admin, door, and user. |
+| 11 | 1, base | [Private operational data](11-private-operational-data.md) | 06, 09, 28 | JSON for orders, tickets, check-ins, and stock, outside `public/data/`. |
+| 12 | 1, product | [Upcoming events](08-upcoming-events.md) | 05, 06, 07, 20 | Capability: upcoming events. Public, no login required. |
+| 13 | 1, product | [Accounts and profile](10-accounts-and-profile.md) | 04, 05, 09, 20, 28 | Cognito, Google, Apple, and the user record, in the web app. |
+| 14 | 1, product | [Payment interfaces](12-payment-interfaces.md) | 09, 10, 11, 28 | Interfaces and user payment methods. This is the payment work that happens now. |
+| 15 | 1, product | [Payment decisions still open](21-payment-decisions.md) | 12 | Lists the later payment choices. Does not pick a provider. Nothing else waits on it. |
+| 16 | 1, product | [Tickets](13-tickets.md) | 08, 12, 20, 28 | Buy a ticket for a published party. The door copy is a QR code. |
+| 17 | 1, product | [Check-in](14-check-in.md) | 05, 10, 13, 20 | Door staff scan QR codes. They cannot configure events, tickets, or merch. |
+| 18 | 1, product | [Merch store](15-merch-store.md) | 05, 10, 12, 20, 28 | Buyer catalog, starting from the two shirts on the page. |
+| 19 | 1, product | [Purchase and ticket history](26-purchase-history.md) | 09, 10, 13, 15, 20 | A user sees only their own purchases and tickets. |
+| 20 | 1, product | [Inventory](16-inventory.md) | 09, 15 | Admin adds merch and sets price, sizes, and stock. |
+| 21 | 1, product | [Email](27-email.md) | 09, 10, 13, 14, 15, 20, 28 | Sending, templates, and every product message. No vendor. |
+| 22 | 1, host | [Web app on Amplify](23-amplify-frontend.md) | 03, 05 | Not live yet. A separate Amplify app. www stays the one-pager. |
+| 23 | 1, host | [API container on ECS](24-ecs-backend.md) | 06, 23 | Not live yet. Docker on ECS. No public production API. |
+| 24 | 1, host | [Confirm RDS for PostgreSQL](25-rds-recommendation.md) | 01, 11, 24 | Not live yet. Recommendation to confirm. Not a migration. |
+| 25 | 2, Bookings | [Bookings package](17-bookings-package.md) | 02, 03, 07, 09, 20 | Second iteration. Bookings in this monorepo, own deploy, shared data. |
+| 26 | 2, Bookings | [Admin party calendar](18-admin-party-calendar.md) | 07, 09, 13, 17, 27 | Admin creates parties and configures that event's tickets. |
+| 27 | 2, Bookings | [Goabase integrations tab](22-goabase-integrations.md) | 07, 17, 27, 28 | Outside parties, so Bookings can email artist offers. |
+| 28 | Later | [iOS and Android repositories](19-ios-android-repos.md) | 04 | Optional. Last. Creates the two repos only. No native screens. |
 
 ## Capabilities
 
@@ -65,8 +77,8 @@ Still open: the payment company, the currencies and prices on the payment-decisi
 | Merch store | 15 |
 | Inventory | 16 |
 | Abuse-resistant security | 09, then enforced on every later ticket |
-| Bookings in this monorepo | 02 names the slot; 17 brings the product in |
-| Admin party calendar | 18 |
+| Bookings in this monorepo | 02 names the slot in the base. 17 brings the product in, in the second iteration. |
+| Admin party calendar | 18, second iteration |
 
 English and Portuguese are decided. Ticket 20 puts them in the web app. The one-pager already has them in `src/i18n/`.
 
@@ -82,21 +94,21 @@ Checked against the decisions so far. The access list is three roles on ticket 0
 | Payment interfaces now, provider later | 12 |
 | Merch and inventory | 15 and 16 |
 | Cognito with Google and Apple, profile and billing | 10 |
-| Bookings deploy, shared artists, parties, calendar | 02 and 17 |
-| Admin party calendar | 18 |
+| Bookings deploy, shared artists, parties, calendar | 02 names the slot. 17, 18, and 22 are the second iteration. |
+| Admin party calendar | 18, after the first product |
 | Security | 09, then the later tickets that enforce it |
 | English and Portuguese, with internationalization | 20. The one-pager already has `en` and `pt`. |
 | JSON until a database exists | 11. Ticket 25 asks the owner to confirm RDS for PostgreSQL and does not migrate. |
 | One-pager keeps deploying | 03. Tickets 23, 24, and 25 are the later hosts and are not live yet. |
-| Email | 27, after parties exist and before the Goabase offer. No vendor. |
-| Goabase integrations | 22, after email. The public refresh script stays. |
+| Email | 27, in the first product, after purchases and the door invite. No vendor. |
+| Goabase integrations | 22, in the second iteration with Bookings. The public refresh script stays. |
 | Types and schemas | 28, step 5, before the web app and the feature tickets. Lookups are on the architecture indexes page. |
 
 Order problem that this pass fixes: iOS and Android were step 5, in the same ticket as the required web shell, so the product could not move without native apps. They are now ticket 19, optional, and last. Nothing depends on them. Phones use the web app in the browser.
 
 Not duplicates: ticket 09 writes who may scan. Ticket 14 builds the invite and the scanner. Ticket 11 is the JSON store. Ticket 01 only recommends the later database. Ticket 04 creates the shared package. Ticket 28 writes the schemas.
 
-The three-role decision does not block the stack, the web shell, or the public event list. Those have no role tools. It is in force from ticket 09 onward. Types and schemas are step 5, before the feature tickets. History waits until tickets and merch exist, which is why it is step 19. Email is step 23, after registration, purchases, the door invite, and party creation. Goabase is step 27 and uses that sender. The catalog does not wait for either. The Amplify, ECS, and RDS tickets are steps 24–26, not live, and the build tickets before them do not wait.
+The three-role decision does not block the stack, the web shell, or the public event list. Those have no role tools. It is in force from ticket 09 onward. Types and schemas are step 5, before the feature tickets, and they include the Bookings records so the second iteration does not invent fields. History is step 19, after tickets and merch. Email is step 21, still in the first product. The Amplify, ECS, and RDS tickets are steps 22–24, not live. Bookings is steps 25–27. The catalog and the public product do not wait for it.
 
 Left open on purpose: the payment company and the rest of the list in ticket 21, API style, the timetable site, agenda contents, draft parties, pickup versus shipping, offline check-in, and a wallet pass. Tickets 23–25 do not create a public launch, and ticket 25 does not create a database.
 

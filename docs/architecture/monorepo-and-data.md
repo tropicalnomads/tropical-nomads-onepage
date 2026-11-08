@@ -56,7 +56,7 @@ A new package that reads and writes JSON for the web app and for Bookings. It is
 
 Bookings, including the admin party calendar used to assemble artist agendas. It deploys on its own to `bookings.tropical-nomads.com`. It lives in this monorepo so it can share artists, parties/events, and the calendar with the other packages.
 
-The Bookings code is a separate product today. It is not in this repository yet. Bringing that code in is part of the decided shape. Where that work sits after the first build step (web app with an API) is an open implementation-order question. See the master plan.
+The Bookings code is a separate product today. It is not in this repository yet. Bringing that code in is the second iteration, after the technical base and the public product. The build plan has the order.
 
 ## Deploys
 

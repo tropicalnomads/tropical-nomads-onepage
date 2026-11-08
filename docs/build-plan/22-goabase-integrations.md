@@ -1,6 +1,6 @@
 # 22 — Goabase integrations tab
 
-**Status:** not started. Last product ticket, beside the optional native-repo ticket and after the not-live host tickets. An integrations tab in Bookings. No native app work.
+**Status:** not started. Second iteration, after the Bookings package. An integrations tab in Bookings. The first product does not wait for it. No native app work.
 
 ## Outcome
 
@@ -8,7 +8,7 @@ Bookings has an integrations tab whose Goabase data is a list of parties that ex
 
 ## Why it exists
 
-`scripts/fetch-goabase-events.mjs` already pulls a curated Goabase id list into `public/data/events.json` for the public site. That script is the page's refresh. This ticket is a different job: a database of outside parties, so Bookings can offer Tropical Nomads artists to them. It sits at the end so the catalog, the calendar, and the public site do not wait on it.
+`scripts/fetch-goabase-events.mjs` already pulls a curated Goabase id list into `public/data/events.json` for the public site. That script is the page's refresh. This ticket is a different job: a database of outside parties, so Bookings can offer Tropical Nomads artists to them. It sits in the second iteration so the catalog and the public site do not wait on it.
 
 ## Depends on
 
