@@ -13,7 +13,7 @@ One pull request for that ticket, reviewed in this order: product manager, techn
 ## Order
 
 1. Product manager confirms the outcome, what is out of scope, and that the ticket order still makes sense.
-2. Technical lead chooses the approach and the limits. The current site keeps deploying. The new app does not go live until a ticket explicitly says so.
+2. Technical lead chooses the approach and the limits. The current site keeps deploying. The new app does not go live until a ticket explicitly says so. Every ticket treats security as a requirement: assume the site will be attacked, and do not ship a path that can be hacked.
 3. Developer implements only that ticket, then writes the notes in `workflows/implementation-notes.md`: a short skill for the ticket, and one skill per new tool or feature.
 4. QA tests the ticket’s acceptance criteria, including unit tests when they can cover the change, and sends failures back to the developer before the owner is asked to review.
 
@@ -29,6 +29,7 @@ One pull request for that ticket, reviewed in this order: product manager, techn
 - The ticket ends with acceptance criteria.
 - QA ran those criteria, including unit tests when they can cover the change.
 - The live one-pager behavior is unchanged unless the ticket is about the current site.
+- The change has no path that can be hacked. Security is part of the ticket, not a later pass.
 
 ## References
 
