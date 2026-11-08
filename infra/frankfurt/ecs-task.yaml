@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: One Fargate task for the Tropical Nomads API. 0.5 vCPU and 1 GB. The database secret is not injected.
+
+Parameters:
+  ExecutionRoleArn:
+    Type: String
+  TaskRoleArn:
+    Type: String
+  Image:
+    Type: String
+    Description: API image URI. Do not commit the value.
+    NoEcho: true
+  LogGroupName:
+    Type: String
+
+Resources:
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: tropical-nomads-api
+      Cpu: "512"
+      Memory: "1024"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      RuntimePlatform:
+        CpuArchitecture: X86_64
+        OperatingSystemFamily: LINUX
+      ExecutionRoleArn: !Ref ExecutionRoleArn
+      TaskRoleArn: !Ref TaskRoleArn
+      ContainerDefinitions:
+        - Name: api
+          Image: !Ref Image
+          Essential: true
+          User: "1000"
+          PortMappings:
+            - ContainerPort: 8787
+              Protocol: tcp
+          Environment:
+            - Name: API_HOSTNAME
+              Value: 0.0.0.0
+            - Name: API_PORT
+              Value: "8787"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref LogGroupName
+              awslogs-region: eu-central-1
+              awslogs-stream-prefix: api
+          HealthCheck:
+            Command:
+              - CMD-SHELL
+              - node -e "fetch('http://127.0.0.1:8787/socials').then((response)=>process.exit(response.ok?0:1)).catch(()=>process.exit(1))"
+            Interval: 30
+            Timeout: 5
+            Retries: 3
+            StartPeriod: 40
+
+Outputs:
+  TaskDefinitionArn:
+    Value: !Ref TaskDefinition

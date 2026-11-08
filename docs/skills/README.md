@@ -18,6 +18,12 @@ This folder holds short procedures for people working on Tropical Nomads.
 - [nextjs.md](nextjs.md) — Next.js lives in the web shell. The one-pager stays on Vite.
 - [turborepo.md](turborepo.md) — how package tasks run. pnpm stays the package manager.
 - [aws-sizes.md](aws-sizes.md) — where the AWS sizes live, and what the next ticket must not change.
+- [frankfurt-hosts.md](frankfurt-hosts.md) — the Frankfurt host templates, and what the next change must not break.
+- [cloudformation.md](cloudformation.md) — one template per resource, applied from `infra/frankfurt/deploy.sh`.
+- [cognito.md](cognito.md) — the web app user pool. Email sign-in. Google and Apple are not configured.
+- [rds-postgresql.md](rds-postgresql.md) — the private `db.t4g.small` PostgreSQL template.
+- [amplify-web.md](amplify-web.md) — the new web app's Amplify app. www stays the one-pager.
+- [ecs-api.md](ecs-api.md) — the private API container on Fargate.
 
 A file belongs here when the procedure is real. Product decisions stay in the [master plan](../master-plan.md). The delivery sequence and the notes template stay on tag `product-plan-v1`.
 

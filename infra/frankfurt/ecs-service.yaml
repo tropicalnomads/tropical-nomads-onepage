@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: One private Fargate task for the Tropical Nomads API. No public IP and no listener.
+
+Parameters:
+  ClusterName:
+    Type: String
+  TaskDefinitionArn:
+    Type: String
+  PrivateSubnetA:
+    Type: AWS::EC2::Subnet::Id
+  PrivateSubnetB:
+    Type: AWS::EC2::Subnet::Id
+  ApiSecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
+
+Resources:
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: tropical-nomads-api
+      Cluster: !Ref ClusterName
+      TaskDefinition: !Ref TaskDefinitionArn
+      DesiredCount: 1
+      LaunchType: FARGATE
+      PlatformVersion: LATEST
+      EnableExecuteCommand: false
+      DeploymentConfiguration:
+        DeploymentCircuitBreaker:
+          Enable: true
+          Rollback: true
+        MinimumHealthyPercent: 0
+        MaximumPercent: 200
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups:
+            - !Ref ApiSecurityGroupId
+          Subnets:
+            - !Ref PrivateSubnetA
+            - !Ref PrivateSubnetB
+      Tags:
+        - Key: Name
+          Value: tropical-nomads-api
+
+Outputs:
+  ServiceName:
+    Value: !GetAtt Service.Name
