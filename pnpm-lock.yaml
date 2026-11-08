@@ -12,9 +12,17 @@ importers:
         specifier: ^2.5.8
         version: 2.11.10
 
-  apps/api: {}
+  apps/api:
+    dependencies:
+      tropical-nomads-shared:
+        specifier: workspace:*
+        version: link:../../packages/shared
 
-  apps/bookings: {}
+  apps/bookings:
+    dependencies:
+      tropical-nomads-shared:
+        specifier: workspace:*
+        version: link:../../packages/shared
 
   apps/one-pager:
     dependencies:

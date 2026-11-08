@@ -2,5 +2,12 @@
   "name": "tropical-nomads-bookings",
   "private": true,
   "version": "0.0.0",
-  "description": "Bookings slot. No application is shipped here. The later deploy is https://bookings.tropical-nomads.com only."
+  "type": "module",
+  "description": "Bookings slot. No application is shipped here. The later deploy is https://bookings.tropical-nomads.com only.",
+  "scripts": {
+    "test": "node --experimental-strip-types --test test/*.test.ts"
+  },
+  "dependencies": {
+    "tropical-nomads-shared": "workspace:*"
+  }
 }
