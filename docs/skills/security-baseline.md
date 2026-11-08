@@ -10,7 +10,9 @@ The API and Bookings re-export `decideAccess`. Do not copy the matrix. No Cognit
 
 Run `pnpm --filter tropical-nomads-shared test`.
 
-The next ticket must not add a fourth role, install another identity product, accept an invite from the browser, or let the client declare a check-in or a payment status.
+A payment status sent by the app is ignored. See [payment-interfaces.md](payment-interfaces.md).
+
+The next ticket must not add a fourth role, install another identity product, accept an invite from the browser, or let the client declare a check-in or a confirmed payment.
 
 ## Three roles
 

@@ -19,6 +19,8 @@ const matrixActions = [
   'scan-ticket',
   'read-own-purchases',
   'read-other-purchases',
+  'read-traces',
+  'use-payment',
 ] as const satisfies readonly AccessAction[];
 
 const matrix = {
@@ -29,6 +31,8 @@ const matrix = {
     'scan-ticket': 'deny',
     'read-own-purchases': 'deny',
     'read-other-purchases': 'deny',
+    'read-traces': 'allow',
+    'use-payment': 'deny',
   },
   door: {
     'create-party': 'deny',
@@ -37,6 +41,8 @@ const matrix = {
     'scan-ticket': 'allow',
     'read-own-purchases': 'deny',
     'read-other-purchases': 'deny',
+    'read-traces': 'deny',
+    'use-payment': 'deny',
   },
   user: {
     'create-party': 'deny',
@@ -45,6 +51,8 @@ const matrix = {
     'scan-ticket': 'deny',
     'read-own-purchases': 'allow',
     'read-other-purchases': 'deny',
+    'read-traces': 'allow',
+    'use-payment': 'allow',
   },
 } as const satisfies Record<Role, Record<(typeof matrixActions)[number], 'allow' | 'deny'>>;
 
@@ -113,6 +121,18 @@ describe('access matrix', () => {
     assert.equal(decideAccess({ action: 'read-other-purchases', role: 'user', actorId: 'user-1', subjectId: 'user-1' }).effect, 'deny');
     assert.equal(decideAccess({ action: 'read-own-purchases', role: 'door', actorId: 'door-1', subjectId: 'door-1' }).effect, 'deny');
     assert.equal(decideAccess({ action: 'read-other-purchases', role: 'admin', actorId: 'admin-1', subjectId: 'user-1' }).effect, 'deny');
+    assert.deepEqual(decideAccess({ action: 'read-traces', role: 'admin', actorId: 'admin-1', subjectId: 'user-1' }), {
+      effect: 'allow',
+      actorId: 'admin-1',
+    });
+    assert.deepEqual(decideAccess({ action: 'read-traces', role: 'user', actorId: 'user-1', subjectId: 'user-1' }), {
+      effect: 'allow',
+      actorId: 'user-1',
+    });
+    assert.equal(decideAccess({ action: 'read-traces', role: 'user', actorId: 'user-1', subjectId: 'user-2' }).effect, 'deny');
+    assert.equal(decideAccess({ action: 'read-traces', role: 'door', actorId: 'door-1', subjectId: 'door-1' }).effect, 'deny');
+    assert.equal(decideAccess({ action: 'use-payment', role: 'user', actorId: 'user-1', subjectId: 'user-2' }).effect, 'deny');
+    assert.equal(decideAccess({ action: 'use-payment', role: 'admin', actorId: 'admin-1', subjectId: 'admin-1' }).effect, 'deny');
   });
 
   it('keeps a published read open without adding a role or a password', () => {
