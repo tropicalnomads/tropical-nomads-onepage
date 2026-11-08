@@ -24,7 +24,7 @@ Reviewable implementation tickets live in [`docs/build-plan/`](build-plan/README
 
 - [build-plan/README.md](build-plan/README.md) — the recommended order, one step at a time, and which ticket covers each capability.
 
-These tickets describe work for the owner to accept before anyone builds. They do not add packages, dependencies, or a deploy. Each ticket ends with acceptance criteria. Unit tests cover pure rules when a ticket is built. Cognito, invited door staff, QR scan at the door, and separate app repositories are recorded as owner decisions. The payment company, languages, and the database stay open.
+These tickets describe work for the owner to accept before anyone builds. They do not add packages, dependencies, or a deploy. Each ticket ends with acceptance criteria. Unit tests cover pure rules when a ticket is built. Cognito, invited door staff, QR scan at the door, English and Portuguese, and separate app repositories are recorded as owner decisions. The payment company stays unnamed. Amazon RDS for PostgreSQL is a recommendation to confirm. The new app is not live yet.
 
 ## Skills
 
@@ -40,4 +40,4 @@ A skill file belongs here only when the procedure is real. Placeholder skills do
 
 8 November 2026. Planning only.
 
-Decided: Amazon Cognito login with Google and Apple, admin-invited door staff who scan QR codes, a required web app plus a shared repo, Amplify as the later web host, and a Docker container on ECS as the later API host. Phones use the web app in the browser. Amazon RDS for PostgreSQL is the database recommendation to confirm. JSON stays until then. iOS and Android repos are optional and last, with no native implementation. Still open: the payment company (interfaces come first), API style, and languages. The new app does not go live yet. The build plan holds the recommended order.
+Decided: Amazon Cognito login with Google and Apple, admin-invited door staff who scan QR codes, English and Portuguese with internationalization, and a required web app plus a shared repo. Phones use the web app in the browser. Before a future go-live, and still not live: a separate Amplify app for the new frontend, a Docker container on ECS for the API, and a confirmation of Amazon RDS for PostgreSQL. JSON stays until that confirmation. The one-pager keeps its current Amplify deploy. Goabase is an integrations tab at the end, a party list so Bookings can email artist offers. iOS and Android repos are optional and last. Still open: the payment company (interfaces come first; the remaining payment decisions are listed and no provider is picked) and API style. The new app does not go live yet. The build plan holds the recommended order.

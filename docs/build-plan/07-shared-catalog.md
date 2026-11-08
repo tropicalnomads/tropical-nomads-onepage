@@ -19,7 +19,7 @@ The one-pager has parties and artists and no calendar or artist agenda. Bookings
 1. Treat the fields above as the published contract. Put that schema in the shared repo if ticket 04 has not already done it.
 2. Add calendar entries and artist agendas that point at existing event ids and artist names. Stop and ask what an agenda contains beyond "this artist, these parties", and whether a party can stay off the public list. Do not guess. Both are still open.
 3. Until the draft answer exists, the public list is whatever is in `public/data/events.json`.
-4. Keep Goabase as the current refresh. Do not replace the script and do not make the API call Goabase.
+4. Keep Goabase as the current one-pager refresh. Do not replace the script and do not make the API call Goabase. The integrations tab in ticket 22 is a later party list for artist offers. This ticket does not wait for it.
 5. Later writes from Bookings go through the API into this JSON. The browser cannot write `public/data`.
 6. Leave `links.eventbrite`, `links.tickets`, and `links.goabase` as they are. In-app sales are ticket 13.
 7. Do not move `timetable.tropical-nomads.com` into any repo.

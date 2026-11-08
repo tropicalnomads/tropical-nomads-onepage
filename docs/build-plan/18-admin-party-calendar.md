@@ -21,7 +21,7 @@ Public lineups come from `stages`, `cardArtists`, and the Goabase refresh. There
 2. Place artists from the shared artist catalog onto a party and assemble an agenda. Use the contents accepted in ticket 07. If that answer is missing, stop.
 3. Save through the API into the shared JSON. Do not keep a second lineup inside Bookings.
 4. Apply the draft rule from ticket 07.
-5. The refresh script rewrites `public/data/events.json` from `EVENT_SOURCES`. Say which writer wins when the calendar and `pnpm events` touch the same id. If ticket 07 did not decide whether Goabase remains an input, stop and ask. Do not delete the script meanwhile.
+5. The refresh script rewrites `public/data/events.json` from `EVENT_SOURCES`. Say which writer wins when the calendar and `pnpm events` touch the same id. Do not delete the script. Ticket 22 is the later integrations tab and is not this writer. Do not stop this ticket to wait for it.
 6. Do not build ticket sales, QR check-in, or stock into this calendar.
 7. Record who saved a calendar change.
 8. Verify on the Bookings host only.

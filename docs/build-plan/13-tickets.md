@@ -14,10 +14,11 @@ The site lists parties and then leaves. The product has to generate a ticket, st
 
 - [08 — Upcoming events](08-upcoming-events.md).
 - [12 — Payment interfaces](12-payment-interfaces.md).
+- [20 — English and Portuguese](20-internationalization.md).
 
 ## To-do
 
-1. Ask the owner for ticket types and prices before charging a real amount. The QR format is decided. A wallet pass on top of the QR is still open. Do not build a wallet pass in this ticket.
+1. Do not charge a real amount. Ticket types, prices, and the provider are listed on ticket 21, and this ticket does not wait on them. The QR format is decided. A wallet pass on top of the QR is still open. Do not build a wallet pass in this ticket.
 2. For an event switched to in-app sales: create an order, call `startPayment` with purpose `tickets`, and write an issued ticket in the private store: event id, trace id, buyer id, a secret the API generated, and the time.
 3. The QR payload is the ticket id plus the secret. It is not the Goabase id alone. Render that QR in the web app from the shared payload schema. A phone browser has to show it large enough to scan.
 4. The buyer opens the ticket again from My Tickets in the web app, signed in.

@@ -30,7 +30,7 @@ Creating other git repositories must not retarget this Amplify app. The owner ha
 
 ### Must not go live
 
-8. Do not create a second Amplify app, a production domain, an ECS cluster, or a Docker service for the new web app or the API. Record the targets in the pipeline notes: web app on Amplify, API container on ECS.
+8. Do not create the web app's Amplify app, the ECS service, or a database in this ticket. Those are tickets 23, 24, and 25, and they are not live yet. Do not point www at the new web app.
 9. Do not create a public production URL for the API.
 10. Do not point www at the web app repo, and do not publish a Next.js output as the www artifact.
 11. Do not deploy Bookings, and do not change its host.

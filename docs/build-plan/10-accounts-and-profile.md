@@ -15,6 +15,7 @@ Tickets, merch, and door invites need a real user. The current site has no accou
 - [04 — Shared client repo](04-shared-client-repo.md). The profile schema lives there.
 - [05 — Web app repository](05-app-repos.md). The sign-in screen is in the web app.
 - [09 — Security baseline](09-security-baseline.md). Roles exist before the first admin invite.
+- [20 — English and Portuguese](20-internationalization.md). The profile locale is one of those two codes.
 
 ## Profile to store
 
@@ -49,7 +50,7 @@ Account:
 
 - `createdAt`, `updatedAt`.
 - Status: active or disabled.
-- Locale preference, optional. It does not decide which languages the product ships.
+- Locale preference, optional, and only `en` or `pt`. The product languages are already decided.
 - Door-staff grants are not fields on this profile. They are invites in ticket 14.
 
 Leave date of birth out unless the owner says events are age-restricted. Do not collect it "just in case".

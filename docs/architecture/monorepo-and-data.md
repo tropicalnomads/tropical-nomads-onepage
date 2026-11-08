@@ -65,8 +65,8 @@ A separate deploy is a separate published site from the same repository.
 | Publish target | What it runs | Where this stands |
 | --- | --- | --- |
 | `www.tropical-nomads.com` | The one-pager package | Its existing Amplify app. It keeps deploying. The new web app is not published here. |
-| Web app | The web app repository | Later host is a separate Amplify app. It does not go live yet. |
-| API | The API package | Later host is a Docker container on ECS. It does not go live yet. |
+| Web app | The web app repository | Later host is a separate Amplify app. That ticket is not live yet. www stays the one-pager. |
+| API | The API package | Later host is a Docker container on ECS. That ticket is not live yet. |
 | `bookings.tropical-nomads.com` | The Bookings package | Its own deploy. The package is not in the repo yet. |
 
 `timetable.tropical-nomads.com` is a site the one-pager already links to for some events. It stays outside this diagram until the owner decides otherwise.

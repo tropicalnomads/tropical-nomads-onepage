@@ -15,6 +15,7 @@ Upcoming events are the front door. The page already does this with `getUpcoming
 - [05 — Web app repository](05-app-repos.md).
 - [06 — API reads published data](06-api-reads-published-data.md).
 - [07 — Shared catalog](07-shared-catalog.md).
+- [20 — English and Portuguese](20-internationalization.md). Interface labels use that switch. Event titles stay the catalog strings.
 
 ## To-do
 

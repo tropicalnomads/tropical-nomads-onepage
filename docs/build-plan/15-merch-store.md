@@ -20,6 +20,7 @@ The web app, including a phone browser, lists the two current T-shirts from cata
 - [05 — Web app repository](05-app-repos.md).
 - [10 — Accounts and profile](10-accounts-and-profile.md).
 - [12 — Payment interfaces](12-payment-interfaces.md).
+- [20 — English and Portuguese](20-internationalization.md).
 
 ## To-do
 

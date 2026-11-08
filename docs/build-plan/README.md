@@ -2,20 +2,23 @@
 
 Recommended order for the owner to review before any build. Each file is one ticket. Do them one at a time, in this order, unless the owner reorders them. This folder does not implement the tickets.
 
-Settle the repository split first, keep [www.tropical-nomads.com](https://www.tropical-nomads.com) shipping on its own, then share types and theme, then stand up the web app, then the API, then accounts, then the purchase path. Phones use that web app in the browser. Payment provider connection waits. The interfaces do not. iOS and Android repos are optional and last.
+Settle the repository split first, keep [www.tropical-nomads.com](https://www.tropical-nomads.com) shipping on its own, then share types and theme, then stand up the web app in English and Portuguese, then the API, then accounts, then the purchase path. Phones use that web app in the browser. Payment interfaces are built now. The provider is not chosen. The three host tickets at the end of the required path are not live yet. Goabase and the native repos come after them.
+
+The step column is the order. The file numbers are stable ids, so a ticket can sit earlier or later than its number.
 
 Owner decisions already in this order:
 
 - Login and registration use Amazon Cognito, with Google and Apple sign-in.
-- A user profile holds identity, a billing address, an avatar, and payment methods. The payment company is connected later.
+- A user profile holds identity, a billing address, an avatar, and payment methods. The payment company is listed for later and is not chosen.
 - An admin invites people who scan QR codes and help at the door.
+- The product is English and Portuguese, with internationalization. The one-pager already has both.
 - The web app is its own repository. A shared repository holds theme colors, base components, types, schemas, and constants.
-- The web frontend's later host is Amplify. The API's later host is a Docker container on ECS. Neither goes live in these tickets. The one-pager keeps its existing Amplify deploy.
-- Amazon RDS for PostgreSQL is the database recommendation to confirm. JSON stays the store until then.
+- Before a future go-live, and still not live: the new frontend on its own Amplify app, the API as a Docker container on ECS, and a confirmation of Amazon RDS for PostgreSQL. JSON stays the store until that confirmation. The one-pager keeps its existing Amplify deploy.
 - This repository still holds the one-pager, the API, Bookings, and the JSON. Bookings is not split into its own repo.
-- iOS and Android repositories are optional. Ticket 19 creates them only. It does not implement native apps.
+- Goabase is an integrations tab at the end: a list of parties that exist, so Bookings can email offers of Tropical Nomads artists. The one-pager refresh stays.
+- iOS and Android repositories are optional and last. Ticket 19 creates them only. It does not implement native apps.
 
-Still open: the payment company, API style, and languages. Next.js stays the lean for the web app, not a lock.
+Still open: the payment company, the currencies and prices on the payment-decisions list, and API style. Next.js stays the lean for the web app, not a lock. Languages are not open.
 
 ## Order
 
@@ -26,20 +29,26 @@ Still open: the payment company, API style, and languages. Next.js stays the lea
 | 3 | [Deployment change](03-deployment-change.md) | 02 | www keeps its Amplify deploy. The new web app and the API do not go live. |
 | 4 | [Shared client repo](04-shared-client-repo.md) | 02 | Theme, components, types, schemas, constants for the web app. |
 | 5 | [Web app repository](05-app-repos.md) | 03, 04 | Required web shell, usable in a phone browser. |
-| 6 | [API reads published data](06-api-reads-published-data.md) | 02, 03 | API over the JSON this repo already publishes. |
-| 7 | [Shared catalog](07-shared-catalog.md) | 06 | Artists, parties/events, and calendar. |
-| 8 | [Upcoming events](08-upcoming-events.md) | 05, 06, 07 | Capability: upcoming events. Public, no login required. |
-| 9 | [Security baseline](09-security-baseline.md) | 01, 07 | Roles, including admin invite of door staff. |
-| 10 | [Accounts and profile](10-accounts-and-profile.md) | 04, 05, 09 | Cognito, Google, Apple, and the user record, in the web app. |
-| 11 | [Private operational data](11-private-operational-data.md) | 06, 09 | JSON for orders, tickets, check-ins, and stock, outside `public/data/`. |
-| 12 | [Payment interfaces](12-payment-interfaces.md) | 09, 10, 11 | Interfaces and user payment methods. No provider yet. |
-| 13 | [Tickets](13-tickets.md) | 08, 12 | Buy a ticket. The door copy is a QR code. |
-| 14 | [Check-in](14-check-in.md) | 05, 10, 13 | Admin invites door staff. They scan QR codes in the web app. |
-| 15 | [Merch store](15-merch-store.md) | 05, 10, 12 | Merch, starting from the two shirts on the page. |
-| 16 | [Inventory](16-inventory.md) | 09, 15 | Stock control. Counts leave `src/lib/merch.ts`. |
-| 17 | [Bookings package](17-bookings-package.md) | 02, 03, 07, 09 | Bookings in this monorepo, own deploy, shared data. |
-| 18 | [Admin party calendar](18-admin-party-calendar.md) | 07, 17 | Party calendar and artist agendas. |
-| 19 | [iOS and Android repositories](19-ios-android-repos.md) | 04 | Optional. Last. Creates the two repos only. No native screens. |
+| 6 | [English and Portuguese](20-internationalization.md) | 04, 05 | Internationalization. The only languages are `en` and `pt`. |
+| 7 | [API reads published data](06-api-reads-published-data.md) | 02, 03 | API over the JSON this repo already publishes. |
+| 8 | [Shared catalog](07-shared-catalog.md) | 06 | Artists, parties/events, and calendar. |
+| 9 | [Upcoming events](08-upcoming-events.md) | 05, 06, 07, 20 | Capability: upcoming events. Public, no login required. |
+| 10 | [Security baseline](09-security-baseline.md) | 01, 07 | Roles, including admin invite of door staff. |
+| 11 | [Accounts and profile](10-accounts-and-profile.md) | 04, 05, 09, 20 | Cognito, Google, Apple, and the user record, in the web app. |
+| 12 | [Private operational data](11-private-operational-data.md) | 06, 09 | JSON for orders, tickets, check-ins, and stock, outside `public/data/`. |
+| 13 | [Payment interfaces](12-payment-interfaces.md) | 09, 10, 11 | Interfaces and user payment methods. This is the payment work that happens now. |
+| 14 | [Payment decisions still open](21-payment-decisions.md) | 12 | Lists the later payment choices. Does not pick a provider. Nothing else waits on it. |
+| 15 | [Tickets](13-tickets.md) | 08, 12, 20 | Buy a ticket. The door copy is a QR code. |
+| 16 | [Check-in](14-check-in.md) | 05, 10, 13, 20 | Admin invites door staff. They scan QR codes in the web app. |
+| 17 | [Merch store](15-merch-store.md) | 05, 10, 12, 20 | Merch, starting from the two shirts on the page. |
+| 18 | [Inventory](16-inventory.md) | 09, 15 | Stock control. Counts leave `src/lib/merch.ts`. |
+| 19 | [Bookings package](17-bookings-package.md) | 02, 03, 07, 09, 20 | Bookings in this monorepo, own deploy, shared data. |
+| 20 | [Admin party calendar](18-admin-party-calendar.md) | 07, 17 | Party calendar and artist agendas. |
+| 21 | [Web app on Amplify](23-amplify-frontend.md) | 03, 05 | Not live yet. A separate Amplify app. www stays the one-pager. |
+| 22 | [API container on ECS](24-ecs-backend.md) | 06, 23 | Not live yet. Docker on ECS. No public production API. |
+| 23 | [Confirm RDS for PostgreSQL](25-rds-recommendation.md) | 01, 11, 24 | Not live yet. Recommendation to confirm. Not a migration. |
+| 24 | [Goabase integrations tab](22-goabase-integrations.md) | 07, 17 | Last product ticket. Parties that exist, so Bookings can email artist offers. |
+| 25 | [iOS and Android repositories](19-ios-android-repos.md) | 04 | Optional. Last. Creates the two repos only. No native screens. |
 
 ## Capabilities
 
@@ -48,18 +57,18 @@ Still open: the payment company, API style, and languages. Next.js stays the lea
 | Upcoming events | 08 |
 | Tickets | 13 |
 | Check-in | 14 |
-| Payments | 12 |
+| Payments | 12 now; 21 lists the later decisions and does not pick a provider |
 | Merch store | 15 |
 | Inventory | 16 |
 | Abuse-resistant security | 09, then again in 10–16 |
 | Bookings in this monorepo | 02 names the slot; 17 brings the product in |
 | Admin party calendar | 18 |
 
-Languages have no ticket that decides them. The one-pager keeps English and Portuguese in `src/i18n/`.
+English and Portuguese are decided. Ticket 20 puts them in the web app. The one-pager already has them in `src/i18n/`.
 
 ## Gaps
 
-Checked against the decisions so far. No capability was missing a ticket, so no feature ticket was added. Ticket 19 exists only to hold the optional native repos that used to sit inside ticket 05.
+Checked against the decisions so far. Tickets 20–25 cover languages, the later payment list, Goabase, and the three hosts that are not live yet. Ticket 19 remains the optional native repos.
 
 | Decision | Where it is |
 | --- | --- |
@@ -72,14 +81,18 @@ Checked against the decisions so far. No capability was missing a ticket, so no 
 | Bookings deploy, shared artists, parties, calendar | 02 and 17 |
 | Admin party calendar | 18 |
 | Security | 09, then the later tickets that enforce it |
-| JSON until a database exists | 11. Ticket 01 recommends RDS for PostgreSQL and does not migrate. |
-| One-pager keeps deploying, new app does not go live | 03. Later hosts are written down: Amplify for the web app, ECS for the API. |
+| English and Portuguese, with internationalization | 20. The one-pager already has `en` and `pt`. |
+| JSON until a database exists | 11. Ticket 25 asks the owner to confirm RDS for PostgreSQL and does not migrate. |
+| One-pager keeps deploying | 03. Tickets 23, 24, and 25 are the later hosts and are not live yet. |
+| Goabase integrations | 22, after the not-live host tickets. The public refresh script stays. |
 
 Order problem that this pass fixes: iOS and Android were step 5, in the same ticket as the required web shell, so the product could not move without native apps. They are now ticket 19, optional, and last. Nothing depends on them. Phones use the web app in the browser.
 
 Not duplicates: ticket 09 writes who may scan. Ticket 14 builds the invite and the scanner. Ticket 11 is the JSON store. Ticket 01 only recommends the later database.
 
-Left open on purpose, with no new ticket: the payment company, API style, languages, Goabase as an input, the timetable site, agenda contents, draft parties, pickup versus shipping, offline check-in, and a wallet pass. There is no ticket that creates the new Amplify app, the ECS service, or the RDS instance, because the new app does not go live yet and the database is still a recommendation.
+None of the new decisions block an earlier ticket. English and Portuguese are step 6, after the shell, so tickets 01–05 do not wait. The payment-decisions list is step 14, and tickets, merch, and inventory do not depend on it. Goabase is step 24, and the catalog and the calendar do not wait for it. The Amplify, ECS, and RDS tickets are steps 21–23, not live, and the build tickets before them do not wait.
+
+Left open on purpose: the payment company and the rest of the list in ticket 21, API style, the timetable site, agenda contents, draft parties, pickup versus shipping, offline check-in, and a wallet pass. Tickets 23–25 do not create a public launch, and ticket 25 does not create a database.
 
 ## Acceptance criteria and tests
 

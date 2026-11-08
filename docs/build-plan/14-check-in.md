@@ -15,6 +15,7 @@ The owner wants to invite helpers for the door, not to let every buyer scan thei
 - [05 — Web app repository](05-app-repos.md).
 - [10 — Accounts and profile](10-accounts-and-profile.md).
 - [13 — Tickets](13-tickets.md).
+- [20 — English and Portuguese](20-internationalization.md).
 
 ## To-do
 

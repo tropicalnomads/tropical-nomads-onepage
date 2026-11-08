@@ -280,27 +280,27 @@ Status is per row. Decisions the owner added on 8 November 2026 are marked as de
 | --- | --- | --- |
 | Tech stack | Partly decided | Login and registration use Amazon Cognito, with Google and Apple sign-in. Next.js remains the lean for the web app, not a lock. The one-pager stays the Vite app. The web frontend deploys on Amplify. The API deploys as a Docker container on ECS. API style stays open. Amazon RDS for PostgreSQL is the database recommendation to confirm. JSON stays until then. |
 | Cloud vendor | Partly decided | AWS is the platform. Cognito is identity. Amplify hosts the one-pager now and is the later host for the web app. ECS is the later host for the API container. RDS for PostgreSQL is recommended and not created. Region, instance size, and other services stay open. `amplify.yml` still describes only the current static site. |
-| Payments provider | Undecided | The provider is integrated later. The payment interfaces, and a place on the user for payment methods, are settled first. The company stays unnamed. |
+| Payments provider | Undecided | The provider is integrated later and is not named. Ticket 12 builds the interfaces now. Ticket 21 lists the remaining payment decisions: company, currencies, ticket types and prices, refunds and chargebacks, comps and guest tickets, and when external checkout links are retired. |
 | Ticket format | Partly decided | Door staff scan a QR code. A wallet pass or another extra format for the buyer is still open. |
 | Where the apps live | Decided | The web app and a shared repository are required. iOS and Android repositories are optional, last, and are not a native implementation. Phones use the web app in the browser. This repo still holds the one-pager, the API, Bookings, and the JSON data. |
 | Who performs check-in | Decided | An admin invites people to scan QR codes and help at the door. Buyers do not check themselves in. |
-| Languages and markets | Undecided | The one-pager currently has English and Portuguese. That does not decide the product's languages, countries, or currencies. |
+| Languages | Decided | The product is English and Portuguese, with internationalization. The one-pager already has both in `src/i18n/`. Countries are not decided by that. Currencies are on the payment-decisions list. |
 | Implementation order | Proposed for review | The recommended order is in [docs/build-plan/](build-plan/README.md). Each ticket ends with acceptance criteria and unit tests where the behavior is pure. |
 
 ### Also undecided, and needed before implementation
 
 - Buyers do register and sign in. How a ticket is delivered besides being available in the app (for example email) is still open.
-- Ticket types, currencies, comps, guest lists, transfers, re-entry, refunds, and cancellation.
+- Ticket types, currencies, comps, guest lists, refunds, chargebacks, and cancellation. They are listed in the build plan and do not block the payment interfaces. Transfers and re-entry stay with check-in.
 - Whether merch fulfillment is pickup, shipping, or both. Merch uses the same payment interfaces as tickets. Today's page describes a WhatsApp reservation and pickup at The Sound House, Dublin.
 - Which products exist beyond T-shirts.
 - What an artist agenda contains, and how much of it the public site shows.
 - Whether a party can stay on the admin calendar and off the public list.
 - Whether `timetable.tropical-nomads.com` remains a separate surface. This plan leaves it where it is.
-- Whether Goabase, or any external party list, remains an input. Today it is how event JSON is refreshed.
+- Goabase's new job is decided: an integrations tab, last in the product tickets, holding parties that exist so Bookings can email offers of Tropical Nomads artists. The one-pager refresh script stays until that ticket. It does not block the catalog or the calendar.
 - Whether Bookings admin, inventory admin, and the person who reviews orders are one role or several.
 - Where writable JSON lives — in git, or in a private location the API updates — and how two deploys avoid overwriting the same file. The store is JSON until the owner confirms Amazon RDS for PostgreSQL.
 - Whether check-in has to work offline at the door.
-- The one-pager keeps its own Amplify deploy at www. The new web app's Amplify app is a later host and is not created yet.
+- The one-pager keeps its own Amplify deploy at www. Before a future go-live, and still not live: a separate Amplify app for the web frontend, a Docker container on ECS for the API, and a confirmation of Amazon RDS for PostgreSQL. None of those three is a public launch, and the database ticket is not a migration.
 
 ## 8. What to decide first
 
@@ -312,9 +312,9 @@ This is a planning sequence. It is the order of decisions. It is not a build sch
 4. **Agree ticket and payment outcomes** before format or provider: what the buyer receives, what check-in has to prove, and the rules for transfer, re-entry, comps, and refunds.
 5. **Agree merch and inventory rules:** the catalog, pickup versus shipping, and whether a shirt is paid inside this product. Stock moves when a sale is real.
 6. **Split public JSON from private JSON,** including where writable files live. Do this before API work, so ticket secrets stay out of the public site bundle.
-7. **Choose languages and markets** for the product. English and Portuguese on the current page remain a fact about the one-pager while that choice is open.
+7. **Languages are chosen.** The product is English and Portuguese, with internationalization. Countries are still open. Currencies are on the payment-decisions list.
 8. **Build shared UI components for the web app.** Theme tokens, types, schemas, and constants live in the shared repo. Native screens are not in the required path, so a Swift or Kotlin component toolkit is not a blocker.
-9. **Confirm the database recommendation and choose the payment provider** once the flows and the data boundary are clear. Cognito with Google and Apple is decided. Amplify and ECS are the later hosts and are not launched yet. Amazon RDS for PostgreSQL is recommended and not created. API style and the payment company stay open. Payment interfaces are built before any provider is connected. JSON stays the store until the database is confirmed.
+9. **Confirm the database recommendation and choose the payment provider** once the flows and the data boundary are clear. Cognito with Google and Apple is decided. The later hosts are a separate Amplify app, a Docker container on ECS, and RDS for PostgreSQL if the owner confirms it. Those three tickets are not live yet. The one-pager deploy stays. API style and the payment company stay open. Payment interfaces are built before any provider is connected. JSON stays the store until the database is confirmed.
 10. **Set the remaining implementation order** after those decisions. One constraint is already fixed. It sits below, separate from this list, so it is not mistaken for a full build plan.
 
 ### Later build constraint

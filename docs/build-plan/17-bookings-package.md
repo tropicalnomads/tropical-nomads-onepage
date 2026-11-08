@@ -16,6 +16,7 @@ The header already links to Bookings. Its code is not here. The owner asked for 
 - [03 — Deployment change](03-deployment-change.md).
 - [07 — Shared catalog](07-shared-catalog.md).
 - [09 — Security baseline](09-security-baseline.md).
+- [20 — English and Portuguese](20-internationalization.md). Bookings admin uses those two languages.
 
 ## To-do
 
@@ -25,7 +26,7 @@ The header already links to Bookings. Its code is not here. The owner asked for 
 4. Replace any private copy of artists, parties, or calendars with the shared catalog through the API.
 5. Keep tickets, payments, profiles, and stock out of Bookings unless the owner expands sharing.
 6. Bookings admin stays team-only.
-7. Leave `timetable.tropical-nomads.com` where it is.
+7. Leave `timetable.tropical-nomads.com` where it is. Do not build the Goabase integrations tab here. That is ticket 22.
 8. Verify www still serves the one-pager, the header link still opens Bookings, and a Bookings-only change does not deploy the client apps.
 
 ## Acceptance criteria

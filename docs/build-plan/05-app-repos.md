@@ -22,7 +22,7 @@ The product people open, including on a phone, is this web app. iOS and Android 
 2. Shell only. Placeholder routes for the four areas. The layout has to be usable in a phone browser width, because that is how phones use the product.
 3. Import theme tokens and types from the shared package. Do not restate event field names locally.
 4. Do not add payment, ticket generation, stock edits, or Bookings admin.
-5. Do not add a language list. Leave one place copy can be translated later. Leave `src/i18n/` (`en` and `pt`) on the one-pager.
+5. Do not build the language switch in this ticket. Ticket 20 does that. The product languages are English and Portuguese. Leave `src/i18n/` (`en` and `pt`) on the one-pager.
 6. Do not create the web app's Amplify app, a production domain, or an ECS service. Ticket 03 names those as later targets. This ticket does not launch them.
 7. Do not point www at this repo.
 8. Do not treat `vite-plugin-pwa` on the one-pager as this app.

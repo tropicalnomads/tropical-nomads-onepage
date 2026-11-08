@@ -17,7 +17,7 @@ Size counts for `hw` and `pg` live in the private stock JSON. A completed merch 
 
 ## To-do
 
-1. Move `MERCH_STOCK` counts into the private stock collection, keyed by product id and size (`P`, `M`, `G`, `GG`, `2XL`). Keep `EN_SIZE` for English labels. Portuguese labels on the one-pager stay the codes (`sizeLabel`). Do not add languages.
+1. Move `MERCH_STOCK` counts into the private stock collection, keyed by product id and size (`P`, `M`, `G`, `GG`, `2XL`). Keep `EN_SIZE` for English labels. Portuguese labels on the one-pager stay the codes (`sizeLabel`). Do not add a third language. Product languages are ticket 20.
 2. Point the apps at these counts. Hide a size at 0.
 3. Decrement only when a merch payment is confirmed. The stub adapter never confirms, so tests decrement through a fixture confirmed trace or through an inventory-admin correction. A page view and the WhatsApp link do not decrement.
 4. Inventory admin can see counts, add stock, and correct a count. Record who, when, and the old and new values.

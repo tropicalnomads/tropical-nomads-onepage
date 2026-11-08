@@ -27,7 +27,7 @@ The owner wants the payment structure settled and the integration later. Users n
    - `recordRefund(traceId)` as an interface, with the refund rules still open
 2. Ship a stub adapter. `startPayment` writes a private trace with status `pending_provider`. It does not set `confirmed`. `markPaymentConfirmed` is not callable from the apps.
 3. A payment method stores id, type (card, Apple Pay, Google Pay, or other), provider references, brand, last 4, expiry, billing address id, and status. Reject a payload that contains a full card number or CVC.
-4. Require a billing address on the profile before `startPayment`. Currency is an argument. Do not assume EUR from the shirt price. Ask the owner which currencies to allow, and until they answer accept an explicit currency on the call and record it.
+4. Require a billing address on the profile before `startPayment`. Currency is an argument. Do not assume EUR from the shirt price. Which currencies are allowed is listed on ticket 21. This ticket does not wait for that answer. Accept the currency on the call and record it.
 5. The team can read traces. Buyers can read their own.
 6. Do not install a provider SDK and do not name a company.
 7. Do not remove Eventbrite, Goabase, or the WhatsApp reserve link.
