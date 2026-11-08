@@ -16,6 +16,7 @@ export { origins } from './constants/origins.ts';
 export { webAreas } from './navigation/areas.ts';
 export type { WebAreaId } from './navigation/areas.ts';
 export {
+  containsCardNumber,
   declareLookup,
   lookups,
   parseAffiliation,
