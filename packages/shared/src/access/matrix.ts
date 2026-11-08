@@ -10,6 +10,8 @@ export const accessActions = [
   'scan-ticket',
   'read-own-purchases',
   'read-other-purchases',
+  'read-traces',
+  'use-payment',
   'grant-admin',
   'grant-door',
   'invite-door',
@@ -54,6 +56,7 @@ export type AccessRequest =
       invite?: DoorInviteScope;
     }
   | { action: 'read-own-purchases' | 'read-other-purchases'; role: Role; actorId: string; subjectId: string }
+  | { action: 'read-traces' | 'use-payment'; role: Role; actorId: string; subjectId: string }
   | { action: 'read-published' };
 
 export function roleForNewAccount(): Role {
@@ -92,7 +95,10 @@ export function roleAllows(role: Role, action: AccessAction): boolean {
     case 'scan-ticket':
       return known === 'door';
     case 'read-own-purchases':
+    case 'use-payment':
       return known === 'user';
+    case 'read-traces':
+      return known === 'admin' || known === 'user';
     case 'read-other-purchases':
       return false;
     case 'read-published':
@@ -156,6 +162,13 @@ export function decideAccess(request: AccessRequest): AccessDecision {
       return allow(actorId);
     }
     case 'read-own-purchases':
+      return request.subjectId === actorId ? allow(actorId) : deny();
+    case 'read-traces':
+      if (request.role === 'admin') {
+        return allow(actorId);
+      }
+      return request.subjectId === actorId ? allow(actorId) : deny();
+    case 'use-payment':
       return request.subjectId === actorId ? allow(actorId) : deny();
     case 'read-other-purchases':
       return deny();

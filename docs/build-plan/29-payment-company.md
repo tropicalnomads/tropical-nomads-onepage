@@ -13,7 +13,7 @@ Tickets and merch are built against the payment interfaces first. The hosts for 
 ## Depends on
 
 - [12 — Payment interfaces](12-payment-interfaces.md). The company connects to those functions.
-- [23 — Web app on Amplify](23-amplify-frontend.md), [24 — API container on ECS](24-ecs-backend.md), and [25 — Confirm RDS for PostgreSQL](25-rds-recommendation.md). This ticket sits after those hosts. It does not launch them.
+- [23 — Web app on Amplify](23-amplify-frontend.md), [24 — API container on ECS](24-ecs-backend.md), [25 — Confirm RDS for PostgreSQL](25-rds-recommendation.md), and [31 — AWS as code repository](31-aws-as-code.md). This ticket sits after those hosts. It does not launch them.
 
 ## To-do
 
@@ -26,7 +26,7 @@ Tickets and merch are built against the payment interfaces first. The hosts for 
 ## Acceptance criteria
 
 - The company is still unnamed.
-- The ticket is last in the first iteration, after the Amplify, ECS, and RDS tickets.
+- The ticket is last in the first iteration, after the Amplify, ECS, RDS, and AWS-as-code tickets.
 - No SDK was added, and `package.json` is unchanged.
 - Nothing was deployed, and no AWS resource was created.
 

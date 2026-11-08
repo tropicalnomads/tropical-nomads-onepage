@@ -12,3 +12,4 @@ dev-dist
 .idea
 __pycache__/
 *.pyc
+data/operational/avatars/

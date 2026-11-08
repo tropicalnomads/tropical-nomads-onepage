@@ -2,13 +2,15 @@
 
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
-import { areaText, shellText } from '../i18n/copy';
+import { accountText, areaText, shellText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { navigation } from '../navigation';
 import { LanguageSwitch } from './LanguageSwitch';
 
-export function ShellHeader() {
+export function ShellHeader({ signedIn }: { signedIn: boolean }) {
   const { language } = useLanguage();
+  const accountHref = signedIn ? '/account' : '/account/sign-in';
+  const accountLabel = signedIn ? accountText(language, 'accountTitle') : accountText(language, 'signIn');
   const [menuOpen, setMenuOpen] = useState(false);
 
   const closeMenu = (): void => {
@@ -65,6 +67,12 @@ export function ShellHeader() {
                 {areaText(language, item.id)}
               </a>
             ))}
+            <a
+              href={accountHref}
+              className="shrink-0 rounded-full px-3 py-1.5 text-sm font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+            >
+              {accountLabel}
+            </a>
           </nav>
           <LanguageSwitch />
         </div>
@@ -86,6 +94,13 @@ export function ShellHeader() {
               {areaText(language, item.id)}
             </a>
           ))}
+          <a
+            href={accountHref}
+            onClick={closeMenu}
+            className="rounded-lg px-3 py-2.5 text-left text-base font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+          >
+            {accountLabel}
+          </a>
         </nav>
       ) : null}
     </header>

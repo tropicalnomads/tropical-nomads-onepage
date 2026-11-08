@@ -1,6 +1,6 @@
 # Operational JSON
 
-This directory is the private store for orders, payment traces, issued tickets, check-ins, door invites, and stock counts. It is not inside `public/`, and the one-pager does not publish it. The committed files are empty. Do not put secrets, ticket values, card numbers, or customer records here.
+This directory is the private store for orders, payment traces, issued tickets, check-ins, door invites, stock counts, and profiles. Payment methods are fields on `profiles.json`, not a separate public file. It is not inside `public/`, and the one-pager does not publish it. The committed files are empty. Do not commit customer records. Do not put secrets, passwords, ticket values, or card numbers here.
 
 The API reads and writes these files. A cross-process lock waits on the stack. One process orders its own writes. Two processes can still drop an update.
 

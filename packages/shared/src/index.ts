@@ -1,4 +1,16 @@
 export {
+  accountCanPurchase,
+  accountCanScan,
+  attachVerifiedSignIn,
+  normalizeAccountEmail,
+  passwordProblem,
+  usernameProblem,
+} from './account/identity.ts';
+export type { AttachedProfile, VerifiedSignIn } from './account/identity.ts';
+export type { BillingAddress, PaymentMethod, Profile } from './schema/account.ts';
+export type { PaymentTrace } from './schema/commerce.ts';
+export type { PaymentMethodType, PaymentPurpose } from './schema/values.ts';
+export {
   accessActions,
   configuredAdminId,
   decideAccess,

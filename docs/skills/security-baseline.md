@@ -6,11 +6,13 @@ Admin actions return the actor id so a later write can record who did it. An emp
 
 `read-published` is allowed with no account. It is not a role. `roleForNewAccount` returns `user`. The first admin is `INITIAL_ADMIN_SUB` in the environment. Do not put a credential in the repo.
 
-The API and Bookings re-export `decideAccess`. Do not copy the matrix. No Cognito call is made here. Private orders, tickets, and stock are files in `data/operational`, not browser routes. See [private-operational-data.md](private-operational-data.md).
+The API and Bookings re-export `decideAccess`. Do not copy the matrix. No Cognito call is made here. Private orders, tickets, and stock are files in `data/operational`, not browser routes. See [private-operational-data.md](private-operational-data.md). Profiles use the same private directory and do not add a role. See [accounts-and-profile.md](accounts-and-profile.md).
 
 Run `pnpm --filter tropical-nomads-shared test`.
 
-The next ticket must not add a fourth role, install another identity product, accept an invite from the browser, or let the client declare a check-in or a payment status.
+A payment status sent by the app is ignored. See [payment-interfaces.md](payment-interfaces.md).
+
+The next ticket must not add a fourth role, install another identity product, accept an invite from the browser, or let the client declare a check-in or a confirmed payment.
 
 ## Three roles
 

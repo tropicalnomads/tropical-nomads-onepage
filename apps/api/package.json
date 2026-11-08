@@ -5,7 +5,9 @@
   "type": "module",
   "description": "Local read-only Hono API for the published JSON. No public URL.",
   "exports": {
-    ".": "./src/app.ts"
+    ".": "./src/app.ts",
+    "./accounts": "./src/accounts.ts",
+    "./payments": "./src/payments.ts"
   },
   "scripts": {
     "dev": "node --experimental-strip-types src/main.ts",
