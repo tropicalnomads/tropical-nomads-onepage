@@ -1,4 +1,4 @@
-import { listen } from './http.ts';
+import { listen } from './server.ts';
 
 const port = Number(process.env.API_PORT ?? 8787);
 

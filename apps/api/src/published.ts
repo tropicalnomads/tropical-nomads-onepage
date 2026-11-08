@@ -28,10 +28,59 @@ const schemaForCatalog = {
 
 const privateKeys = new Set(['secret', 'password', 'cardNumber', 'cvc', 'cvv', 'pan', 'stopToken', '__proto__', 'constructor']);
 
+export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue | undefined };
+
+export interface PublishedEventSource {
+  provider?: string;
+  id?: number;
+  url?: string;
+  status?: string;
+  dateCreated?: string;
+  dateModified?: string;
+}
+
+export interface PublishedEventLinks {
+  goabase?: string;
+  eventbrite?: string;
+  tickets?: string;
+  instagram?: string | string[];
+  instagramPost?: string;
+}
+
+export interface PublishedEventImages {
+  bannerLocal?: string;
+  small?: string;
+  medium?: string;
+  large?: string;
+  full?: string;
+}
+
+/**
+ * Fields the stored event file is known to carry.
+ * `source` and `images` stay here because `parseParty` does not copy them.
+ * Extra stored keys stay on the object the route returns.
+ */
 export interface PublishedEvent {
   id: string;
   title: string;
   dateStart: string;
+  dateEnd?: string;
+  timezone?: string;
+  durationHours?: number;
+  type?: string;
+  description?: string;
+  organizer?: string;
+  lineupRaw?: string;
+  timetableFestivalId?: string;
+  venue?: unknown;
+  stages?: unknown;
+  cardArtists?: string[];
+  partnerIds?: string[];
+  media?: unknown;
+  offers?: unknown;
+  images?: PublishedEventImages;
+  links?: PublishedEventLinks;
+  source?: PublishedEventSource;
 }
 
 export interface PublishedEvents {
@@ -62,18 +111,41 @@ export function assertNoPrivateFields(value: unknown): void {
   }
 }
 
-function readPublishedFile(catalog: PublishedCatalog): unknown {
+function isJsonValue(value: unknown): value is JsonValue {
+  if (value === null || typeof value === 'string' || typeof value === 'boolean') {
+    return true;
+  }
+  if (typeof value === 'number') {
+    return Number.isFinite(value);
+  }
+  if (Array.isArray(value)) {
+    return value.every((item) => isJsonValue(item));
+  }
+  if (typeof value === 'object') {
+    return Object.values(value).every((item) => isJsonValue(item));
+  }
+  return false;
+}
+
+function readPublishedFile(catalog: PublishedCatalog): JsonValue {
   const fileName = publishedFiles[catalog];
   const filePath = join(dataDirectory, fileName);
   const parsed: unknown = JSON.parse(readFileSync(filePath, 'utf8'));
   assertNoPrivateFields(parsed);
+  if (!isJsonValue(parsed)) {
+    throw new Error('catalog is not json');
+  }
   return parsed;
 }
 
-export function readCatalog(catalog: PublishedCatalog): unknown {
+export function readCatalog(catalog: PublishedCatalog): JsonValue {
   return readPublishedFile(catalog);
 }
 
+/**
+ * Returns the stored events file. Do not run these objects through `parseParty`:
+ * that parser drops `source` and `images`, and it rejects extra Goabase fields.
+ */
 export function readEvents(): PublishedEvents {
   const parsed = readPublishedFile('events');
   if (!isEventsEnvelope(parsed)) {
@@ -83,18 +155,20 @@ export function readEvents(): PublishedEvents {
 }
 
 function isEventsEnvelope(value: unknown): value is PublishedEvents {
-  if (typeof value !== 'object' || value === null) {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     return false;
   }
   const record = value as Record<string, unknown>;
   const source = record.source;
+  if (typeof source !== 'object' || source === null || Array.isArray(source)) {
+    return false;
+  }
+  const sourceRecord = source as Record<string, unknown>;
   return (
     typeof record.schemaVersion === 'number' &&
     typeof record.generatedAt === 'string' &&
-    typeof source === 'object' &&
-    source !== null &&
-    typeof (source as { provider?: unknown }).provider === 'string' &&
-    typeof (source as { endpoint?: unknown }).endpoint === 'string' &&
+    typeof sourceRecord.provider === 'string' &&
+    typeof sourceRecord.endpoint === 'string' &&
     typeof record.count === 'number' &&
     Array.isArray(record.events)
   );

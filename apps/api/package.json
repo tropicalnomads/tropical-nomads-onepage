@@ -3,13 +3,18 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Local read-only API for the published JSON. No public URL.",
+  "description": "Local read-only Hono API for the published JSON. No public URL.",
+  "exports": {
+    ".": "./src/app.ts"
+  },
   "scripts": {
     "dev": "node --experimental-strip-types src/main.ts",
     "lint": "tsc --noEmit",
     "test": "node --experimental-strip-types --test test/*.test.ts"
   },
   "dependencies": {
+    "@hono/node-server": "2.1.6",
+    "hono": "4.13.17",
     "tropical-nomads-shared": "workspace:*"
   },
   "devDependencies": {

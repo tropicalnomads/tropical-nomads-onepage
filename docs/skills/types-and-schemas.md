@@ -1,6 +1,6 @@
 # Types and schemas
 
-Ticket 28 fills `packages/shared` version `0.3.0`. The parsers and the lookup list are in `packages/shared/src/schema/`. `apps/api` and `apps/bookings` import `schemas` from that package. Neither ships a server.
+Ticket 28 fills `packages/shared` version `0.3.0`. The parsers and the lookup list are in `packages/shared/src/schema/`. `apps/api` and `apps/bookings` import `schemas` from that package. The API server is Hono. See [hono.md](hono.md). Bookings does not ship a server.
 
 The owner asked to reuse the current brand. This ticket does not change the one-pager or the web shell.
 

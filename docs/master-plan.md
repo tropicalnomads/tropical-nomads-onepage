@@ -281,7 +281,7 @@ The owner defined the architecture.
 | Web app | Next.js, installed in `apps/web`. The one-pager `src/` is not rewritten. The shell is not deployed. |
 | Web frontend host | Amplify, when a later ticket is allowed to launch. A separate app from the one-pager. |
 | API host | A Docker container on ECS, when a later ticket is allowed to launch. The cluster is not created here. |
-| API style | REST. |
+| API style | REST, served by Hono on Node. The local API listens on `127.0.0.1`. `Strict-Transport-Security` stays off until the ECS host is HTTPS. |
 | Phones | The web app in the browser. |
 | Repositories | The shared package is `packages/shared`. The web shell is `apps/web`. Their GitHub remotes were not created. iOS and Android repos are optional and last. Ticket 19 may create them. It does not implement native apps. This monorepo keeps the one-pager, the API, Bookings, the web shell, and JSON. The monorepo uses Turborepo and pnpm. The one-pager package is `apps/one-pager`. |
 | Package manager | pnpm. The one-pager already uses it. |
@@ -304,7 +304,7 @@ Still open: ticket types, comps, guest lists, chargebacks, cancellation, transfe
 
 | Topic | Status | What stays attached to the question |
 | --- | --- | --- |
-| Tech stack | Decided | The record above. Cognito with Google and Apple. Next.js for the web shell in `apps/web`. Amplify for the new frontend, not launched. A Docker container on ECS for the API. REST. RDS for PostgreSQL is the recommendation. JSON stays until that database is confirmed. The new app is not launched. |
+| Tech stack | Decided | The record above. Cognito with Google and Apple. Next.js for the web shell in `apps/web`. Amplify for the new frontend, not launched. A Docker container on ECS for the API. REST, served by Hono. RDS for PostgreSQL is the recommendation. JSON stays until that database is confirmed. The new app is not launched. |
 | Cloud vendor | Decided as a target | AWS is the platform, in Frankfurt (`eu-central-1`). The one-pager keeps its Amplify app. The new web app's Amplify app and the ECS cluster are not created here. Starting sizes are in [the AWS record](devops/aws.md). DevOps owns later changes. |
 | Payments provider | Chosen later | Ticket 29, last in the first iteration, after the not-live hosts. The company is not named. The currency is euro. There are no refunds. |
 | Ticket format | Decided for this iteration | Door staff scan a QR code. A wallet pass is later, and it is not in this iteration. |
@@ -338,14 +338,14 @@ This is a planning sequence. It is the order of decisions. It is not a build sch
 6. **Split public JSON from private JSON,** including where writable files live. Do this before API work, so ticket secrets stay out of the public site bundle.
 7. **Languages are chosen.** The product is English and Portuguese, with internationalization. Countries are still open. The currency is euro.
 8. **Build shared UI components for the web app.** Theme tokens, the area ids, and the record schemas live in `packages/shared`. Native screens are not in the required path, so a Swift or Kotlin component toolkit is not a blocker.
-9. **The architecture is defined.** Cognito with Google and Apple, Next.js, Amplify, a Docker container on ECS, REST, and Amazon RDS for PostgreSQL as the recommendation. Every AWS resource is in Frankfurt (`eu-central-1`). Those hosts are not live yet. The one-pager deploy stays. The payment company is ticket 29 and is not named. JSON stays the store until the database is confirmed. Starting sizes for about five admins and parties of about 100–200 people are in [the AWS record](devops/aws.md).
+9. **The architecture is defined.** Cognito with Google and Apple, Next.js, Amplify, a Docker container on ECS, REST served by Hono, and Amazon RDS for PostgreSQL as the recommendation. Every AWS resource is in Frankfurt (`eu-central-1`). Those hosts are not live yet. The one-pager deploy stays. The payment company is ticket 29 and is not named. JSON stays the store until the database is confirmed. Starting sizes for about five admins and parties of about 100–200 people are in [the AWS record](devops/aws.md).
 10. **Set the remaining implementation order** after those decisions. One constraint is already fixed. It sits below, separate from this list, so it is not mistaken for a full build plan.
 
 ### Later build constraint
 
 When the owner explicitly asks to start building, the **first build step** is to turn the Tropical Nomads page into a web app that can have an API.
 
-The web shell is `apps/web` and is not live. The API in `apps/api` reads the published JSON on `127.0.0.1` and is not live. JSON files are the data store. The [build plan](build-plan/README.md) splits the rest into tickets.
+The web shell is `apps/web` and is not live. The API in `apps/api` is Hono. It reads the published JSON on `127.0.0.1` and is not live. JSON files are the data store. The [build plan](build-plan/README.md) splits the rest into tickets.
 
 ## 9. How this folder grows
 
