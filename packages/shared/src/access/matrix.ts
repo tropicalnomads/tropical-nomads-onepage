@@ -16,6 +16,9 @@ export const accessActions = [
   'grant-door',
   'invite-door',
   'revoke-door',
+  'create-guest-list',
+  'add-guest',
+  'read-event-roster',
   'read-published',
 ] as const;
 
@@ -44,12 +47,14 @@ type AdminAction =
   | 'grant-admin'
   | 'grant-door'
   | 'invite-door'
-  | 'revoke-door';
+  | 'revoke-door'
+  | 'create-guest-list'
+  | 'add-guest';
 
 export type AccessRequest =
   | { action: AdminAction; role: Role; actorId: string }
   | {
-      action: 'scan-ticket';
+      action: 'scan-ticket' | 'read-event-roster';
       role: Role;
       actorId: string;
       partyId: string;
@@ -91,9 +96,12 @@ export function roleAllows(role: Role, action: AccessAction): boolean {
     case 'grant-door':
     case 'invite-door':
     case 'revoke-door':
+    case 'create-guest-list':
+    case 'add-guest':
       return known === 'admin';
     case 'scan-ticket':
-      return known === 'door';
+    case 'read-event-roster':
+      return known === 'door' || known === 'admin';
     case 'read-own-purchases':
     case 'use-payment':
       return known === 'user';
@@ -126,10 +134,24 @@ function actorIdOf(value: string): string | undefined {
   return id === '' ? undefined : id;
 }
 
+function partyAccess(role: Role, actorId: string, partyId: string, invite: DoorInviteScope | undefined): AccessDecision {
+  const party = partyId.trim();
+  if (party === '') {
+    return deny();
+  }
+  if (role === 'admin') {
+    return allow(actorId);
+  }
+  if (role === 'door' && invite && !invite.revoked && invite.partyIds.includes(party)) {
+    return allow(actorId);
+  }
+  return deny();
+}
+
 /**
  * Allow or deny one request.
  * An admin change includes the actor id so the later write can record who did it.
- * A scan allows a door actor only for a party on an invite loaded by the API.
+ * A door scan allows only a party on an invite. An admin can open check-in for a named party.
  * Reading someone else's purchases is denied for every role.
  * Published reads stay open. That is not a fourth role.
  */
@@ -152,15 +174,12 @@ export function decideAccess(request: AccessRequest): AccessDecision {
     case 'grant-door':
     case 'invite-door':
     case 'revoke-door':
+    case 'create-guest-list':
+    case 'add-guest':
       return allow(actorId);
-    case 'scan-ticket': {
-      const partyId = request.partyId.trim();
-      const invite = request.invite;
-      if (partyId === '' || !invite || invite.revoked || !invite.partyIds.includes(partyId)) {
-        return deny();
-      }
-      return allow(actorId);
-    }
+    case 'scan-ticket':
+    case 'read-event-roster':
+      return partyAccess(request.role, actorId, request.partyId, request.invite);
     case 'read-own-purchases':
       return request.subjectId === actorId ? allow(actorId) : deny();
     case 'read-traces':

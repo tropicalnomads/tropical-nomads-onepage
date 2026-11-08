@@ -8,7 +8,8 @@
     ".": "./src/app.ts",
     "./accounts": "./src/accounts.ts",
     "./payments": "./src/payments.ts",
-    "./tickets": "./src/tickets.ts"
+    "./tickets": "./src/tickets.ts",
+    "./check-in": "./src/check-in.ts"
   },
   "scripts": {
     "dev": "node --experimental-strip-types src/main.ts",

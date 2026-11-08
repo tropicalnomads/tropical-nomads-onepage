@@ -44,8 +44,9 @@ export const schemas = {
   order: ['id', 'userId', 'purpose', 'lines', 'traceId', 'createdAt'],
   paymentTrace: ['id', 'userId', 'amount', 'currency', 'purpose', 'reference', 'status'],
   issuedTicket: ['id', 'partyId', 'traceId', 'buyerId', 'secret', 'createdAt', 'validForEntry'],
-  checkIn: ['id', 'ticketId', 'partyId', 'at', 'actorId', 'result', 'reason'],
+  checkIn: ['id', 'ticketId', 'guestId', 'partyId', 'at', 'actorId', 'result', 'reason'],
   doorInvite: ['id', 'email', 'userId', 'partyIds', 'revoked'],
+  guestList: ['id', 'partyId', 'name', 'createdAt', 'guests'],
   product: ['id', 'name', 'image', 'alt', 'amount', 'currency', 'pickup', 'stockNote'],
   stockCount: ['productId', 'size', 'count'],
   stockCorrection: ['id', 'productId', 'size', 'actorId', 'at', 'oldCount', 'newCount'],
@@ -63,6 +64,7 @@ export { parseBillingAddress, parsePaymentMethod, parseProfile } from './account
 export {
   parseCheckIn,
   parseDoorInvite,
+  parseGuestList,
   parseIssuedTicket,
   parseOrder,
   parsePaymentTrace,

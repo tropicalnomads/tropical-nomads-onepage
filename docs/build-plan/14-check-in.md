@@ -1,6 +1,6 @@
 # 14 — Check-in invites and QR scan
 
-**Status:** not started. Admin and door staff open the check-in page. They pick an event, see who was sold a ticket, search by name, and scan a QR code. One check-in is final. Admins keep guest lists.
+**Status:** done for the check-in page. Admin and door staff pick a published event, see sold tickets, search by name, and scan a QR code. The first check-in is final. Admins keep guest lists. A sold ticket stays unpaid until a provider confirms it. No payment company is named.
 
 ## Outcome
 

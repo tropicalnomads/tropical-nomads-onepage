@@ -18,6 +18,7 @@ export const operationalCollections = {
   'issued-tickets': 'issuedTicket',
   'check-ins': 'checkIn',
   'door-invites': 'doorInvite',
+  'guest-lists': 'guestList',
   'stock-counts': 'stockCount',
 } as const satisfies Record<string, keyof typeof schemas>;
 

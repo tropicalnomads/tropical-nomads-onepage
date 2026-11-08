@@ -28,7 +28,7 @@ const matrix = {
     'create-party': 'allow',
     'configure-event-tickets': 'allow',
     'set-merch': 'allow',
-    'scan-ticket': 'deny',
+    'scan-ticket': 'allow',
     'read-own-purchases': 'deny',
     'read-other-purchases': 'deny',
     'read-traces': 'allow',
@@ -88,7 +88,7 @@ describe('access matrix', () => {
     });
   });
 
-  it('lets door scan only an invited party, and denies admin and user', () => {
+  it('lets door scan only an invited party, and lets an admin open a named party', () => {
     const invite = { partyIds: ['party-1'], revoked: false };
     assert.deepEqual(
       decideAccess({ action: 'scan-ticket', role: 'door', actorId: 'door-1', partyId: 'party-1', invite }),
@@ -108,8 +108,17 @@ describe('access matrix', () => {
       }).effect,
       'deny',
     );
-    assert.equal(decideAccess({ action: 'scan-ticket', role: 'admin', actorId: 'admin-1', partyId: 'party-1', invite }).effect, 'deny');
+    assert.deepEqual(decideAccess({ action: 'scan-ticket', role: 'admin', actorId: 'admin-1', partyId: 'party-1' }), {
+      effect: 'allow',
+      actorId: 'admin-1',
+    });
+    assert.equal(decideAccess({ action: 'read-event-roster', role: 'door', actorId: 'door-1', partyId: 'party-2', invite }).effect, 'deny');
     assert.equal(decideAccess({ action: 'scan-ticket', role: 'user', actorId: 'user-1', partyId: 'party-1', invite }).effect, 'deny');
+    assert.equal(decideAccess({ action: 'create-guest-list', role: 'door', actorId: 'door-1' }).effect, 'deny');
+    assert.deepEqual(decideAccess({ action: 'add-guest', role: 'admin', actorId: 'admin-1' }), {
+      effect: 'allow',
+      actorId: 'admin-1',
+    });
   });
 
   it('lets a user read only their own purchases', () => {

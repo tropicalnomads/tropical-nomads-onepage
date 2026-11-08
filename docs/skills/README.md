@@ -20,6 +20,8 @@ This folder holds short procedures for people working on Tropical Nomads.
 - [payment-interfaces.md](payment-interfaces.md) — ticket 12. Pending traces and saved methods. No payment company.
 - [tickets.md](tickets.md) — ticket 13. An unpaid euro ticket and a QR code for a published party.
 - [qr-code.md](qr-code.md) — the SVG encoder for the ticket payload. Not a payment SDK.
+- [check-in.md](check-in.md) — ticket 14. Admin and door check in one published event. One entry. Guest lists.
+- [qr-camera.md](qr-camera.md) — the browser camera that reads a ticket QR code.
 - [hono.md](hono.md) — the REST library for `apps/api`. Hono on Node, loopback only.
 - [nextjs.md](nextjs.md) — Next.js lives in the web shell. The one-pager stays on Vite.
 - [turborepo.md](turborepo.md) — how package tasks run. pnpm stays the package manager.

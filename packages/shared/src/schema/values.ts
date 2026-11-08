@@ -10,7 +10,7 @@ export type Role = (typeof roles)[number];
 export const paymentPurposes = ['tickets', 'merch'] as const;
 export type PaymentPurpose = (typeof paymentPurposes)[number];
 
-export const traceStatuses = ['pending_provider'] as const;
+export const traceStatuses = ['pending_provider', 'confirmed'] as const;
 export type TraceStatus = (typeof traceStatuses)[number];
 
 export const signInProviders = ['cognito', 'google', 'apple'] as const;
@@ -78,6 +78,7 @@ export interface SchemaRefs {
   profileIds?: readonly string[];
   traceIds?: readonly string[];
   ticketIds?: readonly string[];
+  guestIds?: readonly string[];
   outsidePartyIds?: readonly string[];
   billingAddressIds?: readonly string[];
   templateIds?: readonly string[];
