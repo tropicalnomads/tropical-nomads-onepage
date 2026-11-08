@@ -6,7 +6,7 @@ From the repo root, run `pnpm install`, `pnpm lint`, and `pnpm build`. Those com
 
 The owner asked for Turborepo and for pnpm. The one-pager already used pnpm. It keeps its Amplify deploy. `amplify.yml` publishes `apps/one-pager/dist` and does not publish the API or Bookings.
 
-Named client repositories, not created: `tropical-nomads-shared`, `tropical-nomads-web`, and optional `tropical-nomads-ios` and `tropical-nomads-android`.
+The shared client is the package `tropical-nomads-shared` in `packages/shared`. Its GitHub remote was not created. Still named only: `tropical-nomads-web`, and optional `tropical-nomads-ios` and `tropical-nomads-android`.
 
 The next ticket must not deploy the new web app, connect to AWS, create those client repositories, put operational JSON under `public/`, or give the API a public URL.
 

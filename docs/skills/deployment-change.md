@@ -6,4 +6,4 @@ Cache-Control stays uncached for the site, and `/assets/**` stays immutable for 
 
 The owner asked for the one-pager to keep deploying from the monorepo, and for the new app to stay offline. The web app's Amplify app is ticket 23. The API container on ECS is ticket 24. The database confirmation is ticket 25. None of those were created.
 
-The next ticket must not create the shared repository, connect to AWS, give the API a public URL, point www at another package, or copy `data/operational` into `apps/one-pager/public`.
+Ticket 4 adds `packages/shared` and does not change this deploy. The next ticket must not create the web app, connect to AWS, give the API a public URL, point www at another package, or copy `data/operational` into `apps/one-pager/public`.
