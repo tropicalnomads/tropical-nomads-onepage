@@ -22,7 +22,7 @@ Do not answer them in this ticket. Do not name a company.
 2. Which currencies `startPayment` may accept. The shirt on the page is €50. That price is not a decision that the product takes only euros.
 3. An admin sets an event's ticket offers and a product's price in tickets 18 and 16. This list does not replace those prices with one global price, and it does not choose the payment company.
 4. What a refund and a chargeback do to the trace from `recordRefund`, and whether a cancelled order can still be checked in.
-5. Whether a comp or a guest ticket is a payment trace with no charge, or a different kind of issued ticket. Transfers and a second scan stay on the check-in ticket. They are not payment-company choices.
+5. Transfers and cancellation stay open. A guest list is not a payment trace: ticket 14 lets an admin add named guests and check them in without a charge. A checked person cannot be checked in again. Those are not payment-company choices.
 6. When an event leaves Eventbrite, another tickets URL, or Goabase, and when the shirt leaves the WhatsApp reserve. Those links stay until that switch.
 
 ## To-do
@@ -34,7 +34,7 @@ Do not answer them in this ticket. Do not name a company.
 
 ## Acceptance criteria
 
-- The six items above are recorded as open.
+- The items above stay open, except the guest list and the second check-in, which ticket 14 now decides.
 - No provider name was added.
 - Ticket 12's functions are unchanged by this ticket.
 
