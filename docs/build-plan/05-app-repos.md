@@ -2,7 +2,7 @@
 
 **Status:** done as a shell in this monorepo. The package is `apps/web`, name `tropical-nomads-web`, version `0.1.0`. It is not deployed. No Amplify app, production domain, or ECS service was created. No iOS or Android repository was created. No AWS account was connected.
 
-The README lists this shell as step 6. Step 5 is still [types and schemas](28-types-and-schemas.md), and that ticket was not started. The owner asked for the web app shell. The shell does not write schema fields and does not restate event field names.
+The README lists this shell as step 6. [Types and schemas](28-types-and-schemas.md) are step 5 and now live in `packages/shared`. The shell does not restate event field names.
 
 ## Outcome
 
@@ -22,7 +22,7 @@ The product people open, including on a phone, is this web app. iOS and Android 
 - [04 — Shared client repo](04-shared-client-repo.md).
 - [01 — Identify the stack](01-identify-stack.md). The owner accepted Next.js. It is installed in this package only.
 
-Ticket 28 is still open. This shell does not wait on event fields because it does not load events.
+The shell does not load events. It reads area ids from the shared package, not the schema field list.
 
 ## To-do
 

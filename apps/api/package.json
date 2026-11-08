@@ -2,5 +2,12 @@
   "name": "tropical-nomads-api",
   "private": true,
   "version": "0.0.0",
-  "description": "API slot. No application is shipped here. There is no public URL."
+  "type": "module",
+  "description": "API slot. No application is shipped here. There is no public URL.",
+  "scripts": {
+    "test": "node --experimental-strip-types --test test/*.test.ts"
+  },
+  "dependencies": {
+    "tropical-nomads-shared": "workspace:*"
+  }
 }

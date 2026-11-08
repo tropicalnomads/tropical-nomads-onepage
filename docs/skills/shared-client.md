@@ -6,6 +6,6 @@ The owner asked for the shared client package in this repository. The planning t
 
 Run `pnpm --filter tropical-nomads-shared test` and `pnpm --filter tropical-nomads-shared lint`. www still builds with `pnpm --filter tropical-nomads-page build`. `amplify.yml` is unchanged.
 
-The package exports theme tokens, `textView`, the three public origins, `webAreas`, and an empty `schemas` object. It does not contain `public/data`. Ticket 28 fills the schema fields.
+The package exports theme tokens, `textView`, the three public origins, `webAreas`, and the record schemas. It does not contain `public/data`. See [types-and-schemas.md](types-and-schemas.md).
 
 The next ticket must not deploy the web shell, connect to AWS, publish this package to a registry, or copy event JSON into it.
