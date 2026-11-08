@@ -1,6 +1,6 @@
 # 30 — Database scripts repository
 
-**Status:** not started. Step 25, after the RDS confirmation and before the payment company. This file names the repository and does not create it.
+**Status:** not started. Step 26, after the RDS confirmation and ticket 31, and before the payment company. This file names the repository and does not create it.
 
 ## Outcome
 
@@ -42,7 +42,7 @@ The index does not show an earlier step. Tickets before the confirmation test ag
 
 ## Acceptance criteria
 
-- The build-plan index places this ticket at step 25, after ticket 25 and before ticket 29.
+- The build-plan index places this ticket at step 26, after ticket 25 and ticket 31, and before ticket 29.
 - The repository is named `tropical-nomads-database` and was not created.
 - No migration script, seed script, or dependency was added. `package.json` is unchanged.
 - The recommendation is still Amazon RDS for PostgreSQL in Frankfurt. No other database was picked. JSON is still the store. No RDS instance was created, and nothing was migrated.
