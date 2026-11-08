@@ -277,11 +277,12 @@ Status is per row. Decisions the owner added on 8 November 2026 are marked as de
 | Where the apps live | Decided | The web app and a shared repository are required. iOS and Android repositories are optional, last, and are not a native implementation. Phones use the web app in the browser. This repo still holds the one-pager, the API, Bookings, and the JSON data. |
 | Who performs check-in | Decided | The access list has three roles. Door staff scan QR codes. Admins and users do not. |
 | Languages | Decided | The product is English and Portuguese, with internationalization. The one-pager already has both in `src/i18n/`. Countries are not decided by that. Currencies are on the payment-decisions list. |
+| Email | Decided | One sender and a fixed message list. A ticket purchase email carries the QR code. Marketing for a new party, and the artist offer, need consent, a stated purpose, and a way to stop. Stopping marketing does not stop purchase or QR mail. No email vendor is chosen. |
 | Implementation order | Proposed for review | The recommended order is in [docs/build-plan/](build-plan/README.md). Each ticket ends with acceptance criteria and unit tests where the behavior is pure. |
 
 ### Also undecided, and needed before implementation
 
-- Buyers do register and sign in. How a ticket is delivered besides being available in the app (for example email) is still open.
+- Buyers do register and sign in. A ticket is in the app and in the ticket-purchase email, which carries the QR code. The message list, consent, and the right to stop marketing are in the email ticket. No email vendor is chosen.
 - Ticket types, currencies, comps, guest lists, refunds, chargebacks, and cancellation. They are listed in the build plan and do not block the payment interfaces. Transfers and re-entry stay with check-in.
 - Whether merch fulfillment is pickup, shipping, or both. Merch uses the same payment interfaces as tickets. Today's page describes a WhatsApp reservation and pickup at The Sound House, Dublin.
 - Which products exist beyond T-shirts.

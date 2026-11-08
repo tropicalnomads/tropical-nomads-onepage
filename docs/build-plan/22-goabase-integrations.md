@@ -13,7 +13,8 @@ Bookings has an integrations tab whose Goabase data is a list of parties that ex
 ## Depends on
 
 - [07 — Shared catalog](07-shared-catalog.md). The artists being offered are the shared artists.
-- [17 — Bookings package](17-bookings-package.md). The tab and the offer email live in Bookings.
+- [17 — Bookings package](17-bookings-package.md). The tab lives in Bookings.
+- [27 — Email](27-email.md). The artist offer uses that sender. Do not add a second mailer.
 
 Nothing depends on this ticket. It does not block the admin calendar.
 

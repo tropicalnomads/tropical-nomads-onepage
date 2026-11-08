@@ -15,7 +15,8 @@ Owner decisions already in this order:
 - The web app is its own repository. A shared repository holds theme colors, base components, types, schemas, and constants.
 - Before a future go-live, and still not live: the new frontend on its own Amplify app, the API as a Docker container on ECS, and a confirmation of Amazon RDS for PostgreSQL. JSON stays the store until that confirmation. The one-pager keeps its existing Amplify deploy.
 - This repository still holds the one-pager, the API, Bookings, and the JSON. Bookings is not split into its own repo.
-- Goabase is an integrations tab at the end: a list of parties that exist, so Bookings can email offers of Tropical Nomads artists. The one-pager refresh stays.
+- Email is one sender, with templates and a fixed message list. Marketing needs consent and can be stopped. No email vendor is chosen.
+- Goabase is an integrations tab at the end: a list of parties that exist, so Bookings can email offers of Tropical Nomads artists. That offer uses the email ticket. The one-pager refresh stays.
 - iOS and Android repositories are optional and last. Ticket 19 creates them only. It does not implement native apps.
 
 Still open: the payment company, the currencies and prices on the payment-decisions list, and API style. Next.js stays the lean for the web app, not a lock. Languages are not open.
@@ -45,11 +46,12 @@ Still open: the payment company, the currencies and prices on the payment-decisi
 | 19 | [Inventory](16-inventory.md) | 09, 15 | Admin adds merch and sets price, sizes, and stock. |
 | 20 | [Bookings package](17-bookings-package.md) | 02, 03, 07, 09, 20 | Bookings in this monorepo, own deploy, shared data. |
 | 21 | [Admin party calendar](18-admin-party-calendar.md) | 07, 09, 13, 17 | Admin creates parties, sets description, image, and artists, and configures that event's tickets. |
-| 22 | [Web app on Amplify](23-amplify-frontend.md) | 03, 05 | Not live yet. A separate Amplify app. www stays the one-pager. |
-| 23 | [API container on ECS](24-ecs-backend.md) | 06, 23 | Not live yet. Docker on ECS. No public production API. |
-| 24 | [Confirm RDS for PostgreSQL](25-rds-recommendation.md) | 01, 11, 24 | Not live yet. Recommendation to confirm. Not a migration. |
-| 25 | [Goabase integrations tab](22-goabase-integrations.md) | 07, 17 | Last product ticket. Parties that exist, so Bookings can email artist offers. |
-| 26 | [iOS and Android repositories](19-ios-android-repos.md) | 04 | Optional. Last. Creates the two repos only. No native screens. |
+| 22 | [Email](27-email.md) | 09, 10, 13, 14, 15, 18, 20 | Sending, templates, and every product message. No vendor. |
+| 23 | [Web app on Amplify](23-amplify-frontend.md) | 03, 05 | Not live yet. A separate Amplify app. www stays the one-pager. |
+| 24 | [API container on ECS](24-ecs-backend.md) | 06, 23 | Not live yet. Docker on ECS. No public production API. |
+| 25 | [Confirm RDS for PostgreSQL](25-rds-recommendation.md) | 01, 11, 24 | Not live yet. Recommendation to confirm. Not a migration. |
+| 26 | [Goabase integrations tab](22-goabase-integrations.md) | 07, 17, 27 | Last product ticket. Artist offers go through the email ticket. |
+| 27 | [iOS and Android repositories](19-ios-android-repos.md) | 04 | Optional. Last. Creates the two repos only. No native screens. |
 
 ## Capabilities
 
@@ -85,13 +87,14 @@ Checked against the decisions so far. The access list is three roles on ticket 0
 | English and Portuguese, with internationalization | 20. The one-pager already has `en` and `pt`. |
 | JSON until a database exists | 11. Ticket 25 asks the owner to confirm RDS for PostgreSQL and does not migrate. |
 | One-pager keeps deploying | 03. Tickets 23, 24, and 25 are the later hosts and are not live yet. |
-| Goabase integrations | 22, after the not-live host tickets. The public refresh script stays. |
+| Email | 27, after parties exist and before the Goabase offer. No vendor. |
+| Goabase integrations | 22, after email. The public refresh script stays. |
 
 Order problem that this pass fixes: iOS and Android were step 5, in the same ticket as the required web shell, so the product could not move without native apps. They are now ticket 19, optional, and last. Nothing depends on them. Phones use the web app in the browser.
 
 Not duplicates: ticket 09 writes who may scan. Ticket 14 builds the invite and the scanner. Ticket 11 is the JSON store. Ticket 01 only recommends the later database.
 
-The three-role decision does not block the stack, the web shell, or the public event list. Those have no role tools. It is in force from ticket 09 onward. History waits until tickets and merch exist, which is why it is step 18. Goabase is step 25, and the catalog does not wait for it. The Amplify, ECS, and RDS tickets are steps 22–24, not live, and the build tickets before them do not wait.
+The three-role decision does not block the stack, the web shell, or the public event list. Those have no role tools. It is in force from ticket 09 onward. History waits until tickets and merch exist, which is why it is step 18. Email is step 22, after registration, purchases, the door invite, and party creation. Goabase is step 26 and uses that sender. The catalog does not wait for either. The Amplify, ECS, and RDS tickets are steps 23–25, not live, and the build tickets before them do not wait.
 
 Left open on purpose: the payment company and the rest of the list in ticket 21, API style, the timetable site, agenda contents, draft parties, pickup versus shipping, offline check-in, and a wallet pass. Tickets 23–25 do not create a public launch, and ticket 25 does not create a database.
 

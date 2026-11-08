@@ -19,7 +19,7 @@ The owner wants to invite helpers for the door, not to let every buyer scan thei
 
 ## To-do
 
-1. Admin invites by email, attaching one or more event ids from the shared catalog. The invite grants the door-staff role for those events only. A helper for one party cannot scan another party's tickets.
+1. Admin invites by email, attaching one or more event ids from the shared catalog. The invite grants the door-staff role for those events only. A helper for one party cannot scan another party's tickets. The message is the door-invite template in ticket 27. This ticket does not choose an email vendor.
 2. The invited person registers or signs in through Cognito if they do not already have an account. The invite attaches to that profile. Revoking the invite removes the role immediately.
 3. The check-in area in the web app scans a QR code, including from a phone browser, and sends the payload to the API. The API checks that the ticket was issued, the secret matches, the event is one this person may scan, and the payment trace is confirmed. Do not build a native scanner. Deny the scan to the admin role and the user role.
 4. With the stub provider, confirmed traces do not exist yet, so a scan of a real QR returns unpaid and does not admit. That is success for this ticket, not a broken scanner.
