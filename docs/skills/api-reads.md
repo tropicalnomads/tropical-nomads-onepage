@@ -4,7 +4,7 @@ Ticket 06. `apps/api` is a Hono app. It reads the JSON in `apps/one-pager/public
 
 An event is upcoming when `dateStart` is at or after local midnight of the given day. That matches `isUpcomingEvent` in `apps/one-pager/src/lib/data.ts`. The one-pager still fetches `/data/events.json` itself.
 
-The package imports `schemas` from `tropical-nomads-shared`. It does not keep a second field list. A private field such as a ticket secret is refused. Query checks use `hono/validator`. See [hono.md](hono.md).
+The package imports `schemas` from `tropical-nomads-shared`. It does not keep a second field list. A private field such as a ticket secret is refused. Query checks use `hono/validator`. See [hono.md](hono.md). Ticket 07 reads parties and artists through `src/catalog.ts`. See [shared-catalog.md](shared-catalog.md).
 
 `pnpm --filter tropical-nomads-api dev` listens on `127.0.0.1` only, port `8787` unless `API_PORT` is set. `serve` sets that hostname. There is no public hostname. `amplify.yml` does not build this package. The web shell is not deployed.
 

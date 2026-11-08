@@ -1,16 +1,8 @@
 import { Hono } from 'hono';
 import { secureHeaders } from 'hono/secure-headers';
 import { validator } from 'hono/validator';
-import {
-  eventsView,
-  pastEvents,
-  publishedSchema,
-  readCatalog,
-  readEvents,
-  upcomingEvents,
-  type PublishedCatalog,
-  type PublishedEvents,
-} from './published.ts';
+import { readArtistCatalog, readPartyCatalog } from './catalog.ts';
+import { eventsView, pastEvents, publishedSchema, readCatalog, upcomingEvents, type PublishedCatalog } from './published.ts';
 
 export interface TodayQuery {
   today?: string;
@@ -67,11 +59,6 @@ function requireSchema(catalog: PublishedCatalog): void {
   }
 }
 
-function eventsResponse(): PublishedEvents {
-  requireSchema('events');
-  return readEvents();
-}
-
 function selectedDay(today: string | undefined): Date {
   return today === undefined ? startOfToday() : parseToday(today);
 }
@@ -86,16 +73,16 @@ function catalogResponse(catalog: PublishedCatalog): Record<string, unknown> | u
 }
 
 const routes = new Hono()
-  .get('/events', todayQuery, (c) => c.json(eventsResponse()))
+  .get('/events', todayQuery, (c) => c.json(readPartyCatalog()))
   .get('/events/upcoming', todayQuery, (c) => {
-    const events = eventsResponse();
+    const events = readPartyCatalog();
     return c.json(eventsView(events, upcomingEvents(events.events, selectedDay(c.req.valid('query').today))));
   })
   .get('/events/past', todayQuery, (c) => {
-    const events = eventsResponse();
+    const events = readPartyCatalog();
     return c.json(eventsView(events, pastEvents(events.events, selectedDay(c.req.valid('query').today))));
   })
-  .get('/artists', todayQuery, (c) => c.json(catalogResponse('artists')))
+  .get('/artists', todayQuery, (c) => c.json(readArtistCatalog()))
   .get('/venues', todayQuery, (c) => c.json(catalogResponse('venues')))
   .get('/labels', todayQuery, (c) => c.json(catalogResponse('labels')))
   .get('/partners', todayQuery, (c) => c.json(catalogResponse('partners')))
