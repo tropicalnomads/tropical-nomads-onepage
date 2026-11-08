@@ -12,7 +12,8 @@ Tickets, merch, and door invites need a real user. The current site has no accou
 
 ## Depends on
 
-- [04 — Shared client repo](04-shared-client-repo.md). The profile schema lives there.
+- [04 — Shared client repo](04-shared-client-repo.md). The shared package exists.
+- [28 — Types and schemas](28-types-and-schemas.md). The profile schema is already written there.
 - [05 — Web app repository](05-app-repos.md). The sign-in screen is in the web app.
 - [09 — Security baseline](09-security-baseline.md). Roles exist before the first admin invite.
 - [20 — English and Portuguese](20-internationalization.md). The profile locale is one of those two codes.

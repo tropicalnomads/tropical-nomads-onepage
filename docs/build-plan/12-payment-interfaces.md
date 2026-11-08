@@ -15,10 +15,11 @@ The owner wants the payment structure settled and the integration later. Users n
 - [09 — Security baseline](09-security-baseline.md).
 - [10 — Accounts and profile](10-accounts-and-profile.md).
 - [11 — Private operational data](11-private-operational-data.md).
+- [28 — Types and schemas](28-types-and-schemas.md). The trace and payment-method schemas already exist.
 
 ## To-do
 
-1. Define these functions in the API and as types in the shared repo. Names can change to match the API style once that is chosen. The jobs cannot:
+1. Define these functions in the API. The trace and payment-method shapes are the schemas from ticket 28. Names can change to match the API style once that is chosen. The jobs cannot:
    - `createCustomer(userId)`
    - `attachPaymentMethod(userId, method)`
    - `listPaymentMethods(userId)`

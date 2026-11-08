@@ -4,19 +4,20 @@
 
 ## Outcome
 
-Artists, parties/events, and the calendar are one JSON catalog the API serves. The public site reads the published view. The app repos use the shared schema from ticket 04. A second events catalog does not exist.
+Artists, parties/events, and the calendar are one JSON catalog the API serves. The public site reads the published view. The app repos use the shared schema from ticket 28. A second events catalog does not exist.
 
 ## Why it exists
 
-The one-pager has parties and artists and no calendar or artist agenda. Bookings is supposed to build agendas from the same parties. Event fields already live in `src/lib/types/event.ts`: `id`, `title`, `type`, `dateStart`, `dateEnd`, `timezone`, `durationHours`, `venue`, `lineupRaw`, `stages`, `cardArtists`, `partnerIds`, `timetableFestivalId`, `media`, `description`, `organizer`, `images`, `links`, `source`. `scripts/fetch-goabase-events.mjs` writes the public files from a curated Goabase id list plus `scripts/data/`.
+The one-pager has parties and artists and no calendar or artist agenda. Bookings is supposed to build agendas from the same parties. Event fields already live in `src/lib/types/event.ts`. Ticket 28 puts that shape, plus an artist id, into the shared schema. `scripts/fetch-goabase-events.mjs` writes the public files from a curated Goabase id list plus `scripts/data/`.
 
 ## Depends on
 
 - [06 — API reads published data](06-api-reads-published-data.md).
+- [28 — Types and schemas](28-types-and-schemas.md). The party and artist schemas already exist.
 
 ## To-do
 
-1. Treat the fields above as the published contract. Put that schema in the shared repo if ticket 04 has not already done it.
+1. Use the party and artist schemas from ticket 28. Do not add a second event shape in this ticket.
 2. Add calendar entries and artist agendas that point at existing event ids and artist names. Stop and ask what an agenda contains beyond "this artist, these parties", and whether a party can stay off the public list. Do not guess. Both are still open.
 3. Until the draft answer exists, the public list is whatever is in `public/data/events.json`.
 4. Keep Goabase as the current one-pager refresh. Do not replace the script and do not make the API call Goabase. The integrations tab in ticket 22 is a later party list for artist offers. This ticket does not wait for it.

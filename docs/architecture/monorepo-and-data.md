@@ -2,7 +2,7 @@
 
 **Status:** planning only. High level. No new packages, no application code. Hosts and the database recommendation are recorded. Nothing is created.
 
-These notes describe the future shape of this repository. The [master plan](../master-plan.md) is the product description. This page is how the repository, the deploys, and the data fit together. The [documentation index](../README.md) explains where new notes go.
+These notes describe the future shape of this repository. The [architecture index](README.md) lists every architecture page. The [system page](system.md) is the diagram of repositories and deploys. The [models page](models.md) is how the records point at each other. The [master plan](../master-plan.md) is the product description. The [documentation index](../README.md) explains where new notes go.
 
 ## The shape already decided
 
@@ -139,5 +139,5 @@ The entities stay: artists, parties/events, calendar, agendas, tickets, orders, 
 
 - Packages, workspace config, and dependencies.
 - Creating AWS resources, choosing a web framework beyond the Next.js lean, and choosing a payment provider. Amplify, ECS, and the RDS recommendation are already written above.
-- API routes, field-level schemas, and ticket encoding.
+- API routes and the byte encoding of a QR image. The record relationships and the fields are on the [models page](models.md). Ticket 28 writes the schemas.
 - The one-pager's runtime behavior.

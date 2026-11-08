@@ -7,7 +7,7 @@
 
 This plan describes the product and the later shape of the repository. It does not implement the product, add packages, or choose vendors. The one-pager keeps its current behavior.
 
-Read it with the [documentation index](README.md) and the [architecture notes](architecture/monorepo-and-data.md).
+Read it with the [documentation index](README.md) and the [architecture pages](architecture/README.md).
 
 ## 1. The product, in plain words
 
@@ -183,7 +183,7 @@ Admin is one role. Refunds, guest tickets, and similar money rules are still und
 
 ## 5. Repository shape
 
-The [architecture notes](architecture/monorepo-and-data.md) hold the detail. What is already settled:
+The [architecture index](architecture/README.md) holds the detail: the [system diagram](architecture/system.md), the [model diagram](architecture/models.md), and the [monorepo notes](architecture/monorepo-and-data.md). What is already settled:
 
 - Later work stays in **this** repository. There is no new unrelated repository.
 - The repository becomes a **monorepo** when that conversion is requested. This plan does not convert it.
@@ -278,6 +278,7 @@ Status is per row. Decisions the owner added on 8 November 2026 are marked as de
 | Who performs check-in | Decided | The access list has three roles. Door staff scan QR codes. Admins and users do not. |
 | Languages | Decided | The product is English and Portuguese, with internationalization. The one-pager already has both in `src/i18n/`. Countries are not decided by that. Currencies are on the payment-decisions list. |
 | Email | Decided | One sender and a fixed message list. A ticket purchase email carries the QR code. Marketing for a new party, and the artist offer, need consent, a stated purpose, and a way to stop. Stopping marketing does not stop purchase or QR mail. No email vendor is chosen. |
+| Data model | Decided as a picture | Records and fields are in the architecture models page. Ticket 28 writes those schemas before the feature tickets. Open questions stay unfilled. |
 | Implementation order | Proposed for review | The recommended order is in [docs/build-plan/](build-plan/README.md). Each ticket ends with acceptance criteria and unit tests where the behavior is pure. |
 
 ### Also undecided, and needed before implementation
