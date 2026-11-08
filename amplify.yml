@@ -10,7 +10,7 @@ frontend:
       commands:
         - pnpm build
   artifacts:
-    baseDirectory: dist
+    baseDirectory: apps/one-pager/dist
     files:
       - "**/*"
   cache:

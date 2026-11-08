@@ -40,7 +40,7 @@ The Amplify, ECS, and RDS tickets are the deploy path for the first product, and
 | Step | Iteration | Ticket | Depends on | What it covers |
 | --- | --- | --- | --- | --- |
 | 1 | 1, base | [Identify the stack](01-identify-stack.md) | None | Cognito, Next.js, Amplify, ECS, REST, and the RDS recommendation. Region is Frankfurt. |
-| 2 | 1, base | [Repository shape](02-repository-shape.md) | 01 | This monorepo keeps the one-pager, API, Bookings, and JSON. It uses Turborepo. Commands use pnpm. The Turborepo config is not added yet. Shared and web repos are required. iOS and Android are named only. |
+| 2 | 1, base | [Repository shape](02-repository-shape.md) | 01 | This monorepo keeps the one-pager, API, and Bookings. Turborepo and pnpm. Client repos are named only. |
 | 3 | 1, base | [Deployment change](03-deployment-change.md) | 02 | www keeps its Amplify deploy. The new web app and the API do not go live. |
 | 4 | 1, base | [Shared client repo](04-shared-client-repo.md) | 02 | Theme, components, and the package that will hold the schemas. |
 | 5 | 1, base | [Types and schemas](28-types-and-schemas.md) | 04 | Every field and the lookups, including Bookings records, before the feature tickets. |
@@ -135,11 +135,12 @@ Every ticket ends with acceptance criteria. When that ticket is built:
 
 ## Repo facts these tickets rely on
 
-- The site is one Vite package, name `tropical-nomads-page`, built with `pnpm build` (`tsc -b && vite build`) into `dist/`.
-- Package manager commands use pnpm. The one-pager already uses pnpm, including `pnpm-lock.yaml` and `amplify.yml`.
-- The monorepo uses Turborepo. There is no Turborepo config yet, and there is no workspace file yet. `amplify.yml` installs and builds at the repo root and publishes `dist/`.
-- Published data is `public/data/*.json`, refreshed by `scripts/fetch-goabase-events.mjs`.
-- Merch stock, price, and the WhatsApp reserve link live in `src/lib/merch.ts`, not in JSON.
-- Ticket buttons leave the site via `getPrimaryTicketUrl` in `src/lib/data.ts`.
+- The site is one Vite package, `apps/one-pager`, name `tropical-nomads-page`, built with `pnpm build` (`tsc -b && vite build`) into `apps/one-pager/dist/`.
+- Package manager commands use pnpm. The lockfile is at the repo root. `amplify.yml` installs there and publishes `apps/one-pager/dist`.
+- The monorepo uses Turborepo (`turbo.json`) and a pnpm workspace (`pnpm-workspace.yaml`).
+- Published data is `apps/one-pager/public/data/*.json`, refreshed by `apps/one-pager/scripts/fetch-goabase-events.mjs`.
+- Operational JSON is `data/operational`. It is empty and it is not published.
+- Merch stock, price, and the WhatsApp reserve link live in `apps/one-pager/src/lib/merch.ts`, not in JSON.
+- Ticket buttons leave the site via `getPrimaryTicketUrl` in `apps/one-pager/src/lib/data.ts`.
 - Bookings is a header link to `https://bookings.tropical-nomads.com`. Its code is not in this repo.
 - Some events link out to `timetable.tropical-nomads.com`. That site is not part of these tickets.

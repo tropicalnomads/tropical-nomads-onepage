@@ -27,5 +27,5 @@ The owner asked for each of these.
 - The payment company is chosen in ticket 29, last in the first iteration. No company is named.
 - DevOps is on the building team. They own the AWS sizes and hold the AWS skills. They are not a product role.
 - Traffic is about five admins, and parties of about 100–200 people. The sizes are in [the AWS record](../devops/aws.md).
-- The monorepo uses Turborepo. The Turborepo config is not added yet.
+- The monorepo uses Turborepo. Ticket 2 adds the config. See [turborepo.md](turborepo.md).
 - Package manager commands use pnpm. The one-pager already uses pnpm.
