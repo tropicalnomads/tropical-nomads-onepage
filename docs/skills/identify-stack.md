@@ -14,7 +14,7 @@ The owner asked for each of these.
 - The web app is Next.js.
 - The new frontend host is Amplify.
 - The API host is a Docker container on ECS.
-- The API is REST.
+- The API is REST. The library is Hono, chosen on 8 November 2026. See [hono.md](hono.md).
 - Login is Amazon Cognito with Google and Apple. Passwords stay in Cognito.
 - The languages are English and Portuguese.
 - The database recommendation is Amazon RDS for PostgreSQL. JSON stays until that database is confirmed.

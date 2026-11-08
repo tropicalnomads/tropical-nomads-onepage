@@ -6,7 +6,7 @@
 
 The stack note matches what the owner decided on 8 November 2026. The architecture is defined. The new app is not launched.
 
-Decided: Amazon Cognito with Google and Apple. Next.js for the web app. Amplify for the new frontend. A Docker container on ECS for the API. REST. English and Portuguese. Euro only, for now. Merch is pickup for now, and shipping is later. There are no refunds. A party can be a draft. Offline check-in and a wallet pass are later, and they are not in this iteration. Phones use the web app in the browser. iOS and Android repos stay optional and last. The monorepo uses Turborepo. Package manager commands use pnpm. The one-pager already uses pnpm. Ticket 1 records that decision. Ticket 2 adds the Turborepo config.
+Decided: Amazon Cognito with Google and Apple. Next.js for the web app. Amplify for the new frontend. A Docker container on ECS for the API. REST, later served by Hono. English and Portuguese. Euro only, for now. Merch is pickup for now, and shipping is later. There are no refunds. A party can be a draft. Offline check-in and a wallet pass are later, and they are not in this iteration. Phones use the web app in the browser. iOS and Android repos stay optional and last. The monorepo uses Turborepo. Package manager commands use pnpm. The one-pager already uses pnpm. Ticket 1 records that decision. Ticket 2 adds the Turborepo config.
 
 Recommendation, not created: Amazon RDS for PostgreSQL. JSON stays the store until that database is confirmed.
 
@@ -84,3 +84,7 @@ None. This is the first ticket.
 ## Tests
 
 No unit test. The implementer re-reads the master plan and this ticket and checks they agree. `pnpm lint` and `pnpm build` in this repo still pass, because this ticket does not change the app.
+
+## Later
+
+On 8 November 2026 the owner chose Hono as the REST library. Ticket 1 did not install it. The choice is in the master plan's API style row and in [hono.md](../skills/hono.md).
