@@ -158,6 +158,7 @@ function claimsFrom(value: unknown): IdClaims | undefined {
         emailVerified: true,
         givenName: typeof record.givenName === 'string' ? record.givenName : '',
         familyName: typeof record.familyName === 'string' ? record.familyName : '',
+        preferredUsername: typeof record.preferredUsername === 'string' ? record.preferredUsername : '',
         provider: record.provider,
         providerSubject: record.providerSubject,
       };

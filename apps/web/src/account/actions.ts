@@ -2,8 +2,10 @@
 
 import { cookies } from 'next/headers';
 import { publishedEventIds, readAccounts } from 'tropical-nomads-api/accounts';
+import { normalizeAccountEmail, type VerifiedSignIn } from 'tropical-nomads-shared';
 import type { AccountNotice } from '../i18n/copy';
-import { cognitoTarget, registerWithCognito, signInWithCognito } from './cognito';
+import { cognitoTarget, registerWithCognito, signInWithCognito, verifiedSignInFromClaims } from './cognito';
+import { establishVerifiedAccount } from './establish';
 import { reviewPasswordSignIn, reviewProvider, reviewRegistration } from './review';
 import { createSessionToken, readSessionSub, sessionCookieName } from './session';
 
@@ -39,16 +41,31 @@ export async function registerAction(formData: FormData): Promise<AccountActionR
   const created = await registerWithCognito(
     {
       email: field(formData, 'email'),
+      username: field(formData, 'username'),
       password,
       givenName: field(formData, 'givenName'),
       familyName: field(formData, 'familyName'),
     },
     target,
   );
-  if (created.sub) {
-    await remember(created.sub);
+  if (!created.sub) {
+    return { notice: created.notice };
   }
-  return { notice: created.notice };
+  const admitted = await admit({
+    sub: created.sub,
+    provider: 'cognito',
+    providerSubject: created.sub,
+    email: field(formData, 'email'),
+    emailVerified: true,
+    username: field(formData, 'username'),
+    givenName: field(formData, 'givenName'),
+    familyName: field(formData, 'familyName'),
+  });
+  if (typeof admitted !== 'string') {
+    return { notice: admitted };
+  }
+  await remember(admitted);
+  return {};
 }
 
 export async function signInAction(formData: FormData): Promise<AccountActionResult> {
@@ -63,11 +80,45 @@ export async function signInAction(formData: FormData): Promise<AccountActionRes
     return { notice: 'cognito-not-configured' };
   }
   const signedIn = await signInWithCognito(email, password, target);
-  if (!signedIn.sub) {
+  if (!signedIn.claims || normalizeAccountEmail(signedIn.claims.email) !== normalizeAccountEmail(email)) {
     return { notice: signedIn.notice ?? 'password-rejected' };
   }
-  await remember(signedIn.sub);
+  const existing = readAccounts().profiles.find(
+    (profile) => profile.sub === signedIn.claims?.sub || normalizeAccountEmail(profile.email) === normalizeAccountEmail(signedIn.claims?.email ?? ''),
+  );
+  const profile = verifiedSignInFromClaims(
+    signedIn.claims,
+    undefined,
+    existing ? { username: existing.username, givenName: existing.givenName, familyName: existing.familyName } : undefined,
+  );
+  if (!profile) {
+    return { notice: 'username-required' };
+  }
+  const admitted = await admit(profile);
+  if (typeof admitted !== 'string') {
+    return { notice: admitted };
+  }
+  await remember(admitted);
   return {};
+}
+
+async function admit(signIn: VerifiedSignIn): Promise<string | AccountNotice> {
+  try {
+    return await establishVerifiedAccount(signIn);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '';
+    switch (message) {
+      case 'username is taken':
+        return 'username-taken';
+      case 'username is not valid':
+      case 'username is required':
+        return 'username-invalid';
+      case 'name is required':
+        return 'name-required';
+      default:
+        return 'password-rejected';
+    }
+  }
 }
 
 async function remember(sub: string): Promise<void> {
