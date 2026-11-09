@@ -1,11 +1,13 @@
 'use client';
 
-import { LogIn, Menu, UserRound, X } from 'lucide-react';
+import { LogIn, Menu, ShoppingBag, UserRound, X } from 'lucide-react';
 import { useState } from 'react';
 import type { Locale, WebAreaId } from 'tropical-nomads-shared';
 import { accountText, areaText, shellText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
+import { shopText } from '../i18n/shop-copy';
 import { navigation } from '../navigation';
+import { useShopCart } from '../shop/useShopCart';
 import { LanguageSwitch } from './LanguageSwitch';
 
 const navLinkClass =
@@ -16,6 +18,35 @@ function headerLabel(language: Locale, id: WebAreaId): string {
     return shellText(language, 'calendar');
   }
   return areaText(language, id);
+}
+
+function CartLink({ menu, onClick }: { menu?: boolean; onClick?: () => void }) {
+  const { language } = useLanguage();
+  const { count } = useShopCart();
+  if (menu) {
+    return (
+      <a
+        href="/shop/cart"
+        onClick={onClick}
+        className="flex items-center justify-between rounded-lg px-3 py-2.5 text-left text-base font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+      >
+        <span>{shopText(language, 'cart')}</span>
+        {count > 0 ? <span className="rounded-full bg-ozora-yellow px-2 py-0.5 text-xs font-bold text-ozora-ink">{count}</span> : null}
+      </a>
+    );
+  }
+  return (
+    <a
+      href="/shop/cart"
+      aria-label={shopText(language, 'cartAria')}
+      className="relative hidden h-9 w-9 items-center justify-center rounded-full border border-white/15 text-ozora-cream transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise lg:inline-flex"
+    >
+      <ShoppingBag size={18} aria-hidden="true" />
+      {count > 0 ? (
+        <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-ozora-yellow px-1 text-[11px] font-bold text-ozora-ink">{count}</span>
+      ) : null}
+    </a>
+  );
 }
 
 export function ShellHeader({ signedIn }: { signedIn: boolean }) {
@@ -83,6 +114,7 @@ export function ShellHeader({ signedIn }: { signedIn: boolean }) {
         </nav>
 
         <div className="relative z-20 flex items-center gap-2">
+          <CartLink />
           <LanguageSwitch />
           <a
             href={accountHref}
@@ -117,6 +149,7 @@ export function ShellHeader({ signedIn }: { signedIn: boolean }) {
               {headerLabel(language, item.id)}
             </a>
           ))}
+          <CartLink menu onClick={closeMenu} />
         </nav>
       ) : null}
     </header>

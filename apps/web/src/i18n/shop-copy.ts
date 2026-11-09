@@ -22,6 +22,16 @@ export interface ShopCopy {
   total: string;
   buy: string;
   note: string;
+  view: string;
+  back: string;
+  decrease: string;
+  increase: string;
+  delivery: string;
+  continue: string;
+  cartAria: string;
+  missingTitle: string;
+  missingBody: string;
+  left: string;
 }
 
 export const shopCopy: Record<Locale, ShopCopy> = {
@@ -46,6 +56,16 @@ export const shopCopy: Record<Locale, ShopCopy> = {
     total: 'Total',
     buy: 'Buy',
     note: 'Buy opens WhatsApp with the shirts, sizes, delivery address, and the total. We answer there.',
+    view: 'View shirt',
+    back: 'Back to shop',
+    decrease: 'Decrease quantity',
+    increase: 'Increase quantity',
+    delivery: 'Delivery',
+    continue: 'Continue shopping',
+    cartAria: 'Open cart',
+    missingTitle: 'That shirt is not in the shop.',
+    missingBody: 'The shop has the two embroidered T-shirts.',
+    left: '{count} left',
   },
   pt: {
     title: 'Loja',
@@ -68,9 +88,36 @@ export const shopCopy: Record<Locale, ShopCopy> = {
     total: 'Total',
     buy: 'Comprar',
     note: 'Comprar abre o WhatsApp com as camisetas, tamanhos, endereço de entrega e o total. Respondemos por lá.',
+    view: 'Ver camiseta',
+    back: 'Voltar à loja',
+    decrease: 'Diminuir quantidade',
+    increase: 'Aumentar quantidade',
+    delivery: 'Entrega',
+    continue: 'Continuar comprando',
+    cartAria: 'Abrir carrinho',
+    missingTitle: 'Essa camiseta não está na loja.',
+    missingBody: 'A loja tem as duas camisetas bordadas.',
+    left: '{count} restantes',
   },
 };
 
 export function shopText<K extends keyof ShopCopy>(language: Locale, key: K): string {
   return presentText(language, `shop.${key}`, shopCopy[language][key]);
+}
+
+export function shopProductMeta(language: Locale, id: 'hw' | 'pg'): string {
+  switch (id) {
+    case 'hw':
+      return shopText(language, 'metaHw');
+    case 'pg':
+      return shopText(language, 'metaPg');
+    default: {
+      const unexpected: never = id;
+      return unexpected;
+    }
+  }
+}
+
+export function shopLeft(language: Locale, count: number): string {
+  return shopText(language, 'left').replace('{count}', String(count));
 }

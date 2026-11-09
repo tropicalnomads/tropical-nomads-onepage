@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import { locales } from 'tropical-nomads-shared';
 import { catalogAsset, shirtSrc } from '../src/events/assets.ts';
 import { shopCopy } from '../src/i18n/shop-copy.ts';
+import { addShopLine, parseShopCart, setShopLineQuantity } from '../src/shop/cart.ts';
 import { shopOrderMessage, shopProducts, shopTotal, shopWhatsappUrl } from '../src/shop/order.ts';
 
 const address = {
@@ -50,6 +52,43 @@ describe('shop', () => {
     assert.equal(shopOrderMessage(lines, { ...address, city: '   ' }, 'en'), undefined);
     assert.equal(shopOrderMessage([], address, 'pt'), undefined);
     assert.equal(shopOrderMessage([{ productId: 'hw', size: 'G', quantity: 99 }], address, 'en'), undefined);
+  });
+
+  it('merges the same shirt and size and keeps the quantity inside stock', () => {
+    const once = addShopLine([], { productId: 'hw', size: 'G', quantity: 2 });
+    const twice = addShopLine(once, { productId: 'hw', size: 'G', quantity: 2 });
+    assert.deepEqual(twice, [{ productId: 'hw', size: 'G', quantity: 3 }]);
+    assert.equal(setShopLineQuantity(twice, 'hw', 'G', 9)[0]?.quantity, 3);
+    assert.deepEqual(setShopLineQuantity(twice, 'hw', 'G', 0), []);
+    const stored = parseShopCart(
+      JSON.stringify({
+        lines: [
+          { productId: 'hw', size: 'P', quantity: 2 },
+          { productId: 'pg', size: 'M', quantity: 9 },
+        ],
+        address: { name: 'Ada', line1: '', city: '', postalCode: '', country: '' },
+      }),
+    );
+    assert.deepEqual(stored.lines, [{ productId: 'pg', size: 'M', quantity: 2 }]);
+    assert.equal(stored.address.name, 'Ada');
+  });
+
+  it('keeps the address form on the cart page', () => {
+    const catalog = readFileSync(new URL('../src/components/ShopCatalog.tsx', import.meta.url), 'utf8');
+    const product = readFileSync(new URL('../src/components/ShopProduct.tsx', import.meta.url), 'utf8');
+    const cart = readFileSync(new URL('../src/components/ShopCart.tsx', import.meta.url), 'utf8');
+    const catalogPage = readFileSync(new URL('../app/shop/page.tsx', import.meta.url), 'utf8');
+    const cartPage = readFileSync(new URL('../app/shop/cart/page.tsx', import.meta.url), 'utf8');
+    const header = readFileSync(new URL('../src/components/ShellHeader.tsx', import.meta.url), 'utf8');
+    assert.equal(catalog.includes('postalCode'), false);
+    assert.equal(catalog.includes('<select'), false);
+    assert.equal(catalogPage.includes('postalCode'), false);
+    assert.equal(product.includes('<select'), false);
+    assert.equal(product.includes('liveSizes'), true);
+    assert.equal(cart.includes('postalCode'), true);
+    assert.equal(cart.includes('shopWhatsappUrl'), true);
+    assert.equal(cartPage.includes('ShopCart'), true);
+    assert.equal(header.includes('/shop/cart'), true);
   });
 
   it('has the same shop labels in English and Portuguese', () => {
