@@ -13,7 +13,7 @@ Read it with the [documentation index](README.md) and the [architecture pages](a
 
 Tropical Nomads already has a public website at [www.tropical-nomads.com](https://www.tropical-nomads.com) and a Bookings product at [bookings.tropical-nomads.com](https://bookings.tropical-nomads.com). The aim is one product family built from those: a website and an application, with Bookings in the same codebase.
 
-A person can see the next events, buy a ticket, receive a ticket the product generated, and check that ticket in at the event. The product takes payment for those tickets. It also sells merchandise — T-shirts and other products — and it keeps stock under control.
+A person can see the next events, buy a ticket, receive a ticket the product generated, and check that ticket in at the event. The product takes payment for those tickets. It also sells shopandise — T-shirts and other products — and it keeps stock under control.
 
 Bookings stays on its own address. Its code moves into this repository, it deploys separately, and it shares artists, parties and events, and the calendar with the website and app. In Bookings admin, a party calendar is how the team builds each artist's agenda.
 
@@ -28,7 +28,7 @@ These are facts about the current one-pager, so the restatement stays honest. Th
 - The site lists upcoming events and past events from JSON under `public/data/`. `scripts/fetch-goabase-events.mjs` refreshes events from Goabase.
 - A ticket button sends the visitor to an external link on the event (Eventbrite, another tickets URL, or Goabase). The site does not sell the ticket itself.
 - Some events link out to a timetable at `timetable.tropical-nomads.com`.
-- The shop shows two T-shirts at €50, with pickup described as The Sound House in Dublin. Reserving opens WhatsApp. Size counts live in `src/lib/merch.ts`.
+- The shop shows two T-shirts at €50, with pickup described as The Sound House in Dublin. Reserving opens WhatsApp. Size counts live in `src/lib/shop.ts`.
 - The page has English and Portuguese copy.
 - The build includes a PWA plugin. `amplify.yml` builds this static site.
 - Bookings is a separate product on its own host. Its code is not in this repository.
@@ -59,15 +59,15 @@ The application has an area for checking in tickets that were purchased. An admi
 
 ### 2.4 Payments
 
-Ticket purchases are paid, and the product keeps a trace of what was paid: who, how much, which tickets, and the status. The payment interfaces, including a place for the user's payment methods, come first. Connecting a provider comes later. The same interfaces cover merch.
+Ticket purchases are paid, and the product keeps a trace of what was paid: who, how much, which tickets, and the status. The payment interfaces, including a place for the user's payment methods, come first. Connecting a provider comes later. The same interfaces cover shop.
 
-### 2.5 Merch store
+### 2.5 Shop store
 
-The product sells T-shirts and other merchandise. Today's page shows two shirts and a WhatsApp reservation. The product store is a catalog a customer can buy from. Tickets and merch share payment interfaces. Connecting a provider comes later. Which other products exist stays open. Merch is pickup for now. Shipping is later.
+The product sells T-shirts and other shopandise. Today's page shows two shirts and a WhatsApp reservation. The product store is a catalog a customer can buy from. Tickets and shop share payment interfaces. Connecting a provider comes later. Which other products exist stays open. Shop is pickup for now. Shipping is later.
 
 ### 2.6 Inventory
 
-Stock is controlled. A real sale changes the count. The team can see and correct stock. The public store shows availability that matches those counts. Today's counts are constants in `src/lib/merch.ts`. In the product, stock is data, held as JSON until a database is chosen (section 5, and the architecture notes).
+Stock is controlled. A real sale changes the count. The team can see and correct stock. The public store shows availability that matches those counts. Today's counts are constants in `src/lib/shop.ts`. In the product, stock is data, held as JSON until a database is chosen (section 5, and the architecture notes).
 
 ### 2.7 Abuse-resistant security
 
@@ -86,7 +86,7 @@ The admin role has a calendar of parties and festivals. An admin creates a party
 ```
 Upcoming events  →  Tickets  →  Payments  →  Issued ticket  →  Check-in
 
-Merch store      →  Inventory  →  same payment interfaces, provider later
+Shop store      →  Inventory  →  same payment interfaces, provider later
 
 Bookings admin   →  Party calendar  →  Artist agendas
         \                                  /
@@ -96,10 +96,10 @@ Bookings admin   →  Party calendar  →  Artist agendas
 - **Events feed tickets.** An event can be listed with nothing for sale. An event that sells tickets opens the purchase flow.
 - **Tickets go with payment.** The product issues the ticket when that order's payment is complete. What "complete" means depends on the provider, which is undecided. The order and the payment trace stay together.
 - **Check-in uses the issued ticket.** Check-in does not create a ticket and does not take payment.
-- **Merch and inventory are a pair.** The store sells what inventory says is available. Inventory owns the count.
-- **Merch uses the same payment interfaces as tickets.** Connecting the provider comes later. Merch is pickup for now. Shipping is later.
+- **Shop and inventory are a pair.** The store sells what inventory says is available. Inventory owns the count.
+- **Shop uses the same payment interfaces as tickets.** Connecting the provider comes later. Shop is pickup for now. Shipping is later.
 - **Bookings and the public product share artists, parties/events, and the calendar.** Both products read and write those records. The admin party calendar is where agendas are assembled. Visitors see the published parties. A public lineup and an agenda in Bookings are two views of the same data.
-- **Security sits on every arrow.** A person with no account can read published events. Admin writes parties, ticket offers, and merch. Door staff only record a check-in. A user reads their own purchases and tickets.
+- **Security sits on every arrow.** A person with no account can read published events. Admin writes parties, ticket offers, and shop. Door staff only record a check-in. A user reads their own purchases and tickets.
 
 ### Information architecture
 
@@ -110,15 +110,15 @@ Areas the product needs. The names describe the job. They are not screen titles,
 | Public events | Visitor, buyer | Upcoming events, and enough detail to decide to go |
 | Ticket purchase | Buyer | Choose tickets, pay, receive the generated ticket |
 | My purchases and tickets | User | See that person's own purchase history and ticket history |
-| Check-in | Door | Scan a QR code and record the result. No event, ticket, or merch configuration |
-| Merch store | User | Browse T-shirts and other products, and buy what is in stock |
-| Merch admin | Admin | Add merch and set price, sizes, and stock |
+| Check-in | Door | Scan a QR code and record the result. No event, ticket, or shop configuration |
+| Shop store | User | Browse T-shirts and other products, and buy what is in stock |
+| Shop admin | Admin | Add shop and set price, sizes, and stock |
 | Party calendar | Admin | Create parties, set description, image, and artists, configure that event's tickets, and build agendas |
 | Shared catalog | Website/app and Bookings, both reading and writing; visitors see the published view | Artists, parties/events, calendar |
 
 A user returns to their own purchases and tickets after they sign in. Registration uses Cognito, with Google and Apple, and starts as the user role.
 
-Admin is one role for parties and merch. Door is one role for the scanner. The jobs stay in different screens so a door session is not also the party editor.
+Admin is one role for parties and shop. Door is one role for the scanner. The jobs stay in different screens so a door session is not also the party editor.
 
 ## 4. Main flows
 
@@ -129,7 +129,7 @@ The paths below are what to design against. Open choices stay open.
 1. Open the public site.
 2. See the upcoming events.
 3. Open an event and read when, where, and who is playing.
-4. Leave, start a ticket purchase, or browse merch.
+4. Leave, start a ticket purchase, or browse shop.
 5. A visitor does not see other people's tickets, inventory controls, the party-calendar editor, or payment traces.
 
 Today the ticket step leaves the site through an external link. In the product, that step continues in the buyer flow below.
@@ -152,13 +152,13 @@ The owner decided this on 8 November 2026. An admin invites people to help at th
 3. The product checks that the ticket was issued, matches this event, matches a real payment, and is still valid under the rules. Re-entry and transfers are undecided.
 4. The product records the check-in: which ticket, which event, when, and who performed it.
 5. A refused check-in (unknown, unpaid, wrong event, or already used when the rules say so) is visible to this role, and the holder is not admitted.
-6. This role does not create a party, configure tickets, add merch, or change price, sizes, or stock.
+6. This role does not create a party, configure tickets, add shop, or change price, sizes, or stock.
 
-### Merch customer
+### Shop customer
 
 1. Open the store and see T-shirts and any other products on sale.
 2. See which sizes or variants are available. The count comes from inventory.
-3. Buy or reserve. Merch is pickup for now. Shipping is later. The current page reserves by WhatsApp and names a Dublin pickup.
+3. Buy or reserve. Shop is pickup for now. Shipping is later. The current page reserves by WhatsApp and names a Dublin pickup.
 4. A completed sale reduces stock, so two customers cannot take the last piece.
 5. The customer does not edit counts.
 
@@ -169,7 +169,7 @@ Admin is one role. There are no refunds. Guest tickets and the other money rules
 1. Sign in as admin.
 2. Create a party. Set its description, image, and artists.
 3. Configure that event's ticket offers.
-4. Add merch. Set its price, sizes, and stock.
+4. Add shop. Set its price, sizes, and stock.
 5. Invite door staff, and revoke the invite.
 6. Save parties through the shared catalog, so the public list and Bookings use the same records. A party can be a draft and stay off the public list. A draft is not readable on the public site (section 7).
 7. This role does not scan QR codes.
@@ -179,7 +179,7 @@ Admin is one role. There are no refunds. Guest tickets and the other money rules
 1. Sign in. The account is the user role unless an admin has changed it.
 2. Buy a ticket or a shirt through the purchase flow.
 3. Open purchase history and ticket history. Only this account's rows are there.
-4. This role does not open the party editor, the merch editor, or the scanner.
+4. This role does not open the party editor, the shop editor, or the scanner.
 
 ## 5. Repository shape
 
@@ -217,8 +217,8 @@ These are the outcomes the product is designed for. They describe the future pro
 
 Signed-in accounts have one of three roles.
 
-- **Admin** creates parties and sets the description, image, and artists. Admin configures that event's tickets. Admin adds merch and sets price, sizes, and stock. Admin invites and removes door staff.
-- **Door** checks people in by scanning a QR code for an invited event. Door cannot configure events, tickets, or merch.
+- **Admin** creates parties and sets the description, image, and artists. Admin configures that event's tickets. Admin adds shop and sets price, sizes, and stock. Admin invites and removes door staff.
+- **Door** checks people in by scanning a QR code for an invited event. Door cannot configure events, tickets, or shop.
 - **User** sees their own purchase history and their own ticket history, and can buy. A user cannot open admin tools or the door scanner.
 
 A person with no account can read published events and the public store. That is not a fourth role. One account has one role, so a door session is not also the party editor.
@@ -254,8 +254,8 @@ Sign-in is Amazon Cognito, with Google and Apple as the SSO providers. New accou
 
 ### Admin access
 
-- Party, ticket-offer, merch, and stock writes are admin actions. The public site reads the published result.
-- A completed merch sale also moves stock. That movement is not a door or user edit.
+- Party, ticket-offer, shop, and stock writes are admin actions. The public site reads the published result.
+- A completed shop sale also moves stock. That movement is not a door or user edit.
 - An admin action that changes money, tickets, or stock records who did it.
 
 ### Public files and private files
@@ -292,7 +292,7 @@ The owner defined the architecture.
 | Traffic | About five admins. A party is about 100–200 people. The audience is small. The sizes for that audience are in [the AWS record](devops/aws.md). |
 | Payment company | Chosen in ticket 29, last in the first iteration, after the not-live hosts. No company is named. |
 | Currency | Euro only, for now. |
-| Merch | Pickup for now. Shipping is later. |
+| Shop | Pickup for now. Shipping is later. |
 | Refunds | There are no refunds. |
 | Draft parties | A party can be a draft. A draft stays off the public list and is not readable by a visitor. |
 | Offline check-in | Later. Not in this iteration. |
@@ -318,7 +318,7 @@ Still open: ticket types, comps, guest lists, chargebacks, cancellation, transfe
 ### Also undecided, and needed before implementation
 
 - Ticket types, comps, guest lists, chargebacks, and cancellation. Transfers and re-entry stay with check-in. The currency is euro, and there are no refunds.
-- Which products exist beyond T-shirts. Merch is pickup for now. Shipping is later. Today's page describes a WhatsApp reservation and pickup at The Sound House, Dublin.
+- Which products exist beyond T-shirts. Shop is pickup for now. Shipping is later. Today's page describes a WhatsApp reservation and pickup at The Sound House, Dublin.
 - What an artist agenda contains, and how much of it the public site shows.
 - Whether `timetable.tropical-nomads.com` remains a separate surface. This plan leaves it where it is.
 - Goabase's new job is decided: an integrations tab in the second iteration, with Bookings, holding parties that exist so Bookings can email offers of Tropical Nomads artists. The one-pager refresh script stays until that ticket. It does not block the catalog or the first product.
@@ -334,7 +334,7 @@ This is a planning sequence. It is the order of decisions. It is not a build sch
 2. **The actors are named.** Signed-in people are admin, door, or user. Admin invites door staff. A user sees their own history. DevOps is on the building team and is not a signed-in role.
 3. **The shared records are sketched** in the plan on tag `product-plan-v1`. A party can be a draft, and a draft is not on the public list. What an agenda contains stays open.
 4. **Ticket and payment outcomes.** The buyer receives a QR code in this iteration. There are no refunds. The currency is euro. Transfer, re-entry, and comps stay open. The payment company is ticket 29, after the not-live hosts, and it is not named.
-5. **Merch is pickup for now.** Shipping is later. Stock moves when a sale is real. Whether a shirt is paid inside this product waits on the payment company.
+5. **Shop is pickup for now.** Shipping is later. Stock moves when a sale is real. Whether a shirt is paid inside this product waits on the payment company.
 6. **Split public JSON from private JSON,** including where writable files live. Do this before API work, so ticket secrets stay out of the public site bundle.
 7. **Languages are chosen.** The product is English and Portuguese, with internationalization. Countries are still open. The currency is euro.
 8. **Build shared UI components for the web app.** Theme tokens, the area ids, and the record schemas live in `packages/shared`. Native screens are not in the required path, so a Swift or Kotlin component toolkit is not a blocker.

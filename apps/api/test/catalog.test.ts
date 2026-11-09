@@ -2,11 +2,12 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { api } from '../src/app.ts';
 import { serveStoredRecords } from '../src/catalog.ts';
 import { schemas } from '../src/schemas.ts';
 
-const repoRoot = new URL('../../../', import.meta.url);
+const repoRoot = fileURLToPath(new URL('../../../', import.meta.url));
 const eventsPath = new URL('../../one-pager/public/data/events.json', import.meta.url);
 const artistsPath = new URL('../../one-pager/public/data/artists.json', import.meta.url);
 
@@ -82,8 +83,8 @@ describe('shared catalog', () => {
   });
 
   it('keeps one events file and does not add an agenda', async () => {
-    const files = findEventsFiles(new URL(repoRoot).pathname);
-    assert.deepEqual(files, [join(new URL(repoRoot).pathname, 'apps/one-pager/public/data/events.json')]);
+    const files = findEventsFiles(repoRoot);
+    assert.deepEqual(files, [join(repoRoot, 'apps/one-pager/public/data/events.json')]);
     const catalog = readFileSync(new URL('../src/catalog.ts', import.meta.url), 'utf8');
     const refresh = readFileSync(new URL('../../one-pager/scripts/fetch-goabase-events.mjs', import.meta.url), 'utf8');
     const onePager = readFileSync(new URL('../../one-pager/src/lib/data.ts', import.meta.url), 'utf8');

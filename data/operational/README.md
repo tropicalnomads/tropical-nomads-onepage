@@ -4,4 +4,4 @@ This directory is the private store for orders, payment traces, issued tickets, 
 
 The API reads and writes these files. A cross-process lock waits on the stack. One process orders its own writes. Two processes can still drop an update.
 
-`MERCH_STOCK` in the one-pager stays until ticket 16. Amazon RDS for PostgreSQL is still only a recommendation.
+`SHOP_STOCK` in the one-pager stays until ticket 16. Amazon RDS for PostgreSQL is still only a recommendation.

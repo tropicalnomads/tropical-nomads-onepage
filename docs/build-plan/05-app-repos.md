@@ -6,7 +6,7 @@ The README lists this shell as step 6. [Types and schemas](28-types-and-schemas.
 
 ## Outcome
 
-`apps/web` runs in a desktop browser and in a phone browser. It opens four placeholder areas: upcoming events, my tickets, check-in, and merch. The area ids come from `tropical-nomads-shared` (`webAreas`, package version `0.2.0`). The shell is not on www.
+`apps/web` runs in a desktop browser and in a phone browser. It opens four placeholder areas: upcoming events, my tickets, check-in, and shop. The area ids come from `tropical-nomads-shared` (`webAreas`, package version `0.2.0`). The shell is not on www.
 
 The owner asked for this package in the monorepo, on a pull request into `dev`. The planning text described a separate GitHub repository. That remote was not created.
 

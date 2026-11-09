@@ -10,7 +10,7 @@ The product has one way to send email, templates in English and Portuguese, and 
 
 Registration, a purchase, the QR code, and a door invite each need a message in the first product. A new party and an artist offer need the same sender later. Ticket 18 sends the new-party message when an admin publishes. Ticket 22 sends the artist offer. A second sender would split consent and the stop switch.
 
-This ticket sits in the first iteration, after accounts, ticket and merch purchases, and the door invite. The templates for the second iteration are created here. A fixture party id is enough to test them. The first product does not wait for Bookings.
+This ticket sits in the first iteration, after accounts, ticket and shop purchases, and the door invite. The templates for the second iteration are created here. A fixture party id is enough to test them. The first product does not wait for Bookings.
 
 ## Depends on
 
@@ -18,7 +18,7 @@ This ticket sits in the first iteration, after accounts, ticket and merch purcha
 - [10 — Accounts and profile](10-accounts-and-profile.md). Registration, and the address on the account.
 - [13 — Tickets](13-tickets.md). The purchase and the QR code.
 - [14 — Check-in invites and QR scan](14-check-in.md). The door invite.
-- [15 — Merch store](15-merch-store.md). The merch purchase.
+- [15 — Shop store](15-shop-store.md). The shop purchase.
 - [20 — English and Portuguese](20-internationalization.md). Each template has both languages.
 
 ## Messages
@@ -30,12 +30,12 @@ Each row has one purpose. The purpose is stored with the template.
 | Registration | Tell the person their account exists | The new account | No |
 | Ticket purchase | Confirm the ticket order | The buyer | No |
 | QR code | Give the buyer the code the door scans | The buyer, inside the ticket-purchase message | No |
-| Merch purchase | Confirm the merch order | The buyer | No |
+| Shop purchase | Confirm the shop order | The buyer | No |
 | Door invite | Tell an invited person which events they may scan | The invited address | No |
 | New party | Announce a party the admin published | An account that consented | Yes |
 | Artist offer | Offer Tropical Nomads artists to a party on the integrations list | That party's address, from ticket 22 | Yes |
 
-The QR code is not a second message and not a second secret. It rides in the ticket-purchase message. A merch purchase has no QR code.
+The QR code is not a second message and not a second secret. It rides in the ticket-purchase message. A shop purchase has no QR code.
 
 Refund mail is not on this list. Ticket 21 still has refunds as an open decision, and no ticket sends one.
 
@@ -44,7 +44,7 @@ Refund mail is not on this list. Ticket 21 still has refunds as an open decision
 1. Add a send function the other tickets call. A stub records the template id, the recipient, the language, and the purpose. It does not deliver to a real inbox. Do not name a vendor and do not install a vendor SDK.
 2. Store the templates above in English and Portuguese. A missing language fails the send.
 3. Record marketing consent separately from creating an account. Registration does not turn consent on. The new-party message and the artist-offer message refuse to send when consent is absent.
-4. Give every marketing message a stop control. The stop token is unguessable. It is not the user id and not the public event id. Using it turns marketing consent off. Later marketing sends do not go out. Ticket-purchase, QR, merch-purchase, registration, and door-invite messages are unchanged by that stop.
+4. Give every marketing message a stop control. The stop token is unguessable. It is not the user id and not the public event id. Using it turns marketing consent off. Later marketing sends do not go out. Ticket-purchase, QR, shop-purchase, registration, and door-invite messages are unchanged by that stop.
 5. Send the QR only to the buyer address on the account. Do not put the ticket secret in a marketing message, in `public/data`, or in a log line.
 6. Only the admin role may send the new-party message or the artist offer. Door and user are denied.
 7. Keep recipient addresses and consent out of `public/data`.

@@ -12,7 +12,7 @@ The first successful check-in tags that ticket or guest as checked. A second att
 
 An admin can create a guest list for the selected event and add people by name. Those people are checked in from the same page. Door staff can check them in and cannot create or edit the list.
 
-Door staff still have no other tool. They cannot create a party, set a description, image, or artists, configure tickets, or add merch, prices, sizes, or stock.
+Door staff still have no other tool. They cannot create a party, set a description, image, or artists, configure tickets, or add shop, prices, sizes, or stock.
 
 ## Why it exists
 
@@ -49,7 +49,7 @@ The owner wants helpers at the door, and also wants the admin on the same page. 
 - The event lists its sold tickets without the secret, and a name search finds a buyer or a guest on that event only.
 - The first confirmed check-in is tagged checked. The next attempt is refused.
 - An admin can create a guest list, add a person, and that person can be checked in once. Door staff cannot create the list.
-- A door session cannot create a party, configure tickets, or change merch.
+- A door session cannot create a party, configure tickets, or change shop.
 - Revoking the invite denies the next scan.
 - An unpaid sold ticket is refused.
 - A confirmed, matching QR is accepted once. The test uses a fixture trace marked confirmed, not the live stub.
@@ -64,6 +64,6 @@ Unit tests:
 - The first confirmed check-in is accepted and tagged checked. The second is refused as already used. The actor is the door user or the admin, not the buyer.
 - QR for another event, a bad secret, or `pending_provider` is refused.
 - An admin can add a guest. Door staff can check that guest in once and cannot create the list.
-- Door is denied create-party, configure-event-tickets, and set-merch.
+- Door is denied create-party, configure-event-tickets, and set-shop.
 
 The implementer runs those tests, scans one fixture QR in the web app against the local API, checks a guest in from the name search, and runs the one-pager build.

@@ -168,7 +168,7 @@
         },
         "mapUrl": "https://maps.app.goo.gl/EtfCwAWYFE9CAmhNA"
       },
-      "lineupRaw": "After June 🇧🇷 (Full-On / Night / Forest)\nAraujah 🇧🇷 (Progressive)\nBlazin'G 🇧🇷 (Full-On / Night / Forest)\nDeutsch 🇧🇷 (Progressive)\nKobot 🇧🇷 (Full-On)\nMiddle-D 🇧🇷 (Progressive)\nOcto 🇧🇷 (Progressive)\nRespeter 🇧🇷 (Progressive)\nShivaion 🇧🇷 (Full-On / Night / Forest)\nVinius 🇧🇷 (Full-On)",
+      "lineupRaw": "After June 🇧🇷 (Full-On / Night / Forest)\nAraujah 🇧🇷 (Progressive)\nBlazin'G 🇧🇷 (Full-On / Night / Forest)\nDeutsch 🇧🇷 (Progressive)\nKobot 🇧🇷 (Full-On)\nMiddle-D 🇧🇷 (Progressive)\nOcto 🇧🇷 (Progressive)\nRespecter 🇧🇷 (Progressive)\nShivaion 🇧🇷 (Full-On / Night / Forest)\nVinius 🇧🇷 (Full-On)",
       "stages": [
         {
           "name": "Line-up",
@@ -247,7 +247,7 @@
               "stage": "Line-up"
             },
             {
-              "name": "Respeter",
+              "name": "Respecter",
               "isoCountry": "BR",
               "countryFlag": "🇧🇷",
               "genres": [
@@ -286,7 +286,7 @@
         "Kobot",
         "Middle-D",
         "Octo",
-        "Respeter",
+        "Respecter",
         "Shivaion",
         "Vinius"
       ],

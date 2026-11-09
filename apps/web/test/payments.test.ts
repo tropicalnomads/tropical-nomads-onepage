@@ -11,7 +11,7 @@ describe('payment interfaces', () => {
     const form = readFileSync(new URL('../src/components/PaymentSection.tsx', import.meta.url), 'utf8');
     const actions = readFileSync(new URL('../src/payments/actions.ts', import.meta.url), 'utf8');
     const upcoming = readFileSync(new URL('../app/upcoming-events/page.tsx', import.meta.url), 'utf8');
-    const merch = readFileSync(new URL('../../one-pager/src/lib/merch.ts', import.meta.url), 'utf8');
+    const shop = readFileSync(new URL('../../one-pager/src/lib/shop.ts', import.meta.url), 'utf8');
     const onePagerList = readFileSync(new URL('../../one-pager/src/lib/data.ts', import.meta.url), 'utf8');
     assert.equal(form.includes('cardNumber'), false);
     assert.equal(form.includes('cvc'), false);
@@ -19,13 +19,13 @@ describe('payment interfaces', () => {
     assert.equal(actions.includes('markPaymentConfirmed'), false);
     assert.equal(actions.includes('recordRefund'), false);
     assert.equal(actions.includes('startTicketPaymentAction'), true);
-    assert.equal(actions.includes('startMerchPaymentAction'), true);
+    assert.equal(actions.includes('startShopPaymentAction'), true);
     assert.equal(actions.includes("startPurpose('tickets'"), true);
-    assert.equal(actions.includes("startPurpose('merch'"), true);
+    assert.equal(actions.includes("startPurpose('shop'"), true);
     assert.equal(actions.includes('commitPayment'), true);
     assert.equal(upcoming.includes('commitPayment'), false);
-    assert.equal(merch.includes('whatsappReserveUrl'), true);
-    assert.equal(merch.includes('MERCH_PRICE_EUR'), true);
+    assert.equal(shop.includes('whatsappReserveUrl'), true);
+    assert.equal(shop.includes('SHOP_PRICE_EUR'), true);
     assert.equal(onePagerList.includes('getPrimaryTicketUrl'), true);
     for (const language of locales) {
       assert.equal(paymentText(language, 'notACharge').includes('http'), false);

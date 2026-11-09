@@ -7,7 +7,7 @@ export type { Locale };
 export const roles = ['admin', 'door', 'user'] as const;
 export type Role = (typeof roles)[number];
 
-export const paymentPurposes = ['tickets', 'merch'] as const;
+export const paymentPurposes = ['tickets', 'shop'] as const;
 export type PaymentPurpose = (typeof paymentPurposes)[number];
 
 export const traceStatuses = ['pending_provider', 'confirmed'] as const;
@@ -40,7 +40,7 @@ export type PartyType = (typeof partyTypes)[number];
 export const templateIds = [
   'registration',
   'ticket-purchase',
-  'merch-purchase',
+  'shop-purchase',
   'door-invite',
   'new-party',
   'artist-offer',
@@ -51,7 +51,7 @@ export function marketingFor(id: TemplateId): boolean {
   switch (id) {
     case 'registration':
     case 'ticket-purchase':
-    case 'merch-purchase':
+    case 'shop-purchase':
     case 'door-invite':
       return false;
     case 'new-party':

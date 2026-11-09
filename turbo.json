@@ -2,15 +2,23 @@
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
     "build": {
-      "outputs": ["dist/**"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
       "env": ["AWS_COMMIT_ID"]
     },
     "lint": {
       "outputs": []
     },
+    "test": {
+      "outputs": []
+    },
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "start": {
+      "cache": false,
+      "persistent": true,
+      "env": ["API_BASE_URL", "API_HOSTNAME", "API_PORT", "DB_STARTUP_CHECK"]
     }
   }
 }

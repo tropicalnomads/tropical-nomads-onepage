@@ -71,11 +71,11 @@ describe('private operational data', () => {
 
   it('stays out of the one-pager bundle and off the public routes', async () => {
     const amplify = readFileSync(new URL('../../../amplify.yml', import.meta.url), 'utf8');
-    const merch = readFileSync(new URL('../../one-pager/src/lib/merch.ts', import.meta.url), 'utf8');
+    const shop = readFileSync(new URL('../../one-pager/src/lib/shop.ts', import.meta.url), 'utf8');
     const apiPackage = readFileSync(new URL('../package.json', import.meta.url), 'utf8');
     assert.match(amplify, /apps\/one-pager\/dist/);
     assert.equal(amplify.includes('data/operational'), false);
-    assert.match(merch, /MERCH_STOCK/);
+    assert.match(shop, /SHOP_STOCK/);
     assert.equal(apiPackage.includes('"pg"'), true);
     assert.equal(apiPackage.includes('prisma'), false);
     assert.equal(apiPackage.includes('password'), false);

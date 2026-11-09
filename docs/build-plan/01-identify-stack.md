@@ -6,7 +6,7 @@
 
 The stack note matches what the owner decided on 8 November 2026. The architecture is defined. The new app is not launched.
 
-Decided: Amazon Cognito with Google and Apple. Next.js for the web app. Amplify for the new frontend. A Docker container on ECS for the API. REST, later served by Hono. English and Portuguese. Euro only, for now. Merch is pickup for now, and shipping is later. There are no refunds. A party can be a draft. Offline check-in and a wallet pass are later, and they are not in this iteration. Phones use the web app in the browser. iOS and Android repos stay optional and last. The monorepo uses Turborepo. Package manager commands use pnpm. The one-pager already uses pnpm. Ticket 1 records that decision. Ticket 2 adds the Turborepo config.
+Decided: Amazon Cognito with Google and Apple. Next.js for the web app. Amplify for the new frontend. A Docker container on ECS for the API. REST, later served by Hono. English and Portuguese. Euro only, for now. Shop is pickup for now, and shipping is later. There are no refunds. A party can be a draft. Offline check-in and a wallet pass are later, and they are not in this iteration. Phones use the web app in the browser. iOS and Android repos stay optional and last. The monorepo uses Turborepo. Package manager commands use pnpm. The one-pager already uses pnpm. Ticket 1 records that decision. Ticket 2 adds the Turborepo config.
 
 Recommendation, not created: Amazon RDS for PostgreSQL. JSON stays the store until that database is confirmed.
 
@@ -31,7 +31,7 @@ Recommend Amazon RDS for PostgreSQL. The owner still has to confirm it. This tic
 Why this engine fits:
 
 - Users, billing addresses, orders, tickets, check-ins, stock counts, events, artists, and agendas are rows that point at each other. Bookings and the web app share those rows.
-- A ticket scan and a merch sale both need a transaction, so two requests cannot take the last unit or accept the same ticket.
+- A ticket scan and a shop sale both need a transaction, so two requests cannot take the last unit or accept the same ticket.
 - PostgreSQL can store the current JSON documents in `jsonb` during a later move, so the file shapes do not need a second database.
 - The API is a container on ECS, which is a normal client of RDS on a private network.
 - DynamoDB makes those links and the single-decrement update harder than this product needs.
@@ -54,7 +54,7 @@ None. This is the first ticket.
    - API style: REST.
    - Languages: English and Portuguese.
    - Currency: euro only, for now.
-   - Merch: pickup for now. Shipping is later.
+   - Shop: pickup for now. Shipping is later.
    - Refunds: there are none.
    - A party can be a draft. A draft is not on the public list and is not readable by a visitor.
    - Offline check-in and a wallet pass are later. They are not in this iteration.

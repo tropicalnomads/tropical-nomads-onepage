@@ -9,7 +9,9 @@ applications:
       phases:
         preBuild:
           commands:
-            - npm install -g pnpm@9.15.9
+            - nvm install 24.22.2 && nvm alias default 24.22.2 && nvm use 24.22.2
+            - node --version
+            - npm install -g pnpm@12.18.0
             - pnpm --version
             - pnpm install --frozen-lockfile
         build:
@@ -29,10 +31,15 @@ applications:
       phases:
         preBuild:
           commands:
-            - nvm install 22 && nvm alias default 22 && node -v && npm install -g pnpm@9.15.9 && pnpm install --frozen-lockfile
+            - nvm install 24.22.2 && nvm alias default 24.22.2 && nvm use 24.22.2
+            - node --version
+            - npm install -g pnpm@12.18.0
+            - pnpm --version
+            - pnpm install --frozen-lockfile
         build:
           commands:
-            - nvm use 22 && node -v && pnpm --filter tropical-nomads-web build
+            - nvm use 24.22.2 && node --version
+            - pnpm --filter tropical-nomads-web build
       artifacts:
         baseDirectory: apps/web/.next
         files:

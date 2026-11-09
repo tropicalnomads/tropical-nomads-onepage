@@ -38,6 +38,8 @@ describe('upcoming events', () => {
     }
     const withPartner = events.find((event) => event.partners.length > 0);
     assert.ok(withPartner);
+    const forestShankara = events.flatMap((event) => event.partners).find((partner) => partner.id === 'forest-shankara');
+    assert.equal(forestShankara?.logoFit, 'contain');
     const withBanner = events.find((event) => event.bannerSrc);
     assert.ok(withBanner);
   });

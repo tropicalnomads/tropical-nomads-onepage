@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { SiteHeader } from '@/components/SiteHeader';
 import { Footer } from '@/components/Footer';
 import { HeroSection } from '@/components/HeroSection';
-import { MerchSection } from '@/components/MerchSection';
+import { ShopSection } from '@/components/ShopSection';
 import { UpcomingEventsList } from '@/components/UpcomingEventsList';
 import { PastEventsGallery } from '@/components/PastEventsGallery';
 import { SocialLinks } from '@/components/SocialLinks';
@@ -102,7 +102,7 @@ export default function App(): JSX.Element {
         ) : (
           <UpcomingEventsList events={upcomingEvents} partners={data.partners} />
         )}
-        <MerchSection />
+        <ShopSection />
         {!isLoading && !error ? (
           <>
             <PastEventsGallery events={pastEvents} onOpenPreview={setLightboxEvent} />

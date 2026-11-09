@@ -6,7 +6,7 @@ An event is upcoming when `dateStart` is at or after local midnight of the given
 
 The package imports `schemas` from `tropical-nomads-shared`. It does not keep a second field list. A private field such as a ticket secret is refused. Query checks use `hono/validator`. See [hono.md](hono.md). Ticket 07 reads parties and artists through `src/catalog.ts`. See [shared-catalog.md](shared-catalog.md). Private orders, tickets, check-ins, and stock are not routes. See [private-operational-data.md](private-operational-data.md).
 
-`pnpm --filter tropical-nomads-api dev` listens on `127.0.0.1` only, port `8787` unless `API_PORT` is set. `serve` sets that hostname unless `API_HOSTNAME` is `0.0.0.0` for the private ECS task. There is no public hostname. `amplify.yml` does not build this package. The web shell is not on www.
+`pnpm start` at the repository root launches the API on `127.0.0.1:3101` from the root `.env`. The package fallback is `8787` when `API_PORT` is absent. `serve` sets the loopback hostname unless `API_HOSTNAME` is `0.0.0.0` for the private ECS task. `DB_STARTUP_CHECK` is disabled locally and enabled on ECS. `amplify.yml` does not build this package. The web shell is not on www.
 
 Run `pnpm --filter tropical-nomads-api test` and `pnpm --filter tropical-nomads-api lint`. www still builds with `pnpm --filter tropical-nomads-page build`.
 

@@ -15,6 +15,15 @@ const nextConfig: NextConfig = {
   typedRoutes: false,
   poweredByHeader: false,
   transpilePackages: ['tropical-nomads-shared', 'tropical-nomads-api'],
+  outputFileTracingRoot: repoRoot,
+  outputFileTracingIncludes: {
+    '/*': [
+      '../one-pager/public/data/*.json',
+      '../one-pager/public/events/banners/*.{jpeg,jpg,png,webp}',
+      '../one-pager/public/partners/*.{jpeg,jpg,png,webp}',
+      '../one-pager/public/shop/*.{jpeg,jpg,png,webp}',
+    ],
+  },
 };
 
 export default nextConfig;

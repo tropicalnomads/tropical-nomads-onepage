@@ -132,11 +132,11 @@ export async function startTicketPaymentAction(formData: FormData): Promise<Paym
   return startPurpose('tickets', formData);
 }
 
-export async function startMerchPaymentAction(formData: FormData): Promise<PaymentActionResult> {
-  return startPurpose('merch', formData);
+export async function startShopPaymentAction(formData: FormData): Promise<PaymentActionResult> {
+  return startPurpose('shop', formData);
 }
 
-async function startPurpose(purpose: 'tickets' | 'merch', formData: FormData): Promise<PaymentActionResult> {
+async function startPurpose(purpose: 'tickets' | 'shop', formData: FormData): Promise<PaymentActionResult> {
   if (rejected(formData)) {
     return { notice: 'card-rejected' };
   }

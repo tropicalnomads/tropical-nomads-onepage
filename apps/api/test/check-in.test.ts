@@ -157,7 +157,7 @@ describe('check-in', () => {
     assert.equal(second.outcome.reason, 'already used');
     assert.equal(decideAccess({ action: 'create-party', role: 'door', actorId: 'sub-doe' }).effect, 'deny');
     assert.equal(decideAccess({ action: 'configure-event-tickets', role: 'door', actorId: 'sub-doe' }).effect, 'deny');
-    assert.equal(decideAccess({ action: 'set-merch', role: 'door', actorId: 'sub-doe' }).effect, 'deny');
+    assert.equal(decideAccess({ action: 'set-shop', role: 'door', actorId: 'sub-doe' }).effect, 'deny');
   });
 
   it('does not publish a draft or open a check-in route', async () => {

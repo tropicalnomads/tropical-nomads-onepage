@@ -146,6 +146,7 @@ Resources:
       CallbackURLs: !If
         - UseHostedUi
         - - !Ref CallbackUrl
+          - http://127.0.0.1:3100/account/callback
         - !Ref AWS::NoValue
       AllowedOAuthFlowsUserPoolClient: !If [UseHostedUi, true, false]
       AllowedOAuthFlows: !If
@@ -172,7 +173,7 @@ Resources:
     Type: AWS::Cognito::UserPoolGroup
     Properties:
       GroupName: admin
-      Description: Configures events, tickets, merch, prices, sizes, and stock.
+      Description: Configures events, tickets, shop, prices, sizes, and stock.
       Precedence: 1
       UserPoolId: !Ref UserPool
 

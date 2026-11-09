@@ -1,6 +1,6 @@
 # ECS API
 
-The API image is built from `apps/api/Dockerfile`. The build context excludes `data/`, so operational JSON stays out, and the image does not copy the one-pager `dist/`. The image default bind is `127.0.0.1`. The task sets `API_HOSTNAME=0.0.0.0` and `API_PORT=8787`.
+The API image is built from `apps/api/Dockerfile` with the pinned Node 24 runtime. The build context excludes `data/`, so operational JSON stays out, and the image does not copy the one-pager `dist/`. The image default bind is `127.0.0.1`. The task sets `API_HOSTNAME=0.0.0.0`, `API_PORT=8787`, and `DB_STARTUP_CHECK=true`.
 
 The cluster is `tropical-nomads`. The service is `tropical-nomads-api`: one Fargate task at 0.5 vCPU and 1 GB, private subnets, no public IP. The repository `tropical-nomads-api` keeps the last 10 images. Logs are `/tropical-nomads/api` for 30 days. The load balancer `tropical-nomads-api` has no listener and no production hostname.
 

@@ -4,7 +4,7 @@
 
 ## Outcome
 
-The one-pager still deploys on its own, on its existing Amplify app, to [www.tropical-nomads.com](https://www.tropical-nomads.com). `amplify.yml` installs pnpm 9.15.9, runs `pnpm install --frozen-lockfile` at the repo root, runs `pnpm --filter tropical-nomads-page build`, and publishes `apps/one-pager/dist`. A change to that package can still be published. The new web app is not given an Amplify app. The API is not given an ECS service. `bookings.tropical-nomads.com` is untouched.
+The one-pager still deploys on its own, on its existing Amplify app, to [www.tropical-nomads.com](https://www.tropical-nomads.com). `amplify.yml` pins Node 24.22.2 and pnpm 12.18.0, runs `pnpm install --frozen-lockfile` at the repo root, runs `pnpm --filter tropical-nomads-page build`, and publishes `apps/one-pager/dist`. A change to that package can still be published. The new web app is not given an Amplify app. The API is not given an ECS service. `bookings.tropical-nomads.com` is untouched.
 
 Later hosts, not created here:
 
@@ -24,7 +24,7 @@ Later hosts, not created here:
 
 ### Preserve
 
-1. Point the existing Amplify app at the one-pager package only: pnpm 9.15.9, frozen lockfile, `pnpm --filter tropical-nomads-page build` (`tsc -b && vite build`), and `apps/one-pager/dist`.
+1. Point the existing Amplify app at the one-pager package only: Node 24.22.2, pnpm 12.18.0, frozen lockfile, `pnpm --filter tropical-nomads-page build` (`tsc -b && vite build`), and `apps/one-pager/dist`.
 2. Keep the `amplify.yml` cache headers: default uncached, `/assets/**` immutable for a year.
 3. Keep `AWS_COMMIT_ID` as the build id when the host provides it.
 4. Keep the events SEO plugin (it reads `public/data/events.json`) and the PWA manifest and service worker.

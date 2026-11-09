@@ -30,7 +30,7 @@ Shared data, read and written by both the website/app and Bookings:
 - parties / events
 - calendar
 
-The website/app also covers upcoming events, tickets, check-in, payments, the merch store, and inventory. Those sit with the public product. They become Bookings data only if the owner later says so.
+The website/app also covers upcoming events, tickets, check-in, payments, the shop store, and inventory. Those sit with the public product. They become Bookings data only if the owner later says so.
 
 ## Packages
 
@@ -105,7 +105,7 @@ This set fits data the world is allowed to read: published events, artists, venu
 
 The files are a starting point for the shared entities. They are not a frozen schema. Events today carry a Goabase source id and external ticket URLs. The future ticket is issued by this product, so the records will need new fields. Those fields are not designed here.
 
-Merch is not in these files. Price, pickup copy, and size counts are constants in `src/lib/merch.ts`. Inventory for the product is data. Until a database exists, that data is JSON. Moving those constants is later work.
+Shop is not in these files. Price, pickup copy, and size counts are constants in `src/lib/shop.ts`. Inventory for the product is data. Until a database exists, that data is JSON. Moving those constants is later work.
 
 ### Operational data
 
@@ -114,7 +114,7 @@ Tickets, payment traces, check-in records, orders, and live stock change when so
 The API package is the reader and writer:
 
 - The web app asks the API to create an order, record a confirmed payment, issue a ticket, and check a ticket in.
-- The store asks the API for availability. A completed merch sale updates stock through the API.
+- The store asks the API for availability. A completed shop sale updates stock through the API.
 - The admin role asks the API to update artists, parties, and calendar entries. The public upcoming-events list reads the published result. Door and user cannot.
 - While the one-pager is still the static site, it keeps reading the published reference JSON. This planning stage does not make it a writer of tickets.
 

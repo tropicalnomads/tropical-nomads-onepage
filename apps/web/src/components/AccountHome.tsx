@@ -12,7 +12,7 @@ export interface TeamTrace {
   username: string;
   amount: number;
   currency: string;
-  purpose: 'tickets' | 'merch';
+  purpose: 'tickets' | 'shop';
 }
 
 export interface AccountSummary {

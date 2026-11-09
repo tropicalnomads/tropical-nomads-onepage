@@ -1,15 +1,26 @@
 {
   "name": "tropical-nomads",
   "private": true,
-  "packageManager": "pnpm@9.15.9",
+  "type": "module",
+  "packageManager": "pnpm@12.18.0",
+  "engines": {
+    "node": ">=24.22.2 <25",
+    "pnpm": "12.18.0"
+  },
   "scripts": {
-    "build": "turbo run build --filter=tropical-nomads-page",
-    "lint": "turbo run lint --filter=tropical-nomads-page",
-    "dev": "pnpm --filter tropical-nomads-page dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test && node --test infra/frankfurt/test/templates.test.ts",
+    "dev": "pnpm start",
+    "prestart": "node scripts/dev-preflight.mjs",
+    "start": "turbo run dev --filter=tropical-nomads-web --filter=tropical-nomads-api",
+    "start:prod": "node scripts/dev-preflight.mjs && cross-env API_BASE_URL=http://127.0.0.1:3101 pnpm --filter tropical-nomads-web build && cross-env API_BASE_URL=http://127.0.0.1:3101 turbo run start --filter=tropical-nomads-web --filter=tropical-nomads-api",
     "events": "pnpm --filter tropical-nomads-page events",
     "events:refresh": "pnpm --filter tropical-nomads-page events:refresh"
   },
   "devDependencies": {
-    "turbo": "^2.5.8"
+    "cross-env": "10.1.0",
+    "fkill": "10.0.3",
+    "turbo": "2.11.10"
   }
 }

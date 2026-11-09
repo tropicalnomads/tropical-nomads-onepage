@@ -48,7 +48,7 @@ export function UpcomingEvents({ events }: { events: readonly UpcomingEventCard[
               return (
                 <article
                   key={event.id}
-                  className={`flex flex-col gap-4 rounded-2xl border p-4 md:min-h-[15rem] md:flex-row md:items-stretch ${
+                  className={`flex flex-col gap-4 rounded-2xl border p-4 transition md:min-h-[15rem] md:flex-row md:items-stretch ${
                     highlighted ? 'border-ozora-yellow/60 bg-ozora-yellow/10 shadow-glow' : 'border-white/10 bg-black/20'
                   }`}
                 >
@@ -146,29 +146,28 @@ export function UpcomingEvents({ events }: { events: readonly UpcomingEventCard[
                     </div>
                   </div>
                   {event.partners.length > 0 ? (
-                    <ul className="flex flex-row flex-wrap items-center justify-center gap-3 md:shrink-0 md:flex-col md:justify-center">
+                    <div className="hidden shrink-0 flex-row items-center justify-center gap-3 md:flex md:self-center">
                       {event.partners.map((partner) => (
-                        <li key={partner.id}>
+                        <div key={partner.id}>
                           {partner.href ? (
                             <a
                               href={partner.href}
                               target="_blank"
                               rel="noreferrer noopener"
-                              className="flex flex-col items-center gap-1 text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-pink"
+                              className="group focus-visible:outline-none"
                               aria-label={fill(eventText(language, 'partnerAria'), { name: partner.name })}
+                              title={partner.name}
                             >
                               <PartnerMark partner={partner} />
-                              <span className="max-w-24 text-xs text-ozora-cream/80">{partner.name}</span>
                             </a>
                           ) : (
-                            <span className="flex flex-col items-center gap-1 text-center">
+                            <span className="group" title={partner.name}>
                               <PartnerMark partner={partner} />
-                              <span className="max-w-24 text-xs text-ozora-cream/80">{partner.name}</span>
                             </span>
                           )}
-                        </li>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   ) : null}
                 </article>
               );
@@ -249,7 +248,22 @@ function TicketPurchase({ event }: { event: UpcomingEventCard }) {
 
 function PartnerMark({ partner }: { partner: UpcomingEventCard['partners'][number] }) {
   if (partner.logoSrc) {
-    return <img src={partner.logoSrc} alt="" className="h-16 w-16 rounded-full border-2 border-white/25 object-cover md:h-20 md:w-20" />;
+    const fitContain = partner.logoFit === 'contain';
+    return (
+      <span
+        className={`block h-20 w-20 overflow-hidden rounded-full shadow-lg shadow-black/50 transition duration-200 group-hover:-translate-y-0.5 group-hover:scale-105 group-hover:shadow-xl group-hover:shadow-ozora-pink/20 md:h-24 md:w-24 ${
+          fitContain
+            ? 'border border-amber-300/40 bg-[radial-gradient(circle_at_50%_38%,#17382b_0%,#07120e_58%,#020605_100%)] ring-2 ring-emerald-300/10'
+            : 'border-2 border-white/25 bg-ozora-ink ring-1 ring-inset ring-white/10'
+        }`}
+      >
+        <img
+          src={partner.logoSrc}
+          alt={`${partner.name} logo`}
+          className={fitContain ? 'h-full w-full object-contain p-2' : 'h-full w-full object-cover'}
+        />
+      </span>
+    );
   }
   const initials = partner.name
     .split(/\s+/)
@@ -258,7 +272,7 @@ function PartnerMark({ partner }: { partner: UpcomingEventCard['partners'][numbe
     .map((word) => word[0]?.toUpperCase() ?? '')
     .join('');
   return (
-    <span className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-white/25 bg-ozora-ink text-sm font-semibold text-ozora-cream md:h-20 md:w-20">
+    <span className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-ozora-turquoise/50 to-ozora-pink/50 text-2xl font-black text-ozora-cream shadow-lg shadow-black/50 transition duration-200 group-hover:-translate-y-0.5 group-hover:scale-105 group-hover:shadow-xl group-hover:shadow-ozora-pink/20 md:h-24 md:w-24">
       {initials}
     </span>
   );

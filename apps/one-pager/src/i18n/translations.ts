@@ -11,7 +11,7 @@ export interface TranslationDict {
   navPartners: string;
   navSocials: string;
   navBookings: string;
-  navMerch: string;
+  navShop: string;
   tickets: string;
   homeAria: string;
   openMenuAria: string;
@@ -84,39 +84,39 @@ export interface TranslationDict {
   // Language selector
   switchLanguageTo: (languageLabel: string) => string;
 
-  // Merch
-  merchTagline: string;
-  merchHeadline: string;
-  merchLead: string;
-  merchTotal: (count: number) => string;
-  merchReserveWhatsApp: string;
-  merchPiecesTitle: string;
-  merchPiecesSubtitle: string;
-  merchChipParty: string;
-  merchChipDrop: string;
-  merchMetaHw: string;
-  merchMetaPg: string;
-  merchSizes: string;
-  merchBookHw: string;
-  merchBookPg: string;
-  merchLeft: (count: number) => string;
-  merchLastRun: string;
-  merchMadeToOrder: string;
-  merchLastOne: string;
-  merchManyLeft: (count: number) => string;
-  merchHowTitle: string;
-  merchHowSubtitle: string;
-  merchStep1Title: string;
-  merchStep1Body: string;
-  merchStep2Title: string;
-  merchStep2Body: string;
-  merchStep2Sample: string;
-  merchCopyNumber: string;
-  merchCopied: string;
-  merchCopyFallback: string;
-  merchStep3Title: string;
-  merchStep3Body: string;
-  merchWhatsAppMessage: (item: string) => string;
+  // Shop
+  shopTagline: string;
+  shopHeadline: string;
+  shopLead: string;
+  shopTotal: (count: number) => string;
+  shopReserveWhatsApp: string;
+  shopPiecesTitle: string;
+  shopPiecesSubtitle: string;
+  shopChipParty: string;
+  shopChipDrop: string;
+  shopMetaHw: string;
+  shopMetaPg: string;
+  shopSizes: string;
+  shopBookHw: string;
+  shopBookPg: string;
+  shopLeft: (count: number) => string;
+  shopLastRun: string;
+  shopMadeToOrder: string;
+  shopLastOne: string;
+  shopManyLeft: (count: number) => string;
+  shopHowTitle: string;
+  shopHowSubtitle: string;
+  shopStep1Title: string;
+  shopStep1Body: string;
+  shopStep2Title: string;
+  shopStep2Body: string;
+  shopStep2Sample: string;
+  shopCopyNumber: string;
+  shopCopied: string;
+  shopCopyFallback: string;
+  shopStep3Title: string;
+  shopStep3Body: string;
+  shopWhatsAppMessage: (item: string) => string;
 }
 
 export const translations: Record<Language, TranslationDict> = {
@@ -129,7 +129,7 @@ export const translations: Record<Language, TranslationDict> = {
     navPartners: 'Partners',
     navSocials: 'Socials',
     navBookings: 'Bookings',
-    navMerch: 'Shop',
+    navShop: 'Shop',
     tickets: 'Tickets',
     homeAria: 'Tropical Nomads home',
     openMenuAria: 'Open navigation menu',
@@ -198,39 +198,39 @@ export const translations: Record<Language, TranslationDict> = {
 
     switchLanguageTo: (languageLabel) => `Switch language to ${languageLabel}`,
 
-    merchTagline: 'Shop · Tropical Groove Halloween',
-    merchHeadline: 'Reserve your T-Shirt, pick it up at the party',
-    merchLead:
+    shopTagline: 'Shop · Tropical Groove Halloween',
+    shopHeadline: 'Reserve your T-Shirt, pick it up at the party',
+    shopLead:
       "UV-reactive embroidery, made in Portugal. Limited stock for Saturday's party at The Sound House. Reserve it and it's held under your name.",
-    merchTotal: (count) => `Only ${count} T-Shirts for the whole party`,
-    merchReserveWhatsApp: 'Reserve on WhatsApp',
-    merchPiecesTitle: 'Available T-Shirts',
-    merchPiecesSubtitle: 'Pick up at the party, Saturday 24/10. Stock updated today.',
-    merchChipParty: 'Party edition',
-    merchChipDrop: 'Drop 01',
-    merchMetaHw: 'Embroidered T-Shirt · glows under UV',
-    merchMetaPg: 'Embroidered T-Shirt · logo front, artwork back',
-    merchSizes: 'Sizes',
-    merchBookHw: 'Reserve the Halloween T-Shirt',
-    merchBookPg: 'Reserve the Psy Groove T-Shirt',
-    merchLeft: (count) => (count === 1 ? 'T-Shirt left' : 'T-Shirts left'),
-    merchLastRun: 'Last production run',
-    merchMadeToOrder: 'Then made to order only',
-    merchLastOne: 'last one',
-    merchManyLeft: (count) => `${count} left`,
-    merchHowTitle: 'How to reserve',
-    merchHowSubtitle: 'Three steps, takes a minute.',
-    merchStep1Title: 'Pick',
-    merchStep1Body: 'Your T-Shirt and size from the list above.',
-    merchStep2Title: 'Message us on WhatsApp',
-    merchStep2Body: 'T-Shirt, size and your name, like this:',
-    merchStep2Sample: 'Halloween · L · First Last',
-    merchCopyNumber: 'Copy number',
-    merchCopied: 'Number copied',
-    merchCopyFallback: 'Selected, copy it',
-    merchStep3Title: 'Pick it up at the party',
-    merchStep3Body: 'Saturday 24/10, The Sound House. Find us at the merch stand.',
-    merchWhatsAppMessage: (item) =>
+    shopTotal: (count) => `Only ${count} T-Shirts for the whole party`,
+    shopReserveWhatsApp: 'Reserve on WhatsApp',
+    shopPiecesTitle: 'Available T-Shirts',
+    shopPiecesSubtitle: 'Pick up at the party, Saturday 24/10. Stock updated today.',
+    shopChipParty: 'Party edition',
+    shopChipDrop: 'Drop 01',
+    shopMetaHw: 'Embroidered T-Shirt · glows under UV',
+    shopMetaPg: 'Embroidered T-Shirt · logo front, artwork back',
+    shopSizes: 'Sizes',
+    shopBookHw: 'Reserve the Halloween T-Shirt',
+    shopBookPg: 'Reserve the Psy Groove T-Shirt',
+    shopLeft: (count) => (count === 1 ? 'T-Shirt left' : 'T-Shirts left'),
+    shopLastRun: 'Last production run',
+    shopMadeToOrder: 'Then made to order only',
+    shopLastOne: 'last one',
+    shopManyLeft: (count) => `${count} left`,
+    shopHowTitle: 'How to reserve',
+    shopHowSubtitle: 'Three steps, takes a minute.',
+    shopStep1Title: 'Pick',
+    shopStep1Body: 'Your T-Shirt and size from the list above.',
+    shopStep2Title: 'Message us on WhatsApp',
+    shopStep2Body: 'T-Shirt, size and your name, like this:',
+    shopStep2Sample: 'Halloween · L · First Last',
+    shopCopyNumber: 'Copy number',
+    shopCopied: 'Number copied',
+    shopCopyFallback: 'Selected, copy it',
+    shopStep3Title: 'Pick it up at the party',
+    shopStep3Body: 'Saturday 24/10, The Sound House. Find us at the shop stand.',
+    shopWhatsAppMessage: (item) =>
       `Hi! I'd like to reserve a T-Shirt to pick up at the party on 24/10:\nT-Shirt: ${item}\nSize: \nName: `,
   },
   pt: {
@@ -242,7 +242,7 @@ export const translations: Record<Language, TranslationDict> = {
     navPartners: 'Parceiros',
     navSocials: 'Redes',
     navBookings: 'Bookings',
-    navMerch: 'Merch',
+    navShop: 'Shop',
     tickets: 'Ingressos',
     homeAria: 'Início da Tropical Nomads',
     openMenuAria: 'Abrir menu de navegação',
@@ -311,39 +311,39 @@ export const translations: Record<Language, TranslationDict> = {
 
     switchLanguageTo: (languageLabel) => `Mudar idioma para ${languageLabel}`,
 
-    merchTagline: 'Merch · Tropical Groove Halloween',
-    merchHeadline: 'Reserva a tua camiseta e retira na festa',
-    merchLead:
+    shopTagline: 'Shop · Tropical Groove Halloween',
+    shopHeadline: 'Reserva a tua camiseta e retira na festa',
+    shopLead:
       'Bordado que brilha no UV, feito em Portugal. Estoque contado pra festa de sábado na Sound House. Reservou, tá guardada com teu nome.',
-    merchTotal: (count) => `Só ${count} camisetas pra festa inteira`,
-    merchReserveWhatsApp: 'Reservar no WhatsApp',
-    merchPiecesTitle: 'Peças disponíveis',
-    merchPiecesSubtitle: 'Retirada na festa de sábado, 24/10. Estoque atualizado hoje.',
-    merchChipParty: 'Edição da festa',
-    merchChipDrop: 'Drop 01',
-    merchMetaHw: 'Camiseta bordada · brilha no UV',
-    merchMetaPg: 'Camiseta bordada · logo na frente, arte nas costas',
-    merchSizes: 'Tamanhos',
-    merchBookHw: 'Reservar a Halloween',
-    merchBookPg: 'Reservar a Psy Groove',
-    merchLeft: (count) => (count === 1 ? 'peça restante' : 'peças restantes'),
-    merchLastRun: 'Última produção',
-    merchMadeToOrder: 'Depois só sob encomenda',
-    merchLastOne: 'última',
-    merchManyLeft: (count) => `${count} restam`,
-    merchHowTitle: 'Como reservar',
-    merchHowSubtitle: 'Três passos, leva um minuto.',
-    merchStep1Title: 'Escolhe',
-    merchStep1Body: 'A peça e o teu tamanho na lista acima.',
-    merchStep2Title: 'Manda no WhatsApp',
-    merchStep2Body: 'Peça, tamanho e teu nome, assim:',
-    merchStep2Sample: 'Halloween · G · Nome Sobrenome',
-    merchCopyNumber: 'Copiar número',
-    merchCopied: 'Número copiado',
-    merchCopyFallback: 'Selecionado, copie',
-    merchStep3Title: 'Retira na festa',
-    merchStep3Body: 'Sábado 24/10, The Sound House. Procura a gente no merch.',
-    merchWhatsAppMessage: (item) =>
+    shopTotal: (count) => `Só ${count} camisetas pra festa inteira`,
+    shopReserveWhatsApp: 'Reservar no WhatsApp',
+    shopPiecesTitle: 'Peças disponíveis',
+    shopPiecesSubtitle: 'Retirada na festa de sábado, 24/10. Estoque atualizado hoje.',
+    shopChipParty: 'Edição da festa',
+    shopChipDrop: 'Drop 01',
+    shopMetaHw: 'Camiseta bordada · brilha no UV',
+    shopMetaPg: 'Camiseta bordada · logo na frente, arte nas costas',
+    shopSizes: 'Tamanhos',
+    shopBookHw: 'Reservar a Halloween',
+    shopBookPg: 'Reservar a Psy Groove',
+    shopLeft: (count) => (count === 1 ? 'peça restante' : 'peças restantes'),
+    shopLastRun: 'Última produção',
+    shopMadeToOrder: 'Depois só sob encomenda',
+    shopLastOne: 'última',
+    shopManyLeft: (count) => `${count} restam`,
+    shopHowTitle: 'Como reservar',
+    shopHowSubtitle: 'Três passos, leva um minuto.',
+    shopStep1Title: 'Escolhe',
+    shopStep1Body: 'A peça e o teu tamanho na lista acima.',
+    shopStep2Title: 'Manda no WhatsApp',
+    shopStep2Body: 'Peça, tamanho e teu nome, assim:',
+    shopStep2Sample: 'Halloween · G · Nome Sobrenome',
+    shopCopyNumber: 'Copiar número',
+    shopCopied: 'Número copiado',
+    shopCopyFallback: 'Selecionado, copie',
+    shopStep3Title: 'Retira na festa',
+    shopStep3Body: 'Sábado 24/10, The Sound House. Procura a gente no shop.',
+    shopWhatsAppMessage: (item) =>
       `Fala! Quero reservar pra retirar na festa 24/10:\nPeça: ${item}\nTamanho: \nNome: `,
   },
 };

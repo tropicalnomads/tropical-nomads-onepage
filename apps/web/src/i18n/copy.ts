@@ -73,7 +73,7 @@ export interface PaymentCopy {
   teamEmpty: string;
   unknownAccount: string;
   types: Record<PaymentMethodType, string>;
-  purposes: Record<'tickets' | 'merch', string>;
+  purposes: Record<'tickets' | 'shop', string>;
   notices: Record<PaymentNotice, string>;
 }
 
@@ -204,16 +204,16 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       'upcoming-events': 'Upcoming events',
       'my-tickets': 'My tickets',
       'check-in': 'Check-in',
-      merch: 'Merch',
+      shop: 'Shop',
     },
     areaDescriptions: {
       'upcoming-events': 'Published parties, with the date, the place, and who is playing.',
       'my-tickets': 'Your tickets and the QR code for the door. An unpaid ticket is not valid for entry.',
       'check-in': 'Door staff and admins check in a published event. A checked person cannot enter again.',
-      merch: 'The shop is not open in this shell.',
+      shop: 'Two embroidered T-shirts. Buy sends the order on WhatsApp. Nothing is charged here.',
     },
     events: {
-      subtitle: 'The next parties. A party with a euro offer can be bought here. The others keep their seller link.',
+      subtitle: 'All future dates, sorted from the next one.',
       emptyTitle: 'No upcoming events',
       emptyBody: 'Check back soon for newly announced dates.',
       nextUp: 'Next up',
@@ -297,7 +297,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       teamEmpty: 'No payment traces.',
       unknownAccount: 'Unknown account',
       types: { card: 'Card', apple_pay: 'Apple Pay', google_pay: 'Google Pay', other: 'Other' },
-      purposes: { tickets: 'Tickets', merch: 'Merch' },
+      purposes: { tickets: 'Tickets', shop: 'Shop' },
       notices: {
         'not-signed-in': 'Sign in before saving a payment method.',
         'billing-required': 'Add a billing address first.',
@@ -365,16 +365,16 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       'upcoming-events': 'Próximos eventos',
       'my-tickets': 'Meus ingressos',
       'check-in': 'Check-in',
-      merch: 'Merch',
+      shop: 'Loja',
     },
     areaDescriptions: {
       'upcoming-events': 'Festas publicadas, com a data, o lugar e quem toca.',
       'my-tickets': 'Os seus ingressos e o QR da porta. Um ingresso não pago não vale para entrar.',
       'check-in': 'A porta e os admins fazem o check-in de uma festa publicada. Quem já entrou não entra de novo.',
-      merch: 'A loja não está aberta neste app.',
+      shop: 'Duas camisetas bordadas. Comprar envia o pedido no WhatsApp. Nada é cobrado aqui.',
     },
     events: {
-      subtitle: 'As próximas festas. Uma festa com oferta em euro pode ser comprada aqui. As outras mantêm o link do vendedor.',
+      subtitle: 'Todas as datas futuras, a partir da próxima.',
       emptyTitle: 'Nenhum evento futuro',
       emptyBody: 'Volte em breve para novas datas anunciadas.',
       nextUp: 'A seguir',
@@ -458,7 +458,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       teamEmpty: 'Nenhum pagamento registrado.',
       unknownAccount: 'Conta desconhecida',
       types: { card: 'Cartão', apple_pay: 'Apple Pay', google_pay: 'Google Pay', other: 'Outro' },
-      purposes: { tickets: 'Ingressos', merch: 'Merch' },
+      purposes: { tickets: 'Ingressos', shop: 'Loja' },
       notices: {
         'not-signed-in': 'Entre antes de salvar um meio de pagamento.',
         'billing-required': 'Adicione um endereço de cobrança primeiro.',
@@ -570,7 +570,7 @@ export function paymentTypeLabel(language: Locale, type: PaymentMethodType): str
   return presentText(language, `payments.type.${type}`, shellCopy[language].payments.types[type]);
 }
 
-export function paymentPurposeLabel(language: Locale, purpose: 'tickets' | 'merch'): string {
+export function paymentPurposeLabel(language: Locale, purpose: 'tickets' | 'shop'): string {
   return presentText(language, `payments.purpose.${purpose}`, shellCopy[language].payments.purposes[purpose]);
 }
 

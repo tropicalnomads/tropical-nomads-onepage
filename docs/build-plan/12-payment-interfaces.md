@@ -4,13 +4,13 @@
 
 ## Outcome
 
-The API has payment functions for tickets and for merch. A signed-in user can save a billing address and a payment method on the account screen, in English and Portuguese, at phone width and at desktop width. Each attempt can write a private trace. No payment company SDK is installed. A charge does not become paid.
+The API has payment functions for tickets and for shop. A signed-in user can save a billing address and a payment method on the account screen, in English and Portuguese, at phone width and at desktop width. Each attempt can write a private trace. No payment company SDK is installed. A charge does not become paid.
 
 A signed-in user can hold payment methods on their profile. Each attempt writes a trace. A charge does not become paid until a provider adapter, added in a later ticket, confirms it.
 
 ## Why it exists
 
-The owner wants the payment structure settled and the integration later. Users need payment types for tickets and merch, plus a billing address (ticket 10). The page today does not charge anyone. `getPrimaryTicketUrl` still sends people to Eventbrite, another tickets URL, or Goabase. `MERCH_PRICE_EUR` is 50 and the shop opens WhatsApp. Those stay until a later ticket switches a product over.
+The owner wants the payment structure settled and the integration later. Users need payment types for tickets and shop, plus a billing address (ticket 10). The page today does not charge anyone. `getPrimaryTicketUrl` still sends people to Eventbrite, another tickets URL, or Goabase. The web shop does not call `startShopPayment`. Buy on `/shop` opens WhatsApp, recorded in ticket 15. `startShopPayment` stays for a later provider.
 
 ## Depends on
 
@@ -25,7 +25,7 @@ The owner wants the payment structure settled and the integration later. Users n
    - `createCustomer(userId)`
    - `attachPaymentMethod(userId, method)`
    - `listPaymentMethods(userId)`
-   - `startPayment({ userId, amount, currency, purpose, reference })` where purpose is `tickets` or `merch`
+   - `startPayment({ userId, amount, currency, purpose, reference })` where purpose is `tickets` or `shop`
    - `markPaymentConfirmed(traceId, providerReference)` for the future provider adapter only
    - `recordRefund(traceId)` as an interface, with the refund rules still open
 2. Ship a stub adapter. `startPayment` writes a private trace with status `pending_provider`. It does not set `confirmed`. `markPaymentConfirmed` is not callable from the apps.
@@ -38,7 +38,7 @@ The owner wants the payment structure settled and the integration later. Users n
 
 ## Rules
 
-- `startTicketPayment` and `startMerchPayment` both call `startPayment`. The trace status is `pending_provider`. A status sent by the app is ignored.
+- `startTicketPayment` and `startShopPayment` both call `startPayment`. The trace status is `pending_provider`. A status sent by the app is ignored.
 - `markPaymentConfirmed` does not write and is not called from the web app. `recordRefund` does not write. Refund rules stay open.
 - A payment method stores the schema fields. A card number or a CVC is rejected and is not stored. The server chooses the method id and the provider references.
 - `startPayment` requires a billing address on an active user profile. The currency on the call is recorded. It is not taken from the shirt price.
@@ -47,7 +47,7 @@ The owner wants the payment structure settled and the integration later. Users n
 
 ## Acceptance criteria
 
-- Tickets and merch both call `startPayment`.
+- Tickets and shop both call `startPayment`.
 - A stub payment remains `pending_provider`.
 - The app cannot mark it confirmed.
 - A method containing a full card number is rejected.
@@ -57,7 +57,7 @@ The owner wants the payment structure settled and the integration later. Users n
 
 Unit tests of the stub:
 
-- `startPayment` for `tickets` and for `merch` returns a trace with amount, currency, purpose, user id, and status `pending_provider`.
+- `startPayment` for `tickets` and for `shop` returns a trace with amount, currency, purpose, user id, and status `pending_provider`.
 - Calling the app-facing surface with `status: confirmed` does not change the stored status.
 - `attachPaymentMethod` rejects a 16-digit card number field.
 - `startPayment` fails when the profile has no billing address.

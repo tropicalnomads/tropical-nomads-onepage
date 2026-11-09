@@ -85,7 +85,7 @@ describe('Frankfurt templates', () => {
     assert.equal(pool.includes('BEGIN PRIVATE'), false);
   });
 
-  it('creates a separate Amplify app with no domain and no token', () => {
+  it('keeps the web Amplify definitions free of domains and repository tokens', () => {
     const amplify = read(join(frankfurt, 'amplify-web-app.yaml'));
     const onePager = read(join(repo, 'amplify.yml'));
     assert.match(amplify, /Name: tropical-nomads-web/);
@@ -94,7 +94,10 @@ describe('Frankfurt templates', () => {
     assert.equal(amplify.includes('OauthToken'), false);
     assert.equal(amplify.includes('AWS::Amplify::Domain'), false);
     assert.match(onePager, /tropical-nomads-page/);
-    assert.equal(onePager.includes('tropical-nomads-web'), false);
+    assert.match(onePager, /appRoot: apps\/web/);
+    assert.match(onePager, /tropical-nomads-web/);
+    assert.equal(onePager.includes('AccessToken'), false);
+    assert.equal(onePager.includes('OauthToken'), false);
   });
 
   it('does not publish the API or give the task a public address', () => {

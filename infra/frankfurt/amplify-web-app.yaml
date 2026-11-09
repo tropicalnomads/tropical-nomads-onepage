@@ -26,7 +26,11 @@ Resources:
               phases:
                 preBuild:
                   commands:
-                    - npm install -g pnpm@9.15.9
+                    - nvm install 24.22.2
+                    - nvm use 24.22.2
+                    - node --version
+                    - npm install -g pnpm@12.18.0
+                    - pnpm --version
                     - cd ../..
                     - pnpm install --frozen-lockfile
                 build:

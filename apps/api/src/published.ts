@@ -150,8 +150,8 @@ function isJsonValue(value: unknown): value is JsonValue {
 
 function readPublishedFile(catalog: PublishedCatalog): JsonValue {
   const fileName = publishedFiles[catalog];
-  const filePath = join(publishedDataDirectory(), fileName);
-  const parsed: unknown = JSON.parse(readFileSync(filePath, 'utf8'));
+  const filePath = join(/* turbopackIgnore: true */ publishedDataDirectory(), fileName);
+  const parsed: unknown = JSON.parse(readFileSync(/* turbopackIgnore: true */ filePath, 'utf8'));
   assertNoPrivateFields(parsed);
   if (!isJsonValue(parsed)) {
     throw new Error('catalog is not json');

@@ -6,7 +6,7 @@ The API in `apps/api` is Hono `4.13.17` with `@hono/node-server` `2.1.6`. The ow
 
 Routes are GET. HEAD returns the same status and headers with an empty body. Any other method is 405. An unknown path is 404. A thrown error is 500 `{ error: 'catalog unavailable' }`. The body does not include the file path or a secret.
 
-`src/server.ts` calls `serve` from `@hono/node-server` and always sets `hostname`. The default is `127.0.0.1`. `API_HOSTNAME=0.0.0.0` is accepted for the private ECS task and is refused for any other address. Do not change the default. The port is `8787`, or `API_PORT`.
+`src/server.ts` calls `serve` from `@hono/node-server` and always sets `hostname`. The default is `127.0.0.1`. `API_HOSTNAME=0.0.0.0` is accepted for the private ECS task and is refused for any other address. Do not change the default. The fallback port is `8787`; the local root `.env` sets `API_PORT=3101`. The root `pnpm start` command supervises this process and the web app together.
 
 `secureHeaders` sets `X-Content-Type-Options: nosniff`. It does not set `Strict-Transport-Security`, because this listener is HTTP. Turn that header on when the ECS host is HTTPS. `Cache-Control` is `no-store`. There is no `Access-Control-Allow-Origin`.
 

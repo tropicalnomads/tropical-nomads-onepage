@@ -6,7 +6,7 @@
 
 The API reads and writes those collections in `data/operational`. That directory is outside `public/` and outside `apps/one-pager/dist`. The published catalog stays in `apps/one-pager/public/data`. `publishEvents` returns that events file unchanged and refuses to attach a ticket secret.
 
-`MERCH_STOCK` stays in the one-pager until ticket 16. Amazon RDS for PostgreSQL is still only a recommendation. Profiles stay out of `public/data`.
+`SHOP_STOCK` stays in the one-pager until ticket 16. Amazon RDS for PostgreSQL is still only a recommendation. Profiles stay out of `public/data`.
 
 ## Depends on
 

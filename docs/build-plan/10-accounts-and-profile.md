@@ -10,7 +10,7 @@ The product still asks for a person to register and sign in on the web app, incl
 
 ## Why it exists
 
-Tickets, merch, and door invites need a real user. The current site has no accounts. Language choice is only `tn:language:v1` in the browser. The owner asked for Cognito plus Google and Apple, and for a profile rich enough to pay for tickets and merch later.
+Tickets, shop, and door invites need a real user. The current site has no accounts. Language choice is only `tn:language:v1` in the browser. The owner asked for Cognito plus Google and Apple, and for a profile rich enough to pay for tickets and shop later.
 
 ## Depends on
 
@@ -65,7 +65,7 @@ Leave date of birth out unless the owner says events are age-restricted. Do not 
 3. Username rules: unique, stable enough to show at the door, rejected when taken. Unit-test the validator. Do not use the public event id as a username.
 4. Avatar upload stores an image reference on the profile. The bytes are not committed to git and not placed in `public/data`.
 5. The web app uses the shared profile schema. It does not invent fields.
-6. Sign-out works in the web app, including a phone browser. A disabled profile cannot start a purchase or scan. Do not put party, merch, or scanner controls on the registration screen.
+6. Sign-out works in the web app, including a phone browser. A disabled profile cannot start a purchase or scan. Do not put party, shop, or scanner controls on the registration screen.
 7. Do not add the payment company's SDK. The payment-method list can be empty.
 8. Do not put profiles, emails, or avatars into `public/data`.
 

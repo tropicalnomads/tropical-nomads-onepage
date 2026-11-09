@@ -19,7 +19,7 @@ The owner asked for each of these.
 - The languages are English and Portuguese.
 - The database recommendation is Amazon RDS for PostgreSQL. JSON stays until that database is confirmed.
 - The currency is euro only, for now.
-- Merch is pickup for now. Shipping is later.
+- Shop is pickup for now. Shipping is later.
 - There are no refunds.
 - A party can be a draft. A visitor cannot read a draft.
 - Offline check-in and a wallet pass are later, not in this iteration.

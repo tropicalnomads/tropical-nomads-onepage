@@ -2,7 +2,7 @@
 
 Ticket 10. Profile rules live in `packages/shared/src/account/identity.ts`. The private file is `data/operational/profiles.json`, read by `apps/api/src/accounts.ts`. The screens are `/account`, `/account/register`, and `/account/sign-in`.
 
-A new account is `user`. The same verified email keeps one `sub` and gains the second provider. An unverified email does not merge. A disabled profile cannot purchase or scan. The registration screen has no merch, party, or scanner control.
+A new account is `user`. The same verified email keeps one `sub` and gains the second provider. An unverified email does not merge. A disabled profile cannot purchase or scan. The registration screen has no shop, party, or scanner control.
 
 Passwords are not stored. Google and Apple do not trust a subject sent by the browser. Without Cognito settings, the buttons return `cognito-not-configured` and create no profile. With the hosted-UI settings, the callback verifies the ID token before `registerVerifiedAccount` and the session cookie. See [cognito.md](cognito.md). An active profile can upload a JPEG, PNG, or WebP from `/account`. The bytes stay in `data/operational/avatars/`. Upcoming events stay public.
 

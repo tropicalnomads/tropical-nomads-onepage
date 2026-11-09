@@ -4,4 +4,4 @@ Frankfurt infrastructure is one template per resource under `infra/frankfurt`. `
 
 No template contains a password, a provider secret, a connection string, or an account id. RDS creates the database password in Secrets Manager.
 
-Check the templates with `node --experimental-strip-types --test infra/frankfurt/test/templates.test.ts` before a deploy. The next change must not add a second region, a public database, or a secret to these files.
+Check the templates with `node --test infra/frankfurt/test/templates.test.ts` before a deploy. The next change must not add a second region, a public database, or a secret to these files.

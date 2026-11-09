@@ -6,7 +6,7 @@
 
 `packages/shared/src/access/matrix.ts` is the only access list. A signed-in person has one role. A new account is a user. A visitor can read published data, and that is not a fourth role. The API and Bookings import `decideAccess` from this package.
 
-Admin may create a party, configure that event's tickets, set merch, invite or revoke door staff, and grant admin or door. The allow result carries the actor id. An admin may scan a published party without an invite. Door may scan only a party on an invite the API loads. User may read their own purchases. A read of someone else's id is denied. A user cannot scan. Door and user cannot use the admin actions.
+Admin may create a party, configure that event's tickets, set shop, invite or revoke door staff, and grant admin or door. The allow result carries the actor id. An admin may scan a published party without an invite. Door may scan only a party on an invite the API loads. User may read their own purchases. A read of someone else's id is denied. A user cannot scan. Door and user cannot use the admin actions.
 
 The first admin is `INITIAL_ADMIN_SUB` in configuration. This repo does not store a credential. No Cognito call is made.
 

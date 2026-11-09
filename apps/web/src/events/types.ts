@@ -3,6 +3,7 @@ export interface UpcomingPartner {
   name: string;
   href?: string;
   logoSrc?: string;
+  logoFit?: 'cover' | 'contain';
 }
 
 export interface InAppOffer {

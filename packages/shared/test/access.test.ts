@@ -15,7 +15,7 @@ import {
 const matrixActions = [
   'create-party',
   'configure-event-tickets',
-  'set-merch',
+  'set-shop',
   'scan-ticket',
   'read-own-purchases',
   'read-other-purchases',
@@ -27,7 +27,7 @@ const matrix = {
   admin: {
     'create-party': 'allow',
     'configure-event-tickets': 'allow',
-    'set-merch': 'allow',
+    'set-shop': 'allow',
     'scan-ticket': 'allow',
     'read-own-purchases': 'deny',
     'read-other-purchases': 'deny',
@@ -37,7 +37,7 @@ const matrix = {
   door: {
     'create-party': 'deny',
     'configure-event-tickets': 'deny',
-    'set-merch': 'deny',
+    'set-shop': 'deny',
     'scan-ticket': 'allow',
     'read-own-purchases': 'deny',
     'read-other-purchases': 'deny',
@@ -47,7 +47,7 @@ const matrix = {
   user: {
     'create-party': 'deny',
     'configure-event-tickets': 'deny',
-    'set-merch': 'deny',
+    'set-shop': 'deny',
     'scan-ticket': 'deny',
     'read-own-purchases': 'allow',
     'read-other-purchases': 'deny',
@@ -78,7 +78,7 @@ describe('access matrix', () => {
     const allowed = decideAccess({ action: 'create-party', role: 'admin', actorId: 'admin-1' });
     assert.deepEqual(allowed, { effect: 'allow', actorId: 'admin-1' });
     assert.equal(decideAccess({ action: 'configure-event-tickets', role: 'door', actorId: 'door-1' }).effect, 'deny');
-    assert.equal(decideAccess({ action: 'set-merch', role: 'user', actorId: 'user-1' }).effect, 'deny');
+    assert.equal(decideAccess({ action: 'set-shop', role: 'user', actorId: 'user-1' }).effect, 'deny');
     assert.equal(decideAccess({ action: 'create-party', role: 'admin', actorId: '  ' }).effect, 'deny');
     assert.equal(decideAccess({ action: 'grant-admin', role: 'user', actorId: 'user-1' }).effect, 'deny');
     assert.equal(decideAccess({ action: 'grant-door', role: 'door', actorId: 'door-1' }).effect, 'deny');

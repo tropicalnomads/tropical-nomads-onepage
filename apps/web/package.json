@@ -4,10 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "NEXT_TELEMETRY_DISABLED=1 next dev",
-    "build": "NEXT_TELEMETRY_DISABLED=1 next build",
-    "lint": "NEXT_TELEMETRY_DISABLED=1 next typegen && tsc --noEmit",
-    "test": "node --experimental-strip-types --test test/*.test.ts"
+    "dev": "next dev --hostname 127.0.0.1 --port 3100",
+    "start": "next start --hostname 127.0.0.1 --port 3100",
+    "build": "cross-env NEXT_TELEMETRY_DISABLED=1 next build",
+    "lint": "cross-env NEXT_TELEMETRY_DISABLED=1 next typegen && tsc --noEmit",
+    "test": "node --test test/*.test.ts"
   },
   "dependencies": {
     "@fontsource-variable/outfit": "5.2.8",
@@ -15,17 +16,18 @@
     "lucide-react": "0.453.0",
     "next": "^16.4.5",
     "qrcode": "1.5.4",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "tropical-nomads-api": "workspace:*",
     "tropical-nomads-shared": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^26.0.0",
+    "@types/node": "24.19.2",
     "@types/qrcode": "1.5.5",
-    "@types/react": "^18.3.31",
-    "@types/react-dom": "^18.3.7",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "autoprefixer": "10.5.0",
+    "cross-env": "10.1.0",
     "postcss": "8.5.15",
     "postcss-import": "16.1.1",
     "tailwindcss": "3.4.19",

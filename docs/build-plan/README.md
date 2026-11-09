@@ -10,7 +10,7 @@ Owner decisions already in this order:
 
 - Login and registration use Amazon Cognito, with Google and Apple sign-in.
 - A user profile holds identity, a billing address, an avatar, and payment methods. The payment company is ticket 29, last in the first iteration after tickets 31 and 30, and is not named.
-- The access list has three roles. Admin creates parties and merch. Door staff only scan QR codes. Every other user sees their own purchase history and ticket history.
+- The access list has three roles. Admin creates parties and shop. Door staff only scan QR codes. Every other user sees their own purchase history and ticket history.
 - The product is English and Portuguese, with internationalization. The one-pager already has both, and the web shell switches between them.
 - The web shell is `apps/web`. The shared package is `packages/shared` at version `0.4.0`. The owner asked for both in this monorepo. The planning text described separate repositories, and those remotes were not created. Ticket 28 writes the schemas there. The shell does not invent fields. The language codes are `en` and `pt`.
 - Before a future go-live, and still not live: the new frontend on its own Amplify app, the API as a Docker container on ECS, and a confirmation of Amazon RDS for PostgreSQL. Every AWS resource is in Frankfurt (`eu-central-1`). JSON stays the store until that confirmation. The one-pager keeps its existing Amplify deploy.
@@ -18,7 +18,7 @@ Owner decisions already in this order:
 - This repository still holds the one-pager, the API, Bookings, and the JSON. Bookings is not split into its own repo.
 - Migration scripts and seed scripts are named for a separate repository, `tropical-nomads-database` (ticket 30). The seeds are for unit tests, automation tests, and similar uses. The owner asked for that repository. It is named here and not created. Amazon RDS for PostgreSQL in Frankfurt stays the recommendation. JSON stays the store until that database is confirmed. Seeds stay synthetic, and the scripts hold no passwords, ticket secrets, card numbers, or connection strings.
 - Email is one sender, with templates and a fixed message list. Marketing needs consent and can be stopped. No email vendor is chosen.
-- The first iteration is the technical base, then the public product: upcoming events, accounts, payments, tickets, check-in, merch, history, inventory, and email. It reads parties that are already in the published JSON.
+- The first iteration is the technical base, then the public product: upcoming events, accounts, payments, tickets, check-in, shop, history, inventory, and email. It reads parties that are already in the published JSON.
 - Bookings is the second iteration: the Bookings package, the admin party calendar, and the Goabase integrations tab. The first product does not wait for them.
 - Goabase in that second iteration is a list of parties that exist, so Bookings can email offers of Tropical Nomads artists. That offer uses the email ticket. The one-pager refresh stays.
 - iOS and Android repositories are optional and last. Ticket 19 creates them only. It does not implement native apps.
@@ -60,9 +60,9 @@ The Amplify, ECS, and RDS tickets are the deploy path for the first product, and
 | 15 | 1, product | [Payment decisions still open](21-payment-decisions.md) | 12 | Later payment questions. Euro and no refunds are already decided. The company is ticket 29. |
 | 16 | 1, product | [Tickets](13-tickets.md) | 08, 12, 20, 28 | Buy a ticket for a published party. The door copy is a QR code. |
 | 17 | 1, product | [Check-in](14-check-in.md) | 05, 10, 13, 20 | Admin and door pick an event, see sold tickets, search by name, and scan a QR code. One check-in. Admin guest lists. Door cannot edit the party. |
-| 18 | 1, product | [Merch store](15-merch-store.md) | 05, 10, 12, 20, 28 | Buyer catalog, starting from the two shirts on the page. |
+| 18 | 1, product | [Shop](15-shop-store.md) | 05, 20 | Buyer catalog of the two shirts. Checkout is WhatsApp, not a charge. |
 | 19 | 1, product | [Purchase and ticket history](26-purchase-history.md) | 09, 10, 13, 15, 20 | A user sees only their own purchases and tickets. |
-| 20 | 1, product | [Inventory](16-inventory.md) | 09, 15 | Admin adds merch and sets price, sizes, and stock. |
+| 20 | 1, product | [Inventory](16-inventory.md) | 09, 15 | Admin adds shop and sets price, sizes, and stock. |
 | 21 | 1, product | [Email](27-email.md) | 09, 10, 13, 14, 15, 20, 28 | Sending, templates, and every product message. No vendor. |
 | 22 | 1, host | [Web app on Amplify](23-amplify-frontend.md) | 03, 05 | Not live yet. A separate Amplify app. www stays the one-pager. |
 | 23 | 1, host | [API container on ECS](24-ecs-backend.md) | 06, 23 | Not live yet. Docker on ECS. No public production API. |
@@ -84,7 +84,7 @@ The Amplify, ECS, and RDS tickets are the deploy path for the first product, and
 | Tickets | 13 |
 | Check-in | 14 |
 | Payments | 12 now. 21 lists later questions. 29 is the company, last in iteration 1, and does not name one. |
-| Merch store | 15 |
+| Shop | 15 |
 | Inventory | 16 |
 | Abuse-resistant security | 09, then enforced on every later ticket |
 | Bookings in this monorepo | 02 names the slot in the base. 17 brings the product in, in the second iteration. |
@@ -103,7 +103,7 @@ Checked against the decisions so far. The access list is three roles on ticket 0
 | Tickets and QR check-in | 13 and 14 |
 | Three roles | 09. Admin tools are 16 and 18. Door scan is 14. Own history is 26. |
 | Payment interfaces now, company last | 12 now. 29 is last in iteration 1 and does not name a company. |
-| Merch and inventory | 15 and 16 |
+| Shop and inventory | 15 and 16. The shop orders on WhatsApp. Inventory still waits for a confirmed payment. |
 | Cognito with Google and Apple, profile and billing | 10 |
 | Bookings deploy, shared artists, parties, calendar | 02 names the slot. 17, 18, and 22 are the second iteration. |
 | Admin party calendar | 18, after the first product |
@@ -122,7 +122,7 @@ Order problem that this pass fixes: iOS and Android were step 5, in the same tic
 
 Not duplicates: ticket 09 writes who may scan. Ticket 14 builds the invite and the scanner. Ticket 11 is the JSON store. Ticket 01 only recommends the later database. Ticket 04 creates the shared package. Ticket 28 writes the schemas. Ticket 25 confirms that recommendation and does not migrate. Ticket 31 names the repository for AWS resource files. It does not create the repository, Cognito, or RDS, and it does not replace tickets 23, 24, or 25. Ticket 30 names the repository for migration scripts and test seeds. It does not create the repository, and it does not replace ticket 25.
 
-The three-role decision does not block the stack, the web shell, or the public event list. Those have no role tools. It is in force from ticket 09 onward. Types and schemas are step 5, before the feature tickets, and they include the Bookings records so the second iteration does not invent fields. History is step 19, after tickets and merch. Email is step 21, still in the first product. The Amplify, ECS, and RDS tickets are steps 22–24, not live. The AWS-as-code repository is step 25, with those hosts. The database scripts repository is step 26. The payment company is step 27 and is not named. Bookings is steps 28–30. iOS and Android are step 31. The catalog and the public product do not wait for Bookings. Ticket 32 is step 32. It adds the tab logo and the search files on the web app. It depends on tickets 03, 05, 08, 09, 15, and 20.
+The three-role decision does not block the stack, the web shell, or the public event list. Those have no role tools. It is in force from ticket 09 onward. Types and schemas are step 5, before the feature tickets, and they include the Bookings records so the second iteration does not invent fields. History is step 19, after tickets and shop. Email is step 21, still in the first product. The Amplify, ECS, and RDS tickets are steps 22–24, not live. The AWS-as-code repository is step 25, with those hosts. The database scripts repository is step 26. The payment company is step 27 and is not named. Bookings is steps 28–30. iOS and Android are step 31. The catalog and the public product do not wait for Bookings. Ticket 32 is step 32. It adds the tab logo and the search files on the web app. It depends on tickets 03, 05, 08, 09, 15, and 20.
 
 Left open on purpose: the timetable site and agenda contents. Ticket 21 lists later payment questions and does not name a company. Tickets 23–25 and ticket 31 do not create a public launch, and ticket 25 does not create a database. Ticket 31 does not create a repository, call AWS, or create Cognito or RDS. Multi-AZ stays out of scope. Ticket 30 does not create a repository, a database, or a migration. Ticket 29 is the company choice and does not name one. Starting AWS sizes are in [the AWS record](../devops/aws.md). DevOps owns later changes.
 
@@ -151,7 +151,7 @@ Every ticket ends with acceptance criteria. When that ticket is built:
 - The monorepo uses Turborepo (`turbo.json`) and a pnpm workspace (`pnpm-workspace.yaml`).
 - Published data is `apps/one-pager/public/data/*.json`, refreshed by `apps/one-pager/scripts/fetch-goabase-events.mjs`.
 - Operational JSON is `data/operational`. It is empty and it is not published.
-- Merch stock, price, and the WhatsApp reserve link live in `apps/one-pager/src/lib/merch.ts`, not in JSON.
+- Shop stock and the €50 price live in `apps/one-pager/src/lib/shop.ts`, not in JSON. The web shop orders on WhatsApp `+49 176 48996011`. The one-pager keeps its own reserve number.
 - Ticket buttons leave the site via `getPrimaryTicketUrl` in `apps/one-pager/src/lib/data.ts`.
 - Bookings is a header link to `https://bookings.tropical-nomads.com`. Its code is not in this repo.
 - Some events link out to `timetable.tropical-nomads.com`. That site is not part of these tickets.

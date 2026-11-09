@@ -4,7 +4,7 @@ The new app's hosts are templates in `infra/frankfurt`. One CloudFormation file 
 
 The names are the VPC `tropical-nomads`, the database `tropical-nomads-frankfurt`, the user pool and Amplify app `tropical-nomads-web`, and the API cluster, service, image repository, and load balancer `tropical-nomads-api`. JSON stays the store. `amplify.yml` is unchanged. www is not retargeted.
 
-Run `node --experimental-strip-types --test infra/frankfurt/test/templates.test.ts` and `pnpm --filter tropical-nomads-api test`.
+Run `node --test infra/frankfurt/test/templates.test.ts` and `pnpm --filter tropical-nomads-api test`.
 
 Check the live hosts with the local status page in [host-status.md](host-status.md). The API task is healthy. `API_BASE_URL` stays unset because the load balancer has no listener and its hostname does not answer. The next change must not open port 5432 to the internet, put a password in git, attach www to the new Amplify app, or add Google or Apple without the owner's client ids.
 

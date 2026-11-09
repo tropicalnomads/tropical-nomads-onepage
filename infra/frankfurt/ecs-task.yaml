@@ -55,6 +55,8 @@ Resources:
               Value: "5432"
             - Name: DB_NAME
               Value: postgres
+            - Name: DB_STARTUP_CHECK
+              Value: "true"
           Secrets:
             - Name: DB_USER
               ValueFrom: !Sub "${DbSecretArn}:username::"

@@ -40,7 +40,7 @@ The kind of note that can land here later, once the steps are true:
 
 - refreshing the published event list, after that workflow is agreed
 - publishing the one-pager
-- adding a merch product, after the catalog is data rather than a constant in the page
+- adding a shop product, after the catalog is data rather than a constant in the page
 
 Those are examples of future titles only. They are not procedures, and this folder does not contain them.
 

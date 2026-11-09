@@ -14,7 +14,7 @@ flowchart LR
   tickets[Tickets and history] --> ticketBuyer[Tickets by buyer]
   scan[QR check-in] --> ticketId[Ticket by id]
   scan --> inviteUser[Invite by user]
-  merch[Merch and stock] --> stockKey[Stock by product and size]
+  shop[Shop and stock] --> stockKey[Stock by product and size]
   mail[Email] --> consentKey[Consent by subject]
   mail --> stopKey[Consent by stop token]
   offers[Artist offers] --> outsideId[Outside party by id]
@@ -32,7 +32,7 @@ flowchart LR
 | Tickets | 13 | Issued ticket by `id`, then compare the secret. Tickets by `buyerId`, newest first. | Ticket `id` | The buyer reads their own ticket. The secret is checked, not searched. |
 | Purchase history | 26 | Orders by `userId`, newest first. The same buyer lookup as tickets. | Order `id` | The session user only. An id in the query does not switch accounts. Door and admin do not get this list. |
 | Check-in | 14 | Invite by `userId`. Invite by email before the account exists. Check-ins by `ticketId`, newest first. | Invite `id`. Check-in `id`. | Door, and only for a party on that invite. |
-| Merch store | 15 | Product by `id`. The product list. | Product `id` | Anyone can read the catalog. Buying requires a signed-in user. |
+| Shop store | 15 | Product by `id`. The product list. | Product `id` | Anyone can read the catalog. Buying requires a signed-in user. |
 | Inventory | 16 | Stock by `productId` and size. Corrections by `productId` for the admin. | One stock row per product and size | The store reads the count. Admin writes it. Door and user cannot. |
 | Email | 27 | Template by `id`. Consent by subject kind and subject id. Consent by `stopToken`. | Template `id`. One consent row per subject. `stopToken`. | Marketing sends only where consent exists and `stoppedAt` is empty. The stop link uses the token. |
 | Artist offers | 22 | Outside party by `id`. Artist by `id`. | Outside-party `id`, disjoint from public party ids | Admin. The public events file is not a source for the outside-party id. |
@@ -48,7 +48,7 @@ These ids have to exist before the row is saved.
 - An issued ticket points at a party, a trace, and a buyer.
 - A check-in points at a ticket and a party.
 - A door invite's party ids are catalog parties.
-- A stock row and a merch line point at a product id.
+- A stock row and a shop line point at a product id.
 - An artist offer points at an outside party and a catalog artist.
 - A payment method points at a billing address on the same profile.
 

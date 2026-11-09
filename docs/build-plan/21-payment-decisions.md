@@ -8,7 +8,7 @@ The payment questions that are still unanswered are written in one place. Ticket
 
 ## Why it exists
 
-Tickets and merch can be built against the stub while these answers are missing, because a stub charge stays `pending_provider` and does not take money. The answers are still needed before a real charge. Leaving them scattered across tickets makes an early ticket look blocked.
+Tickets and shop can be built against the stub while these answers are missing, because a stub charge stays `pending_provider` and does not take money. The answers are still needed before a real charge. Leaving them scattered across tickets makes an early ticket look blocked.
 
 ## Depends on
 
@@ -29,7 +29,7 @@ Do not answer them in this ticket. Do not name a company.
 
 1. Copy this list into the master plan's payments row so the open items have one home.
 2. Do not pick a provider, a currency set, or a price.
-3. Do not add a dependency from tickets, merch, or inventory onto this ticket.
+3. Do not add a dependency from tickets, shop, or inventory onto this ticket.
 4. Do not install a provider SDK.
 
 ## Acceptance criteria

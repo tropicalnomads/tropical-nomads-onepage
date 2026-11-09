@@ -1,4 +1,4 @@
-import { createHash, createPublicKey, createVerify } from 'node:crypto';
+import { createHash, createPublicKey, createVerify, type JsonWebKey } from 'node:crypto';
 import type { VerifiedSignIn } from 'tropical-nomads-shared';
 import type { AccountNotice } from '../i18n/copy';
 

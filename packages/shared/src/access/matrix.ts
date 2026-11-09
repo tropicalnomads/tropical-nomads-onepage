@@ -6,7 +6,7 @@ export type { Role };
 export const accessActions = [
   'create-party',
   'configure-event-tickets',
-  'set-merch',
+  'set-shop',
   'scan-ticket',
   'read-own-purchases',
   'read-other-purchases',
@@ -43,7 +43,7 @@ export type AccessDecision = AccessAllow | AccessDeny;
 type AdminAction =
   | 'create-party'
   | 'configure-event-tickets'
-  | 'set-merch'
+  | 'set-shop'
   | 'grant-admin'
   | 'grant-door'
   | 'invite-door'
@@ -91,7 +91,7 @@ export function roleAllows(role: Role, action: AccessAction): boolean {
   switch (action) {
     case 'create-party':
     case 'configure-event-tickets':
-    case 'set-merch':
+    case 'set-shop':
     case 'grant-admin':
     case 'grant-door':
     case 'invite-door':
@@ -169,7 +169,7 @@ export function decideAccess(request: AccessRequest): AccessDecision {
   switch (request.action) {
     case 'create-party':
     case 'configure-event-tickets':
-    case 'set-merch':
+    case 'set-shop':
     case 'grant-admin':
     case 'grant-door':
     case 'invite-door':

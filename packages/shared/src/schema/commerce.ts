@@ -36,14 +36,14 @@ export interface TicketLine {
   quantity: number;
 }
 
-export interface MerchLine {
-  kind: 'merch';
+export interface ShopLine {
+  kind: 'shop';
   productId: string;
   size: StockSize;
   quantity: number;
 }
 
-export type OrderLine = TicketLine | MerchLine;
+export type OrderLine = TicketLine | ShopLine;
 
 export interface Order {
   id: string;
@@ -155,13 +155,13 @@ function parseLine(input: unknown, refs: SchemaRefs, errors: string[]): OrderLin
     if (!partyId || !offerName || quantity === undefined) return undefined;
     return { kind: 'ticket', partyId, offerName, quantity };
   }
-  if (kind === 'merch') {
+  if (kind === 'shop') {
     const productId = requireString(input, 'productId', errors);
     const size = parseEnum(input.size, stockSizes, 'size');
     if (!size.ok) errors.push(...size.errors);
     if (productId) requireRef(refs.productIds, productId, 'productId', errors);
     if (!productId || !size.ok || quantity === undefined) return undefined;
-    return { kind: 'merch', productId, size: size.value, quantity };
+    return { kind: 'shop', productId, size: size.value, quantity };
   }
   errors.push('line kind is not allowed');
   return undefined;

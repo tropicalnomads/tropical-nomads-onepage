@@ -186,7 +186,7 @@ export function startPayment(file: AccountFile, traces: readonly PaymentTrace[],
   if (traces.filter((trace) => trace.userId === input.userId).length >= traceLimit) {
     throw new Error('payment is not allowed');
   }
-  const purpose: PaymentPurpose | undefined = input.purpose === 'tickets' || input.purpose === 'merch' ? input.purpose : undefined;
+  const purpose: PaymentPurpose | undefined = input.purpose === 'tickets' || input.purpose === 'shop' ? input.purpose : undefined;
   const currency = input.currency.trim().toUpperCase();
   const reference = input.reference.trim();
   if (!purpose) {
@@ -222,8 +222,8 @@ export function startTicketPayment(file: AccountFile, traces: readonly PaymentTr
   return startPayment(file, traces, { ...input, purpose: 'tickets' }, caller);
 }
 
-export function startMerchPayment(file: AccountFile, traces: readonly PaymentTrace[], input: PaymentDraft, caller: PaymentCaller): StartedPayment {
-  return startPayment(file, traces, { ...input, purpose: 'merch' }, caller);
+export function startShopPayment(file: AccountFile, traces: readonly PaymentTrace[], input: PaymentDraft, caller: PaymentCaller): StartedPayment {
+  return startPayment(file, traces, { ...input, purpose: 'shop' }, caller);
 }
 
 export function listTraces(caller: PaymentCaller, traces: readonly PaymentTrace[], subjectId: string): PaymentTrace[] {
@@ -327,8 +327,8 @@ function begin(purpose: PaymentPurpose, file: AccountFile, traces: readonly Paym
   switch (purpose) {
     case 'tickets':
       return startTicketPayment(file, traces, input, caller);
-    case 'merch':
-      return startMerchPayment(file, traces, input, caller);
+    case 'shop':
+      return startShopPayment(file, traces, input, caller);
     default: {
       const unexpected: never = purpose;
       throw new Error(unexpected);

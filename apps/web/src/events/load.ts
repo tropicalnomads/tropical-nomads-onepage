@@ -41,7 +41,14 @@ function readPartners(value: unknown): Map<string, UpcomingPartner> {
     }
     const href = publicHttpsUrl(readString(partner.instagram));
     const logoSrc = partnerLogoSrc(readString(partner.logo));
-    partners.set(id, { id, name, ...(href ? { href } : {}), ...(logoSrc ? { logoSrc } : {}) });
+    const logoFit = partner.logoFit === 'contain' ? 'contain' : partner.logoFit === 'cover' ? 'cover' : undefined;
+    partners.set(id, {
+      id,
+      name,
+      ...(href ? { href } : {}),
+      ...(logoSrc ? { logoSrc } : {}),
+      ...(logoFit ? { logoFit } : {}),
+    });
   }
   return partners;
 }

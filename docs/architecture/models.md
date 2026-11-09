@@ -17,8 +17,8 @@ erDiagram
   Profile ||--o| MarketingConsent : records
   Order ||--|| PaymentTrace : pays
   Order ||--o{ IssuedTicket : issues
-  Order ||--o{ MerchLine : includes
-  Product ||--o{ MerchLine : "bought as"
+  Order ||--o{ ShopLine : includes
+  Product ||--o{ ShopLine : "bought as"
   Product ||--|{ StockCount : "counted by size"
   IssuedTicket ||--o{ CheckIn : "scanned as"
   DoorInvite }o--o{ Party : "allows scan of"
@@ -98,9 +98,9 @@ No password, no card number, and no date of birth.
 
 ### Order and payment trace
 
-An order has `id`, `userId`, purpose `tickets` or `merch`, lines, `traceId`, and `createdAt`.
+An order has `id`, `userId`, purpose `tickets` or `shop`, lines, `traceId`, and `createdAt`.
 
-A ticket line has `partyId`, offer name, and quantity. A merch line has `productId`, size, and quantity.
+A ticket line has `partyId`, offer name, and quantity. A shop line has `productId`, size, and quantity.
 
 A trace has `id`, `userId`, amount, currency, purpose, reference, and status. The stub status is `pending_provider`. `providerReference` arrives only when a later adapter confirms the trace. The apps cannot set `confirmed`.
 
@@ -142,7 +142,7 @@ Templates are the seven messages in ticket 27. Each has `id`, purpose, `marketin
 | --- | --- |
 | `registration` | no |
 | `ticket-purchase` | no. The body carries the QR payload. |
-| `merch-purchase` | no |
+| `shop-purchase` | no |
 | `door-invite` | no |
 | `new-party` | yes |
 | `artist-offer` | yes |
@@ -165,7 +165,7 @@ sequenceDiagram
   Buyer->>API: Signed in, billing address present
   API->>Private: Order plus PaymentTrace pending_provider
   API->>Private: IssuedTicket validForEntry false
-  Note over API,Private: Merch stock waits for a confirmed trace
+  Note over API,Private: Shop stock waits for a confirmed trace
   actor Door
   Door->>API: QR payload for an invited party
   API->>Private: CheckIn refused while the trace is unpaid

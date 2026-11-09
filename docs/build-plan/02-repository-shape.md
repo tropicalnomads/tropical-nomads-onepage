@@ -54,7 +54,7 @@ Today the one-pager was the repository root. It is now `apps/one-pager`.
    - `tailwind.config.ts`, `postcss.config.js`
    - `src/`, `public/`, `scripts/`
    - The workspace lockfile stays at the repo root. Amplify installs from that root.
-3. Leave that package's behavior alone: same pages, same `pnpm build`, same `/data/*.json` fetches, same `src/lib/merch.ts` shop, same `en` / `pt` copy, same link to `https://bookings.tropical-nomads.com`.
+3. Leave that package's behavior alone: same pages, same `pnpm build`, same `/data/*.json` fetches, same `src/lib/shop.ts` shop, same `en` / `pt` copy, same link to `https://bookings.tropical-nomads.com`.
 4. Add empty package slots in this repo for the API and for Bookings. Bookings deploys only to `bookings.tropical-nomads.com`.
 5. Name the client repositories. Do not create them on GitHub until their tickets. Required: the shared repo (ticket 04) and the web app (ticket 05). Optional and last: iOS and Android (ticket 19), repos only.
 6. Keep published JSON with the one-pager: `public/data/events.json`, `artists.json`, `venues.json`, `labels.json`, `partners.json`, `socials.json`, `agencies.json`, and banners under `public/events/banners/`. Curated inputs stay in `scripts/data/`. The web app does not get its own copy.

@@ -16,7 +16,7 @@ import {
   markPaymentConfirmed,
   readTraces,
   recordRefund,
-  startMerchPayment,
+  startShopPayment,
   startTicketPayment,
   type PaymentCaller,
   type PaymentDraft,
@@ -62,24 +62,24 @@ function method(overrides: Record<string, unknown> = {}): Record<string, unknown
 }
 
 describe('payment interfaces', () => {
-  it('starts a pending trace for tickets and for merch, and ignores a confirmed status', () => {
+  it('starts a pending trace for tickets and for shop, and ignores a confirmed status', () => {
     const file = billedFile();
     const tickets = startTicketPayment(file, [], { ...draft(), status: 'confirmed' }, caller());
-    const merch = startMerchPayment(file, tickets.traces, draft({ amount: 50, currency: 'brl', reference: 'shirt-1' }), caller());
+    const shop = startShopPayment(file, tickets.traces, draft({ amount: 50, currency: 'brl', reference: 'shirt-1' }), caller());
     assert.equal(tickets.trace.purpose, 'tickets');
     assert.equal(tickets.trace.amount, 12.5);
     assert.equal(tickets.trace.currency, 'USD');
     assert.equal(tickets.trace.userId, 'sub-ada');
     assert.equal(tickets.trace.status, 'pending_provider');
-    assert.equal(merch.trace.purpose, 'merch');
-    assert.equal(merch.trace.currency, 'BRL');
-    assert.equal(merch.trace.status, 'pending_provider');
-    assert.equal(merch.traces.length, 2);
-    const confirmed = markPaymentConfirmed(merch.traces, tickets.trace.id, 'adapter-ref');
+    assert.equal(shop.trace.purpose, 'shop');
+    assert.equal(shop.trace.currency, 'BRL');
+    assert.equal(shop.trace.status, 'pending_provider');
+    assert.equal(shop.traces.length, 2);
+    const confirmed = markPaymentConfirmed(shop.traces, tickets.trace.id, 'adapter-ref');
     assert.equal(confirmed.every((trace) => trace.status === 'pending_provider'), true);
     assert.equal(JSON.stringify(confirmed).includes('adapter-ref'), false);
     assert.deepEqual(recordRefund(tickets.trace.id), { applied: false });
-    assert.equal(merch.traces[0]?.status, 'pending_provider');
+    assert.equal(shop.traces[0]?.status, 'pending_provider');
   });
 
   it('rejects a card number, a missing billing address, and a payment by another person', () => {
@@ -97,7 +97,7 @@ describe('payment interfaces', () => {
       ...file,
       profiles: file.profiles.map((profile) => ({ ...profile, status: 'disabled' as const })),
     };
-    assert.throws(() => startMerchPayment(disabled, [], draft(), caller()), /not allowed/);
+    assert.throws(() => startShopPayment(disabled, [], draft(), caller()), /not allowed/);
     assert.throws(() => startTicketPayment(file, [], draft(), caller('admin-1', 'admin')), /not allowed/);
   });
 
@@ -114,7 +114,7 @@ describe('payment interfaces', () => {
     assert.equal(JSON.stringify(readAccounts(root)).includes(cardNumber), false);
     const [first, second] = await Promise.all([
       commitPayment('tickets', draft({ reference: 'party-1' }), caller(), root),
-      commitPayment('merch', draft({ reference: 'shirt-1', currency: 'EUR' }), caller(), root),
+      commitPayment('shop', draft({ reference: 'shirt-1', currency: 'EUR' }), caller(), root),
     ]);
     const traces = readTraces(root);
     assert.equal(traces.length, 2);

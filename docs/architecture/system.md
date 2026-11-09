@@ -97,5 +97,5 @@ Check-in is a later call. Door staff scan the QR. The API reads the issued ticke
 ## Security on this shape
 
 - A visitor can read the published JSON. That read does not include profiles, traces, ticket secrets, invites, or stock counts.
-- Admin writes parties, ticket offers, and merch through the API. Door writes a check-in for an invited party. A user reads their own orders and tickets.
+- Admin writes parties, ticket offers, and shop through the API. Door writes a check-in for an invited party. A user reads their own orders and tickets.
 - The shared repo holds shapes. The private JSON holds the secret values. Publishing the shared package does not publish a buyer's QR secret.

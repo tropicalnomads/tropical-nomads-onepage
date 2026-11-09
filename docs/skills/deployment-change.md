@@ -1,6 +1,6 @@
 # Deployment change
 
-Ticket 3 keeps www on the existing Amplify app. The file is `amplify.yml`. It installs pnpm 9.15.9, installs from the root lockfile, runs `pnpm --filter tropical-nomads-page build`, and publishes `apps/one-pager/dist`.
+Ticket 3 keeps www on the existing Amplify app. The file is `amplify.yml`. It pins Node 24.22.2 and pnpm 12.18.0, installs from the root lockfile, runs `pnpm --filter tropical-nomads-page build`, and publishes `apps/one-pager/dist`.
 
 Cache-Control stays uncached for the site, and `/assets/**` stays immutable for a year. `AWS_COMMIT_ID`, when the host sets it, is the JSON cache-buster in `apps/one-pager/vite.config.ts`. Turbo's build task lists that variable so a cached build does not drop it.
 

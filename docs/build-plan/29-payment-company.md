@@ -8,7 +8,7 @@ The payment company is chosen here, at the end of the first iteration, and nowhe
 
 ## Why it exists
 
-Tickets and merch are built against the payment interfaces first. The hosts for the new app are recorded after that, and they are not live. The company is the last choice of the first iteration, so the product path does not wait on a vendor. Bookings does not wait on it either.
+Tickets and shop are built against the payment interfaces first. The hosts for the new app are recorded after that, and they are not live. The company is the last choice of the first iteration, so the product path does not wait on a vendor. Bookings does not wait on it either.
 
 ## Depends on
 

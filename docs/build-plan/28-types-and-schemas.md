@@ -14,7 +14,7 @@ Open questions stay unfilled: no draft flag, no refund record, no allowed-curren
 
 ## Rules
 
-- Role is `admin`, `door`, or `user`. Locale is `en` or `pt`. Payment purpose is `tickets` or `merch`. Trace status is `pending_provider`.
+- Role is `admin`, `door`, or `user`. Locale is `en` or `pt`. Payment purpose is `tickets` or `shop`. Trace status is `pending_provider`.
 - A published party rejects a ticket secret. A payment method rejects a full card number and a CVC.
 - The QR payload is issued-ticket id plus secret. A payload that is only a public party id fails.
 - Unique keys reject a second row. A reference to a missing id fails.

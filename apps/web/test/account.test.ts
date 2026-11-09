@@ -79,7 +79,7 @@ describe('accounts', () => {
     const register = readFileSync(new URL('../app/account/register/page.tsx', import.meta.url), 'utf8');
     const form = readFileSync(new URL('../src/components/AccountForms.tsx', import.meta.url), 'utf8');
     const actions = readFileSync(new URL('../src/account/actions.ts', import.meta.url), 'utf8');
-    assert.equal(register.includes('/merch'), false);
+    assert.equal(register.includes('/shop'), false);
     assert.equal(register.includes('/check-in'), false);
     assert.equal(form.includes('cardNumber'), false);
     assert.equal(actions.includes('writeAccounts'), false);
