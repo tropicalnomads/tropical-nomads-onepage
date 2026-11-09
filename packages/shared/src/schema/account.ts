@@ -42,6 +42,10 @@ export interface Profile {
   displayName?: string;
   avatarKey?: string;
   phone?: string;
+  city?: string;
+  region?: string;
+  postalCode?: string;
+  country?: string;
   providers: readonly ProviderLink[];
   createdAt: string;
   updatedAt: string;
@@ -86,6 +90,10 @@ const profileFields = [
   'displayName',
   'avatarKey',
   'phone',
+  'city',
+  'region',
+  'postalCode',
+  'country',
   'providers',
   'createdAt',
   'updatedAt',
@@ -120,6 +128,10 @@ export function parseProfile(input: unknown, refs: SchemaRefs = {}): ParseResult
   if (phone && !phonePattern.test(phone)) {
     errors.push('phone is not E.164');
   }
+  const city = optionalString(read.value, 'city', errors);
+  const region = optionalString(read.value, 'region', errors);
+  const postalCode = optionalString(read.value, 'postalCode', errors);
+  const country = optionalString(read.value, 'country', errors);
   const createdAt = requireString(read.value, 'createdAt', errors);
   const updatedAt = requireString(read.value, 'updatedAt', errors);
   const statusResult = parseEnum(read.value.status, accountStatuses, 'status');
@@ -170,6 +182,10 @@ export function parseProfile(input: unknown, refs: SchemaRefs = {}): ParseResult
   if (displayName) profile.displayName = displayName;
   if (avatarKey) profile.avatarKey = avatarKey;
   if (phone) profile.phone = phone;
+  if (city) profile.city = city;
+  if (region) profile.region = region;
+  if (postalCode) profile.postalCode = postalCode;
+  if (country) profile.country = country;
   if (locale) profile.locale = locale;
   if (billingAddressId) profile.billingAddressId = billingAddressId;
   return finish(errors, profile);

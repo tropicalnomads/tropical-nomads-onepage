@@ -122,8 +122,22 @@ export async function finishVerifiedSignIn(formData: FormData): Promise<HostedRe
 }
 
 export async function hasVerifiedClaims(): Promise<boolean> {
+  return (await readVerifiedClaims()) !== undefined;
+}
+
+export async function rememberVerifiedClaims(claims: IdClaims): Promise<void> {
   const jar = await cookies();
-  return claimsFrom(openPayload(jar.get(verifiedCookie)?.value)) !== undefined;
+  jar.set(verifiedCookie, sealPayload(claims, 1800), { ...oauthCookie(), maxAge: 1800 });
+}
+
+export async function readVerifiedClaims(): Promise<IdClaims | undefined> {
+  const jar = await cookies();
+  return claimsFrom(openPayload(jar.get(verifiedCookie)?.value));
+}
+
+export async function clearVerifiedClaims(): Promise<void> {
+  const jar = await cookies();
+  jar.delete({ name: verifiedCookie, path: '/account' });
 }
 
 function hostedProvider(value: string): HostedProvider | undefined {

@@ -6,6 +6,7 @@ import {
   containsCardNumber,
   parseBillingAddress,
   parsePaymentMethod,
+  parseProfile,
   parseProfiles,
   usernameProblem,
   type BillingAddress,
@@ -136,6 +137,46 @@ export function registerVerifiedAccount(
   }
   const next = assertAccountFile({ ...file, profiles: attached.value.profiles });
   return next;
+}
+
+export interface ProfileDetails {
+  givenName: string;
+  familyName: string;
+  displayName?: string;
+  phone?: string;
+  city?: string;
+  region?: string;
+  postalCode?: string;
+  country?: string;
+}
+
+const optionalProfileFields = ['displayName', 'phone', 'city', 'region', 'postalCode', 'country'] as const;
+
+export function saveProfileDetails(file: AccountFile, sub: string, input: ProfileDetails, now: string): AccountFile {
+  const current = file.profiles.find((profile) => profile.sub === sub);
+  if (!current || current.status !== 'active') {
+    throw new Error('profile is not active');
+  }
+  const updated: Profile = {
+    ...current,
+    givenName: input.givenName,
+    familyName: input.familyName,
+    updatedAt: now,
+  };
+  for (const key of optionalProfileFields) {
+    const value = input[key];
+    if (value) {
+      updated[key] = value;
+    } else {
+      delete updated[key];
+    }
+  }
+  const parsed = parseProfile(updated, { billingAddressIds: file.billingAddresses.map((address) => address.id) });
+  if (!parsed.ok) {
+    throw new Error(parsed.errors[0] ?? 'profile was not saved');
+  }
+  const profiles = file.profiles.map((profile) => (profile.sub === sub ? parsed.value : profile));
+  return assertAccountFile({ ...file, profiles });
 }
 
 export function saveDefaultBillingAddress(file: AccountFile, sub: string, input: unknown, now: string): AccountFile {

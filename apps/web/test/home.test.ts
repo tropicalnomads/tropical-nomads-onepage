@@ -122,7 +122,7 @@ describe('homepage catalog', () => {
     assert.equal(formatEventDate(athens, 'en', 'medium'), 'Oct 4, 2026');
     assert.equal(
       upcomingSummary(groove),
-      "After June · Araujah · Blazin'G · Deutsch · Kobot · Middle-D · Octo · Respeter · Shivaion · Vinius",
+      "After June · Araujah · Blazin'G · Deutsch · Kobot · Middle-D · Octo · Respecter · Shivaion · Vinius",
     );
     assert.equal(upcomingSummary(forest), 'Elowinz · Cyk · Inside Mind · FNX +18');
     assert.equal(pastSummary(preHalloween), 'FNX · Valkyrie · 3rd Vision +8');

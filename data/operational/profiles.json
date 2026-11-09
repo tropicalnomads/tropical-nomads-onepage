@@ -1,6 +1,26 @@
 {
   "schemaVersion": 1,
-  "profiles": [],
+  "profiles": [
+    {
+      "sub": "4354f8e2-d001-702a-367d-65d82fc432f7",
+      "email": "juliolpiva@hotmail.com",
+      "emailVerified": true,
+      "username": "juliolpiva",
+      "givenName": "Júlio",
+      "familyName": "Locatelli Piva",
+      "providers": [
+        {
+          "provider": "cognito",
+          "subject": "4354f8e2-d001-702a-367d-65d82fc432f7"
+        }
+      ],
+      "createdAt": "2026-11-09T15:06:35.100Z",
+      "updatedAt": "2026-11-09T15:06:35.100Z",
+      "status": "active",
+      "role": "user",
+      "displayName": "Júlio"
+    }
+  ],
   "billingAddresses": [],
   "paymentMethods": []
 }

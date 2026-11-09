@@ -3,6 +3,8 @@ import { homeCopy, type HomeCopy } from './home.ts';
 
 export interface ShellCopy {
   homeAria: string;
+  navHome: string;
+  calendar: string;
   openMenu: string;
   closeMenu: string;
   primary: string;
@@ -28,22 +30,73 @@ export interface AccountCopy {
   register: string;
   registerTitle: string;
   signInTitle: string;
+  signInSubtitle: string;
+  registerSubtitle: string;
   accountTitle: string;
   intro: string;
+  joinCommunity: string;
+  accountRecovery: string;
   email: string;
   password: string;
+  confirmPassword: string;
+  passwordRuleLength: string;
+  passwordRuleUpper: string;
+  passwordRuleLower: string;
+  passwordRuleNumber: string;
+  passwordRuleSymbol: string;
+  strengthWeak: string;
+  strengthFair: string;
+  strengthGood: string;
+  strengthStrong: string;
+  profileTitle: string;
+  profileHelp: string;
+  profileDetailsTitle: string;
+  profileDetailsHelp: string;
+  required: string;
+  saveProfile: string;
   username: string;
   givenName: string;
   familyName: string;
+  displayName: string;
+  phone: string;
+  city: string;
+  region: string;
+  postalCode: string;
+  country: string;
   submitRegister: string;
   submitSignIn: string;
+  confirmAccount: string;
+  finishProfile: string;
+  working: string;
+  orContinueWith: string;
+  showPassword: string;
+  hidePassword: string;
+  alreadyHaveAccount: string;
+  newToTropical: string;
+  confirmationTitle: string;
+  confirmSubtitle: string;
+  confirmAskTitle: string;
+  confirmAskSubtitle: string;
+  continueConfirm: string;
+  resendCode: string;
+  differentEmail: string;
+  haveCode: string;
+  enterCode: string;
+  forgotPassword: string;
+  forgotTitle: string;
+  resetHelp: string;
+  confirmationCode: string;
+  newPassword: string;
+  sendCode: string;
+  submitReset: string;
+  confirmHelp: string;
   continueGoogle: string;
   continueApple: string;
-  billingLater: string;
   noPaymentMethod: string;
   disabled: string;
   avatarTitle: string;
   avatarHelp: string;
+  avatarChoose: string;
   saveAvatar: string;
   notices: Record<AccountNotice, string>;
 }
@@ -87,13 +140,26 @@ export type AccountNotice =
   | 'email-invalid'
   | 'password-short'
   | 'password-long'
+  | 'password-uppercase'
+  | 'password-lowercase'
+  | 'password-number'
+  | 'password-symbol'
+  | 'password-mismatch'
   | 'password-rejected'
   | 'cognito-not-configured'
   | 'email-unconfirmed'
+  | 'account-confirmed'
+  | 'code-sent'
+  | 'code-limited'
+  | 'code-invalid'
+  | 'reset-sent'
+  | 'password-reset'
   | 'provider-not-allowed'
   | 'not-signed-in'
   | 'avatar-rejected'
-  | 'avatar-saved';
+  | 'avatar-saved'
+  | 'profile-invalid'
+  | 'profile-saved';
 
 const accountNotices: readonly AccountNotice[] = [
   'username-required',
@@ -103,13 +169,26 @@ const accountNotices: readonly AccountNotice[] = [
   'email-invalid',
   'password-short',
   'password-long',
+  'password-uppercase',
+  'password-lowercase',
+  'password-number',
+  'password-symbol',
+  'password-mismatch',
   'password-rejected',
   'cognito-not-configured',
   'email-unconfirmed',
+  'account-confirmed',
+  'code-sent',
+  'code-limited',
+  'code-invalid',
+  'reset-sent',
+  'password-reset',
   'provider-not-allowed',
   'not-signed-in',
   'avatar-rejected',
   'avatar-saved',
+  'profile-invalid',
+  'profile-saved',
 ];
 
 export function knownAccountNotice(value: string | undefined): AccountNotice | null {
@@ -190,6 +269,8 @@ export interface CheckInCopy {
 export const shellCopy: Record<Locale, ShellCopy> = {
   en: {
     homeAria: 'Tropical Nomads home',
+    navHome: 'Home',
+    calendar: 'Calendar',
     openMenu: 'Open navigation menu',
     closeMenu: 'Close navigation menu',
     primary: 'Primary',
@@ -314,22 +395,73 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       register: 'Create account',
       registerTitle: 'Create account',
       signInTitle: 'Sign in',
+      signInSubtitle: 'Welcome back. Your tickets, profile, and event access are waiting.',
+      registerSubtitle: 'Join the Tropical Nomads community and keep everything for the dancefloor in one place.',
       accountTitle: 'Account',
-      intro: 'Email and password, Google, or Apple. Billing can wait until a ticket.',
+      intro: 'Keep your details current so tickets, orders, and event access are easier.',
+      joinCommunity: 'Join the community',
+      accountRecovery: 'Account recovery',
       email: 'Email',
       password: 'Password',
+      confirmPassword: 'Confirm password',
+      passwordRuleLength: 'At least 8 characters',
+      passwordRuleUpper: 'One uppercase letter',
+      passwordRuleLower: 'One lowercase letter',
+      passwordRuleNumber: 'One number',
+      passwordRuleSymbol: 'One symbol',
+      strengthWeak: 'Weak',
+      strengthFair: 'Fair',
+      strengthGood: 'Good',
+      strengthStrong: 'Strong',
+      profileTitle: 'Set up your profile',
+      profileHelp: 'Tell us what you would like to share. Only your given name and family name are required.',
+      profileDetailsTitle: 'Your profile',
+      profileDetailsHelp: 'These details can be reused for tickets, orders, and future checkouts.',
+      required: 'Required',
+      saveProfile: 'Save profile',
       username: 'Username',
       givenName: 'Given name',
       familyName: 'Family name',
+      displayName: 'Display name',
+      phone: 'Phone with country code',
+      city: 'City',
+      region: 'State / region',
+      postalCode: 'Postal code',
+      country: 'Country',
       submitRegister: 'Create account',
       submitSignIn: 'Sign in',
+      confirmAccount: 'Confirm and continue',
+      finishProfile: 'Finish profile',
+      working: 'Please wait…',
+      orContinueWith: 'Or continue with',
+      showPassword: 'Show password',
+      hidePassword: 'Hide password',
+      alreadyHaveAccount: 'Already part of the community?',
+      newToTropical: 'New to Tropical Nomads?',
+      confirmationTitle: 'Check your inbox',
+      confirmSubtitle: 'We sent a code to {email}. You can leave this page and open it again.',
+      confirmAskTitle: 'Confirm your email',
+      confirmAskSubtitle: 'Use the address from the account you created. Coming back to this page keeps you on the code step.',
+      continueConfirm: 'Continue',
+      resendCode: 'Resend code',
+      differentEmail: 'Use a different email',
+      haveCode: 'Have a confirmation code?',
+      enterCode: 'Enter it',
+      forgotPassword: 'Forgot password',
+      forgotTitle: 'Reset password',
+      resetHelp: 'We email a code. The new password stays in Cognito.',
+      confirmationCode: 'Confirmation code',
+      newPassword: 'New password',
+      sendCode: 'Send code',
+      submitReset: 'Save new password',
+      confirmHelp: 'Enter the code from your email. After it is accepted, sign in with the password you chose.',
       continueGoogle: 'Continue with Google',
       continueApple: 'Continue with Apple',
-      billingLater: 'A billing address is not required to create the account.',
       noPaymentMethod: 'No payment method is saved.',
       disabled: 'This account is disabled. It cannot buy or scan.',
       avatarTitle: 'Profile photo',
       avatarHelp: 'JPEG, PNG, or WebP. At most 1 MB.',
+      avatarChoose: 'Choose photo',
       saveAvatar: 'Save photo',
       notices: {
         'username-required': 'Choose a username.',
@@ -337,20 +469,35 @@ export const shellCopy: Record<Locale, ShellCopy> = {
         'username-taken': 'That username is already used.',
         'name-required': 'Enter your given name and family name.',
         'email-invalid': 'Enter an email address.',
-        'password-short': 'Use at least 12 characters.',
+        'password-short': 'Use at least 8 characters.',
         'password-long': 'That password is too long.',
+        'password-uppercase': 'Add an uppercase letter.',
+        'password-lowercase': 'Add a lowercase letter.',
+        'password-number': 'Add a number.',
+        'password-symbol': 'Add a symbol.',
+        'password-mismatch': 'The passwords do not match.',
         'password-rejected': 'Choose a different password.',
         'cognito-not-configured': 'Sign-in is not available yet. Cognito is not configured.',
-        'email-unconfirmed': 'Confirm the message sent to your email, then sign in.',
+        'email-unconfirmed': 'Enter the code sent to your email.',
+        'account-confirmed': 'Email confirmed. Sign in to continue.',
+        'code-sent': 'A new code is on its way.',
+        'code-limited': 'Wait a moment before asking for another code.',
+        'code-invalid': 'That code is not valid.',
+        'reset-sent': 'If the account exists, the reset code is on its way.',
+        'password-reset': 'Password saved. Sign in with the new one.',
         'provider-not-allowed': 'That sign-in provider is not available.',
         'not-signed-in': 'Sign in before changing the account.',
         'avatar-rejected': 'That photo was not saved.',
         'avatar-saved': 'Profile photo saved.',
+        'profile-invalid': 'Check the profile details and try again.',
+        'profile-saved': 'Profile saved.',
       },
     },
   },
   pt: {
     homeAria: 'Início da Tropical Nomads',
+    navHome: 'Início',
+    calendar: 'Calendário',
     openMenu: 'Abrir menu de navegação',
     closeMenu: 'Fechar menu de navegação',
     primary: 'Principal',
@@ -475,22 +622,73 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       register: 'Criar conta',
       registerTitle: 'Criar conta',
       signInTitle: 'Entrar',
+      signInSubtitle: 'Boas-vindas de volta. Seus ingressos, perfil e acesso aos eventos estão esperando.',
+      registerSubtitle: 'Entre para a comunidade Tropical Nomads e mantenha tudo da pista em um só lugar.',
       accountTitle: 'Conta',
-      intro: 'E-mail e senha, Google ou Apple. O endereço de cobrança pode esperar.',
+      intro: 'Mantenha seus dados atualizados para facilitar ingressos, pedidos e acesso aos eventos.',
+      joinCommunity: 'Entre para a comunidade',
+      accountRecovery: 'Recuperação da conta',
       email: 'E-mail',
       password: 'Senha',
+      confirmPassword: 'Confirmar senha',
+      passwordRuleLength: 'Pelo menos 8 caracteres',
+      passwordRuleUpper: 'Uma letra maiúscula',
+      passwordRuleLower: 'Uma letra minúscula',
+      passwordRuleNumber: 'Um número',
+      passwordRuleSymbol: 'Um símbolo',
+      strengthWeak: 'Fraca',
+      strengthFair: 'Razoável',
+      strengthGood: 'Boa',
+      strengthStrong: 'Forte',
+      profileTitle: 'Configure seu perfil',
+      profileHelp: 'Conte o que deseja compartilhar. Apenas nome e apelido são obrigatórios.',
+      profileDetailsTitle: 'Seu perfil',
+      profileDetailsHelp: 'Esses dados podem ser reutilizados em ingressos, pedidos e compras futuras.',
+      required: 'Obrigatório',
+      saveProfile: 'Salvar perfil',
       username: 'Nome de usuário',
       givenName: 'Nome',
       familyName: 'Apelido',
+      displayName: 'Nome de exibição',
+      phone: 'Telefone com código do país',
+      city: 'Cidade',
+      region: 'Estado / região',
+      postalCode: 'Código postal',
+      country: 'País',
       submitRegister: 'Criar conta',
       submitSignIn: 'Entrar',
+      confirmAccount: 'Confirmar e continuar',
+      finishProfile: 'Finalizar perfil',
+      working: 'Aguarde…',
+      orContinueWith: 'Ou continue com',
+      showPassword: 'Mostrar senha',
+      hidePassword: 'Ocultar senha',
+      alreadyHaveAccount: 'Já faz parte da comunidade?',
+      newToTropical: 'Novo na Tropical Nomads?',
+      confirmationTitle: 'Confira seu e-mail',
+      confirmSubtitle: 'Enviamos um código para {email}. Você pode sair e abrir esta página de novo.',
+      confirmAskTitle: 'Confirme seu e-mail',
+      confirmAskSubtitle: 'Use o endereço da conta que você criou. Voltar a esta página mantém você na etapa do código.',
+      continueConfirm: 'Continuar',
+      resendCode: 'Reenviar código',
+      differentEmail: 'Usar outro e-mail',
+      haveCode: 'Tem um código de confirmação?',
+      enterCode: 'Informe aqui',
+      forgotPassword: 'Esqueci a senha',
+      forgotTitle: 'Redefinir senha',
+      resetHelp: 'Enviamos um código por e-mail. A nova senha fica no Cognito.',
+      confirmationCode: 'Código de confirmação',
+      newPassword: 'Nova senha',
+      sendCode: 'Enviar código',
+      submitReset: 'Salvar nova senha',
+      confirmHelp: 'Informe o código do e-mail. Depois de aceito, entre com a senha que você escolheu.',
       continueGoogle: 'Continuar com Google',
       continueApple: 'Continuar com Apple',
-      billingLater: 'O endereço de cobrança não é obrigatório para criar a conta.',
       noPaymentMethod: 'Nenhum meio de pagamento foi salvo.',
       disabled: 'Esta conta está desativada. Ela não pode comprar nem fazer a leitura.',
       avatarTitle: 'Foto do perfil',
       avatarHelp: 'JPEG, PNG ou WebP. No máximo 1 MB.',
+      avatarChoose: 'Escolher foto',
       saveAvatar: 'Salvar foto',
       notices: {
         'username-required': 'Escolha um nome de usuário.',
@@ -498,15 +696,28 @@ export const shellCopy: Record<Locale, ShellCopy> = {
         'username-taken': 'Esse nome de usuário já está em uso.',
         'name-required': 'Informe o nome e o apelido.',
         'email-invalid': 'Informe um e-mail.',
-        'password-short': 'Use pelo menos 12 caracteres.',
+        'password-short': 'Use pelo menos 8 caracteres.',
         'password-long': 'Essa senha é longa demais.',
+        'password-uppercase': 'Adicione uma letra maiúscula.',
+        'password-lowercase': 'Adicione uma letra minúscula.',
+        'password-number': 'Adicione um número.',
+        'password-symbol': 'Adicione um símbolo.',
+        'password-mismatch': 'As senhas não coincidem.',
         'password-rejected': 'Escolha outra senha.',
         'cognito-not-configured': 'A entrada ainda não está disponível. O Cognito não está configurado.',
-        'email-unconfirmed': 'Confirme a mensagem enviada ao seu e-mail e depois entre.',
+        'email-unconfirmed': 'Informe o código enviado ao seu e-mail.',
+        'account-confirmed': 'E-mail confirmado. Entre para continuar.',
+        'code-sent': 'Um novo código está a caminho.',
+        'code-limited': 'Espere um momento antes de pedir outro código.',
+        'code-invalid': 'Esse código não é válido.',
+        'reset-sent': 'Se a conta existir, o código de redefinição está a caminho.',
+        'password-reset': 'Senha salva. Entre com a nova senha.',
         'provider-not-allowed': 'Esse provedor de entrada não está disponível.',
         'not-signed-in': 'Entre antes de alterar a conta.',
         'avatar-rejected': 'Essa foto não foi salva.',
         'avatar-saved': 'Foto do perfil salva.',
+        'profile-invalid': 'Confira os dados do perfil e tente novamente.',
+        'profile-saved': 'Perfil salvo.',
       },
     },
   },

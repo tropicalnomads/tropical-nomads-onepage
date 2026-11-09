@@ -8,7 +8,11 @@ import { emptyAccounts, readAccounts, writeAccounts } from 'tropical-nomads-api/
 import {
   authorizeUrl,
   cognitoTarget,
+  confirmForgotPasswordWithCognito,
+  confirmSignUpWithCognito,
+  resendConfirmationWithCognito,
   exchangeAuthCode,
+  forgotPasswordWithCognito,
   isCognitoAuthorizeUrl,
   pendingNames,
   readCognitoConfig,
@@ -229,5 +233,54 @@ describe('cognito settings', () => {
     });
     assert.equal(forged.sub, undefined);
     assert.equal(forged.claims, undefined);
+  });
+
+  it('confirms a sign-up and resets a password without keeping the password', async () => {
+    const calls: string[] = [];
+    const confirmed = await confirmSignUpWithCognito('ada@example.com', '123456', target, async (_url, init) => {
+      calls.push(init.headers['x-amz-target'] ?? '');
+      return { ok: true, status: 200, json: async () => ({}) };
+    });
+    assert.deepEqual(confirmed, {});
+    const missing = await forgotPasswordWithCognito('ada@example.com', target, async (_url, init) => {
+      calls.push(init.headers['x-amz-target'] ?? '');
+      return { ok: false, status: 400, json: async () => ({ __type: 'UserNotFoundException' }) };
+    });
+    assert.equal(missing.notice, 'reset-sent');
+    let sent = '';
+    const reset = await confirmForgotPasswordWithCognito('ada@example.com', '123456', 'a-long-secret-phrase', target, async (_url, init) => {
+      calls.push(init.headers['x-amz-target'] ?? '');
+      sent = init.body;
+      return { ok: true, status: 200, json: async () => ({}) };
+    });
+    const mismatch = await confirmSignUpWithCognito('ada@example.com', '000000', target, async () => ({
+      ok: false,
+      status: 400,
+      json: async () => ({ __type: 'CodeMismatchException' }),
+    }));
+    assert.deepEqual(reset, {});
+    assert.equal(mismatch.notice, 'code-invalid');
+    assert.equal(sent.includes('a-long-secret-phrase'), true);
+    assert.equal(JSON.stringify(reset).includes('a-long-secret-phrase'), false);
+    assert.deepEqual(calls, [
+      'AWSCognitoIdentityProviderService.ConfirmSignUp',
+      'AWSCognitoIdentityProviderService.ForgotPassword',
+      'AWSCognitoIdentityProviderService.ConfirmForgotPassword',
+    ]);
+  });
+
+  it('resends a confirmation code without storing the address in the result', async () => {
+    const sent = await resendConfirmationWithCognito('ada@example.com', target, async (_url, init) => {
+      assert.equal(init.headers['x-amz-target'], 'AWSCognitoIdentityProviderService.ResendConfirmationCode');
+      assert.equal(init.body.includes('ada@example.com'), true);
+      return { ok: true, status: 200, json: async () => ({}) };
+    });
+    assert.equal(sent.notice, 'code-sent');
+    const limited = await resendConfirmationWithCognito('ada@example.com', target, async () => ({
+      ok: false,
+      status: 400,
+      json: async () => ({ __type: 'LimitExceededException' }),
+    }));
+    assert.equal(limited.notice, 'code-limited');
   });
 });

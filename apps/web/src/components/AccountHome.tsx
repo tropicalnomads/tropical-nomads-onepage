@@ -1,161 +1,117 @@
 'use client';
 
-import { useState, type FormEvent, type ReactNode } from 'react';
-import { signOutAction } from '../account/actions';
-import { saveAvatarAction } from '../account/avatar';
-import { accountNotice, accountText, paymentPurposeLabel, paymentText, type AccountNotice } from '../i18n/copy';
+import { BadgeCheck } from 'lucide-react';
+import { useState, type FormEvent } from 'react';
+import { saveAccountProfileAction } from '../account/profile';
+import { accountText, type AccountNotice } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
-import { PaymentSection, type BillingSummary, type PendingTrace, type SavedMethod } from './PaymentSection';
+import { AuthFrame, AuthNotice, AuthSubmitButton } from './AuthUi';
+import { ProfileFields, type ProfileValues } from './ProfileFields';
 
-export interface TeamTrace {
-  id: string;
+export interface AccountSummary extends ProfileValues {
   username: string;
-  amount: number;
-  currency: string;
-  purpose: 'tickets' | 'shop';
-}
-
-export interface AccountSummary {
-  username: string;
-  givenName: string;
-  familyName: string;
   email: string;
   status: 'active' | 'disabled';
-  canPay: boolean;
-  hasAvatar: boolean;
-  billing: BillingSummary | null;
-  methods: readonly SavedMethod[];
-  traces: readonly PendingTrace[];
-  teamTraces: readonly TeamTrace[] | null;
 }
 
-function Frame({ title, wide, children }: { title: string; wide?: boolean; children: ReactNode }) {
-  const { language } = useLanguage();
-  return (
-    <main>
-      <section className="px-5 py-8 md:px-8">
-        <div className={`mx-auto ${wide ? 'max-w-3xl' : 'max-w-lg'}`}>
-          <h1 className="text-2xl font-bold text-ozora-cream md:text-3xl">{title}</h1>
-          <p className="mt-2 text-sm text-ozora-cream/75">{accountText(language, 'intro')}</p>
-          {children}
-        </div>
-      </section>
-    </main>
-  );
-}
-
-export function AccountHome({ profile }: { profile: AccountSummary | null }) {
+export function AccountHome({
+  profile,
+  initialNotice = null,
+}: {
+  profile: AccountSummary | null;
+  initialNotice?: AccountNotice | null;
+}) {
   const { language } = useLanguage();
   if (!profile) {
     return (
-      <Frame title={accountText(language, 'accountTitle')}>
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+      <AuthFrame
+        showLogo={false}
+        title={accountText(language, 'accountTitle')}
+        subtitle={accountText(language, 'intro')}
+        footer={
+          <a
+            href="/account/forgot-password"
+            className="text-sm font-bold text-ozora-turquoise underline-offset-4 transition hover:text-ozora-yellow hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+          >
+            {accountText(language, 'forgotPassword')}
+          </a>
+        }
+      >
+        <div className="grid gap-3 sm:grid-cols-2">
           <a
             href="/account/sign-in"
-            className="rounded-lg bg-ozora-coral px-4 py-2 text-center text-sm font-semibold text-ozora-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow"
+            className="rounded-xl bg-ozora-green px-5 py-3 text-center text-sm font-bold text-ozora-ink transition hover:-translate-y-0.5 hover:bg-ozora-yellow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow"
           >
             {accountText(language, 'signIn')}
           </a>
           <a
             href="/account/register"
-            className="rounded-lg border border-white/20 px-4 py-2 text-center text-sm font-semibold text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+            className="rounded-xl border border-white/15 bg-white/[0.05] px-5 py-3 text-center text-sm font-bold text-ozora-cream transition hover:border-ozora-turquoise/50 hover:bg-ozora-turquoise/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
           >
             {accountText(language, 'register')}
           </a>
         </div>
-      </Frame>
+      </AuthFrame>
     );
   }
   return (
-    <Frame title={accountText(language, 'accountTitle')} wide={profile.teamTraces !== null}>
-      <dl className="mt-6 space-y-2 text-sm text-ozora-cream">
-        <div>
-          <dt className="text-ozora-cream/60">{accountText(language, 'username')}</dt>
-          <dd>{profile.username}</dd>
-        </div>
-        <div>
-          <dt className="text-ozora-cream/60">{accountText(language, 'givenName')}</dt>
-          <dd>
-            {profile.givenName} {profile.familyName}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-ozora-cream/60">{accountText(language, 'email')}</dt>
-          <dd>{profile.email}</dd>
-        </div>
-      </dl>
-      {profile.status === 'disabled' ? <p className="mt-4 text-sm text-ozora-yellow">{accountText(language, 'disabled')}</p> : null}
-      {profile.status === 'active' ? <AvatarForm hasAvatar={profile.hasAvatar} /> : null}
-      {profile.teamTraces ? <TeamTraces traces={profile.teamTraces} /> : null}
-      <PaymentSection canPay={profile.canPay} billing={profile.billing} methods={profile.methods} traces={profile.traces} />
-      <form action={signOutAction} className="mt-6">
-        <button
-          type="submit"
-          className="rounded-lg border border-white/20 px-4 py-2 text-sm font-semibold text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
-        >
-          {accountText(language, 'signOut')}
-        </button>
-      </form>
-    </Frame>
+    <AuthFrame
+      showLogo={false}
+      wide
+      title={accountText(language, 'accountTitle')}
+      subtitle={accountText(language, 'intro')}
+    >
+      <AccountProfileForm profile={profile} initialNotice={initialNotice} />
+    </AuthFrame>
   );
 }
 
-function AvatarForm({ hasAvatar }: { hasAvatar: boolean }) {
+function AccountProfileForm({
+  profile,
+  initialNotice,
+}: {
+  profile: AccountSummary;
+  initialNotice: AccountNotice | null;
+}) {
   const { language } = useLanguage();
-  const [notice, setNotice] = useState<AccountNotice | null>(null);
+  const [notice, setNotice] = useState<AccountNotice | null>(initialNotice);
+  const [pending, setPending] = useState(false);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
-    const result = await saveAvatarAction(new FormData(event.currentTarget));
-    setNotice(result.notice);
-    if (result.notice === 'avatar-saved') {
-      window.location.assign('/account');
+    setPending(true);
+    setNotice(null);
+    try {
+      const result = await saveAccountProfileAction(new FormData(event.currentTarget));
+      if (result.notice === 'profile-saved') {
+        window.location.assign('/account?notice=profile-saved');
+        return;
+      }
+      setNotice(result.notice ?? 'profile-invalid');
+    } finally {
+      setPending(false);
     }
   }
 
   return (
-    <form onSubmit={onSubmit} className="mt-6 space-y-3">
-      <h2 className="text-lg font-semibold text-ozora-cream">{accountText(language, 'avatarTitle')}</h2>
-      {hasAvatar ? <img src="/account/avatar" alt="" className="h-16 w-16 rounded-full border border-white/20 object-cover" /> : null}
-      <p className="text-sm text-ozora-cream/70">{accountText(language, 'avatarHelp')}</p>
-      <input
-        name="avatar"
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        required
-        className="block w-full text-sm text-ozora-cream file:mr-3 file:rounded-lg file:border-0 file:bg-ozora-coral file:px-3 file:py-2 file:text-sm file:font-semibold file:text-ozora-ink"
-      />
-      <button
-        type="submit"
-        className="rounded-lg bg-ozora-coral px-4 py-2 text-sm font-semibold text-ozora-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow"
-      >
-        {accountText(language, 'saveAvatar')}
-      </button>
-      {notice ? (
-        <p role="status" className="text-sm text-ozora-yellow">
-          {accountNotice(language, notice)}
+    <form onSubmit={onSubmit} className="space-y-7" encType="multipart/form-data" noValidate aria-busy={pending}>
+      <div className="flex items-start gap-3 rounded-2xl border border-ozora-turquoise/20 bg-ozora-turquoise/[0.08] p-4">
+        <BadgeCheck size={21} aria-hidden="true" className="mt-0.5 shrink-0 text-ozora-turquoise" />
+        <div className="min-w-0">
+          <p className="truncate font-bold text-ozora-cream">{profile.email}</p>
+          <p className="mt-0.5 text-sm text-ozora-cream/55">@{profile.username}</p>
+        </div>
+      </div>
+      {profile.status === 'disabled' ? (
+        <p className="rounded-xl border border-ozora-yellow/30 bg-ozora-yellow/10 px-4 py-3 text-sm text-ozora-cream">
+          {accountText(language, 'disabled')}
         </p>
       ) : null}
-    </form>
-  );
-}
-
-function TeamTraces({ traces }: { traces: readonly TeamTrace[] }) {
-  const { language } = useLanguage();
-  return (
-    <section className="mt-8">
-      <h2 className="text-lg font-semibold text-ozora-cream">{paymentText(language, 'teamTitle')}</h2>
-      {traces.length === 0 ? <p className="mt-3 text-sm text-ozora-cream/70">{paymentText(language, 'teamEmpty')}</p> : null}
-      {traces.length > 0 ? (
-        <ul className="mt-3 space-y-2 text-sm text-ozora-cream">
-          {traces.map((trace) => (
-            <li key={trace.id} className="rounded-xl border border-white/10 bg-black/20 px-3 py-2">
-              {trace.username || paymentText(language, 'unknownAccount')} · {paymentPurposeLabel(language, trace.purpose)} {trace.amount}{' '}
-              {trace.currency} · {paymentText(language, 'pending')}
-            </li>
-          ))}
-        </ul>
+      <ProfileFields values={profile} pending={pending || profile.status === 'disabled'} />
+      {profile.status === 'active' ? (
+        <AuthSubmitButton pending={pending}>{accountText(language, 'saveProfile')}</AuthSubmitButton>
       ) : null}
-    </section>
+      <AuthNotice notice={notice} />
+    </form>
   );
 }

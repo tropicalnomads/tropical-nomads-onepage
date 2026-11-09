@@ -61,7 +61,7 @@ Leave date of birth out unless the owner says events are age-restricted. Do not 
 ## To-do
 
 1. Create the Cognito user pool and a web app client when this ticket is implemented. Enable Google and Apple as identity providers. Do this in the owner's AWS account, not in the one-pager repo. Do not create iOS or Android app clients.
-2. Registration collects email, password (or a federated identity), username, and name. Billing address and avatar can be completed after the first sign-in, and a ticket purchase in ticket 13 requires the billing address to be present.
+2. Registration collects email and password, or a federated identity. The password is confirmed on the form and must contain at least 8 characters, an uppercase letter, a lowercase letter, a number, and a symbol. Given name and family name are collected on `/account/profile` after the account exists. A username is not collected. Billing address and avatar can be completed after the first sign-in, and a ticket purchase in ticket 13 requires the billing address to be present.
 3. Username rules: unique, stable enough to show at the door, rejected when taken. Unit-test the validator. Do not use the public event id as a username.
 4. Avatar upload stores an image reference on the profile. The bytes are not committed to git and not placed in `public/data`.
 5. The web app uses the shared profile schema. It does not invent fields.
@@ -74,7 +74,9 @@ Leave date of birth out unless the owner says events are age-restricted. Do not 
 - The profile uses the shared schema. Registration sets `user`, unless the Cognito sub is `INITIAL_ADMIN_SUB`.
 - The store is `data/operational/profiles.json`. It is not an HTTP route and it is not in `public/data`.
 - A password is checked only to refuse a weak one, then dropped. It is not written.
-- Google and Apple buttons do not accept a subject from the browser. They report that Cognito is not configured.
+- Google and Apple buttons do not accept a subject from the browser. They report that Cognito is not configured until those providers are turned on.
+- Email and password stay on the form whenever the pool and client are set. Hosted Cognito is only for Google or Apple, and only when that provider flag is true.
+- If Cognito asks for confirmation, the registration screen collects the emailed code, calls `ConfirmSignUp`, then signs in and writes the profile. `/account/forgot-password` calls `ForgotPassword` and `ConfirmForgotPassword`. A successful password sign-in opens `/account`. The password is still sent only to Cognito.
 - Billing can be saved later, with a country. Payment methods stay empty. No payment SDK.
 - Avatar bytes, when a signed-in session exists, go under `data/operational/avatars/`, which is gitignored.
 
@@ -84,7 +86,7 @@ Leave date of birth out unless the owner says events are age-restricted. Do not 
 - The stored profile matches the schema: username, name, avatar reference, billing address, empty payment methods.
 - Two providers with the same verified email do not create two profiles.
 - The one-pager still has no account screen.
-- Email, Google, and Apple are on the registration and sign-in screens, in English and Portuguese, at phone width and at desktop width. A valid form and both provider buttons stop at “Cognito is not configured”. They do not create a profile.
+- Email, Google, and Apple are on the registration and sign-in screens, in English and Portuguese, at phone width and at desktop width. Without the pool and client, a valid email form stops at “Cognito is not configured” and does not create a profile. Google and Apple stay unconfigured and stop there too. With the pool and client, the password fields stay visible, confirmation and reset use the Cognito API, and a successful sign-in opens `/account`.
 - The profile rules match the shared schema. A verified email keeps one `sub`. A missing username, a missing name, a billing address without a country, and a card number fail in tests. Payment methods stay empty.
 - Upcoming events still open without a login.
 
@@ -101,4 +103,4 @@ Unit tests on the shared schema and the API validator:
 
 ## Not done
 
-The Cognito user pool is still not applied from this repo, so a live sign-in cannot run until the owner sets `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID`. Google and Apple stay unconfigured. No client id or provider secret is in the repo. When Cognito confirms the email, the app writes the profile and then the session. The account screen uploads an avatar into `data/operational/avatars/`.
+The Cognito user pool is still not applied from this repo, so a live round trip depends on the configured pool accepting the calls. Google and Apple stay unconfigured. No client id or provider secret is in the repo. When Cognito confirms the email, the app writes the profile and then the session. Forgot password collects the emailed code and a new password, then returns to sign-in. The account screen uploads an avatar into `data/operational/avatars/`. The header centers the app links and keeps Sign in, or Account, on the right.

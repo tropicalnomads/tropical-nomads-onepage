@@ -1,16 +1,28 @@
 'use client';
 
-import { Menu, X } from 'lucide-react';
+import { LogIn, Menu, UserRound, X } from 'lucide-react';
 import { useState } from 'react';
+import type { Locale, WebAreaId } from 'tropical-nomads-shared';
 import { accountText, areaText, shellText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { navigation } from '../navigation';
 import { LanguageSwitch } from './LanguageSwitch';
 
+const navLinkClass =
+  'shrink-0 rounded-full px-3 py-1.5 text-sm font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise';
+
+function headerLabel(language: Locale, id: WebAreaId): string {
+  if (id === 'upcoming-events') {
+    return shellText(language, 'calendar');
+  }
+  return areaText(language, id);
+}
+
 export function ShellHeader({ signedIn }: { signedIn: boolean }) {
   const { language } = useLanguage();
   const accountHref = signedIn ? '/account' : '/account/sign-in';
   const accountLabel = signedIn ? accountText(language, 'accountTitle') : accountText(language, 'signIn');
+  const AccountIcon = signedIn ? UserRound : LogIn;
   const [menuOpen, setMenuOpen] = useState(false);
 
   const closeMenu = (): void => {
@@ -23,7 +35,7 @@ export function ShellHeader({ signedIn }: { signedIn: boolean }) {
         <a
           href="/"
           onClick={closeMenu}
-          className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow md:hidden"
+          className="absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow lg:hidden"
           aria-label={shellText(language, 'homeAria')}
         >
           <img
@@ -36,7 +48,7 @@ export function ShellHeader({ signedIn }: { signedIn: boolean }) {
         <button
           type="button"
           onClick={() => setMenuOpen((open) => !open)}
-          className="inline-flex items-center justify-center rounded-lg p-2 text-ozora-cream transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise md:hidden"
+          className="relative z-20 inline-flex items-center justify-center rounded-lg p-2 text-ozora-cream transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise lg:hidden"
           aria-label={menuOpen ? shellText(language, 'closeMenu') : shellText(language, 'openMenu')}
           aria-expanded={menuOpen}
           aria-controls="mobile-nav"
@@ -46,7 +58,7 @@ export function ShellHeader({ signedIn }: { signedIn: boolean }) {
 
         <a
           href="/"
-          className="hidden shrink-0 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow md:flex"
+          className="relative z-20 hidden shrink-0 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow lg:flex"
           aria-label={shellText(language, 'homeAria')}
         >
           <img
@@ -56,25 +68,29 @@ export function ShellHeader({ signedIn }: { signedIn: boolean }) {
           />
         </a>
 
-        <div className="flex items-center gap-2">
-          <nav aria-label={shellText(language, 'primary')} className="hidden items-center gap-1 md:flex">
-            {navigation.map((item) => (
-              <a
-                key={item.id}
-                href={item.href}
-                className="shrink-0 rounded-full px-3 py-1.5 text-sm font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
-              >
-                {areaText(language, item.id)}
-              </a>
-            ))}
-            <a
-              href={accountHref}
-              className="shrink-0 rounded-full px-3 py-1.5 text-sm font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
-            >
-              {accountLabel}
+        <nav
+          aria-label={shellText(language, 'primary')}
+          className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 lg:flex"
+        >
+          <a href="/" className={navLinkClass}>
+            {shellText(language, 'navHome')}
+          </a>
+          {navigation.map((item) => (
+            <a key={item.id} href={item.href} className={navLinkClass}>
+              {headerLabel(language, item.id)}
             </a>
-          </nav>
+          ))}
+        </nav>
+
+        <div className="relative z-20 flex items-center gap-2">
           <LanguageSwitch />
+          <a
+            href={accountHref}
+            className="group inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full border border-ozora-yellow/80 bg-ozora-yellow px-2.5 text-sm font-bold text-ozora-ink shadow-[0_8px_22px_rgba(250,208,46,0.2)] transition hover:-translate-y-0.5 hover:border-ozora-coral hover:bg-ozora-coral hover:shadow-[0_12px_26px_rgba(255,127,80,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow focus-visible:ring-offset-2 focus-visible:ring-offset-ozora-navy sm:px-4"
+          >
+            <AccountIcon size={16} aria-hidden="true" className="transition-transform group-hover:scale-110" />
+            {accountLabel}
+          </a>
         </div>
       </div>
 
@@ -82,8 +98,15 @@ export function ShellHeader({ signedIn }: { signedIn: boolean }) {
         <nav
           id="mobile-nav"
           aria-label={shellText(language, 'primaryMobile')}
-          className="flex flex-col gap-1 border-t border-white/10 bg-ozora-navy/95 px-5 py-3 md:hidden"
+          className="flex flex-col gap-1 border-t border-white/10 bg-ozora-navy/95 px-5 py-3 lg:hidden"
         >
+          <a
+            href="/"
+            onClick={closeMenu}
+            className="rounded-lg px-3 py-2.5 text-left text-base font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+          >
+            {shellText(language, 'navHome')}
+          </a>
           {navigation.map((item) => (
             <a
               key={item.id}
@@ -91,16 +114,9 @@ export function ShellHeader({ signedIn }: { signedIn: boolean }) {
               onClick={closeMenu}
               className="rounded-lg px-3 py-2.5 text-left text-base font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
             >
-              {areaText(language, item.id)}
+              {headerLabel(language, item.id)}
             </a>
           ))}
-          <a
-            href={accountHref}
-            onClick={closeMenu}
-            className="rounded-lg px-3 py-2.5 text-left text-base font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
-          >
-            {accountLabel}
-          </a>
         </nav>
       ) : null}
     </header>

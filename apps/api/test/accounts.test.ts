@@ -14,6 +14,7 @@ import {
   saveAvatarFile,
   saveAvatarKey,
   saveDefaultBillingAddress,
+  saveProfileDetails,
   updateAccounts,
   writeAccounts,
 } from '../src/accounts.ts';
@@ -82,6 +83,28 @@ describe('accounts', () => {
     assert.equal(billed.profiles.find((profile) => profile.sub === 'sub-ada')?.billingAddressId, 'addr-sub-ada');
     assert.throws(() =>
       saveDefaultBillingAddress(saved, 'sub-ada', { recipientName: 'Ada', line1: '1 Quay', city: 'Dublin', region: 'Leinster', postalCode: 'D01' }, now),
+    );
+    const detailed = saveProfileDetails(
+      saved,
+      'sub-ada',
+      {
+        givenName: 'Ada',
+        familyName: 'Lovelace',
+        displayName: 'Ada',
+        phone: '+353871234567',
+        city: 'Dublin',
+        region: 'Leinster',
+        postalCode: 'D01',
+        country: 'Ireland',
+      },
+      now,
+    );
+    const details = detailed.profiles.find((profile) => profile.sub === 'sub-ada');
+    assert.equal(details?.familyName, 'Lovelace');
+    assert.equal(details?.city, 'Dublin');
+    assert.equal(details?.country, 'Ireland');
+    assert.throws(() =>
+      saveProfileDetails(saved, 'sub-ada', { givenName: 'Ada', familyName: 'Lovelace', phone: '0871234567' }, now),
     );
     const avatar = saveAvatarKey(saved, 'sub-ada', 'avatars/0123456789abcdef.jpg', now);
     assert.equal(avatar.profiles.find((profile) => profile.sub === 'sub-ada')?.avatarKey, 'avatars/0123456789abcdef.jpg');

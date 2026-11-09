@@ -49,18 +49,64 @@ export function usernameProblem(username: string, existing: readonly string[], e
   return undefined;
 }
 
+export function passwordChecks(password: string): {
+  length: boolean;
+  uppercase: boolean;
+  lowercase: boolean;
+  number: boolean;
+  symbol: boolean;
+} {
+  return {
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    number: /[0-9]/.test(password),
+    symbol: /[^A-Za-z0-9]/.test(password),
+  };
+}
+
 export function passwordProblem(password: string, username: string, email: string): string | undefined {
-  if (password.length < 12) {
+  if (password.length < 8) {
     return 'password is too short';
   }
   if (password.length > 128) {
     return 'password is too long';
+  }
+  const checks = passwordChecks(password);
+  if (!checks.uppercase) {
+    return 'password needs an uppercase letter';
+  }
+  if (!checks.lowercase) {
+    return 'password needs a lowercase letter';
+  }
+  if (!checks.number) {
+    return 'password needs a number';
+  }
+  if (!checks.symbol) {
+    return 'password needs a symbol';
   }
   const lower = password.toLowerCase();
   if ((username !== '' && lower === username.toLowerCase()) || (email !== '' && lower === normalizeAccountEmail(email))) {
     return 'password is not allowed';
   }
   return undefined;
+}
+
+export function usernameFromEmail(email: string, existing: readonly string[], eventIds: readonly string[] = []): string {
+  const local = normalizeAccountEmail(email).split('@')[0] ?? '';
+  const letters = local.replace(/[^A-Za-z0-9_-]/g, '');
+  let base = /^[A-Za-z]/.test(letters) ? letters : `m${letters}`;
+  base = base.slice(0, 20);
+  if (base.length < 3) {
+    base = `${base}nomad`.slice(0, 24);
+  }
+  for (let suffix = 0; suffix < 100; suffix += 1) {
+    const candidate = suffix === 0 ? base : `${base.slice(0, 18)}-${suffix}`;
+    if (!usernameProblem(candidate, existing, eventIds)) {
+      return candidate;
+    }
+  }
+  return 'member';
 }
 
 export function accountCanPurchase(profile: Profile): boolean {

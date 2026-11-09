@@ -3,7 +3,9 @@ export {
   accountCanScan,
   attachVerifiedSignIn,
   normalizeAccountEmail,
+  passwordChecks,
   passwordProblem,
+  usernameFromEmail,
   usernameProblem,
 } from './account/identity.ts';
 export type { AttachedProfile, VerifiedSignIn } from './account/identity.ts';

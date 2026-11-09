@@ -9,6 +9,7 @@ const notices: PaymentNotice[] = ['not-signed-in', 'billing-required', 'card-rej
 describe('payment interfaces', () => {
   it('keeps the card number off the account screen and leaves the current shop links', () => {
     const form = readFileSync(new URL('../src/components/PaymentSection.tsx', import.meta.url), 'utf8');
+    const account = readFileSync(new URL('../src/components/AccountHome.tsx', import.meta.url), 'utf8');
     const actions = readFileSync(new URL('../src/payments/actions.ts', import.meta.url), 'utf8');
     const upcoming = readFileSync(new URL('../app/upcoming-events/page.tsx', import.meta.url), 'utf8');
     const shop = readFileSync(new URL('../../one-pager/src/lib/shop.ts', import.meta.url), 'utf8');
@@ -16,6 +17,7 @@ describe('payment interfaces', () => {
     assert.equal(form.includes('cardNumber'), false);
     assert.equal(form.includes('cvc'), false);
     assert.equal(form.includes('cc-number'), false);
+    assert.equal(account.includes('PaymentSection'), false);
     assert.equal(actions.includes('markPaymentConfirmed'), false);
     assert.equal(actions.includes('recordRefund'), false);
     assert.equal(actions.includes('startTicketPaymentAction'), true);

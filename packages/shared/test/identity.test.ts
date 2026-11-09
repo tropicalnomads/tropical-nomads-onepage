@@ -59,8 +59,9 @@ describe('account identity', () => {
     assert.equal(attachVerifiedSignIn([], signIn({ givenName: '  ' }), now).ok, false);
     assert.equal(attachVerifiedSignIn([], signIn({ givenName: '4111111111111111' }), now).ok, false);
     assert.equal(passwordProblem('short', 'Ada', 'ada@example.com'), 'password is too short');
-    assert.equal(passwordProblem('ada@example.com', 'Ada', 'Ada@Example.com'), 'password is not allowed');
-    assert.equal(passwordProblem('a-long-secret-phrase', 'Ada', 'ada@example.com'), undefined);
+    assert.equal(passwordProblem('Long-secret-1', 'Long-secret-1', 'ada@example.com'), 'password is not allowed');
+    assert.equal(passwordProblem('Long-secret-1', 'Ada', 'ada@example.com'), undefined);
+    assert.equal(passwordProblem('long-secret-1', 'Ada', 'ada@example.com'), 'password needs an uppercase letter');
   });
 
   it('merges a second verified provider onto the same profile', () => {

@@ -396,6 +396,9 @@ function noticeFor(code: string): AccountNotice {
       return 'password-short';
     case 'UserNotConfirmedException':
       return 'email-unconfirmed';
+    case 'CodeMismatchException':
+    case 'ExpiredCodeException':
+      return 'code-invalid';
     case 'NotAuthorizedException':
     case 'UserNotFoundException':
       return 'password-rejected';
@@ -404,7 +407,12 @@ function noticeFor(code: string): AccountNotice {
   }
 }
 
-async function postCognito(target: CognitoTarget, action: string, payload: Record<string, unknown>, fetchImpl: FetchLike): Promise<{ ok: true; body: unknown } | { ok: false; notice: AccountNotice }> {
+async function postCognito(
+  target: CognitoTarget,
+  action: string,
+  payload: Record<string, unknown>,
+  fetchImpl: FetchLike,
+): Promise<{ ok: true; body: unknown } | { ok: false; notice: AccountNotice; code: string }> {
   const response = await fetchImpl(`https://cognito-idp.${target.region}.amazonaws.com/`, {
     method: 'POST',
     headers: {
@@ -415,13 +423,14 @@ async function postCognito(target: CognitoTarget, action: string, payload: Recor
   });
   const body: unknown = await response.json();
   if (!response.ok) {
-    return { ok: false, notice: noticeFor(problemCode(body)) };
+    const code = problemCode(body);
+    return { ok: false, notice: noticeFor(code), code };
   }
   return { ok: true, body };
 }
 
 export async function registerWithCognito(
-  input: { email: string; username: string; password: string; givenName: string; familyName: string },
+  input: { email: string; password: string },
   target: CognitoTarget,
   fetchImpl: FetchLike = fetch,
 ): Promise<{ sub?: string; notice?: AccountNotice }> {
@@ -432,12 +441,7 @@ export async function registerWithCognito(
       ClientId: target.clientId,
       Username: input.email,
       Password: input.password,
-      UserAttributes: [
-        { Name: 'email', Value: input.email },
-        { Name: 'given_name', Value: input.givenName },
-        { Name: 'family_name', Value: input.familyName },
-        { Name: 'preferred_username', Value: input.username },
-      ],
+      UserAttributes: [{ Name: 'email', Value: input.email }],
     },
     fetchImpl,
   );
@@ -494,4 +498,113 @@ export async function signInWithCognito(
     return { notice: 'password-rejected' };
   }
   return { sub: claims.sub, claims };
+}
+
+export async function confirmSignUpWithCognito(
+  email: string,
+  code: string,
+  target: CognitoTarget,
+  fetchImpl: FetchLike = fetch,
+): Promise<{ notice?: AccountNotice }> {
+  const result = await postCognito(
+    target,
+    'ConfirmSignUp',
+    {
+      ClientId: target.clientId,
+      Username: email,
+      ConfirmationCode: code.trim(),
+    },
+    fetchImpl,
+  );
+  if (!result.ok) {
+    if (
+      result.code === 'CodeMismatchException' ||
+      result.code === 'ExpiredCodeException' ||
+      result.code === 'NotAuthorizedException' ||
+      result.code === 'InvalidParameterException' ||
+      result.code === 'UserNotFoundException'
+    ) {
+      return { notice: 'code-invalid' };
+    }
+    if (
+      result.code === 'LimitExceededException' ||
+      result.code === 'TooManyRequestsException' ||
+      result.code === 'TooManyFailedAttemptsException'
+    ) {
+      return { notice: 'code-limited' };
+    }
+    return { notice: result.notice };
+  }
+  return {};
+}
+
+export async function resendConfirmationWithCognito(
+  email: string,
+  target: CognitoTarget,
+  fetchImpl: FetchLike = fetch,
+): Promise<{ notice: AccountNotice }> {
+  const result = await postCognito(
+    target,
+    'ResendConfirmationCode',
+    {
+      ClientId: target.clientId,
+      Username: email,
+    },
+    fetchImpl,
+  );
+  if (!result.ok) {
+    if (result.code === 'UserNotFoundException') {
+      return { notice: 'code-sent' };
+    }
+    if (
+      result.code === 'LimitExceededException' ||
+      result.code === 'TooManyRequestsException' ||
+      result.code === 'TooManyFailedAttemptsException'
+    ) {
+      return { notice: 'code-limited' };
+    }
+    return { notice: result.notice };
+  }
+  return { notice: 'code-sent' };
+}
+
+export async function forgotPasswordWithCognito(
+  email: string,
+  target: CognitoTarget,
+  fetchImpl: FetchLike = fetch,
+): Promise<{ notice: AccountNotice }> {
+  const result = await postCognito(
+    target,
+    'ForgotPassword',
+    {
+      ClientId: target.clientId,
+      Username: email,
+    },
+    fetchImpl,
+  );
+  if (!result.ok && result.code !== 'UserNotFoundException') {
+    return { notice: result.notice };
+  }
+  return { notice: 'reset-sent' };
+}
+
+export async function confirmForgotPasswordWithCognito(
+  email: string,
+  code: string,
+  password: string,
+  target: CognitoTarget,
+  fetchImpl: FetchLike = fetch,
+): Promise<{ notice?: AccountNotice }> {
+  const result = await postCognito(
+    target,
+    'ConfirmForgotPassword',
+    {
+      ClientId: target.clientId,
+      Username: email,
+      ConfirmationCode: code.trim(),
+      Password: password,
+    },
+    fetchImpl,
+  );
+  return result.ok ? {} : { notice: result.notice };
 }
