@@ -4,6 +4,7 @@ import { homeCopy, type HomeCopy } from './home.ts';
 export interface ShellCopy {
   homeAria: string;
   navHome: string;
+  navBookings: string;
   calendar: string;
   openMenu: string;
   closeMenu: string;
@@ -270,6 +271,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
   en: {
     homeAria: 'Tropical Nomads home',
     navHome: 'Home',
+    navBookings: 'Bookings',
     calendar: 'Calendar',
     openMenu: 'Open navigation menu',
     closeMenu: 'Close navigation menu',
@@ -497,6 +499,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
   pt: {
     homeAria: 'Início da Tropical Nomads',
     navHome: 'Início',
+    navBookings: 'Bookings',
     calendar: 'Calendário',
     openMenu: 'Abrir menu de navegação',
     closeMenu: 'Fechar menu de navegação',

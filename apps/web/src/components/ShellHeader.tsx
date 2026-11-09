@@ -2,7 +2,7 @@
 
 import { LogIn, Menu, ShoppingBag, UserRound, X } from 'lucide-react';
 import { useState } from 'react';
-import type { Locale, WebAreaId } from 'tropical-nomads-shared';
+import { origins, type Locale, type WebAreaId } from 'tropical-nomads-shared';
 import { accountText, areaText, shellText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { shopText } from '../i18n/shop-copy';
@@ -18,6 +18,23 @@ function headerLabel(language: Locale, id: WebAreaId): string {
     return shellText(language, 'calendar');
   }
   return areaText(language, id);
+}
+
+function BookingsLink({ menu, onClick }: { menu?: boolean; onClick?: () => void }) {
+  const { language } = useLanguage();
+  return (
+    <a
+      href={origins.bookings}
+      onClick={onClick}
+      className={
+        menu
+          ? 'rounded-lg px-3 py-2.5 text-left text-base font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise'
+          : navLinkClass
+      }
+    >
+      {shellText(language, 'navBookings')}
+    </a>
+  );
 }
 
 function CartLink({ menu, onClick }: { menu?: boolean; onClick?: () => void }) {
@@ -111,11 +128,11 @@ export function ShellHeader({ signedIn }: { signedIn: boolean }) {
               {headerLabel(language, item.id)}
             </a>
           ))}
+          <BookingsLink />
         </nav>
 
         <div className="relative z-20 flex items-center gap-2">
           <CartLink />
-          <LanguageSwitch />
           <a
             href={accountHref}
             className="group inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full border border-ozora-yellow/80 bg-ozora-yellow px-2.5 text-sm font-bold text-ozora-ink shadow-[0_8px_22px_rgba(250,208,46,0.2)] transition hover:-translate-y-0.5 hover:border-ozora-coral hover:bg-ozora-coral hover:shadow-[0_12px_26px_rgba(255,127,80,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow focus-visible:ring-offset-2 focus-visible:ring-offset-ozora-navy sm:px-4"
@@ -149,7 +166,11 @@ export function ShellHeader({ signedIn }: { signedIn: boolean }) {
               {headerLabel(language, item.id)}
             </a>
           ))}
+          <BookingsLink menu onClick={closeMenu} />
           <CartLink menu onClick={closeMenu} />
+          <div className="mt-2 border-t border-white/10 px-3 pt-3">
+            <LanguageSwitch />
+          </div>
         </nav>
       ) : null}
     </header>

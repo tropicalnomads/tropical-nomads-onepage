@@ -12,7 +12,9 @@ export interface ShopLine {
 export interface ShopAddress {
   name: string;
   line1: string;
+  line2: string;
   city: string;
+  region: string;
   postalCode: string;
   country: string;
 }
@@ -24,11 +26,13 @@ function clean(value: string): string {
 }
 
 function addressLines(address: ShopAddress): string[] | undefined {
-  const lines = [clean(address.name), clean(address.line1), clean(address.city), clean(address.postalCode), clean(address.country)];
-  if (lines.some((line) => line === '')) {
+  const required = [clean(address.name), clean(address.line1), clean(address.city), clean(address.postalCode), clean(address.country)];
+  if (required.some((line) => line === '')) {
     return undefined;
   }
-  return lines;
+  return [required[0], required[1], clean(address.line2), required[2], clean(address.region), required[3], required[4]].filter(
+    (line) => line !== '',
+  );
 }
 
 function sizeStock(productId: ShopLine['productId'], size: ShopSizeCode): number {
@@ -49,6 +53,10 @@ export function linePrice(quantity: number): number {
 
 export function shopTotal(lines: readonly ShopLine[]): number {
   return lines.reduce((sum, line) => sum + linePrice(line.quantity), 0);
+}
+
+export function shopAddressComplete(address: ShopAddress): boolean {
+  return addressLines(address) !== undefined;
 }
 
 export function shopOrderMessage(lines: readonly ShopLine[], address: ShopAddress, language: 'en' | 'pt'): string | undefined {

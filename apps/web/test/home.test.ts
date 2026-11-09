@@ -168,6 +168,7 @@ describe('homepage shell', () => {
     const page = readFileSync(new URL('../src/components/home/HomePage.tsx', import.meta.url), 'utf8');
     const upcoming = readFileSync(new URL('../src/components/home/UpcomingSection.tsx', import.meta.url), 'utf8');
     assert.equal(header.includes('href="/"'), true);
+    assert.equal(header.includes('origins.bookings'), true);
     assert.equal(header.includes('#upcoming-events'), false);
     assert.equal(header.includes('#gallery'), false);
     const heroAt = page.indexOf('<HeroCard');

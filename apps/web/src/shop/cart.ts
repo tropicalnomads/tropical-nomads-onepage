@@ -3,7 +3,15 @@ import { shopProducts, type ShopAddress, type ShopLine } from './order.ts';
 
 export const shopCartStorageKey = 'tn:shop-cart:v1';
 
-export const emptyShopAddress: ShopAddress = { name: '', line1: '', city: '', postalCode: '', country: '' };
+export const emptyShopAddress: ShopAddress = {
+  name: '',
+  line1: '',
+  line2: '',
+  city: '',
+  region: '',
+  postalCode: '',
+  country: '',
+};
 
 export interface StoredShopCart {
   lines: ShopLine[];
@@ -75,7 +83,9 @@ function readAddress(value: unknown): ShopAddress {
   return {
     name: typeof record.name === 'string' ? record.name : '',
     line1: typeof record.line1 === 'string' ? record.line1 : '',
+    line2: typeof record.line2 === 'string' ? record.line2 : '',
     city: typeof record.city === 'string' ? record.city : '',
+    region: typeof record.region === 'string' ? record.region : '',
     postalCode: typeof record.postalCode === 'string' ? record.postalCode : '',
     country: typeof record.country === 'string' ? record.country : '',
   };

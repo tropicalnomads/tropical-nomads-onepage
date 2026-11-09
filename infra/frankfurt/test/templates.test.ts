@@ -96,6 +96,9 @@ describe('Frankfurt templates', () => {
     assert.match(onePager, /tropical-nomads-page/);
     assert.match(onePager, /appRoot: apps\/web/);
     assert.match(onePager, /tropical-nomads-web/);
+    assert.match(onePager, /ensure-amplify-next\.mjs/);
+    assert.match(amplify, /ensure-amplify-next\.mjs/);
+    assert.match(read(join(repo, 'pnpm-workspace.yaml')), /nodeLinker: hoisted/);
     assert.equal(onePager.includes('AccessToken'), false);
     assert.equal(onePager.includes('OauthToken'), false);
   });

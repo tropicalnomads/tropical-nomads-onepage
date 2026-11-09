@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { saveBillingAction, saveMethodAction, type PaymentActionResult } from '../payments/actions';
 import { accountText, paymentNotice, paymentPurposeLabel, paymentText, paymentTypeLabel } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
+import { SelectField } from './SelectField';
 
 const fieldClass =
   'mt-1 w-full rounded-lg border border-white/15 bg-black/30 px-3 py-2 text-sm text-ozora-cream outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise';
@@ -128,13 +129,13 @@ export function PaymentSection({
           <h3 className="text-sm font-semibold text-ozora-cream">{paymentText(language, 'methodTitle')}</h3>
           <label className="block text-sm text-ozora-cream/80">
             {paymentText(language, 'type')}
-            <select name="type" className={fieldClass} defaultValue="card">
-              {methodTypes.map((type) => (
-                <option key={type} value={type}>
-                  {paymentTypeLabel(language, type)}
-                </option>
-              ))}
-            </select>
+            <SelectField
+              name="type"
+              className="mt-1"
+              ariaLabel={paymentText(language, 'type')}
+              defaultValue="card"
+              options={methodTypes.map((type) => ({ value: type, label: paymentTypeLabel(language, type) }))}
+            />
           </label>
           <AddressField name="brand" label={paymentText(language, 'brand')} autoComplete="off" />
           <AddressField name="last4" label={paymentText(language, 'last4')} autoComplete="off" maxLength={4} />

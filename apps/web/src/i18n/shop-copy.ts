@@ -16,7 +16,9 @@ export interface ShopCopy {
   remove: string;
   name: string;
   line1: string;
+  line2: string;
   city: string;
+  region: string;
   postalCode: string;
   country: string;
   total: string;
@@ -32,6 +34,31 @@ export interface ShopCopy {
   missingTitle: string;
   missingBody: string;
   left: string;
+  added: string;
+  viewCart: string;
+  close: string;
+  checkout: string;
+  next: string;
+  review: string;
+  backCart: string;
+  backAddress: string;
+  subtotal: string;
+  addressIntro: string;
+  savedAddress: string;
+  profileAddress: string;
+  useAddress: string;
+  saveAddress: string;
+  saveAddressHelp: string;
+  lookup: string;
+  lookingUp: string;
+  lookupFound: string;
+  lookupMissing: string;
+  lookupHelp: string;
+  selectCountry: string;
+  ireland: string;
+  portugal: string;
+  unitedKingdom: string;
+  germany: string;
 }
 
 export const shopCopy: Record<Locale, ShopCopy> = {
@@ -48,9 +75,11 @@ export const shopCopy: Record<Locale, ShopCopy> = {
     cart: 'Cart',
     empty: 'The cart is empty.',
     remove: 'Remove',
-    name: 'Name',
-    line1: 'Street and number',
+    name: 'Full name',
+    line1: 'Address line 1',
+    line2: 'Apartment, suite, or unit',
     city: 'City',
+    region: 'State / region',
     postalCode: 'Postal code',
     country: 'Country',
     total: 'Total',
@@ -66,6 +95,31 @@ export const shopCopy: Record<Locale, ShopCopy> = {
     missingTitle: 'That shirt is not in the shop.',
     missingBody: 'The shop has the two embroidered T-shirts.',
     left: '{count} left',
+    added: 'Added to cart',
+    viewCart: 'View cart',
+    close: 'Close',
+    checkout: 'Proceed to checkout',
+    next: 'Continue',
+    review: 'Review',
+    backCart: 'Back to cart',
+    backAddress: 'Back to address',
+    subtotal: 'Subtotal',
+    addressIntro: 'Choose a saved address or enter where you want this order delivered.',
+    savedAddress: 'Saved delivery address',
+    profileAddress: 'From your profile',
+    useAddress: 'Use this address',
+    saveAddress: 'Save this address to my account',
+    saveAddressHelp: 'It will be ready the next time you check out.',
+    lookup: 'Find address',
+    lookingUp: 'Finding address…',
+    lookupFound: 'City and region added from the postal code.',
+    lookupMissing: 'We could not find that postal code. You can still enter the address manually.',
+    lookupHelp: 'Postal lookup uses public postal data and OpenStreetMap after you ask us to find the address.',
+    selectCountry: 'Select a country',
+    ireland: 'Ireland',
+    portugal: 'Portugal',
+    unitedKingdom: 'United Kingdom',
+    germany: 'Germany',
   },
   pt: {
     title: 'Loja',
@@ -80,9 +134,11 @@ export const shopCopy: Record<Locale, ShopCopy> = {
     cart: 'Carrinho',
     empty: 'O carrinho está vazio.',
     remove: 'Remover',
-    name: 'Nome',
-    line1: 'Rua e número',
+    name: 'Nome completo',
+    line1: 'Endereço',
+    line2: 'Apartamento, bloco ou complemento',
     city: 'Cidade',
+    region: 'Estado / região',
     postalCode: 'Código postal',
     country: 'País',
     total: 'Total',
@@ -98,6 +154,31 @@ export const shopCopy: Record<Locale, ShopCopy> = {
     missingTitle: 'Essa camiseta não está na loja.',
     missingBody: 'A loja tem as duas camisetas bordadas.',
     left: '{count} restantes',
+    added: 'Adicionado ao carrinho',
+    viewCart: 'Ver carrinho',
+    close: 'Fechar',
+    checkout: 'Finalizar compra',
+    next: 'Continuar',
+    review: 'Revisão',
+    backCart: 'Voltar ao carrinho',
+    backAddress: 'Voltar ao endereço',
+    subtotal: 'Subtotal',
+    addressIntro: 'Escolha um endereço salvo ou informe onde deseja receber este pedido.',
+    savedAddress: 'Endereço de entrega salvo',
+    profileAddress: 'Dados do seu perfil',
+    useAddress: 'Usar este endereço',
+    saveAddress: 'Salvar este endereço na minha conta',
+    saveAddressHelp: 'Ele estará pronto na próxima compra.',
+    lookup: 'Buscar endereço',
+    lookingUp: 'Buscando endereço…',
+    lookupFound: 'Cidade e região preenchidas pelo código postal.',
+    lookupMissing: 'Não encontramos esse código postal. Você ainda pode preencher o endereço manualmente.',
+    lookupHelp: 'A busca usa dados postais públicos e o OpenStreetMap quando você solicita o endereço.',
+    selectCountry: 'Selecione um país',
+    ireland: 'Irlanda',
+    portugal: 'Portugal',
+    unitedKingdom: 'Reino Unido',
+    germany: 'Alemanha',
   },
 };
 

@@ -66,6 +66,8 @@ describe('upcoming events', () => {
     const page = readFileSync(new URL('../src/components/UpcomingEvents.tsx', import.meta.url), 'utf8');
     const onePagerList = readFileSync(new URL('../../one-pager/src/components/UpcomingEventsList.tsx', import.meta.url), 'utf8');
     assert.equal(page.includes('issueTicketAction'), true);
+    assert.equal(page.includes('<select'), false);
+    assert.equal(page.includes('SelectField'), true);
     assert.equal(page.includes('checkout'), false);
     assert.equal(page.includes('markPaymentConfirmed'), false);
     assert.equal(page.includes('recordRefund'), false);

@@ -8,6 +8,7 @@ import { accountText, areaText, eventText, paymentNotice, paymentText } from '..
 import { useLanguage } from '../i18n/provider';
 import { issueTicketAction, type TicketActionResult } from '../tickets/actions';
 import { EmptyState } from '../../../one-pager/src/components/EmptyState';
+import { SelectField } from './SelectField';
 
 function fill(template: string, values: Record<string, string>): string {
   return Object.entries(values).reduce((text, [key, value]) => text.replaceAll(`{${key}}`, value), template);
@@ -199,19 +200,16 @@ function TicketPurchase({ event }: { event: UpcomingEventCard }) {
       {single ? (
         <input type="hidden" name="offerName" value={single.name} />
       ) : (
-        <label className="text-sm text-ozora-cream">
-          <span className="sr-only">{eventText(language, 'buyInApp')}</span>
-          <select
-            name="offerName"
-            className="w-full rounded-lg border border-white/15 bg-black/30 px-3 py-2 text-sm text-ozora-cream outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
-          >
-            {event.inAppOffers.map((offer) => (
-              <option key={offer.name} value={offer.name}>
-                {offer.name} · {euroAmount(offer.amount, language)}
-              </option>
-            ))}
-          </select>
-        </label>
+        <SelectField
+          name="offerName"
+          ariaLabel={eventText(language, 'buyInApp')}
+          defaultValue={event.inAppOffers[0]?.name ?? ''}
+          options={event.inAppOffers.map((offer) => ({
+            value: offer.name,
+            label: offer.name,
+            description: euroAmount(offer.amount, language),
+          }))}
+        />
       )}
       <button
         type="submit"

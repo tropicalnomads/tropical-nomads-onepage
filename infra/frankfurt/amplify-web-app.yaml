@@ -31,11 +31,10 @@ Resources:
                     - node --version
                     - npm install -g pnpm@12.18.0
                     - pnpm --version
-                    - cd ../..
-                    - pnpm install --frozen-lockfile
+                    - cd ../.. && pnpm install --frozen-lockfile && node scripts/ensure-amplify-next.mjs
                 build:
                   commands:
-                    - pnpm --filter tropical-nomads-web build
+                    - cd ../.. && pnpm --filter tropical-nomads-web build
               artifacts:
                 baseDirectory: .next
                 files:

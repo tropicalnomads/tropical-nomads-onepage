@@ -5,12 +5,14 @@ import { locales } from 'tropical-nomads-shared';
 import { catalogAsset, shirtSrc } from '../src/events/assets.ts';
 import { shopCopy } from '../src/i18n/shop-copy.ts';
 import { addShopLine, parseShopCart, setShopLineQuantity } from '../src/shop/cart.ts';
-import { shopOrderMessage, shopProducts, shopTotal, shopWhatsappUrl } from '../src/shop/order.ts';
+import { shopOrderMessage, shopProducts, shopTotal, shopWhatsappUrl, shopAddressComplete } from '../src/shop/order.ts';
 
 const address = {
   name: 'Ada Lovelace',
   line1: 'Rua Example 1',
+  line2: 'Apartment 2',
   city: 'Lisbon',
+  region: 'Lisbon',
   postalCode: '1000-001',
   country: 'Portugal',
 };
@@ -52,6 +54,8 @@ describe('shop', () => {
     assert.equal(shopOrderMessage(lines, { ...address, city: '   ' }, 'en'), undefined);
     assert.equal(shopOrderMessage([], address, 'pt'), undefined);
     assert.equal(shopOrderMessage([{ productId: 'hw', size: 'G', quantity: 99 }], address, 'en'), undefined);
+    assert.equal(shopAddressComplete(address), true);
+    assert.equal(shopAddressComplete({ ...address, city: '   ' }), false);
   });
 
   it('merges the same shirt and size and keeps the quantity inside stock', () => {
@@ -73,21 +77,44 @@ describe('shop', () => {
     assert.equal(stored.address.name, 'Ada');
   });
 
-  it('keeps the address form on the cart page', () => {
+  it('keeps the address form on the checkout page', () => {
     const catalog = readFileSync(new URL('../src/components/ShopCatalog.tsx', import.meta.url), 'utf8');
     const product = readFileSync(new URL('../src/components/ShopProduct.tsx', import.meta.url), 'utf8');
+    const added = readFileSync(new URL('../src/components/ShopAddedPanel.tsx', import.meta.url), 'utf8');
     const cart = readFileSync(new URL('../src/components/ShopCart.tsx', import.meta.url), 'utf8');
+    const checkout = readFileSync(new URL('../src/components/ShopCheckout.tsx', import.meta.url), 'utf8');
+    const review = readFileSync(new URL('../src/components/ShopReview.tsx', import.meta.url), 'utf8');
     const catalogPage = readFileSync(new URL('../app/shop/page.tsx', import.meta.url), 'utf8');
     const cartPage = readFileSync(new URL('../app/shop/cart/page.tsx', import.meta.url), 'utf8');
+    const checkoutPage = readFileSync(new URL('../app/shop/checkout/page.tsx', import.meta.url), 'utf8');
+    const postalLookup = readFileSync(new URL('../app/shop/postal-lookup/route.ts', import.meta.url), 'utf8');
+    const deliveryActions = readFileSync(new URL('../src/shop/actions.ts', import.meta.url), 'utf8');
+    const reviewPage = readFileSync(new URL('../app/shop/checkout/review/page.tsx', import.meta.url), 'utf8');
     const header = readFileSync(new URL('../src/components/ShellHeader.tsx', import.meta.url), 'utf8');
     assert.equal(catalog.includes('postalCode'), false);
     assert.equal(catalog.includes('<select'), false);
     assert.equal(catalogPage.includes('postalCode'), false);
     assert.equal(product.includes('<select'), false);
     assert.equal(product.includes('liveSizes'), true);
-    assert.equal(cart.includes('postalCode'), true);
-    assert.equal(cart.includes('shopWhatsappUrl'), true);
+    assert.equal(product.includes('location.assign'), false);
+    assert.equal(product.includes('ShopAddedPanel'), true);
+    assert.equal(added.includes('/shop/cart'), true);
+    assert.equal(added.includes('continue'), true);
+    assert.equal(cart.includes('postalCode'), false);
+    assert.equal(cart.includes('shopWhatsappUrl'), false);
+    assert.equal(cart.includes('/shop/checkout'), true);
     assert.equal(cartPage.includes('ShopCart'), true);
+    assert.equal(checkout.includes('postalCode'), true);
+    assert.equal(checkout.includes('<select'), false);
+    assert.equal(checkout.includes('SelectField'), true);
+    assert.equal(checkout.includes('savedAddress'), true);
+    assert.equal(checkout.includes('lookupPostalCode'), true);
+    assert.equal(checkoutPage.includes('ShopCheckout'), true);
+    assert.equal(checkoutPage.includes('billingAddresses'), true);
+    assert.equal(postalLookup.includes('nominatim.openstreetmap.org'), true);
+    assert.equal(deliveryActions.includes('saveDefaultBillingAddress'), true);
+    assert.equal(review.includes('shopWhatsappUrl'), true);
+    assert.equal(reviewPage.includes('ShopReview'), true);
     assert.equal(header.includes('/shop/cart'), true);
   });
 

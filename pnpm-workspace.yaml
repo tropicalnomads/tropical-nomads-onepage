@@ -2,6 +2,10 @@ packages:
   - "apps/*"
   - "packages/*"
 
+# pnpm 12 ignores node-linker in .npmrc. Amplify Hosting still requires that
+# line, and it requires a real (non-symlinked) node_modules/next at runtime.
+nodeLinker: hoisted
+
 overrides:
   baseline-browser-mapping: "2.11.35"
   browserslist: "4.29.5"

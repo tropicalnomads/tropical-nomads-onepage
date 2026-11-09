@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { liveSizes, sizeLabel, type ShopSizeCode } from '../../../one-pager/src/lib/shop.ts';
 import { shopLeft, shopProductMeta, shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
-import { shopPriceEur, shopProducts, type ShopLine } from '../shop/order';
+import { shopPriceEur, shopProducts, shopTotal, type ShopLine } from '../shop/order';
 import { useShopCart } from '../shop/useShopCart';
+import { ShopAddedPanel } from './ShopAddedPanel';
 import { ShopMissing } from './ShopCatalog';
 import { QuantityStepper } from './ShopQuantity';
 
@@ -16,6 +17,7 @@ export function ShopProduct({ productId, image }: { productId: string; image?: s
   const sizes = product ? liveSizes(product) : [];
   const [size, setSize] = useState<ShopSizeCode | undefined>(sizes[0]?.code);
   const [quantity, setQuantity] = useState(1);
+  const [added, setAdded] = useState<ShopLine | null>(null);
   if (!product || (product.id !== 'hw' && product.id !== 'pg')) {
     return <ShopMissing />;
   }
@@ -37,7 +39,7 @@ export function ShopProduct({ productId, image }: { productId: string; image?: s
     }
     const line: ShopLine = { productId: product.id, size: selected.code, quantity: chosen };
     cart.add(line);
-    window.location.assign('/shop/cart');
+    setAdded(line);
   };
 
   return (
@@ -96,6 +98,14 @@ export function ShopProduct({ productId, image }: { productId: string; image?: s
           </button>
         </div>
       </div>
+      {added ? (
+        <ShopAddedPanel
+          line={cart.lines.find((item) => item.productId === added.productId && item.size === added.size) ?? added}
+          image={image}
+          subtotal={shopTotal(cart.lines)}
+          onClose={() => setAdded(null)}
+        />
+      ) : null}
     </section>
   );
 }

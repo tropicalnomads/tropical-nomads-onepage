@@ -4,12 +4,13 @@ import { origins } from 'tropical-nomads-shared';
 import { areaText, shellText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { navigation } from '../navigation';
+import { LanguageSwitch } from './LanguageSwitch';
 
 export function ShellFooter() {
   const { language } = useLanguage();
 
   return (
-    <footer className="safe-bottom border-t border-white/10 px-5 py-8 text-center text-xs text-ozora-cream/70 md:px-8">
+    <footer className="safe-bottom mt-auto border-t border-white/10 px-5 py-8 text-center text-xs text-ozora-cream/70 md:px-8">
       <nav aria-label={shellText(language, 'footer')} className="mb-4 flex flex-wrap justify-center gap-2">
         {navigation.map((item) => (
           <a
@@ -21,6 +22,9 @@ export function ShellFooter() {
           </a>
         ))}
       </nav>
+      <div className="mb-5 flex justify-center">
+        <LanguageSwitch />
+      </div>
       <p>{shellText(language, 'footerTagline')}</p>
       <p className="mt-3">
         <a

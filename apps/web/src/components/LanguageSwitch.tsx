@@ -1,8 +1,7 @@
 'use client';
 
-import { ChevronDown } from 'lucide-react';
+import { useId, type SVGProps } from 'react';
 import { locales, type Locale } from 'tropical-nomads-shared';
-import { useEffect, useId, useMemo, useRef, useState, type SVGProps } from 'react';
 import { switchLanguageLabel } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 
@@ -66,108 +65,31 @@ function Flag({ locale, clipId }: { locale: Locale; clipId: string }) {
 
 export function LanguageSwitch() {
   const { language, setLanguage } = useLanguage();
-  const [open, setOpen] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const clipBase = useId();
-  const activeLabel = optionLabel(language);
-  const active = useMemo(
-    () => locales.find((locale) => locale === language) ?? locales[0],
-    [language],
-  );
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-    const handlePointerDown = (event: MouseEvent | TouchEvent): void => {
-      if (!(event.target instanceof Node)) {
-        return;
-      }
-      if (!wrapperRef.current?.contains(event.target)) {
-        setOpen(false);
-      }
-    };
-    const handleEscape = (event: KeyboardEvent): void => {
-      if (event.key === 'Escape') {
-        setOpen(false);
-      }
-    };
-    window.addEventListener('mousedown', handlePointerDown);
-    window.addEventListener('touchstart', handlePointerDown);
-    window.addEventListener('keydown', handleEscape);
-    return () => {
-      window.removeEventListener('mousedown', handlePointerDown);
-      window.removeEventListener('touchstart', handlePointerDown);
-      window.removeEventListener('keydown', handleEscape);
-    };
-  }, [open]);
 
   return (
-    <div ref={wrapperRef} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((prev) => !prev)}
-        aria-expanded={open}
-        aria-label={switchLanguageLabel(language, activeLabel)}
-        className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-bold text-ozora-cream sm:hidden"
-      >
-        <Flag locale={active} clipId={`${clipBase}-active`} />
-        <span>{activeLabel}</span>
-        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
-      </button>
-
-      {open ? (
-        <div className="absolute right-0 top-full z-[80] mt-1.5 w-28 rounded-xl border border-white/10 bg-ozora-navy/95 p-1.5 shadow-2xl backdrop-blur sm:hidden">
-          {locales.map((locale) => {
-            const label = optionLabel(locale);
-            const selected = locale === language;
-            return (
-              <button
-                key={locale}
-                type="button"
-                onClick={() => {
-                  setLanguage(locale);
-                  setOpen(false);
-                }}
-                className={`mb-1 inline-flex w-full items-center gap-1.5 rounded-lg px-2 py-1.5 text-left text-[11px] font-bold transition last:mb-0 ${
-                  selected
-                    ? 'bg-ozora-yellow text-ozora-ink'
-                    : 'text-ozora-cream/80 hover:bg-white/10 hover:text-ozora-cream'
-                }`}
-                aria-pressed={selected}
-                aria-label={switchLanguageLabel(language, label)}
-              >
-                <Flag locale={locale} clipId={`${clipBase}-menu-${locale}`} />
-                <span>{label}</span>
-              </button>
-            );
-          })}
-        </div>
-      ) : null}
-
-      <div className="hidden items-center gap-1 rounded-full border border-white/15 bg-white/5 p-1 sm:inline-flex">
-        {locales.map((locale) => {
-          const label = optionLabel(locale);
-          const selected = locale === language;
-          return (
-            <button
-              key={locale}
-              type="button"
-              onClick={() => setLanguage(locale)}
-              className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-bold transition ${
-                selected
-                  ? 'bg-ozora-yellow text-ozora-ink'
-                  : 'text-ozora-cream/80 hover:bg-white/10 hover:text-ozora-cream'
-              }`}
-              aria-pressed={selected}
-              aria-label={switchLanguageLabel(language, label)}
-            >
-              <Flag locale={locale} clipId={`${clipBase}-bar-${locale}`} />
-              <span>{label}</span>
-            </button>
-          );
-        })}
-      </div>
+    <div className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 p-1">
+      {locales.map((locale) => {
+        const label = optionLabel(locale);
+        const selected = locale === language;
+        return (
+          <button
+            key={locale}
+            type="button"
+            onClick={() => setLanguage(locale)}
+            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-bold transition ${
+              selected
+                ? 'bg-ozora-yellow text-ozora-ink'
+                : 'text-ozora-cream/80 hover:bg-white/10 hover:text-ozora-cream'
+            }`}
+            aria-pressed={selected}
+            aria-label={switchLanguageLabel(language, label)}
+          >
+            <Flag locale={locale} clipId={`${clipBase}-${locale}`} />
+            <span>{label}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }

@@ -36,6 +36,7 @@ applications:
             - npm install -g pnpm@12.18.0
             - pnpm --version
             - pnpm install --frozen-lockfile
+            - node scripts/ensure-amplify-next.mjs
         build:
           commands:
             - nvm use 24.22.2 && node --version

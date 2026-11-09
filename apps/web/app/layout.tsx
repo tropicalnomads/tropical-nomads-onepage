@@ -24,9 +24,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       </head>
       <body className="font-sans">
         <LanguageProvider>
-          <ShellHeader signedIn={signedIn} />
-          {children}
-          <ShellFooter />
+          <div className="flex min-h-dvh flex-col">
+            <ShellHeader signedIn={signedIn} />
+            {children}
+            <ShellFooter />
+          </div>
         </LanguageProvider>
       </body>
     </html>

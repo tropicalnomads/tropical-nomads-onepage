@@ -15,6 +15,8 @@ describe('payment interfaces', () => {
     const shop = readFileSync(new URL('../../one-pager/src/lib/shop.ts', import.meta.url), 'utf8');
     const onePagerList = readFileSync(new URL('../../one-pager/src/lib/data.ts', import.meta.url), 'utf8');
     assert.equal(form.includes('cardNumber'), false);
+    assert.equal(form.includes('<select'), false);
+    assert.equal(form.includes('SelectField'), true);
     assert.equal(form.includes('cvc'), false);
     assert.equal(form.includes('cc-number'), false);
     assert.equal(account.includes('PaymentSection'), false);

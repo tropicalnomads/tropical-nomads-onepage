@@ -1,0 +1,51 @@
+'use server';
+
+import { cookies } from 'next/headers';
+import { saveDefaultBillingAddress, updateAccounts } from 'tropical-nomads-api/accounts';
+import { readSessionSub, sessionCookieName } from '../account/session';
+
+export type SaveDeliveryResult = 'saved' | 'not-signed-in' | 'invalid';
+
+const limit = 80;
+
+function field(formData: FormData, key: string): string {
+  const value = formData.get(key);
+  return typeof value === 'string' ? value.trim().slice(0, limit) : '';
+}
+
+export async function saveDeliveryAddressAction(formData: FormData): Promise<SaveDeliveryResult> {
+  const jar = await cookies();
+  const sub = readSessionSub(jar.get(sessionCookieName)?.value);
+  if (!sub) {
+    return 'not-signed-in';
+  }
+  const address = {
+    recipientName: field(formData, 'name'),
+    line1: field(formData, 'line1'),
+    line2: field(formData, 'line2'),
+    city: field(formData, 'city'),
+    region: field(formData, 'region'),
+    postalCode: field(formData, 'postalCode'),
+    country: field(formData, 'country'),
+  };
+  if (!address.recipientName || !address.line1 || !address.city || !address.postalCode || !address.country) {
+    return 'invalid';
+  }
+  try {
+    await updateAccounts((current) =>
+      saveDefaultBillingAddress(
+        current,
+        sub,
+        {
+          ...address,
+          // The shared address schema requires a region. Some postal systems do not use one.
+          region: address.region || address.city,
+        },
+        new Date().toISOString(),
+      ),
+    );
+  } catch {
+    return 'invalid';
+  }
+  return 'saved';
+}
