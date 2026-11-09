@@ -69,7 +69,7 @@ Resources:
           HealthCheck:
             Command:
               - CMD-SHELL
-              - node -e "fetch('http://127.0.0.1:8787/socials').then((response)=>process.exit(response.ok?0:1)).catch(()=>process.exit(1))"
+              - node -e "fetch('http://127.0.0.1:8787/health').then((response)=>process.exit(response.ok?0:1)).catch(()=>process.exit(1))"
             Interval: 30
             Timeout: 5
             Retries: 3

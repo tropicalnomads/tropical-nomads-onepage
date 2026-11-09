@@ -1,5 +1,13 @@
+import { existsSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { databaseReachable, databaseSettings } from './database.ts';
 import { apiHostname, listen } from './server.ts';
+
+const localEnv = resolve(dirname(fileURLToPath(import.meta.url)), '../../../.env');
+if (existsSync(localEnv)) {
+  process.loadEnvFile(localEnv);
+}
 
 const port = Number(process.env.API_PORT ?? 8787);
 

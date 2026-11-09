@@ -44,7 +44,7 @@ Resources:
       HealthCheckEnabled: true
       HealthCheckProtocol: HTTP
       HealthCheckPort: "8787"
-      HealthCheckPath: /socials
+      HealthCheckPath: /health
       Matcher:
         HttpCode: "200"
       HealthyThresholdCount: 2

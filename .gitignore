@@ -13,3 +13,5 @@ dev-dist
 __pycache__/
 *.pyc
 data/operational/avatars/
+.env
+.env.local

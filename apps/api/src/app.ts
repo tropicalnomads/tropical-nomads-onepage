@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { secureHeaders } from 'hono/secure-headers';
 import { validator } from 'hono/validator';
 import { readArtistCatalog, readPartyCatalog } from './catalog.ts';
+import { apiHealth } from './health.ts';
 import { eventsView, pastEvents, publishedSchema, readCatalog, upcomingEvents, type PublishedCatalog } from './published.ts';
 
 export interface TodayQuery {
@@ -73,6 +74,12 @@ function catalogResponse(catalog: PublishedCatalog): Record<string, unknown> | u
 }
 
 const routes = new Hono()
+  .get('/health', (c) => {
+    if (new URL(c.req.url).search !== '') {
+      return c.json({ error: 'unknown query' } satisfies ApiError, 400);
+    }
+    return c.json(apiHealth());
+  })
   .get('/events', todayQuery, (c) => c.json(readPartyCatalog()))
   .get('/events/upcoming', todayQuery, (c) => {
     const events = readPartyCatalog();
