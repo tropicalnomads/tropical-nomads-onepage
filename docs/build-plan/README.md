@@ -35,6 +35,8 @@ The public product comes next, still in the first iteration. People can see the 
 
 Bookings is the second iteration: bring the existing Bookings product into this repo, then the admin calendar that creates parties and agendas, then the integrations tab that offers artists to outside parties. The first iteration does not wait on any of those.
 
+Ticket 32 is the tab logo and the search files for `apps/web` at [dev.tropical-nomads.com](https://dev.tropical-nomads.com). It is step 32. It depends on tickets 03, 05, 08, 09, 15, and 20. Bookings, the payment company, the host tickets, and the native repositories are not prerequisites. The one-pager and www stay as they are.
+
 The Amplify, ECS, and RDS tickets are the deploy path for the first product, and they are not live. Ticket 31 is with those hosts. It names `tropical-nomads-aws`, where every AWS change is one versioned file, committed, and deployed from that commit. Cognito with Google and Apple, and RDS for PostgreSQL in Frankfurt, are the first resources. They are not created. Multi-AZ is out of scope. JSON stays the store. www keeps deploying, and the new app does not go live. Ticket 30 comes next. It is the separate repository for migration scripts and for seeds used by unit tests, automation tests, and similar uses. The index keeps it there: ticket 25 confirms RDS and does not migrate, earlier tests still use JSON and the schemas, and the scripts ticket does not pick a new database. The payment-company ticket stays last in that iteration, after tickets 31 and 30, and it does not name a company. Bookings does not wait for the hosts, the scripts repository, or the company.
 
 ## Order
@@ -72,6 +74,7 @@ The Amplify, ECS, and RDS tickets are the deploy path for the first product, and
 | 29 | 2, Bookings | [Admin party calendar](18-admin-party-calendar.md) | 07, 09, 13, 17, 27 | Admin creates parties and configures that event's tickets. |
 | 30 | 2, Bookings | [Goabase integrations tab](22-goabase-integrations.md) | 07, 17, 27, 28 | Outside parties, so Bookings can email artist offers. |
 | 31 | Later | [iOS and Android repositories](19-ios-android-repos.md) | 04 | Optional. Last. Creates the two repos only. No native screens. |
+| 32 | 1, product | [Search and tab logo](32-seo.md) | 03, 05, 08, 09, 15, 20 | Tab logo and search files on `apps/web` at dev.tropical-nomads.com. www stays the one-pager. |
 
 ## Capabilities
 
@@ -86,6 +89,7 @@ The Amplify, ECS, and RDS tickets are the deploy path for the first product, and
 | Abuse-resistant security | 09, then enforced on every later ticket |
 | Bookings in this monorepo | 02 names the slot in the base. 17 brings the product in, in the second iteration. |
 | Admin party calendar | 18, second iteration |
+| Search and tab logo | 32, step 32. Public search files and the tab logo on `apps/web`. www stays the one-pager. |
 
 English and Portuguese are decided. The web shell switches between them. The one-pager already has them in `src/i18n/`.
 
@@ -112,12 +116,13 @@ Checked against the decisions so far. The access list is three roles on ticket 0
 | Email | 27, in the first product, after purchases and the door invite. No vendor. |
 | Goabase integrations | 22, in the second iteration with Bookings. The public refresh script stays. |
 | Types and schemas | 28, step 5. Schemas and lookups are in `packages/shared`. The shell does not invent fields. |
+| Search and tab logo | 32, step 32. Tab logo, title, canonical, Open Graph, Twitter, sitemap, robots, structured data, hreflang for `en` and `pt`, and `/llms.txt` on `apps/web`. |
 
 Order problem that this pass fixes: iOS and Android were step 5, in the same ticket as the required web shell, so the product could not move without native apps. They are now ticket 19, optional, and last. Nothing depends on them. Phones use the web app in the browser.
 
 Not duplicates: ticket 09 writes who may scan. Ticket 14 builds the invite and the scanner. Ticket 11 is the JSON store. Ticket 01 only recommends the later database. Ticket 04 creates the shared package. Ticket 28 writes the schemas. Ticket 25 confirms that recommendation and does not migrate. Ticket 31 names the repository for AWS resource files. It does not create the repository, Cognito, or RDS, and it does not replace tickets 23, 24, or 25. Ticket 30 names the repository for migration scripts and test seeds. It does not create the repository, and it does not replace ticket 25.
 
-The three-role decision does not block the stack, the web shell, or the public event list. Those have no role tools. It is in force from ticket 09 onward. Types and schemas are step 5, before the feature tickets, and they include the Bookings records so the second iteration does not invent fields. History is step 19, after tickets and merch. Email is step 21, still in the first product. The Amplify, ECS, and RDS tickets are steps 22–24, not live. The AWS-as-code repository is step 25, with those hosts. The database scripts repository is step 26. The payment company is step 27 and is not named. Bookings is steps 28–30. iOS and Android are step 31. The catalog and the public product do not wait for Bookings.
+The three-role decision does not block the stack, the web shell, or the public event list. Those have no role tools. It is in force from ticket 09 onward. Types and schemas are step 5, before the feature tickets, and they include the Bookings records so the second iteration does not invent fields. History is step 19, after tickets and merch. Email is step 21, still in the first product. The Amplify, ECS, and RDS tickets are steps 22–24, not live. The AWS-as-code repository is step 25, with those hosts. The database scripts repository is step 26. The payment company is step 27 and is not named. Bookings is steps 28–30. iOS and Android are step 31. The catalog and the public product do not wait for Bookings. Ticket 32 is step 32. It adds the tab logo and the search files on the web app. It depends on tickets 03, 05, 08, 09, 15, and 20.
 
 Left open on purpose: the timetable site and agenda contents. Ticket 21 lists later payment questions and does not name a company. Tickets 23–25 and ticket 31 do not create a public launch, and ticket 25 does not create a database. Ticket 31 does not create a repository, call AWS, or create Cognito or RDS. Multi-AZ stays out of scope. Ticket 30 does not create a repository, a database, or a migration. Ticket 29 is the company choice and does not name one. Starting AWS sizes are in [the AWS record](../devops/aws.md). DevOps owns later changes.
 
