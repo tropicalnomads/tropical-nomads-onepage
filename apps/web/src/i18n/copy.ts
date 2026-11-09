@@ -1,4 +1,5 @@
 import { type Locale, type PaymentMethodType, type WebAreaId } from 'tropical-nomads-shared';
+import { homeCopy, type HomeCopy } from './home.ts';
 
 export interface ShellCopy {
   homeAria: string;
@@ -8,8 +9,8 @@ export interface ShellCopy {
   primaryMobile: string;
   footer: string;
   tagline: string;
-  intro: string;
   footerTagline: string;
+  home: HomeCopy;
   privacy: string;
   switchLanguage: string;
   areas: Record<WebAreaId, string>;
@@ -195,8 +196,8 @@ export const shellCopy: Record<Locale, ShellCopy> = {
     primaryMobile: 'Primary mobile',
     footer: 'Footer',
     tagline: 'Psytrance with a Brazilian touch',
-    intro: 'The same parties, tickets, door, and shop. Nothing here is on sale yet.',
     footerTagline: 'Tropical Nomads - made for the dancefloor community.',
+    home: homeCopy.en,
     privacy: 'Privacy Policy',
     switchLanguage: 'Switch language to {label}',
     areas: {
@@ -356,8 +357,8 @@ export const shellCopy: Record<Locale, ShellCopy> = {
     primaryMobile: 'Principal no celular',
     footer: 'Rodapé',
     tagline: 'Psytrance com um toque brasileiro',
-    intro: 'As mesmas festas, ingressos, porta e loja. Nada aqui está à venda ainda.',
     footerTagline: 'Tropical Nomads - feito para a comunidade da pista.',
+    home: homeCopy.pt,
     privacy: 'Política de privacidade',
     switchLanguage: 'Mudar idioma para {label}',
     areas: {
@@ -518,11 +519,15 @@ export function presentText(language: Locale, key: string, value: string | undef
   return value;
 }
 
-export function shellText<K extends keyof Omit<ShellCopy, 'areas' | 'areaDescriptions' | 'events' | 'tickets' | 'checkIn' | 'account' | 'payments'>>(
+export function shellText<K extends keyof Omit<ShellCopy, 'areas' | 'areaDescriptions' | 'events' | 'tickets' | 'checkIn' | 'account' | 'payments' | 'home'>>(
   language: Locale,
   key: K,
 ): string {
   return presentText(language, key, shellCopy[language][key]);
+}
+
+export function homeText<K extends keyof HomeCopy>(language: Locale, key: K): string {
+  return presentText(language, `home.${key}`, shellCopy[language].home[key]);
 }
 
 export function areaText(language: Locale, id: WebAreaId): string {

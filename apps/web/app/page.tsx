@@ -1,49 +1,22 @@
-'use client';
+import { HomePage } from '../src/components/home/HomePage';
+import { loadHomeCatalog } from '../src/home/catalog';
+import { partitionEvents } from '../src/home/partition';
 
-import { EmptyState } from '../../one-pager/src/components/EmptyState';
-import { areaDescription, areaText, shellText } from '../src/i18n/copy';
-import { useLanguage } from '../src/i18n/provider';
-import { navigation } from '../src/navigation';
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
-export default function HomePage() {
-  const { language } = useLanguage();
-
+export default function Page() {
+  const catalog = loadHomeCatalog();
+  const { upcoming, past } = partitionEvents(catalog.events);
   return (
     <main>
-      <section className="px-5 py-8 md:px-8">
-        <div className="relative mx-auto max-w-3xl overflow-hidden rounded-3xl border border-white/10 bg-black/30 p-7 text-center shadow-2xl backdrop-blur-sm md:p-12">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -top-24 left-1/2 h-56 w-56 -translate-x-1/2 rounded-full bg-ozora-turquoise/20 blur-3xl"
-          />
-          <div className="relative">
-            <img
-              src="/branding/tropical-nomads-logo-horizontal-cream.png"
-              alt="Tropical Nomads"
-              className="mx-auto h-16 w-auto object-contain md:h-20"
-            />
-            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-ozora-turquoise md:text-sm">
-              {shellText(language, 'tagline')}
-            </p>
-            <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-ozora-cream/85 md:text-lg">
-              {shellText(language, 'intro')}
-            </p>
-          </div>
-        </div>
-      </section>
-      <section className="px-5 pb-8 md:px-8">
-        <div className="mx-auto grid max-w-5xl gap-4 sm:grid-cols-2">
-          {navigation.map((item) => (
-            <a
-              key={item.id}
-              href={item.href}
-              className="block rounded-2xl transition hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow"
-            >
-              <EmptyState title={areaText(language, item.id)} description={areaDescription(language, item.id)} />
-            </a>
-          ))}
-        </div>
-      </section>
+      <HomePage
+        upcoming={upcoming}
+        past={past}
+        partners={catalog.partners}
+        socials={catalog.socials}
+        followHref={catalog.followHref}
+      />
     </main>
   );
 }
