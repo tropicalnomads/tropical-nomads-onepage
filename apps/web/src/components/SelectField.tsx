@@ -22,6 +22,9 @@ interface SelectFieldProps {
   id?: string;
   className?: string;
   ariaLabel?: string;
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  emptyLabel?: string;
 }
 
 interface MenuBox {
@@ -56,6 +59,14 @@ function stepEnabled(options: readonly SelectOption[], start: number, direction:
     }
   }
   return start;
+}
+
+function filterOptions(options: readonly SelectOption[], query: string): readonly SelectOption[] {
+  const needle = query.trim().toLowerCase();
+  if (needle === '') {
+    return options;
+  }
+  return options.filter((option) => option.label.toLowerCase().includes(needle) || option.value.toLowerCase().includes(needle));
 }
 
 function matchOption(options: readonly SelectOption[], query: string, start: number): number {
@@ -94,21 +105,28 @@ export function SelectField({
   id,
   className,
   ariaLabel,
+  searchable = false,
+  searchPlaceholder,
+  emptyLabel,
 }: SelectFieldProps) {
   const uid = useId();
   const buttonId = id ?? `${uid}-button`;
   const listId = `${uid}-list`;
   const rootRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const optionsRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
   const queryRef = useRef('');
   const queryTimer = useRef<number | undefined>(undefined);
   const [uncontrolled, setUncontrolled] = useState(defaultValue ?? '');
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [menuBox, setMenuBox] = useState<MenuBox | null>(null);
+  const [filter, setFilter] = useState('');
   const current = value ?? uncontrolled;
   const selectedIndex = options.findIndex((option) => option.value === current);
   const selectedOption = selectedIndex >= 0 ? options[selectedIndex] : undefined;
+  const visibleOptions = filterOptions(options, searchable ? filter : '');
   const isDisabled = disabled || options.length === 0;
   const shown = selectedOption?.label ?? placeholder ?? '';
   const accessibleName = ariaLabel && shown ? `${ariaLabel}, ${shown}` : ariaLabel || shown || undefined;
@@ -121,6 +139,7 @@ export function SelectField({
     if (open) {
       return;
     }
+    setFilter('');
     setMenuBox(null);
   }, [open]);
 
@@ -194,7 +213,7 @@ export function SelectField({
     if (!open || !menuReady || activeIndex < 0) {
       return;
     }
-    const menu = menuRef.current;
+    const menu = optionsRef.current;
     const optionNode = document.getElementById(`${uid}-option-${activeIndex}`);
     if (!menu || !optionNode) {
       return;
@@ -208,8 +227,15 @@ export function SelectField({
     }
   }, [activeIndex, menuReady, open, uid]);
 
+  useEffect(() => {
+    if (!open || !searchable || !menuReady) {
+      return;
+    }
+    searchRef.current?.focus();
+  }, [menuReady, open, searchable]);
+
   const choose = (index: number): void => {
-    const option = options[index];
+    const option = visibleOptions[index];
     if (!option || option.disabled) {
       return;
     }
@@ -226,10 +252,14 @@ export function SelectField({
   };
 
   const preferredIndex = (): number => {
-    if (selectedIndex >= 0 && options[selectedIndex]?.disabled !== true) {
-      return selectedIndex;
+    const selected = selectedIndex >= 0 ? options[selectedIndex] : undefined;
+    if (selected && selected.disabled !== true) {
+      const visibleIndex = visibleOptions.findIndex((option) => option.value === selected.value);
+      if (visibleIndex >= 0) {
+        return visibleIndex;
+      }
     }
-    return firstEnabled(options);
+    return firstEnabled(visibleOptions);
   };
 
   const onTypeahead = (char: string): void => {
@@ -238,13 +268,13 @@ export function SelectField({
     queryTimer.current = window.setTimeout(() => {
       queryRef.current = '';
     }, 450);
-    const found = matchOption(options, queryRef.current, open ? activeIndex : -1);
+    const found = matchOption(visibleOptions, queryRef.current, open ? activeIndex : -1);
     if (found >= 0) {
       openAt(found);
     }
   };
 
-  const onKeyDown = (event: KeyboardEvent<HTMLButtonElement>): void => {
+  const onKeyDown = (event: KeyboardEvent<HTMLElement>): void => {
     if (isDisabled) {
       return;
     }
@@ -253,18 +283,18 @@ export function SelectField({
       const direction = event.key === 'ArrowDown' ? 1 : -1;
       if (!open) {
         const currentIndex = preferredIndex();
-        openAt(currentIndex >= 0 ? currentIndex : firstEnabled(options, direction === -1));
+        openAt(currentIndex >= 0 ? currentIndex : firstEnabled(visibleOptions, direction === -1));
         return;
       }
-      setActiveIndex((currentIndex) => stepEnabled(options, currentIndex < 0 ? (direction === 1 ? -1 : 0) : currentIndex, direction));
+      setActiveIndex((currentIndex) => stepEnabled(visibleOptions, currentIndex < 0 ? (direction === 1 ? -1 : 0) : currentIndex, direction));
       return;
     }
     if (event.key === 'Home' || event.key === 'End') {
       event.preventDefault();
-      openAt(firstEnabled(options, event.key === 'End'));
+      openAt(firstEnabled(visibleOptions, event.key === 'End'));
       return;
     }
-    if (event.key === 'Enter' || event.key === ' ') {
+    if (event.key === 'Enter' || (event.key === ' ' && !(event.target instanceof HTMLInputElement))) {
       event.preventDefault();
       if (!open) {
         openAt(preferredIndex());
@@ -284,7 +314,7 @@ export function SelectField({
       setOpen(false);
       return;
     }
-    if (event.key.length === 1 && !event.altKey && !event.ctrlKey && !event.metaKey) {
+    if (!(event.target instanceof HTMLInputElement) && event.key.length === 1 && !event.altKey && !event.ctrlKey && !event.metaKey) {
       event.preventDefault();
       onTypeahead(event.key);
     }
@@ -295,10 +325,12 @@ export function SelectField({
       ? createPortal(
           <div
             ref={menuRef}
-            id={listId}
-            role="listbox"
-            aria-labelledby={buttonId}
-            onMouseDown={(event: MouseEvent<HTMLDivElement>) => event.preventDefault()}
+            onMouseDown={(event: MouseEvent<HTMLDivElement>) => {
+              if (event.target instanceof HTMLInputElement) {
+                return;
+              }
+              event.preventDefault();
+            }}
             style={{
               position: 'fixed',
               left: menuBox.left,
@@ -307,9 +339,37 @@ export function SelectField({
               zIndex: 80,
               ...(menuBox.opensUp ? { bottom: menuBox.bottom } : { top: menuBox.top }),
             }}
-            className="flex flex-col gap-0.5 overflow-auto overscroll-contain rounded-2xl border border-white/15 bg-[#053b38] p-1.5 shadow-[0_22px_60px_rgba(0,0,0,0.48)] [scrollbar-color:rgba(255,248,231,0.28)_transparent] [scrollbar-width:thin]"
+            className="flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#053b38] shadow-[0_22px_60px_rgba(0,0,0,0.48)]"
           >
-            {options.map((option, index) => {
+            {searchable ? (
+              <div className="border-b border-white/10 p-1.5">
+                <input
+                  ref={searchRef}
+                  value={filter}
+                  autoComplete="off"
+                  placeholder={searchPlaceholder}
+                  aria-label={searchPlaceholder}
+                  aria-controls={listId}
+                  onChange={(event) => {
+                    const next = event.target.value;
+                    setFilter(next);
+                    setActiveIndex(firstEnabled(filterOptions(options, next)));
+                  }}
+                  onKeyDown={onKeyDown}
+                  className="h-10 w-full rounded-xl border border-white/15 bg-black/30 px-3 text-sm text-ozora-cream outline-none placeholder:text-ozora-cream/40 focus:border-ozora-yellow"
+                />
+              </div>
+            ) : null}
+            <div
+              ref={optionsRef}
+              id={listId}
+              role="listbox"
+              aria-labelledby={buttonId}
+              className="flex flex-col gap-0.5 overflow-auto overscroll-contain p-1.5 [scrollbar-color:rgba(255,248,231,0.28)_transparent] [scrollbar-width:thin]"
+              style={{ maxHeight: menuBox.maxHeight - (searchable ? 58 : 0) }}
+            >
+            {visibleOptions.length === 0 ? <p className="px-3 py-2.5 text-sm text-ozora-cream/50">{emptyLabel}</p> : null}
+            {visibleOptions.map((option, index) => {
               const selected = option.value === current;
               const active = index === activeIndex;
               return (
@@ -343,6 +403,7 @@ export function SelectField({
                 </div>
               );
             })}
+            </div>
           </div>,
           document.body,
         )

@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import pg from 'pg';
+import type { ConnectionOptions } from 'node:tls';
 
 const { Client } = pg;
 const rdsCaPath = '/etc/ssl/rds-global-bundle.pem';
@@ -25,6 +26,21 @@ export function databaseSettings(env: Record<string, string | undefined> = proce
   return { host, port, user, password, database };
 }
 
+/** TLS server name stays the RDS hostname when a local tunnel uses 127.0.0.1. */
+export function databaseTls(env: Record<string, string | undefined> = process.env): ConnectionOptions {
+  const host = env.DB_HOST?.trim() ?? '';
+  const servername = env.DB_TLS_SERVERNAME?.trim() || host;
+  return {
+    rejectUnauthorized: true,
+    servername,
+    ...(existsSync(rdsCaPath) ? { ca: readFileSync(rdsCaPath, 'utf8') } : {}),
+  };
+}
+
+export function usingDatabase(root?: string, env: Record<string, string | undefined> = process.env): boolean {
+  return root === undefined && databaseSettings(env) !== undefined;
+}
+
 export async function databaseReachable(settings: DatabaseSettings): Promise<boolean> {
   const client = new Client({
     host: settings.host,
@@ -32,10 +48,7 @@ export async function databaseReachable(settings: DatabaseSettings): Promise<boo
     user: settings.user,
     password: settings.password,
     database: settings.database,
-    ssl: {
-      rejectUnauthorized: true,
-      ...(existsSync(rdsCaPath) ? { ca: readFileSync(rdsCaPath, 'utf8') } : {}),
-    },
+    ssl: databaseTls(),
     connectionTimeoutMillis: 8000,
   });
   try {

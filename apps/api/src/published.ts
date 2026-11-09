@@ -168,11 +168,14 @@ export function readCatalog(catalog: PublishedCatalog): JsonValue {
  * that parser drops `source` and `images`, and it rejects extra Goabase fields.
  */
 export function readEvents(): PublishedEvents {
-  const parsed = readPublishedFile('events');
-  if (!isEventsEnvelope(parsed)) {
+  return publishedEventsFrom(readPublishedFile('events'));
+}
+
+export function publishedEventsFrom(value: unknown): PublishedEvents {
+  if (!isEventsEnvelope(value)) {
     throw new Error('events catalog is not the published envelope');
   }
-  return parsed;
+  return value;
 }
 
 function isEventsEnvelope(value: unknown): value is PublishedEvents {

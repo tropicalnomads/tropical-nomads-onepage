@@ -2,7 +2,9 @@
 
 import { cookies } from 'next/headers';
 import { saveAvatarFile, saveProfileDetails, updateAccounts, type ProfileDetails } from 'tropical-nomads-api/accounts';
+import { apiOrigin } from '../api-origin.ts';
 import type { AccountNotice } from '../i18n/copy';
+import { callPrivate } from '../remote-store.ts';
 import { readSessionSub, sessionCookieName } from './session';
 
 export interface ProfileActionResult {
@@ -81,10 +83,19 @@ export async function saveAccountProfileAction(formData: FormData): Promise<Prof
   const bytes = await readProfileAvatar(formData);
   const now = new Date().toISOString();
   try {
-    await updateAccounts((current) => {
-      const withDetails = saveProfileDetails(current, sub, parsed.details!, now);
-      return bytes ? saveAvatarFile(withDetails, sub, bytes, now) : withDetails;
-    });
+    if (apiOrigin()) {
+      await callPrivate('save-profile', {
+        sub,
+        details: parsed.details,
+        requireSession: true,
+        ...(bytes ? { avatarBase64: Buffer.from(bytes).toString('base64') } : {}),
+      });
+    } else {
+      await updateAccounts((current) => {
+        const withDetails = saveProfileDetails(current, sub, parsed.details!, now);
+        return bytes ? saveAvatarFile(withDetails, sub, bytes, now) : withDetails;
+      });
+    }
   } catch {
     return { notice: bytes ? 'avatar-rejected' : 'profile-invalid' };
   }

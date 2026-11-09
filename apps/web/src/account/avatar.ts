@@ -1,7 +1,9 @@
 'use server';
 
 import { saveAvatarFile, updateAccounts } from 'tropical-nomads-api/accounts';
+import { apiOrigin } from '../api-origin.ts';
 import type { AccountNotice } from '../i18n/copy';
+import { callPrivate } from '../remote-store.ts';
 import { currentAccountSub } from './actions';
 
 export interface AvatarActionResult {
@@ -26,7 +28,11 @@ export async function saveAvatarAction(formData: FormData): Promise<AvatarAction
   }
   const bytes = new Uint8Array(await file.arrayBuffer());
   try {
-    await updateAccounts((current) => saveAvatarFile(current, sub, bytes, new Date().toISOString()));
+    if (apiOrigin()) {
+      await callPrivate('save-avatar', { sub, avatarBase64: Buffer.from(bytes).toString('base64') });
+    } else {
+      await updateAccounts((current) => saveAvatarFile(current, sub, bytes, new Date().toISOString()));
+    }
   } catch {
     return { notice: 'avatar-rejected' };
   }

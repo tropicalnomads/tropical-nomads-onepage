@@ -3,6 +3,8 @@
 import { cookies } from 'next/headers';
 import { saveDefaultBillingAddress, updateAccounts } from 'tropical-nomads-api/accounts';
 import { readSessionSub, sessionCookieName } from '../account/session';
+import { apiOrigin } from '../api-origin.ts';
+import { callPrivate } from '../remote-store.ts';
 
 export type SaveDeliveryResult = 'saved' | 'not-signed-in' | 'invalid';
 
@@ -32,6 +34,16 @@ export async function saveDeliveryAddressAction(formData: FormData): Promise<Sav
     return 'invalid';
   }
   try {
+    if (apiOrigin()) {
+      await callPrivate('save-billing', {
+        sub,
+        address: {
+          ...address,
+          region: address.region || address.city,
+        },
+      });
+      return 'saved';
+    }
     await updateAccounts((current) =>
       saveDefaultBillingAddress(
         current,

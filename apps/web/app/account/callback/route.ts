@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import { readAccounts } from 'tropical-nomads-api/accounts';
+import { currentAccounts } from '../../../src/remote-store';
 import { normalizeAccountEmail } from 'tropical-nomads-shared';
 import {
   exchangeAuthCode,
@@ -67,7 +67,7 @@ export async function GET(request: Request): Promise<Response> {
     return Response.redirect(signIn);
   }
   const email = normalizeAccountEmail(claims.email);
-  const existing = readAccounts().profiles.find((profile) => profile.sub === claims.sub || normalizeAccountEmail(profile.email) === email);
+  const existing = (await currentAccounts()).profiles.find((profile) => profile.sub === claims.sub || normalizeAccountEmail(profile.email) === email);
   const verified = verifiedSignInFromClaims(
     claims,
     pending,

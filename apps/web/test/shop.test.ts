@@ -6,6 +6,7 @@ import { catalogAsset, shirtSrc } from '../src/events/assets.ts';
 import { shopCopy } from '../src/i18n/shop-copy.ts';
 import { addShopLine, parseShopCart, setShopLineQuantity } from '../src/shop/cart.ts';
 import { shopOrderMessage, shopProducts, shopTotal, shopWhatsappUrl, shopAddressComplete } from '../src/shop/order.ts';
+import { canonicalCountryName, countryChoices, postalLookupKey } from '../src/shop/postal.ts';
 
 const address = {
   name: 'Ada Lovelace',
@@ -109,6 +110,15 @@ describe('shop', () => {
     assert.equal(checkout.includes('SelectField'), true);
     assert.equal(checkout.includes('savedAddress'), true);
     assert.equal(checkout.includes('lookupPostalCode'), true);
+    assert.equal(checkout.includes('searchable'), true);
+    assert.equal(checkout.includes('countryChoices'), true);
+    assert.equal(checkout.includes('lookupHelp'), false);
+    assert.equal(checkout.includes('Find address'), false);
+    const nameAt = checkout.indexOf('name="name"');
+    const postalAt = checkout.indexOf('name="postalCode"');
+    const lineAt = checkout.indexOf('name="line1"');
+    const countryAt = checkout.indexOf('name="country"');
+    assert.equal(nameAt < postalAt && postalAt < lineAt && lineAt < countryAt, true);
     assert.equal(checkoutPage.includes('ShopCheckout'), true);
     assert.equal(checkoutPage.includes('billingAddresses'), true);
     assert.equal(postalLookup.includes('nominatim.openstreetmap.org'), true);
@@ -116,6 +126,21 @@ describe('shop', () => {
     assert.equal(review.includes('shopWhatsappUrl'), true);
     assert.equal(reviewPage.includes('ShopReview'), true);
     assert.equal(header.includes('/shop/cart'), true);
+  });
+
+  it('lists every country and still recognises saved country names', () => {
+    const english = countryChoices('en');
+    const portuguese = countryChoices('pt');
+    assert.equal(english.length > 150, true);
+    assert.equal(english.some((country) => country.value === 'Brazil'), true);
+    assert.equal(english.some((country) => country.value === 'Japan'), true);
+    assert.equal(english.some((country) => country.value === 'United States'), true);
+    assert.equal(portuguese.some((country) => country.value === 'Brazil' && country.label === 'Brasil'), true);
+    assert.equal(canonicalCountryName('br'), 'Brazil');
+    assert.equal(canonicalCountryName('Brasil'), 'Brazil');
+    assert.equal(canonicalCountryName('uk'), 'United Kingdom');
+    assert.equal(canonicalCountryName('jp'), 'Japan');
+    assert.equal(postalLookupKey('1000-001', 'Portugal'), postalLookupKey('1000001', 'pt'));
   });
 
   it('has the same shop labels in English and Portuguese', () => {

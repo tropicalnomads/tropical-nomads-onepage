@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
-import { readAccounts } from 'tropical-nomads-api/accounts';
 import { readSessionSub, sessionCookieName } from '../../src/account/session';
+import { currentAccounts } from '../../src/remote-store';
 import { AccountHome, type AccountSummary } from '../../src/components/AccountHome';
 import { knownAccountNotice } from '../../src/i18n/copy';
 
@@ -11,7 +11,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
   const params = await searchParams;
   const jar = await cookies();
   const sub = readSessionSub(jar.get(sessionCookieName)?.value);
-  const stored = readAccounts();
+  const stored = await currentAccounts();
   const profile = stored.profiles.find((item) => item.sub === sub);
   const summary: AccountSummary | null = profile
     ? {

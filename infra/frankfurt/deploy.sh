@@ -99,15 +99,22 @@ deploy_stack tn-frankfurt-ecr "$root/ecr-api.yaml"
 deploy_stack tn-frankfurt-amplify "$root/amplify-web-app.yaml" \
   --parameter-overrides "CognitoUserPoolId=${pool_id}" "CognitoClientId=${client_id}"
 deploy_stack tn-frankfurt-ecs-cluster "$root/ecs-cluster.yaml"
+cert_arn=$(aws_ff acm list-certificates --query "CertificateSummaryList[?DomainName=='api-dev.tropical-nomads.com'].CertificateArn | [0]" --output text)
 deploy_stack tn-frankfurt-alb "$root/load-balancer.yaml" \
-  --parameter-overrides "VpcId=${vpc_id}" "PublicSubnetA=${public_a}" "PublicSubnetB=${public_b}" "AlbSecurityGroupId=${alb_sg}"
+  --parameter-overrides "VpcId=${vpc_id}" "PublicSubnetA=${public_a}" "PublicSubnetB=${public_b}" "AlbSecurityGroupId=${alb_sg}" "CertificateArn=${cert_arn}"
+target_group=$(stack_output tn-frankfurt-alb TargetGroupArn)
+
+tunnel_ami=$(aws_ff ec2 describe-images --owners amazon --filters Name=name,Values='al2023-ami-2023.*-kernel-6.*-arm64' Name=state,Values=available --query 'sort_by(Images,&CreationDate)[-1].ImageId' --output text)
+deploy_stack tn-frankfurt-db-tunnel-host "$root/db-bastion.yaml" \
+  --parameter-overrides "VpcId=${vpc_id}" "PrivateSubnetA=${private_a}" "DbSecurityGroupId=${db_sg}" "ImageId=${tunnel_ami}" "InstanceProfileName=tropical-nomads-db-tunnel"
 
 deploy_stack tn-frankfurt-rds "$root/rds-postgres.yaml" \
   --parameter-overrides "PrivateSubnetA=${private_a}" "PrivateSubnetB=${private_b}" "DbSecurityGroupId=${db_sg}"
 secret_arn=$(stack_output tn-frankfurt-rds DbSecretArn)
+session_arn=$(aws_ff secretsmanager describe-secret --secret-id tropical-nomads/api/session --query ARN --output text)
 
 deploy_stack tn-frankfurt-iam "$root/iam-api.yaml" \
-  --parameter-overrides "DbSecretArn=${secret_arn}"
+  --parameter-overrides "DbSecretArn=${secret_arn}" "SessionSecretArn=${session_arn}"
 execution_role=$(stack_output tn-frankfurt-iam ExecutionRoleArn)
 task_role=$(stack_output tn-frankfurt-iam TaskRoleArn)
 log_group=$(stack_output tn-frankfurt-logs LogGroupName)
@@ -125,11 +132,11 @@ fi
 
 db_host=$(aws_ff rds describe-db-instances --db-instance-identifier tropical-nomads-frankfurt --query 'DBInstances[0].Endpoint.Address' --output text)
 deploy_stack tn-frankfurt-ecs-task "$root/ecs-task.yaml" \
-  --parameter-overrides "ExecutionRoleArn=${execution_role}" "TaskRoleArn=${task_role}" "Image=${image}" "LogGroupName=${log_group}" "DbSecretArn=${secret_arn}" "DbHost=${db_host}"
+  --parameter-overrides "ExecutionRoleArn=${execution_role}" "TaskRoleArn=${task_role}" "Image=${image}" "LogGroupName=${log_group}" "DbSecretArn=${secret_arn}" "DbHost=${db_host}" "SessionSecretArn=${session_arn}"
 task_arn=$(stack_output tn-frankfurt-ecs-task TaskDefinitionArn)
 cluster=$(stack_output tn-frankfurt-ecs-cluster ClusterName)
 
 deploy_stack tn-frankfurt-ecs-service "$root/ecs-service.yaml" \
-  --parameter-overrides "ClusterName=${cluster}" "TaskDefinitionArn=${task_arn}" "PrivateSubnetA=${private_a}" "PrivateSubnetB=${private_b}" "ApiSecurityGroupId=${api_sg}"
+  --parameter-overrides "ClusterName=${cluster}" "TaskDefinitionArn=${task_arn}" "PrivateSubnetA=${private_a}" "PrivateSubnetB=${private_b}" "ApiSecurityGroupId=${api_sg}" "TargetGroupArn=${target_group}"
 
 echo "Frankfurt templates applied"

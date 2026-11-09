@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { liveSizes, sizeLabel, type ShopSizeCode } from '../../../one-pager/src/lib/shop.ts';
 import { shopLeft, shopProductMeta, shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
-import { shopPriceEur, shopProducts, shopTotal, type ShopLine } from '../shop/order';
+import { shopPriceEur, shopTotal, type ShopLine } from '../shop/order';
+import { useShopProducts } from '../shop/product-context';
 import { useShopCart } from '../shop/useShopCart';
 import { ShopAddedPanel } from './ShopAddedPanel';
 import { ShopMissing } from './ShopCatalog';
@@ -13,7 +14,7 @@ import { QuantityStepper } from './ShopQuantity';
 export function ShopProduct({ productId, image }: { productId: string; image?: string }) {
   const { language } = useLanguage();
   const cart = useShopCart();
-  const product = shopProducts().find((item) => item.id === productId);
+  const product = useShopProducts().find((item) => item.id === productId);
   const sizes = product ? liveSizes(product) : [];
   const [size, setSize] = useState<ShopSizeCode | undefined>(sizes[0]?.code);
   const [quantity, setQuantity] = useState(1);

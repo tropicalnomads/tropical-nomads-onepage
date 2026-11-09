@@ -1,9 +1,13 @@
 import { Hono } from 'hono';
 import { secureHeaders } from 'hono/secure-headers';
 import { validator } from 'hono/validator';
-import { readArtistCatalog, readPartyCatalog } from './catalog.ts';
+import { artistsFrom, readArtistCatalog, readPartyCatalog, serveStoredRecords } from './catalog.ts';
+import { databaseSettings } from './database.ts';
 import { apiHealth } from './health.ts';
-import { eventsView, pastEvents, publishedSchema, readCatalog, upcomingEvents, type PublishedCatalog } from './published.ts';
+import { handlePrivate } from './private-api.ts';
+import { loadProductCatalog } from './products.ts';
+import { assertNoPrivateFields, eventsView, pastEvents, publishedEventsFrom, publishedSchema, readCatalog, upcomingEvents, type PublishedCatalog } from './published.ts';
+import { readStoredCatalog, type StoredCatalog } from './sql-store.ts';
 
 export interface TodayQuery {
   today?: string;
@@ -73,6 +77,29 @@ function catalogResponse(catalog: PublishedCatalog): Record<string, unknown> | u
   return body;
 }
 
+async function storedCatalog(catalog: PublishedCatalog): Promise<unknown> {
+  requireSchema(catalog);
+  if (!databaseSettings()) {
+    if (catalog === 'events') {
+      return readPartyCatalog();
+    }
+    if (catalog === 'artists') {
+      return readArtistCatalog();
+    }
+    return catalogResponse(catalog);
+  }
+  const stored = await readStoredCatalog(catalog satisfies StoredCatalog);
+  assertNoPrivateFields(stored);
+  if (catalog === 'events') {
+    const events = publishedEventsFrom(stored);
+    return eventsView(events, serveStoredRecords(events.events));
+  }
+  if (catalog === 'artists') {
+    return artistsFrom(stored);
+  }
+  return stored;
+}
+
 const routes = new Hono()
   .get('/health', (c) => {
     if (new URL(c.req.url).search !== '') {
@@ -80,21 +107,35 @@ const routes = new Hono()
     }
     return c.json(apiHealth());
   })
-  .get('/events', todayQuery, (c) => c.json(readPartyCatalog()))
-  .get('/events/upcoming', todayQuery, (c) => {
-    const events = readPartyCatalog();
+  .get('/events', todayQuery, async (c) => c.json(publishedEventsFrom(await storedCatalog('events'))))
+  .get('/events/upcoming', todayQuery, async (c) => {
+    const events = publishedEventsFrom(await storedCatalog('events'));
     return c.json(eventsView(events, upcomingEvents(events.events, selectedDay(c.req.valid('query').today))));
   })
-  .get('/events/past', todayQuery, (c) => {
-    const events = readPartyCatalog();
+  .get('/events/past', todayQuery, async (c) => {
+    const events = publishedEventsFrom(await storedCatalog('events'));
     return c.json(eventsView(events, pastEvents(events.events, selectedDay(c.req.valid('query').today))));
   })
-  .get('/artists', todayQuery, (c) => c.json(readArtistCatalog()))
-  .get('/venues', todayQuery, (c) => c.json(catalogResponse('venues')))
-  .get('/labels', todayQuery, (c) => c.json(catalogResponse('labels')))
-  .get('/partners', todayQuery, (c) => c.json(catalogResponse('partners')))
-  .get('/socials', todayQuery, (c) => c.json(catalogResponse('socials')))
-  .get('/agencies', todayQuery, (c) => c.json(catalogResponse('agencies')))
+  .get('/artists', todayQuery, async (c) => c.json(await storedCatalog('artists')))
+  .get('/venues', todayQuery, async (c) => c.json(await storedCatalog('venues')))
+  .get('/labels', todayQuery, async (c) => c.json(await storedCatalog('labels')))
+  .get('/partners', todayQuery, async (c) => c.json(await storedCatalog('partners')))
+  .get('/socials', todayQuery, async (c) => c.json(await storedCatalog('socials')))
+  .get('/agencies', todayQuery, async (c) => c.json(await storedCatalog('agencies')))
+  .get('/products', todayQuery, async (c) => c.json({ products: await loadProductCatalog() }))
+  .post('/private', async (c) => {
+    if (new URL(c.req.url).search !== '') {
+      return c.json({ error: 'unknown query' } satisfies ApiError, 400);
+    }
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      body = undefined;
+    }
+    const result = await handlePrivate(body, c.req.header('cookie'));
+    return c.json(result.body, result.status);
+  })
   .notFound((c) => c.json({ error: 'not found' } satisfies ApiError, 404))
   .onError((_error, c) => c.json({ error: 'catalog unavailable' } satisfies ApiError, 500));
 
@@ -119,7 +160,8 @@ export const api = new Hono()
     c.header('Cache-Control', 'no-store');
   })
   .use('*', async (c, next) => {
-    if (c.req.method !== 'GET' && c.req.method !== 'HEAD') {
+    const pathname = new URL(c.req.url).pathname;
+    if (c.req.method !== 'GET' && c.req.method !== 'HEAD' && !(c.req.method === 'POST' && pathname === '/private')) {
       return c.json({ error: 'method not allowed' } satisfies ApiError, 405);
     }
     if (c.req.method === 'HEAD') {

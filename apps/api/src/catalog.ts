@@ -34,10 +34,13 @@ export function readPartyCatalog(): PublishedEvents {
 }
 
 export function readArtistCatalog(): CatalogArtists {
+  return artistsFrom(readCatalog('artists'));
+}
+
+export function artistsFrom(stored: unknown): CatalogArtists {
   if (!schemas.artist.includes('name')) {
     throw new Error('artist schema is missing name');
   }
-  const stored = readCatalog('artists');
   if (!isArtistFile(stored)) {
     throw new Error('artists catalog is not the published envelope');
   }

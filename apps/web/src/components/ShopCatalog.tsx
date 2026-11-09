@@ -4,7 +4,8 @@ import { stockCount } from '../../../one-pager/src/lib/shop.ts';
 import { shopProductMeta, shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
 import type { ShopImageSources } from '../shop/images';
-import { shopPriceEur, shopProducts } from '../shop/order';
+import { shopPriceEur } from '../shop/order';
+import { useShopProducts } from '../shop/product-context';
 
 export type { ShopImageSources };
 
@@ -13,7 +14,7 @@ const cardClass =
 
 export function ShopCatalog({ imageSources }: { imageSources: ShopImageSources }) {
   const { language } = useLanguage();
-  const products = shopProducts();
+  const products = useShopProducts();
 
   return (
     <section className="px-5 py-10 md:px-8 md:py-14">

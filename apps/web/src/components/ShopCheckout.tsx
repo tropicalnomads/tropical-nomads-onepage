@@ -1,12 +1,12 @@
 'use client';
 
-import { Check, MapPin, Search, UserRound } from 'lucide-react';
-import { useRef, useState } from 'react';
-import type { Locale } from 'tropical-nomads-shared';
+import { Check, Loader2, MapPin, UserRound } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
 import { saveDeliveryAddressAction } from '../shop/actions';
 import { shopAddressComplete, type ShopAddress } from '../shop/order';
+import { canonicalCountryName, countryChoices, postalCompact, postalLookupKey } from '../shop/postal';
 import { useShopCart } from '../shop/useShopCart';
 import { SelectField } from './SelectField';
 import { ShopSteps } from './ShopSteps';
@@ -14,31 +14,43 @@ import { ShopSteps } from './ShopSteps';
 const fieldClass =
   'h-12 w-full rounded-xl border border-white/15 bg-black/25 px-4 text-sm text-ozora-cream outline-none transition placeholder:text-ozora-cream/35 focus:border-ozora-yellow focus:ring-2 focus:ring-ozora-yellow/15';
 
-const countries = ['Ireland', 'Portugal', 'United Kingdom', 'Germany'] as const;
-type Country = (typeof countries)[number];
-
 type LookupStatus = 'idle' | 'loading' | 'found' | 'missing';
+
+interface PostalFill {
+  postal: string;
+  city: string;
+  region: string;
+  country: string;
+  line1: string;
+}
+
+interface PostalHit {
+  city?: string;
+  region?: string;
+  postalCode?: string;
+  country?: string;
+  line1?: string;
+}
 
 export interface ShopAddressPreset {
   address: ShopAddress;
   kind: 'saved' | 'profile';
 }
 
-function countryLabel(language: Locale, country: Country): string {
-  switch (country) {
-    case 'Ireland':
-      return shopText(language, 'ireland');
-    case 'Portugal':
-      return shopText(language, 'portugal');
-    case 'United Kingdom':
-      return shopText(language, 'unitedKingdom');
-    case 'Germany':
-      return shopText(language, 'germany');
-    default: {
-      const unexpected: never = country;
-      return unexpected;
-    }
+function withoutStaleFill(address: ShopAddress, fill: PostalFill | null): { address: ShopAddress; fill: PostalFill | null } {
+  if (!fill || postalCompact(address.postalCode) === fill.postal) {
+    return { address, fill };
   }
+  return {
+    fill: null,
+    address: {
+      ...address,
+      city: address.city === fill.city ? '' : address.city,
+      region: address.region === fill.region ? '' : address.region,
+      country: address.country === fill.country ? '' : address.country,
+      line1: fill.line1 !== '' && address.line1 === fill.line1 ? '' : address.line1,
+    },
+  };
 }
 
 function addressSummary(address: ShopAddress): string {
@@ -52,6 +64,115 @@ export function ShopCheckout({ presets, signedIn }: { presets: ShopAddressPreset
   const [lookupStatus, setLookupStatus] = useState<LookupStatus>('idle');
   const [submitting, setSubmitting] = useState(false);
   const lookupKey = useRef('');
+  const requestToken = useRef(0);
+  const postalEdited = useRef(false);
+  const countryEdited = useRef(false);
+  const filledFromLookup = useRef<PostalFill | null>(null);
+  const cartRef = useRef(cart);
+  cartRef.current = cart;
+  const countries = useMemo(() => countryChoices(language), [language]);
+
+  useEffect(() => {
+    if (!cart.ready) {
+      return;
+    }
+    const canonical = canonicalCountryName(cart.address.country);
+    if (canonical === cart.address.country) {
+      return;
+    }
+    cartRef.current.setAddress({ ...cartRef.current.address, country: canonical });
+  }, [cart.ready, cart.address.country]);
+
+  const lookupPostalCode = async (postalCode: string, country: string): Promise<void> => {
+    const trimmed = postalCode.trim();
+    if (trimmed.length < 3) {
+      return;
+    }
+    const key = postalLookupKey(trimmed, country);
+    if (lookupKey.current === key) {
+      return;
+    }
+    const token = requestToken.current + 1;
+    requestToken.current = token;
+    lookupKey.current = key;
+    setLookupStatus('loading');
+    try {
+      const params = new URLSearchParams({ postalCode: trimmed });
+      if (country.trim() !== '') {
+        params.set('country', country.trim());
+      }
+      const response = await fetch(`/shop/postal-lookup?${params}`);
+      if (token !== requestToken.current) {
+        return;
+      }
+      const latest = cartRef.current.address;
+      if (postalCompact(latest.postalCode) !== postalCompact(trimmed)) {
+        return;
+      }
+      if (!response.ok) {
+        const cleared = withoutStaleFill(latest, filledFromLookup.current);
+        filledFromLookup.current = cleared.fill;
+        const next = { ...cleared.address, postalCode: latest.postalCode };
+        lookupKey.current = postalLookupKey(next.postalCode, next.country);
+        if (next.city !== latest.city || next.region !== latest.region || next.country !== latest.country || next.line1 !== latest.line1) {
+          cartRef.current.setAddress(next);
+        }
+        setLookupStatus('missing');
+        return;
+      }
+      const found = (await response.json()) as PostalHit;
+      const cleared = withoutStaleFill(latest, filledFromLookup.current);
+      const nextPostal = found.postalCode?.trim() || latest.postalCode;
+      const nextCountry = found.country?.trim() || cleared.address.country;
+      const city = found.city?.trim() || cleared.address.city;
+      const region = found.region?.trim() || cleared.address.region;
+      const line1 = cleared.address.line1.trim() !== '' ? cleared.address.line1 : found.line1?.trim() || '';
+      filledFromLookup.current = { postal: postalCompact(nextPostal), city, region, country: nextCountry, line1: found.line1?.trim() ? line1 : '' };
+      lookupKey.current = postalLookupKey(nextPostal, nextCountry);
+      cartRef.current.setAddress({
+        ...cleared.address,
+        city,
+        region,
+        country: nextCountry,
+        line1,
+        postalCode: nextPostal,
+      });
+      setLookupStatus('found');
+    } catch {
+      if (token === requestToken.current) {
+        lookupKey.current = '';
+        setLookupStatus('missing');
+      }
+    }
+  };
+
+  const lookupRef = useRef(lookupPostalCode);
+  lookupRef.current = lookupPostalCode;
+
+  useEffect(() => {
+    if (!cart.ready) {
+      return;
+    }
+    const postalCode = cart.address.postalCode;
+    const country = canonicalCountryName(cart.address.country);
+    if (postalCode.trim().length < 3) {
+      return;
+    }
+    const key = postalLookupKey(postalCode, country);
+    if (lookupKey.current === key) {
+      return;
+    }
+    const needsFill = cart.address.city.trim() === '' || country === '';
+    if (!postalEdited.current && !countryEdited.current && !needsFill) {
+      lookupKey.current = key;
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      void lookupRef.current(postalCode, country);
+    }, postalEdited.current || countryEdited.current ? 450 : 0);
+    return () => window.clearTimeout(timer);
+  }, [cart.ready, cart.address.postalCode, cart.address.country]);
+
   if (!cart.ready) {
     return <section className="min-h-[50vh] px-5 py-10 md:px-8 md:py-14" />;
   }
@@ -59,11 +180,21 @@ export function ShopCheckout({ presets, signedIn }: { presets: ShopAddressPreset
 
   const setField = (field: keyof ShopAddress, value: string): void => {
     const address: ShopAddress = { ...cart.address, [field]: value };
-    cart.setAddress(address);
-    if (field === 'postalCode' || field === 'country') {
-      setLookupStatus('idle');
-      lookupKey.current = '';
+    if (field === 'postalCode') {
+      postalEdited.current = true;
+      if (postalCompact(cart.address.postalCode) !== postalCompact(value)) {
+        lookupKey.current = '';
+        setLookupStatus('idle');
+      }
     }
+    if (field === 'country') {
+      countryEdited.current = true;
+      if (canonicalCountryName(cart.address.country).toLowerCase() !== canonicalCountryName(value).toLowerCase()) {
+        lookupKey.current = '';
+        setLookupStatus('idle');
+      }
+    }
+    cart.setAddress(address);
   };
 
   const usePreset = (preset: ShopAddressPreset): void => {
@@ -73,36 +204,14 @@ export function ShopCheckout({ presets, signedIn }: { presets: ShopAddressPreset
         merged[key] = preset.address[key];
       }
     }
+    const matchKey = postalLookupKey(merged.postalCode, merged.country);
+    const needsFill = merged.postalCode.trim().length >= 3 && (merged.city.trim() === '' || merged.country.trim() === '');
+    lookupKey.current = needsFill ? '' : matchKey;
+    postalEdited.current = needsFill;
+    countryEdited.current = false;
+    filledFromLookup.current = null;
+    setLookupStatus('idle');
     cart.setAddress(merged);
-  };
-
-  const lookupPostalCode = async (): Promise<void> => {
-    const postalCode = cart.address.postalCode.trim();
-    const country = cart.address.country.trim();
-    const key = `${country}:${postalCode}`;
-    if (postalCode.length < 3 || country === '' || lookupKey.current === key) {
-      return;
-    }
-    lookupKey.current = key;
-    setLookupStatus('loading');
-    try {
-      const query = new URLSearchParams({ country, postalCode });
-      const response = await fetch(`/shop/postal-lookup?${query}`);
-      if (!response.ok) {
-        setLookupStatus('missing');
-        return;
-      }
-      const found = (await response.json()) as { city?: string; region?: string; postalCode?: string };
-      cart.setAddress({
-        ...cart.address,
-        city: found.city?.trim() || cart.address.city,
-        region: found.region?.trim() || cart.address.region,
-        postalCode: found.postalCode?.trim() || cart.address.postalCode,
-      });
-      setLookupStatus('found');
-    } catch {
-      setLookupStatus('missing');
-    }
   };
 
   const continueCheckout = async (): Promise<void> => {
@@ -169,20 +278,37 @@ export function ShopCheckout({ presets, signedIn }: { presets: ShopAddressPreset
             <form className="rounded-3xl border border-white/10 bg-ozora-navy/55 p-5 shadow-[0_18px_50px_rgba(0,0,0,0.18)] md:p-7" onSubmit={(event) => event.preventDefault()}>
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="grid gap-1.5 text-sm font-semibold text-ozora-cream/80 sm:col-span-2">
-                  {shopText(language, 'country')}
-                  <SelectField
-                    name="country"
-                    ariaLabel={shopText(language, 'country')}
-                    value={cart.address.country}
-                    placeholder={shopText(language, 'selectCountry')}
-                    onChange={(next) => setField('country', next)}
-                    options={countries.map((country) => ({ value: country, label: countryLabel(language, country) }))}
-                  />
-                </label>
-                <label className="grid gap-1.5 text-sm font-semibold text-ozora-cream/80 sm:col-span-2">
                   {shopText(language, 'name')}
                   <input className={fieldClass} name="name" value={cart.address.name} autoComplete="name" onChange={(event) => setField('name', event.target.value)} />
                 </label>
+                <div className="grid gap-1.5 sm:col-span-2 sm:max-w-xs">
+                  <label htmlFor="shop-postal-code" className="text-sm font-semibold text-ozora-cream/80">
+                    {shopText(language, 'postalCode')}
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="shop-postal-code"
+                      className={`${fieldClass} pr-11`}
+                      name="postalCode"
+                      value={cart.address.postalCode}
+                      autoComplete="postal-code"
+                      aria-busy={lookupStatus === 'loading'}
+                      onBlur={() => void lookupPostalCode(cart.address.postalCode, cart.address.country)}
+                      onChange={(event) => setField('postalCode', event.target.value)}
+                    />
+                    {lookupStatus === 'loading' ? (
+                      <Loader2 className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-ozora-turquoise" size={16} aria-hidden="true" />
+                    ) : null}
+                    {lookupStatus === 'found' ? (
+                      <Check className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-emerald-300" size={16} aria-hidden="true" />
+                    ) : null}
+                  </div>
+                  <p className="sr-only" role="status">
+                    {lookupStatus === 'loading' ? shopText(language, 'lookingUp') : null}
+                    {lookupStatus === 'found' ? shopText(language, 'lookupFound') : null}
+                  </p>
+                  {lookupStatus === 'missing' ? <p className="text-xs text-ozora-coral">{shopText(language, 'lookupMissing')}</p> : null}
+                </div>
                 <label className="grid gap-1.5 text-sm font-semibold text-ozora-cream/80 sm:col-span-2">
                   {shopText(language, 'line1')}
                   <input className={fieldClass} name="line1" value={cart.address.line1} autoComplete="address-line1" onChange={(event) => setField('line1', event.target.value)} />
@@ -191,34 +317,6 @@ export function ShopCheckout({ presets, signedIn }: { presets: ShopAddressPreset
                   {shopText(language, 'line2')}
                   <input className={fieldClass} name="line2" value={cart.address.line2} autoComplete="address-line2" onChange={(event) => setField('line2', event.target.value)} />
                 </label>
-                <div className="grid gap-1.5 sm:col-span-2">
-                  <label htmlFor="shop-postal-code" className="text-sm font-semibold text-ozora-cream/80">
-                    {shopText(language, 'postalCode')}
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      id="shop-postal-code"
-                      className={fieldClass}
-                      name="postalCode"
-                      value={cart.address.postalCode}
-                      autoComplete="postal-code"
-                      onBlur={() => void lookupPostalCode()}
-                      onChange={(event) => setField('postalCode', event.target.value)}
-                    />
-                    <button
-                      type="button"
-                      disabled={lookupStatus === 'loading' || cart.address.country === '' || cart.address.postalCode.trim().length < 3}
-                      onClick={() => void lookupPostalCode()}
-                      className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl border border-ozora-turquoise/40 bg-ozora-turquoise/10 px-4 text-xs font-bold text-ozora-turquoise transition hover:bg-ozora-turquoise/20 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/5 disabled:text-ozora-cream/30"
-                    >
-                      <Search size={15} aria-hidden="true" />
-                      {shopText(language, lookupStatus === 'loading' ? 'lookingUp' : 'lookup')}
-                    </button>
-                  </div>
-                  {lookupStatus === 'found' ? <p className="flex items-center gap-1.5 text-xs text-emerald-300"><Check size={13} aria-hidden="true" />{shopText(language, 'lookupFound')}</p> : null}
-                  {lookupStatus === 'missing' ? <p className="text-xs text-ozora-coral">{shopText(language, 'lookupMissing')}</p> : null}
-                  <p className="text-[11px] leading-relaxed text-ozora-cream/40">{shopText(language, 'lookupHelp')}</p>
-                </div>
                 <label className="grid gap-1.5 text-sm font-semibold text-ozora-cream/80">
                   {shopText(language, 'city')}
                   <input className={fieldClass} name="city" value={cart.address.city} autoComplete="address-level2" onChange={(event) => setField('city', event.target.value)} />
@@ -226,6 +324,20 @@ export function ShopCheckout({ presets, signedIn }: { presets: ShopAddressPreset
                 <label className="grid gap-1.5 text-sm font-semibold text-ozora-cream/80">
                   {shopText(language, 'region')}
                   <input className={fieldClass} name="region" value={cart.address.region} autoComplete="address-level1" onChange={(event) => setField('region', event.target.value)} />
+                </label>
+                <label className="grid gap-1.5 text-sm font-semibold text-ozora-cream/80 sm:col-span-2">
+                  {shopText(language, 'country')}
+                  <SelectField
+                    name="country"
+                    ariaLabel={shopText(language, 'country')}
+                    value={canonicalCountryName(cart.address.country)}
+                    placeholder={shopText(language, 'selectCountry')}
+                    searchable
+                    searchPlaceholder={shopText(language, 'searchCountry')}
+                    emptyLabel={shopText(language, 'noCountryMatches')}
+                    onChange={(next) => setField('country', next)}
+                    options={countries}
+                  />
                 </label>
               </div>
 

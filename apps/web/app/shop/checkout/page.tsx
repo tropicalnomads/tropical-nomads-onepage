@@ -1,25 +1,21 @@
 import { cookies } from 'next/headers';
-import { readAccounts } from 'tropical-nomads-api/accounts';
 import { readSessionSub, sessionCookieName } from '../../../src/account/session';
+import { currentAccounts } from '../../../src/remote-store';
 import { ShopCheckout, type ShopAddressPreset } from '../../../src/components/ShopCheckout';
 import type { ShopAddress } from '../../../src/shop/order';
+import { canonicalCountryName } from '../../../src/shop/postal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 function countryName(value: string | undefined): string {
-  const normalized = value?.trim().toLowerCase();
-  if (normalized === 'ie' || normalized === 'ireland' || normalized === 'irlanda') return 'Ireland';
-  if (normalized === 'pt' || normalized === 'portugal') return 'Portugal';
-  if (normalized === 'gb' || normalized === 'uk' || normalized === 'united kingdom' || normalized === 'reino unido') return 'United Kingdom';
-  if (normalized === 'de' || normalized === 'germany' || normalized === 'alemanha') return 'Germany';
-  return value?.trim() ?? '';
+  return canonicalCountryName(value ?? '');
 }
 
 export default async function ShopCheckoutPage() {
   const jar = await cookies();
   const sub = readSessionSub(jar.get(sessionCookieName)?.value);
-  const accounts = readAccounts();
+  const accounts = await currentAccounts();
   const profile = accounts.profiles.find((item) => item.sub === sub && item.status === 'active');
   const saved = profile?.billingAddressId
     ? accounts.billingAddresses.find((address) => address.id === profile.billingAddressId)

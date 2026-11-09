@@ -1,10 +1,11 @@
 'use server';
 
-import { readAccounts } from 'tropical-nomads-api/accounts';
 import { commitAddGuest, commitGuestCheckIn, commitGuestList, commitScan, commitTicketCheckIn, type CheckInOutcome } from 'tropical-nomads-api/check-in';
-import { publishedParties } from 'tropical-nomads-api/tickets';
+import { loadPublishedParties } from 'tropical-nomads-api/tickets';
 import { accountCanScan } from 'tropical-nomads-shared';
 import { currentAccountSub } from '../account/actions';
+import { apiOrigin } from '../api-origin.ts';
+import { callPrivate, currentAccounts } from '../remote-store.ts';
 
 export interface CheckInActionResult {
   admitted: boolean;
@@ -32,7 +33,7 @@ async function staff(): Promise<{ role: 'admin' | 'door'; actorId: string } | un
   if (!sub) {
     return undefined;
   }
-  const profile = readAccounts().profiles.find((item) => item.sub === sub);
+  const profile = (await currentAccounts()).profiles.find((item) => item.sub === sub);
   if (!profile || profile.status !== 'active') {
     return undefined;
   }
@@ -45,8 +46,8 @@ async function staff(): Promise<{ role: 'admin' | 'door'; actorId: string } | un
   return undefined;
 }
 
-function parties(): string[] {
-  return publishedParties()
+async function parties(): Promise<string[]> {
+  return (await loadPublishedParties())
     .map((party) => party.id)
     .filter((id) => id.trim() !== '');
 }
@@ -67,7 +68,10 @@ export async function scanAction(partyId: string, payloadText: string): Promise<
     return { admitted: false, reason: 'unknown' };
   }
   try {
-    return fromOutcome(await commitScan(actor, partyId, payload, parties(), new Date().toISOString()));
+    if (apiOrigin()) {
+      return fromOutcome(await callPrivate<CheckInOutcome>('scan', { caller: actor, partyId, payload }));
+    }
+    return fromOutcome(await commitScan(actor, partyId, payload, await parties(), new Date().toISOString()));
   } catch {
     return { admitted: false, reason: 'denied' };
   }
@@ -82,7 +86,12 @@ export async function checkInTicketAction(formData: FormData): Promise<CheckInAc
     return { admitted: false, reason: 'denied' };
   }
   try {
-    return fromOutcome(await commitTicketCheckIn(actor, field(formData, 'partyId'), field(formData, 'ticketId'), parties(), new Date().toISOString()));
+    if (apiOrigin()) {
+      return fromOutcome(
+        await callPrivate<CheckInOutcome>('check-in-ticket', { caller: actor, partyId: field(formData, 'partyId'), ticketId: field(formData, 'ticketId') }),
+      );
+    }
+    return fromOutcome(await commitTicketCheckIn(actor, field(formData, 'partyId'), field(formData, 'ticketId'), await parties(), new Date().toISOString()));
   } catch {
     return { admitted: false, reason: 'denied' };
   }
@@ -97,7 +106,12 @@ export async function checkInGuestAction(formData: FormData): Promise<CheckInAct
     return { admitted: false, reason: 'denied' };
   }
   try {
-    return fromOutcome(await commitGuestCheckIn(actor, field(formData, 'partyId'), field(formData, 'guestId'), parties(), new Date().toISOString()));
+    if (apiOrigin()) {
+      return fromOutcome(
+        await callPrivate<CheckInOutcome>('check-in-guest', { caller: actor, partyId: field(formData, 'partyId'), guestId: field(formData, 'guestId') }),
+      );
+    }
+    return fromOutcome(await commitGuestCheckIn(actor, field(formData, 'partyId'), field(formData, 'guestId'), await parties(), new Date().toISOString()));
   } catch {
     return { admitted: false, reason: 'denied' };
   }
@@ -112,7 +126,11 @@ export async function createGuestListAction(formData: FormData): Promise<CheckIn
     return { admitted: false, reason: 'denied' };
   }
   try {
-    await commitGuestList(actor, field(formData, 'partyId'), field(formData, 'listName'), parties(), new Date().toISOString());
+    if (apiOrigin()) {
+      await callPrivate('create-guest-list', { caller: actor, partyId: field(formData, 'partyId'), name: field(formData, 'listName') });
+    } else {
+      await commitGuestList(actor, field(formData, 'partyId'), field(formData, 'listName'), await parties(), new Date().toISOString());
+    }
     return { admitted: true };
   } catch {
     return { admitted: false, reason: 'denied' };
@@ -128,7 +146,11 @@ export async function addGuestAction(formData: FormData): Promise<CheckInActionR
     return { admitted: false, reason: 'denied' };
   }
   try {
-    await commitAddGuest(actor, field(formData, 'listId'), field(formData, 'guestName'), parties(), new Date().toISOString());
+    if (apiOrigin()) {
+      await callPrivate('add-guest', { caller: actor, listId: field(formData, 'listId'), name: field(formData, 'guestName') });
+    } else {
+      await commitAddGuest(actor, field(formData, 'listId'), field(formData, 'guestName'), await parties(), new Date().toISOString());
+    }
     return { admitted: true };
   } catch {
     return { admitted: false, reason: 'denied' };

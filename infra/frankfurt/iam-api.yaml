@@ -7,6 +7,11 @@ Parameters:
     Description: Secrets Manager ARN created by RDS. Do not commit the value.
     AllowedPattern: "^arn:aws:secretsmanager:eu-central-1:[0-9]{12}:secret:.+"
     NoEcho: true
+  SessionSecretArn:
+    Type: String
+    Description: Session secret ARN. Do not commit the value.
+    AllowedPattern: "^arn:aws:secretsmanager:eu-central-1:[0-9]{12}:secret:.+"
+    NoEcho: true
 
 Resources:
   ExecutionRole:
@@ -41,7 +46,9 @@ Resources:
                 Resource: !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/tropical-nomads/api:*"
               - Effect: Allow
                 Action: secretsmanager:GetSecretValue
-                Resource: !Ref DbSecretArn
+                Resource:
+                  - !Ref DbSecretArn
+                  - !Ref SessionSecretArn
 
   TaskRole:
     Type: AWS::IAM::Role
@@ -67,6 +74,13 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                 Resource: !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/tropical-nomads/api:*"
+              - Effect: Allow
+                Action:
+                  - ssmmessages:CreateControlChannel
+                  - ssmmessages:CreateDataChannel
+                  - ssmmessages:OpenControlChannel
+                  - ssmmessages:OpenDataChannel
+                Resource: "*"
 
 Outputs:
   ExecutionRoleArn:

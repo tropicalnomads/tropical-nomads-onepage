@@ -12,11 +12,13 @@ import {
   type Order,
   type PaymentTrace,
 } from 'tropical-nomads-shared';
-import { readAccounts, type AccountFile } from './accounts.ts';
+import { loadAccounts, readAccounts, type AccountFile } from './accounts.ts';
 import { readPartyCatalog } from './catalog.ts';
+import { usingDatabase } from './database.ts';
 import { operationalDirectory, readOperational, updateOperational, writeOperational } from './operational.ts';
 import { startTicketPayment, type PaymentCaller } from './payments.ts';
-import type { PublishedEvent } from './published.ts';
+import { publishedEventsFrom, type PublishedEvent } from './published.ts';
+import { queueDatabase, readStoredCatalog, readStoredCollection, writeStoredState } from './sql-store.ts';
 
 export interface TicketParty {
   id: string;
@@ -217,6 +219,40 @@ export function readOrders(root = operationalDirectory()): Order[] {
   return readOperational('orders', root).records.map(storedOrder);
 }
 
+export async function loadIssuedTickets(root?: string): Promise<IssuedTicket[]> {
+  if (usingDatabase(root)) {
+    return (await readStoredCollection('issued-tickets')).records.map(storedTicket);
+  }
+  return readIssuedTickets(root ?? operationalDirectory());
+}
+
+export async function loadOrders(root?: string): Promise<Order[]> {
+  if (usingDatabase(root)) {
+    return (await readStoredCollection('orders')).records.map(storedOrder);
+  }
+  return readOrders(root ?? operationalDirectory());
+}
+
+export async function loadPublishedParties(): Promise<TicketParty[]> {
+  if (!usingDatabase()) {
+    return publishedParties();
+  }
+  return publishedEventsFrom(await readStoredCatalog('events')).events.map(partyFromPublished);
+}
+
+export async function loadPartyTitles(): Promise<Map<string, string>> {
+  if (!usingDatabase()) {
+    return publishedPartyTitles();
+  }
+  const titles = new Map<string, string>();
+  for (const event of publishedEventsFrom(await readStoredCatalog('events')).events) {
+    if (event.id.trim() !== '' && event.title.trim() !== '') {
+      titles.set(event.id, event.title);
+    }
+  }
+  return titles;
+}
+
 function requireOwnReader(caller: PaymentCaller): string {
   const decision = decideAccess({
     action: 'read-own-purchases',
@@ -291,35 +327,67 @@ export function commitTicket(
   input: IssueInput,
   caller: PaymentCaller,
   now = new Date().toISOString(),
-  root = operationalDirectory(),
+  root?: string,
   parties?: readonly TicketParty[],
 ): Promise<IssuedTicket> {
+  if (usingDatabase(root)) {
+    return commitTicketOnDatabase(input, caller, now, parties);
+  }
+  const directory = root ?? operationalDirectory();
   const catalog = parties ?? publishedParties();
   let ticketId = '';
   return updateOperational(
     'issued-tickets',
     (current) => {
       const sale = issueTicket(
-        readAccounts(root),
-        readOperational('payment-traces', root).records.map(storedTrace),
-        readOperational('orders', root).records.map(storedOrder),
+        readAccounts(directory),
+        readOperational('payment-traces', directory).records.map(storedTrace),
+        readOperational('orders', directory).records.map(storedOrder),
         current.records.map(storedTicket),
         catalog,
         input,
         caller,
         now,
       );
-      writeOperational('payment-traces', { schemaVersion: 1, records: sale.traces }, root);
-      writeOperational('orders', { schemaVersion: 1, records: sale.orders }, root);
+      writeOperational('payment-traces', { schemaVersion: 1, records: sale.traces }, directory);
+      writeOperational('orders', { schemaVersion: 1, records: sale.orders }, directory);
       ticketId = sale.ticket.id;
       return { schemaVersion: 1, records: sale.tickets };
     },
-    root,
+    directory,
   ).then((file) => {
     const ticket = file.records.map(storedTicket).find((item) => item.id === ticketId);
     if (!ticket) {
       throw new Error('ticket was not stored');
     }
     return ticket;
+  });
+}
+
+async function commitTicketOnDatabase(
+  input: IssueInput,
+  caller: PaymentCaller,
+  now: string,
+  parties?: readonly TicketParty[],
+): Promise<IssuedTicket> {
+  return queueDatabase(async () => {
+    const accounts = await loadAccounts();
+    const traces = (await readStoredCollection('payment-traces')).records.map(storedTrace);
+    const orders = (await readStoredCollection('orders')).records.map(storedOrder);
+    const tickets = (await readStoredCollection('issued-tickets')).records.map(storedTicket);
+    const catalog = parties ?? (await loadPublishedParties());
+    const sale = issueTicket(accounts, traces, orders, tickets, catalog, input, caller, now);
+    await writeStoredState({
+      collections: {
+        'payment-traces': { schemaVersion: 1, records: sale.traces },
+        orders: { schemaVersion: 1, records: sale.orders },
+        'issued-tickets': { schemaVersion: 1, records: sale.tickets },
+      },
+    });
+    const stored = (await readStoredCollection('issued-tickets')).records.map(storedTicket).find((item) => item.id === sale.ticket.id);
+    if (!stored) {
+      throw new Error('ticket was not stored');
+    }
+    return stored;
   });
 }

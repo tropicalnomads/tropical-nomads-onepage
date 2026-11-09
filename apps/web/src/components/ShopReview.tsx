@@ -3,13 +3,15 @@
 import { sizeLabel } from '../../../one-pager/src/lib/shop.ts';
 import { shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
-import { linePrice, shopOrderMessage, shopProducts, shopTotal, shopWhatsappUrl } from '../shop/order';
+import { linePrice, shopOrderMessage, shopTotal, shopWhatsappUrl } from '../shop/order';
+import { useShopProducts } from '../shop/product-context';
 import { useShopCart } from '../shop/useShopCart';
 import type { ShopImageSources } from '../shop/images';
 import { ShopSteps } from './ShopSteps';
 
 export function ShopReview({ imageSources }: { imageSources: ShopImageSources }) {
   const { language } = useLanguage();
+  const products = useShopProducts();
   const cart = useShopCart();
   if (!cart.ready) {
     return <section className="min-h-[50vh] px-5 py-10 md:px-8 md:py-14" />;
@@ -35,7 +37,7 @@ export function ShopReview({ imageSources }: { imageSources: ShopImageSources })
         ) : (
           <div className="mt-8 space-y-4">
             {cart.lines.map((line) => {
-              const product = shopProducts().find((item) => item.id === line.productId);
+              const product = products.find((item) => item.id === line.productId);
               if (!product) {
                 return null;
               }

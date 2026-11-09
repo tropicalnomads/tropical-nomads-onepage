@@ -10,8 +10,10 @@ import {
   type PaymentTrace,
   type Role,
 } from 'tropical-nomads-shared';
-import { readAccounts, updateAccounts, type AccountFile } from './accounts.ts';
+import { loadAccounts, readAccounts, updateAccounts, type AccountFile } from './accounts.ts';
+import { usingDatabase } from './database.ts';
 import { operationalDirectory, readOperational, updateOperational } from './operational.ts';
+import { queueDatabase, readStoredCollection, writeStoredCollection } from './sql-store.ts';
 
 export interface PaymentCaller {
   role: Role;
@@ -113,6 +115,13 @@ function parseStoredTrace(input: unknown): PaymentTrace {
 
 export function readTraces(root = operationalDirectory()): PaymentTrace[] {
   return readOperational('payment-traces', root).records.map((record) => parseStoredTrace(record));
+}
+
+export async function loadTraces(root?: string): Promise<PaymentTrace[]> {
+  if (usingDatabase(root)) {
+    return (await readStoredCollection('payment-traces')).records.map((record) => parseStoredTrace(record));
+  }
+  return readTraces(root ?? operationalDirectory());
 }
 
 export function createCustomer(file: AccountFile, caller: PaymentCaller, userId: string): PaymentCustomer {
@@ -299,17 +308,29 @@ export function recordRefund(traceId: string): RefundResult {
   return { applied: false };
 }
 
-export function commitPayment(purpose: PaymentPurpose, input: PaymentDraft, caller: PaymentCaller, root = operationalDirectory()): Promise<PaymentTrace> {
+export function commitPayment(purpose: PaymentPurpose, input: PaymentDraft, caller: PaymentCaller, root?: string): Promise<PaymentTrace> {
+  if (usingDatabase(root)) {
+    return queueDatabase(async () => {
+      const started = begin(purpose, await loadAccounts(), await loadTraces(), input, caller);
+      await writeStoredCollection('payment-traces', { schemaVersion: 1, records: started.traces });
+      const trace = (await loadTraces()).find((item) => item.id === started.trace.id);
+      if (!trace) {
+        throw new Error('payment was not stored');
+      }
+      return trace;
+    });
+  }
+  const directory = root ?? operationalDirectory();
   let createdId = '';
   return updateOperational(
     'payment-traces',
     (current) => {
       const existing = current.records.map((record) => parseStoredTrace(record));
-      const started = begin(purpose, readAccounts(root), existing, input, caller);
+      const started = begin(purpose, readAccounts(directory), existing, input, caller);
       createdId = started.trace.id;
       return { schemaVersion: 1, records: started.traces };
     },
-    root,
+    directory,
   ).then((file) => {
     const trace = file.records.map((record) => parseStoredTrace(record)).find((item) => item.id === createdId);
     if (!trace) {
@@ -319,7 +340,7 @@ export function commitPayment(purpose: PaymentPurpose, input: PaymentDraft, call
   });
 }
 
-export function commitPaymentMethod(caller: PaymentCaller, userId: string, method: unknown, root = operationalDirectory()): Promise<AccountFile> {
+export function commitPaymentMethod(caller: PaymentCaller, userId: string, method: unknown, root?: string): Promise<AccountFile> {
   return updateAccounts((current) => attachPaymentMethod(current, caller, userId, method), root);
 }
 

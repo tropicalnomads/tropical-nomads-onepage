@@ -20,7 +20,9 @@ RUN pnpm install --prod --frozen-lockfile --filter tropical-nomads-api...
 
 COPY apps/api apps/api
 COPY packages/shared packages/shared
+COPY database database
 COPY apps/one-pager/public/data apps/one-pager/public/data
+COPY apps/one-pager/src/lib/shop.ts apps/one-pager/src/lib/shop.ts
 
 USER node
 ENV API_PORT=8787

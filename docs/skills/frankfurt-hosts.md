@@ -2,15 +2,15 @@
 
 The new app's hosts are templates in `infra/frankfurt`. One CloudFormation file per resource. `deploy.sh` applies that directory in `eu-central-1`. Set `EXPECTED_AWS_ACCOUNT` to the account that may change. The script stops if the caller is a different account or is not the user `tropical-nomads`.
 
-The names are the VPC `tropical-nomads`, the database `tropical-nomads-frankfurt`, the user pool and Amplify app `tropical-nomads-web`, and the API cluster, service, image repository, and load balancer `tropical-nomads-api`. JSON stays the store. `amplify.yml` is unchanged. www is not retargeted.
+The names are the VPC `tropical-nomads`, the database `tropical-nomads-frankfurt`, the user pool and Amplify app `tropical-nomads-web`, and the API cluster, service, image repository, and load balancer `tropical-nomads-api`. The API reads PostgreSQL when its database settings exist. JSON remains the one-pager store. `amplify.yml` is unchanged. www is not retargeted.
 
 Run `node --test infra/frankfurt/test/templates.test.ts` and `pnpm --filter tropical-nomads-api test`.
 
-Check the live hosts with the local status page in [host-status.md](host-status.md). The API task is healthy. `API_BASE_URL` stays unset because the load balancer has no listener and its hostname does not answer. The next change must not open port 5432 to the internet, put a password in git, attach www to the new Amplify app, or add Google or Apple without the owner's client ids.
+Check the live hosts with the local status page in [host-status.md](host-status.md). The API task is healthy and has no public IP. `https://api-dev.tropical-nomads.com` answers, and the Amplify dev branch sets `API_BASE_URL` to that origin. The next change must not open port 5432 to the internet, put a password in git, attach www to the new Amplify app, or add Google or Apple without the owner's client ids.
 
 ## Decisions
 
-The owner asked for one `db.t4g.small` in Frankfurt, single-AZ, and for JSON to stay the store.
+The owner asked for one `db.t4g.small` in Frankfurt, single-AZ. The API uses that database. The one-pager stays on JSON.
 
 The owner asked for a separate repository named `tropical-nomads-aws`.
 

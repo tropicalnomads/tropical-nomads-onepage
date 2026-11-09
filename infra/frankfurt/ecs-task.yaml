@@ -20,6 +20,11 @@ Parameters:
     Type: String
     Description: RDS endpoint hostname. Do not commit the value.
     NoEcho: true
+  SessionSecretArn:
+    Type: String
+    Description: Session secret ARN. Do not commit the value.
+    AllowedPattern: "^arn:aws:secretsmanager:eu-central-1:[0-9]{12}:secret:.+"
+    NoEcho: true
 
 Resources:
   TaskDefinition:
@@ -62,6 +67,8 @@ Resources:
               ValueFrom: !Sub "${DbSecretArn}:username::"
             - Name: DB_PASSWORD
               ValueFrom: !Sub "${DbSecretArn}:password::"
+            - Name: ACCOUNT_SESSION_SECRET
+              ValueFrom: !Ref SessionSecretArn
           LogConfiguration:
             LogDriver: awslogs
             Options:

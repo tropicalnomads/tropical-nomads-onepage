@@ -5,7 +5,8 @@ import { sizeLabel } from '../../../one-pager/src/lib/shop.ts';
 import { shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
 import { sizeStock } from '../shop/cart';
-import { linePrice, shopProducts, shopTotal } from '../shop/order';
+import { linePrice, shopTotal } from '../shop/order';
+import { useShopProducts } from '../shop/product-context';
 import { useShopCart } from '../shop/useShopCart';
 import type { ShopImageSources } from '../shop/images';
 import { QuantityStepper } from './ShopQuantity';
@@ -13,6 +14,7 @@ import { ShopSteps } from './ShopSteps';
 
 export function ShopCart({ imageSources }: { imageSources: ShopImageSources }) {
   const { language } = useLanguage();
+  const products = useShopProducts();
   const cart = useShopCart();
   if (!cart.ready) {
     return <section className="min-h-[50vh] px-5 py-10 md:px-8 md:py-14" />;
@@ -37,7 +39,7 @@ export function ShopCart({ imageSources }: { imageSources: ShopImageSources }) {
           <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
             <div className="space-y-4">
               {cart.lines.map((line) => {
-                const product = shopProducts().find((item) => item.id === line.productId);
+                const product = products.find((item) => item.id === line.productId);
                 const stock = sizeStock(line.productId, line.size);
                 if (!product) {
                   return null;

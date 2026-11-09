@@ -103,18 +103,38 @@ describe('Frankfurt templates', () => {
     assert.equal(onePager.includes('OauthToken'), false);
   });
 
-  it('does not publish the API or give the task a public address', () => {
+  it('publishes only the dev API hostname and keeps the task private', () => {
     const balancer = read(join(frankfurt, 'load-balancer.yaml'));
     const service = read(join(frankfurt, 'ecs-service.yaml'));
     const task = read(join(frankfurt, 'ecs-task.yaml'));
-    assert.equal(balancer.includes('AWS::ElasticLoadBalancingV2::Listener'), false);
+    const bastion = read(join(frankfurt, 'db-bastion.yaml'));
+    assert.match(balancer, /AWS::ElasticLoadBalancingV2::Listener/);
+    assert.match(balancer, /api-dev\.tropical-nomads\.com/);
+    assert.equal(balancer.includes('www.tropical-nomads.com'), false);
     assert.match(service, /AssignPublicIp: DISABLED/);
-    assert.equal(service.includes('LoadBalancers:'), false);
+    assert.match(service, /LoadBalancers:/);
+    assert.match(service, /ContainerPort: 8787/);
     assert.match(task, /Cpu: "512"/);
     assert.match(task, /Memory: "1024"/);
     assert.equal(task.includes('DATABASE_URL'), false);
     assert.match(task, /ValueFrom: !Sub "\$\{DbSecretArn\}:password::"/);
     assert.match(task, /ValueFrom: !Sub "\$\{DbSecretArn\}:username::"/);
+    assert.match(task, /ACCOUNT_SESSION_SECRET/);
+    assert.match(bastion, /AssociatePublicIpAddress: false/);
+    assert.equal(bastion.includes('0.0.0.0/0') && /FromPort: 5432[\s\S]{0,80}0\.0\.0\.0\/0/.test(bastion), false);
+  });
+
+  it('never pairs port 5432 with a public address', () => {
+    for (const path of templates()) {
+      const lines = read(path).split('\n');
+      for (let index = 0; index < lines.length; index += 1) {
+        if (!lines[index]?.includes('5432')) {
+          continue;
+        }
+        const window = lines.slice(Math.max(0, index - 6), index + 6).join('\n');
+        assert.equal(window.includes('0.0.0.0/0'), false, path);
+      }
+    }
   });
 
   it('keeps the status page on loopback and away from secret values', () => {

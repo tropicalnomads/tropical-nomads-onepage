@@ -2,7 +2,9 @@ import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from '
 import { dirname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { containsCardNumber, schemas } from 'tropical-nomads-shared';
+import { usingDatabase } from './database.ts';
 import { assertNoPrivateFields } from './published.ts';
+import { queueDatabase, readStoredCollection, writeStoredCollection } from './sql-store.ts';
 
 /**
  * Private JSON for orders, traces, tickets, check-ins, invites, and stock.
@@ -156,12 +158,21 @@ export function writeOperational(name: OperationalCollection, file: OperationalF
 export function updateOperational(
   name: OperationalCollection,
   change: (current: OperationalFile) => OperationalFile,
-  root = operationalDirectory(),
+  root?: string,
 ): Promise<OperationalFile> {
+  if (usingDatabase(root)) {
+    return queueDatabase(async () => {
+      const current = assertOperationalFile(name, await readStoredCollection(name));
+      const next = assertOperationalFile(name, change(current));
+      await writeStoredCollection(name, next);
+      return assertOperationalFile(name, await readStoredCollection(name));
+    });
+  }
+  const directory = root ?? operationalDirectory();
   return queueWriter(async () => {
-    const next = change(readOperational(name, root));
-    writeOperational(name, next, root);
-    return readOperational(name, root);
+    const next = change(readOperational(name, directory));
+    writeOperational(name, next, directory);
+    return readOperational(name, directory);
   });
 }
 

@@ -1,10 +1,12 @@
 'use server';
 
-import { accountCanPurchase, containsCardNumber } from 'tropical-nomads-shared';
-import { readAccounts, saveDefaultBillingAddress, updateAccounts } from 'tropical-nomads-api/accounts';
+import { accountCanPurchase, containsCardNumber, type PaymentTrace } from 'tropical-nomads-shared';
+import { saveDefaultBillingAddress, updateAccounts } from 'tropical-nomads-api/accounts';
 import { commitPayment, commitPaymentMethod, type PaymentDraft } from 'tropical-nomads-api/payments';
 import { currentAccountSub } from '../account/actions';
+import { apiOrigin } from '../api-origin.ts';
 import type { PaymentNotice } from '../i18n/copy';
+import { callPrivate, currentAccounts } from '../remote-store.ts';
 
 export interface PaymentActionResult {
   notice: PaymentNotice;
@@ -48,7 +50,7 @@ async function buyer(): Promise<{ sub: string; role: 'user'; actorId: string } |
   if (!sub) {
     return 'not-signed-in';
   }
-  const profile = readAccounts().profiles.find((item) => item.sub === sub);
+  const profile = (await currentAccounts()).profiles.find((item) => item.sub === sub);
   if (!profile || !accountCanPurchase(profile)) {
     return profile ? 'cannot-pay' : 'not-signed-in';
   }
@@ -84,6 +86,21 @@ export async function saveBillingAction(formData: FormData): Promise<PaymentActi
     return { notice: 'billing-required' };
   }
   try {
+    if (apiOrigin()) {
+      await callPrivate('save-billing', {
+        sub: actor.sub,
+        address: {
+          recipientName: address.recipientName,
+          line1: address.line1,
+          ...(address.line2 ? { line2: address.line2 } : {}),
+          city: address.city,
+          region: address.region,
+          postalCode: address.postalCode,
+          country: address.country,
+        },
+      });
+      return { notice: 'billing-saved' };
+    }
     await updateAccounts((current) =>
       saveDefaultBillingAddress(
         current,
@@ -115,6 +132,19 @@ export async function saveMethodAction(formData: FormData): Promise<PaymentActio
     return { notice: actor };
   }
   try {
+    if (apiOrigin()) {
+      await callPrivate('save-method', {
+        caller: actor,
+        method: {
+          type: field(formData, 'type'),
+          brand: field(formData, 'brand'),
+          last4: field(formData, 'last4'),
+          expiryMonth: field(formData, 'expiryMonth'),
+          expiryYear: field(formData, 'expiryYear'),
+        },
+      });
+      return { notice: 'method-saved' };
+    }
     await commitPaymentMethod(actor, actor.sub, {
       type: field(formData, 'type'),
       brand: field(formData, 'brand'),
@@ -153,7 +183,9 @@ async function startPurpose(purpose: 'tickets' | 'shop', formData: FormData): Pr
     ...(status ? { status } : {}),
   };
   try {
-    const trace = await commitPayment(purpose, input, actor);
+    const trace = apiOrigin()
+      ? await callPrivate<PaymentTrace>('pay', { purpose, input, caller: actor })
+      : await commitPayment(purpose, input, actor);
     if (trace.status !== 'pending_provider') {
       return { notice: 'cannot-pay' };
     }

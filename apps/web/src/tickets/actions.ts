@@ -1,10 +1,11 @@
 'use server';
 
-import { accountCanPurchase, containsCardNumber } from 'tropical-nomads-shared';
-import { readAccounts } from 'tropical-nomads-api/accounts';
+import { accountCanPurchase, containsCardNumber, type IssuedTicket } from 'tropical-nomads-shared';
 import { commitTicket } from 'tropical-nomads-api/tickets';
 import { currentAccountSub } from '../account/actions';
+import { apiOrigin } from '../api-origin.ts';
 import type { PaymentNotice } from '../i18n/copy';
+import { callPrivate, currentAccounts } from '../remote-store.ts';
 
 export interface TicketActionResult {
   notice: PaymentNotice;
@@ -61,7 +62,7 @@ async function buyer(): Promise<{ role: 'user'; actorId: string } | PaymentNotic
   if (!sub) {
     return 'not-signed-in';
   }
-  const profile = readAccounts().profiles.find((item) => item.sub === sub);
+  const profile = (await currentAccounts()).profiles.find((item) => item.sub === sub);
   if (!profile || !accountCanPurchase(profile)) {
     return profile ? 'cannot-pay' : 'not-signed-in';
   }
@@ -77,7 +78,8 @@ export async function issueTicketAction(formData: FormData): Promise<TicketActio
     return { notice: actor };
   }
   try {
-    const ticket = await commitTicket({ partyId: field(formData, 'partyId'), offerName: field(formData, 'offerName') }, actor);
+    const input = { partyId: field(formData, 'partyId'), offerName: field(formData, 'offerName') };
+    const ticket = apiOrigin() ? await callPrivate<IssuedTicket>('issue-ticket', { input, caller: actor }) : await commitTicket(input, actor);
     if (ticket.validForEntry !== false || !/^ticket-[a-f0-9]{18}$/.test(ticket.id)) {
       return { notice: 'cannot-pay' };
     }

@@ -1,9 +1,8 @@
 import { cookies } from 'next/headers';
 import { accountCanScan } from 'tropical-nomads-shared';
-import { readAccounts } from 'tropical-nomads-api/accounts';
-import { readDoorInvites, rosterFor, searchRoster, visibleEvents } from 'tropical-nomads-api/check-in';
-import { publishedParties, publishedPartyTitles, readIssuedTickets } from 'tropical-nomads-api/tickets';
+import { eventRoster, searchRoster, visibleEvents } from 'tropical-nomads-api/check-in';
 import { readSessionSub, sessionCookieName } from '../../src/account/session';
+import { loadSnapshot } from '../../src/remote-store';
 import { CheckInDesk } from '../../src/components/CheckInDesk';
 import { CheckInGate } from '../../src/components/CheckInGate';
 
@@ -16,7 +15,8 @@ export default async function CheckInPage({ searchParams }: { searchParams: Prom
   const query = typeof params.q === 'string' ? params.q : '';
   const jar = await cookies();
   const sub = readSessionSub(jar.get(sessionCookieName)?.value);
-  const profile = sub ? readAccounts().profiles.find((item) => item.sub === sub) : undefined;
+  const snapshot = await loadSnapshot();
+  const profile = sub ? snapshot.accounts.profiles.find((item) => item.sub === sub) : undefined;
   const staff =
     profile && profile.status === 'active' && profile.role === 'admin'
       ? { role: 'admin' as const, actorId: profile.sub }
@@ -30,14 +30,25 @@ export default async function CheckInPage({ searchParams }: { searchParams: Prom
       </main>
     );
   }
-  const partyIds = publishedParties()
-    .map((party) => party.id)
-    .filter((id) => id !== '');
-  const titles = publishedPartyTitles();
-  const events = visibleEvents(staff, readDoorInvites(), partyIds).map((id) => ({ id, title: titles.get(id) ?? id }));
+  const partyIds = snapshot.parties.map((party) => party.id).filter((id) => id !== '');
+  const titles = new Map(snapshot.titles);
+  const events = visibleEvents(staff, snapshot.invites, partyIds).map((id) => ({ id, title: titles.get(id) ?? id }));
   const selected = events.some((event) => event.id === eventId) ? eventId : undefined;
-  const roster = selected ? rosterFor(staff, selected, partyIds) : undefined;
-  const shown = roster && query.trim() !== '' ? searchRoster(roster, query, readAccounts(), readIssuedTickets()) : roster;
+  const roster = selected
+    ? eventRoster(
+        snapshot.accounts,
+        snapshot.invites,
+        snapshot.guestLists,
+        snapshot.tickets,
+        snapshot.orders,
+        snapshot.traces,
+        snapshot.checkIns,
+        staff,
+        selected,
+        partyIds,
+      )
+    : undefined;
+  const shown = roster && query.trim() !== '' ? searchRoster(roster, query, snapshot.accounts, snapshot.tickets) : roster;
   return (
     <main className="px-5 py-8 md:px-8">
       <div className="mx-auto max-w-5xl">

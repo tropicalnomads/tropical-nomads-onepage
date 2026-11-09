@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Private SSM tunnel for the Frankfurt database. No public IP and no SSH from the internet.
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+  PrivateSubnetA:
+    Type: AWS::EC2::Subnet::Id
+  DbSecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
+  ImageId:
+    Type: AWS::EC2::Image::Id
+  InstanceProfileName:
+    Type: String
+    Default: tropical-nomads-db-tunnel
+    AllowedPattern: "^[A-Za-z0-9+=,.@_-]+$"
+
+Resources:
+  TunnelSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: tropical-nomads-db-tunnel
+      GroupDescription: Private SSM tunnel. Inbound is closed. PostgreSQL egress goes only to the database.
+      VpcId: !Ref VpcId
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 1
+          ToPort: 1
+          CidrIp: 127.0.0.1/32
+          Description: Replace the default allow-all egress
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          DestinationSecurityGroupId: !Ref DbSecurityGroupId
+          Description: PostgreSQL
+      Tags:
+        - Key: Name
+          Value: tropical-nomads-db-tunnel
+
+  DatabaseFromTunnel:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref DbSecurityGroupId
+      IpProtocol: tcp
+      FromPort: 5432
+      ToPort: 5432
+      SourceSecurityGroupId: !Ref TunnelSecurityGroup
+      Description: Tunnel to PostgreSQL
+
+  Tunnel:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t4g.nano
+      ImageId: !Ref ImageId
+      IamInstanceProfile: !Ref InstanceProfileName
+      NetworkInterfaces:
+        - DeviceIndex: 0
+          AssociatePublicIpAddress: false
+          DeleteOnTermination: true
+          SubnetId: !Ref PrivateSubnetA
+          GroupSet:
+            - !Ref TunnelSecurityGroup
+      Tags:
+        - Key: Name
+          Value: tropical-nomads-db-tunnel
+
+  TunnelToSsm:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref TunnelSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: 0.0.0.0/0
+      Description: SSM through the NAT gateway
+
+Outputs:
+  TunnelInstanceId:
+    Value: !Ref Tunnel
+  TunnelSecurityGroupId:
+    Value: !Ref TunnelSecurityGroup

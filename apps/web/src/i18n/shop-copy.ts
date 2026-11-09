@@ -54,6 +54,8 @@ export interface ShopCopy {
   lookupFound: string;
   lookupMissing: string;
   lookupHelp: string;
+  searchCountry: string;
+  noCountryMatches: string;
   selectCountry: string;
   ireland: string;
   portugal: string;
@@ -115,6 +117,8 @@ export const shopCopy: Record<Locale, ShopCopy> = {
     lookupFound: 'City and region added from the postal code.',
     lookupMissing: 'We could not find that postal code. You can still enter the address manually.',
     lookupHelp: 'Postal lookup uses public postal data and OpenStreetMap after you ask us to find the address.',
+    searchCountry: 'Search countries',
+    noCountryMatches: 'No countries match',
     selectCountry: 'Select a country',
     ireland: 'Ireland',
     portugal: 'Portugal',
@@ -174,6 +178,8 @@ export const shopCopy: Record<Locale, ShopCopy> = {
     lookupFound: 'Cidade e região preenchidas pelo código postal.',
     lookupMissing: 'Não encontramos esse código postal. Você ainda pode preencher o endereço manualmente.',
     lookupHelp: 'A busca usa dados postais públicos e o OpenStreetMap quando você solicita o endereço.',
+    searchCountry: 'Buscar país',
+    noCountryMatches: 'Nenhum país encontrado',
     selectCountry: 'Selecione um país',
     ireland: 'Irlanda',
     portugal: 'Portugal',

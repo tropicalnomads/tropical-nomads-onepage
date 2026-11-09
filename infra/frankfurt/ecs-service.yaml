@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: One private Fargate task for the Tropical Nomads API. No public IP and no listener.
+Description: One private Fargate task for the Tropical Nomads API. No public IP. The dev load balancer forwards to it.
 
 Parameters:
   ClusterName:
@@ -12,6 +12,8 @@ Parameters:
     Type: AWS::EC2::Subnet::Id
   ApiSecurityGroupId:
     Type: AWS::EC2::SecurityGroup::Id
+  TargetGroupArn:
+    Type: String
 
 Resources:
   Service:
@@ -30,6 +32,11 @@ Resources:
           Rollback: true
         MinimumHealthyPercent: 0
         MaximumPercent: 200
+      HealthCheckGracePeriodSeconds: 60
+      LoadBalancers:
+        - ContainerName: api
+          ContainerPort: 8787
+          TargetGroupArn: !Ref TargetGroupArn
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: DISABLED

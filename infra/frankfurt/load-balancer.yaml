@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: API load balancer without a listener. A certificate waits until a hostname is chosen, so this file does not publish the API.
+Description: API load balancer. HTTPS for api-dev.tropical-nomads.com forwards to the API target group. www is not attached.
 
 Parameters:
   VpcId:
@@ -10,6 +10,11 @@ Parameters:
     Type: AWS::EC2::Subnet::Id
   AlbSecurityGroupId:
     Type: AWS::EC2::SecurityGroup::Id
+  CertificateArn:
+    Type: String
+    Description: DNS-validated certificate for api-dev.tropical-nomads.com. Do not commit the value.
+    AllowedPattern: "^arn:aws:acm:eu-central-1:[0-9]{12}:certificate/.+"
+    NoEcho: true
 
 Resources:
   LoadBalancer:
@@ -56,6 +61,19 @@ Resources:
       Tags:
         - Key: Name
           Value: tropical-nomads-api
+
+  HttpsListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 443
+      Protocol: HTTPS
+      SslPolicy: ELBSecurityPolicy-TLS13-1-2-2021-06
+      Certificates:
+        - CertificateArn: !Ref CertificateArn
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
 
 Outputs:
   LoadBalancerArn:

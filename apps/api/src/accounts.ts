@@ -15,8 +15,10 @@ import {
   type VerifiedSignIn,
 } from 'tropical-nomads-shared';
 import { readPartyCatalog } from './catalog.ts';
+import { usingDatabase } from './database.ts';
 import { operationalDirectory } from './operational.ts';
 import { assertNoPrivateFields } from './published.ts';
+import { queueDatabase, readStoredAccounts, readStoredAvatar, readStoredCatalog, writeStoredAccounts, writeStoredAvatar } from './sql-store.ts';
 
 export interface AccountFile {
   schemaVersion: 1;
@@ -114,6 +116,58 @@ export function publishedEventIds(): string[] {
   return readPartyCatalog()
     .events.map((event) => event.id)
     .filter((id) => id.trim() !== '');
+}
+
+export async function loadAccounts(root?: string): Promise<AccountFile> {
+  if (usingDatabase(root)) {
+    return assertAccountFile(await readStoredAccounts());
+  }
+  return readAccounts(root ?? accountRoot());
+}
+
+export async function loadPublishedEventIds(): Promise<string[]> {
+  if (!usingDatabase()) {
+    return publishedEventIds();
+  }
+  const catalog = await readStoredCatalog('events');
+  if (typeof catalog !== 'object' || catalog === null || Array.isArray(catalog)) {
+    throw new Error('events catalog is not the published envelope');
+  }
+  const events = (catalog as { events?: unknown }).events;
+  if (!Array.isArray(events)) {
+    throw new Error('events catalog is not the published envelope');
+  }
+  return events.flatMap((event) => {
+    if (typeof event !== 'object' || event === null || Array.isArray(event)) {
+      return [];
+    }
+    const id = (event as { id?: unknown }).id;
+    return typeof id === 'string' && id.trim() !== '' ? [id] : [];
+  });
+}
+
+export async function loadAvatar(key: string, root?: string): Promise<Uint8Array | undefined> {
+  if (!/^avatars\/[a-f0-9]{16,}\.(?:jpg|png|webp)$/.test(key)) {
+    return undefined;
+  }
+  if (usingDatabase(root)) {
+    const bytes = await readStoredAvatar(key);
+    return bytes !== undefined && inspectAvatar(bytes) ? bytes : undefined;
+  }
+  return readAvatar(key, root ?? accountRoot());
+}
+
+export async function storeAvatarBytes(bytes: Uint8Array): Promise<string> {
+  if (!usingDatabase()) {
+    return storeAvatar(bytes);
+  }
+  const ext = inspectAvatar(bytes);
+  if (!ext) {
+    throw new Error('avatar is not an image');
+  }
+  const key = `avatars/${randomBytes(16).toString('hex')}.${ext}`;
+  await writeStoredAvatar(key, bytes);
+  return key;
 }
 
 export function emptyAccounts(): AccountFile {
@@ -286,10 +340,18 @@ export function saveAvatarKey(file: AccountFile, sub: string, avatarKey: string,
   return assertAccountFile({ ...file, profiles });
 }
 
-export function updateAccounts(change: (current: AccountFile) => AccountFile, root = accountRoot()): Promise<AccountFile> {
+export function updateAccounts(change: (current: AccountFile) => AccountFile, root?: string): Promise<AccountFile> {
+  if (usingDatabase(root)) {
+    return queueDatabase(async () => {
+      const next = assertAccountFile(change(await loadAccounts()));
+      await writeStoredAccounts(next);
+      return loadAccounts();
+    });
+  }
+  const directory = root ?? accountRoot();
   return queueWriter(async () => {
-    const next = change(readAccounts(root));
-    writeAccounts(next, root);
-    return readAccounts(root);
+    const next = change(readAccounts(directory));
+    writeAccounts(next, directory);
+    return readAccounts(directory);
   });
 }

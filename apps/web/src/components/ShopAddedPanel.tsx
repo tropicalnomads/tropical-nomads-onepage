@@ -5,14 +5,15 @@ import { useEffect, useRef, useState } from 'react';
 import { sizeLabel } from '../../../one-pager/src/lib/shop.ts';
 import { shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
-import { linePrice, shopProducts, type ShopLine } from '../shop/order';
+import { linePrice, type ShopLine } from '../shop/order';
+import { useShopProducts } from '../shop/product-context';
 
 export function ShopAddedPanel({ line, image, subtotal, onClose }: { line: ShopLine; image?: string; subtotal: number; onClose: () => void }) {
   const { language } = useLanguage();
   const onCloseRef = useRef(onClose);
   const [shown, setShown] = useState(false);
   onCloseRef.current = onClose;
-  const product = shopProducts().find((item) => item.id === line.productId);
+  const product = useShopProducts().find((item) => item.id === line.productId);
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => setShown(true));

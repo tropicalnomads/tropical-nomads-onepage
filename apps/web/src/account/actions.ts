@@ -1,7 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { publishedEventIds, readAccounts, saveAvatarFile, saveProfileDetails, updateAccounts } from 'tropical-nomads-api/accounts';
+import { saveAvatarFile, saveProfileDetails, updateAccounts } from 'tropical-nomads-api/accounts';
 import { normalizeAccountEmail, usernameFromEmail, type VerifiedSignIn } from 'tropical-nomads-shared';
 import type { AccountNotice } from '../i18n/copy';
 import {
@@ -21,6 +21,8 @@ import { establishVerifiedAccount } from './establish';
 import { readProfileAvatar, readProfileDetails } from './profile';
 import { accountEmail, pendingEmailCookie, reviewConfirmationCode, reviewEmail, reviewPasswordSignIn, reviewProvider, reviewRegistration } from './review';
 import { createSessionToken, readSessionSub, sessionCookieName } from './session';
+import { apiOrigin } from '../api-origin.ts';
+import { callPrivate, loadSnapshot } from '../remote-store.ts';
 
 export interface AccountActionResult {
   notice?: AccountNotice;
@@ -122,11 +124,11 @@ export async function completeProfileAction(formData: FormData): Promise<Account
   if (!claims) {
     return { notice: 'not-signed-in' };
   }
-  const accounts = readAccounts();
+  const snapshot = await loadSnapshot();
   const username = usernameFromEmail(
     claims.email,
-    accounts.profiles.map((profile) => profile.username),
-    publishedEventIds(),
+    snapshot.accounts.profiles.map((profile) => profile.username),
+    snapshot.eventIds,
   );
   const profile = verifiedSignInFromClaims(
     claims,
@@ -143,10 +145,18 @@ export async function completeProfileAction(formData: FormData): Promise<Account
   const bytes = await readProfileAvatar(formData);
   const now = new Date().toISOString();
   try {
-    await updateAccounts((current) => {
-      const withDetails = saveProfileDetails(current, admitted, parsed.details!, now);
-      return bytes ? saveAvatarFile(withDetails, admitted, bytes, now) : withDetails;
-    });
+    if (apiOrigin()) {
+      await callPrivate('save-profile', {
+        sub: admitted,
+        details: parsed.details,
+        ...(bytes ? { avatarBase64: Buffer.from(bytes).toString('base64') } : {}),
+      });
+    } else {
+      await updateAccounts((current) => {
+        const withDetails = saveProfileDetails(current, admitted, parsed.details!, now);
+        return bytes ? saveAvatarFile(withDetails, admitted, bytes, now) : withDetails;
+      });
+    }
   } catch {
     return { notice: bytes ? 'avatar-rejected' : 'profile-invalid' };
   }
@@ -214,7 +224,7 @@ export async function signInAction(formData: FormData): Promise<AccountActionRes
   if (normalizeAccountEmail(signedIn.claims.email) !== normalizeAccountEmail(email)) {
     return { notice: 'password-rejected' };
   }
-  const existing = readAccounts().profiles.find(
+  const existing = (await loadSnapshot()).accounts.profiles.find(
     (profile) => profile.sub === signedIn.claims?.sub || normalizeAccountEmail(profile.email) === normalizeAccountEmail(signedIn.claims?.email ?? ''),
   );
   const profile = verifiedSignInFromClaims(

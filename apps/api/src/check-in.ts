@@ -19,9 +19,12 @@ import {
   type Profile,
   type Role,
 } from 'tropical-nomads-shared';
-import { readAccounts, writeAccounts, type AccountFile } from './accounts.ts';
+import { loadAccounts, readAccounts, writeAccounts, type AccountFile } from './accounts.ts';
+import { usingDatabase } from './database.ts';
 import { operationalDirectory, readOperational, updateOperational } from './operational.ts';
-import { readIssuedTickets, readOrders } from './tickets.ts';
+import { loadTraces } from './payments.ts';
+import { queueDatabase, readStoredCollection, writeStoredCollection, writeStoredState } from './sql-store.ts';
+import { loadIssuedTickets, readIssuedTickets, readOrders } from './tickets.ts';
 
 export interface CheckInCaller {
   role: Role;
@@ -555,14 +558,51 @@ export function readCheckIns(root = operationalDirectory()): CheckIn[] {
   return storedCheckIns(readOperational('check-ins', root).records);
 }
 
+export async function loadDoorInvites(root?: string): Promise<DoorInvite[]> {
+  if (usingDatabase(root)) {
+    return storedInvites((await readStoredCollection('door-invites')).records);
+  }
+  return readDoorInvites(root ?? operationalDirectory());
+}
+
+export async function loadGuestLists(root?: string): Promise<GuestList[]> {
+  if (usingDatabase(root)) {
+    return storedLists((await readStoredCollection('guest-lists')).records);
+  }
+  return readGuestLists(root ?? operationalDirectory());
+}
+
+export async function loadCheckIns(root?: string): Promise<CheckIn[]> {
+  if (usingDatabase(root)) {
+    return storedCheckIns((await readStoredCollection('check-ins')).records);
+  }
+  return readCheckIns(root ?? operationalDirectory());
+}
+
 export function commitInvite(
   caller: CheckInCaller,
   email: string,
   partyIds: readonly string[],
   publishedPartyIds: readonly string[],
   now: string,
-  root = operationalDirectory(),
+  root?: string,
 ): Promise<DoorInvite> {
+  if (usingDatabase(root)) {
+    return queueDatabase(async () => {
+      const changed = inviteDoor(await loadAccounts(), await loadDoorInvites(), caller, email, partyIds, publishedPartyIds, now);
+      const inviteId = changed.invites[changed.invites.length - 1]?.id ?? '';
+      await writeStoredState({
+        accounts: changed.file,
+        collections: { 'door-invites': { schemaVersion: 1, records: changed.invites } },
+      });
+      const invite = (await loadDoorInvites()).find((item) => item.id === inviteId);
+      if (!invite) {
+        throw new Error('invite was not stored');
+      }
+      return invite;
+    });
+  }
+  const directory = root ?? operationalDirectory();
   let inviteId = '';
   return updateOperational(
     'door-invites',
@@ -574,12 +614,12 @@ export function commitInvite(
         }
         return parsed.value;
       });
-      const changed = inviteDoor(readAccounts(root), invites, caller, email, partyIds, publishedPartyIds, now);
-      writeAccounts(changed.file, root);
+      const changed = inviteDoor(readAccounts(directory), invites, caller, email, partyIds, publishedPartyIds, now);
+      writeAccounts(changed.file, directory);
       inviteId = changed.invites[changed.invites.length - 1]?.id ?? '';
       return { schemaVersion: 1, records: changed.invites };
     },
-    root,
+    directory,
   ).then((file) => {
     const invite = file.records
       .map((record) => {
@@ -614,17 +654,36 @@ export function commitScan(
   payload: unknown,
   publishedPartyIds: readonly string[],
   now: string,
-  root = operationalDirectory(),
+  root?: string,
 ): Promise<CheckInOutcome> {
+  if (usingDatabase(root)) {
+    return queueDatabase(async () => {
+      const scanned = scanTicket(
+        await loadAccounts(),
+        await loadDoorInvites(),
+        await loadIssuedTickets(),
+        await loadTraces(),
+        await loadCheckIns(),
+        caller,
+        partyId,
+        payload,
+        publishedPartyIds,
+        now,
+      );
+      await writeStoredCollection('check-ins', { schemaVersion: 1, records: scanned.checkIns });
+      return scanned.outcome;
+    });
+  }
+  const directory = root ?? operationalDirectory();
   let outcomeResult: CheckInOutcome = { admitted: false, reason: 'unknown' };
   return updateOperational(
     'check-ins',
     (current) => {
       const scanned = scanTicket(
-        readAccounts(root),
-        readDoorInvites(root),
-        readIssuedTickets(root),
-        storedTraces(readOperational('payment-traces', root).records),
+        readAccounts(directory),
+        readDoorInvites(directory),
+        readIssuedTickets(directory),
+        storedTraces(readOperational('payment-traces', directory).records),
         storedCheckIns(current.records),
         caller,
         partyId,
@@ -635,7 +694,7 @@ export function commitScan(
       outcomeResult = scanned.outcome;
       return { schemaVersion: 1, records: scanned.checkIns };
     },
-    root,
+    directory,
   ).then(() => outcomeResult);
 }
 
@@ -645,17 +704,30 @@ export function commitGuestList(
   name: string,
   publishedPartyIds: readonly string[],
   now: string,
-  root = operationalDirectory(),
+  root?: string,
 ): Promise<GuestList> {
+  if (usingDatabase(root)) {
+    return queueDatabase(async () => {
+      const lists = createGuestList(await loadAccounts(), await loadGuestLists(), caller, partyId, name, publishedPartyIds, now);
+      const listId = lists[lists.length - 1]?.id ?? '';
+      await writeStoredCollection('guest-lists', { schemaVersion: 1, records: lists });
+      const list = (await loadGuestLists()).find((item) => item.id === listId);
+      if (!list) {
+        throw new Error('guest list was not stored');
+      }
+      return list;
+    });
+  }
+  const directory = root ?? operationalDirectory();
   let listId = '';
   return updateOperational(
     'guest-lists',
     (current) => {
-      const lists = createGuestList(readAccounts(root), storedLists(current.records), caller, partyId, name, publishedPartyIds, now);
+      const lists = createGuestList(readAccounts(directory), storedLists(current.records), caller, partyId, name, publishedPartyIds, now);
       listId = lists[lists.length - 1]?.id ?? '';
       return { schemaVersion: 1, records: lists };
     },
-    root,
+    directory,
   ).then((file) => {
     const list = storedLists(file.records).find((item) => item.id === listId);
     if (!list) {
@@ -671,15 +743,27 @@ export function commitAddGuest(
   name: string,
   publishedPartyIds: readonly string[],
   now: string,
-  root = operationalDirectory(),
+  root?: string,
 ): Promise<GuestList> {
+  if (usingDatabase(root)) {
+    return queueDatabase(async () => {
+      const lists = addGuest(await loadAccounts(), await loadGuestLists(), caller, listId, name, publishedPartyIds, now);
+      await writeStoredCollection('guest-lists', { schemaVersion: 1, records: lists });
+      const list = (await loadGuestLists()).find((item) => item.id === listId);
+      if (!list) {
+        throw new Error('guest was not stored');
+      }
+      return list;
+    });
+  }
+  const directory = root ?? operationalDirectory();
   return updateOperational(
     'guest-lists',
     (current) => ({
       schemaVersion: 1,
-      records: addGuest(readAccounts(root), storedLists(current.records), caller, listId, name, publishedPartyIds, now),
+      records: addGuest(readAccounts(directory), storedLists(current.records), caller, listId, name, publishedPartyIds, now),
     }),
-    root,
+    directory,
   ).then((file) => {
     const list = storedLists(file.records).find((item) => item.id === listId);
     if (!list) {
@@ -695,16 +779,34 @@ export function commitGuestCheckIn(
   guestId: string,
   publishedPartyIds: readonly string[],
   now: string,
-  root = operationalDirectory(),
+  root?: string,
 ): Promise<CheckInOutcome> {
+  if (usingDatabase(root)) {
+    return queueDatabase(async () => {
+      const checked = checkInGuest(
+        await loadAccounts(),
+        await loadDoorInvites(),
+        await loadGuestLists(),
+        await loadCheckIns(),
+        caller,
+        partyId,
+        guestId,
+        publishedPartyIds,
+        now,
+      );
+      await writeStoredCollection('check-ins', { schemaVersion: 1, records: checked.checkIns });
+      return checked.outcome;
+    });
+  }
+  const directory = root ?? operationalDirectory();
   let outcomeResult: CheckInOutcome = { admitted: false, reason: 'unknown' };
   return updateOperational(
     'check-ins',
     (current) => {
       const checked = checkInGuest(
-        readAccounts(root),
-        readDoorInvites(root),
-        readGuestLists(root),
+        readAccounts(directory),
+        readDoorInvites(directory),
+        readGuestLists(directory),
         storedCheckIns(current.records),
         caller,
         partyId,
@@ -715,7 +817,7 @@ export function commitGuestCheckIn(
       outcomeResult = checked.outcome;
       return { schemaVersion: 1, records: checked.checkIns };
     },
-    root,
+    directory,
   ).then(() => outcomeResult);
 }
 
@@ -725,17 +827,36 @@ export function commitTicketCheckIn(
   ticketId: string,
   publishedPartyIds: readonly string[],
   now: string,
-  root = operationalDirectory(),
+  root?: string,
 ): Promise<CheckInOutcome> {
+  if (usingDatabase(root)) {
+    return queueDatabase(async () => {
+      const checked = checkInTicket(
+        await loadAccounts(),
+        await loadDoorInvites(),
+        await loadIssuedTickets(),
+        await loadTraces(),
+        await loadCheckIns(),
+        caller,
+        partyId,
+        ticketId,
+        publishedPartyIds,
+        now,
+      );
+      await writeStoredCollection('check-ins', { schemaVersion: 1, records: checked.checkIns });
+      return checked.outcome;
+    });
+  }
+  const directory = root ?? operationalDirectory();
   let outcomeResult: CheckInOutcome = { admitted: false, reason: 'unknown' };
   return updateOperational(
     'check-ins',
     (current) => {
       const checked = checkInTicket(
-        readAccounts(root),
-        readDoorInvites(root),
-        readIssuedTickets(root),
-        storedTraces(readOperational('payment-traces', root).records),
+        readAccounts(directory),
+        readDoorInvites(directory),
+        readIssuedTickets(directory),
+        storedTraces(readOperational('payment-traces', directory).records),
         storedCheckIns(current.records),
         caller,
         partyId,
@@ -746,7 +867,7 @@ export function commitTicketCheckIn(
       outcomeResult = checked.outcome;
       return { schemaVersion: 1, records: checked.checkIns };
     },
-    root,
+    directory,
   ).then(() => outcomeResult);
 }
 
