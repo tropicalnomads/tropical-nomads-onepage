@@ -1,24 +1,46 @@
 version: 1
 # www.tropical-nomads.com publishes only the one-pager package.
-# The web app's Amplify app, the API container on ECS, and the database are later hosts. They are not created here.
-frontend:
-  phases:
-    preBuild:
-      commands:
-        - npm install -g pnpm@9.15.9
-        - pnpm --version
-        - pnpm install --frozen-lockfile
-    build:
-      commands:
-        - pnpm --filter tropical-nomads-page build
-  artifacts:
-    baseDirectory: apps/one-pager/dist
-    files:
-      - "**/*"
-  cache:
-    paths:
-      - node_modules/**/*
-      - .pnpm-store/**/*
+# dev.tropical-nomads.com publishes the web app from the same repository.
+# The one-pager publish path stays apps/one-pager/dist.
+applications:
+  - appRoot: apps/one-pager
+    frontend:
+      buildPath: /
+      phases:
+        preBuild:
+          commands:
+            - npm install -g pnpm@9.15.9
+            - pnpm --version
+            - pnpm install --frozen-lockfile
+        build:
+          commands:
+            - pnpm --filter tropical-nomads-page build
+      artifacts:
+        baseDirectory: apps/one-pager/dist
+        files:
+          - "**/*"
+      cache:
+        paths:
+          - node_modules/**/*
+          - .pnpm-store/**/*
+  - appRoot: apps/web
+    frontend:
+      buildPath: /
+      phases:
+        preBuild:
+          commands:
+            - nvm install 22 && nvm alias default 22 && node -v && npm install -g pnpm@9.15.9 && pnpm install --frozen-lockfile
+        build:
+          commands:
+            - nvm use 22 && node -v && pnpm --filter tropical-nomads-web build
+      artifacts:
+        baseDirectory: apps/web/.next
+        files:
+          - "**/*"
+      cache:
+        paths:
+          - node_modules/**/*
+          - .pnpm-store/**/*
 # Amplify defaults to s-maxage=31536000, so CloudFront would keep HTML,
 # sw.js and JSON for a year. Hashed Vite assets stay immutable.
 customHeaders:
