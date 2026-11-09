@@ -17,7 +17,7 @@ export interface CatalogAsset {
 
 type AssetKind = 'banners' | 'partners';
 
-function catalogRoot(): string {
+export function onePagerPublicDir(): string {
   const fromWeb = resolve(process.cwd(), '../one-pager/public');
   if (existsSync(fromWeb)) {
     return fromWeb;
@@ -26,7 +26,7 @@ function catalogRoot(): string {
 }
 
 function assetDirectory(kind: AssetKind): string {
-  const root = catalogRoot();
+  const root = onePagerPublicDir();
   switch (kind) {
     case 'banners':
       return join(root, 'events', 'banners');
