@@ -98,6 +98,7 @@ describe('check-in', () => {
     const sold = ticket();
     const first = scanTicket(invited.file, invited.invites, [sold], [trace('confirmed')], [], door, 'party-a', { id: sold.id, secret: sold.secret }, parties, now);
     assert.equal(first.outcome.admitted, true);
+    assert.equal(first.outcome.buyerName, 'ada Nomad');
     assert.equal(first.outcome.checkIn?.actorId, 'sub-doe');
     assert.notEqual(first.outcome.checkIn?.actorId, sold.buyerId);
     const second = scanTicket(invited.file, invited.invites, [sold], [trace('confirmed')], first.checkIns, door, 'party-a', { id: sold.id, secret: sold.secret }, parties, later);

@@ -13,7 +13,14 @@ export function databaseSettings(env = process.env) {
   return { host, port, user, password, database, servername };
 }
 
-export function sslConfig(servername) {
+export function sslConfig(servername, env = process.env) {
+  const value = env.DB_SSL?.trim() ?? '';
+  if (value === 'false') {
+    return false;
+  }
+  if (value !== '' && value !== 'true') {
+    throw new Error('DB_SSL must be true or false');
+  }
   const caPath = '/etc/ssl/rds-global-bundle.pem';
   return {
     rejectUnauthorized: true,

@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import pg from 'pg';
@@ -17,7 +17,7 @@ export async function migrate(env = process.env) {
     user: settings.user,
     password: settings.password,
     database: settings.database,
-    ssl: sslConfig(settings.servername),
+    ssl: sslConfig(settings.servername, env),
   });
   await client.connect();
   try {
@@ -51,6 +51,10 @@ export async function migrate(env = process.env) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const envFile = join(dirname(fileURLToPath(import.meta.url)), '../.env');
+  if (existsSync(envFile)) {
+    process.loadEnvFile(envFile);
+  }
   migrate().catch((error) => {
     const message = error instanceof Error ? error.message : 'migration failed';
     process.stderr.write(`${message}\n`);

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -9,6 +10,8 @@ import { emptyAccounts, registerVerifiedAccount, saveDefaultBillingAddress, writ
 import { readOperational } from '../src/operational.ts';
 import { type PaymentCaller } from '../src/payments.ts';
 import { commitTicket, createTicketSecret, issueTicket, listOwnTickets, readOwnTicket, type TicketParty } from '../src/tickets.ts';
+
+process.env.TICKET_QR_KEY ??= '0123456789abcdef'.repeat(4);
 
 const now = '2026-11-08T18:00:00.000Z';
 const partyId = 'party-switched';
@@ -46,8 +49,8 @@ function party(offers: TicketParty['offers']): TicketParty {
   return { id: partyId, offers, sourceId: '117713' };
 }
 
-function euroParty(): TicketParty {
-  return party([{ name: 'Early', amount: 15, currency: 'EUR' }]);
+function euroParty(capacity = 20): TicketParty {
+  return party([{ name: 'Early', amount: 15, currency: 'EUR', capacity }]);
 }
 
 function emptyRoot(): string {
@@ -93,7 +96,7 @@ describe('tickets', () => {
     assert.equal(readFileSync(new URL('../../one-pager/public/data/events.json', import.meta.url), 'utf8'), eventsBefore);
   });
 
-  it('stores an unpaid euro ticket and refuses a draft, another currency, and another buyer', async () => {
+  it('stores a paid euro ticket and refuses a draft, another currency, and another buyer', async () => {
     const root = emptyRoot();
     const eventsBefore = readFileSync(new URL('../../one-pager/public/data/events.json', import.meta.url), 'utf8');
     await assert.rejects(() => commitTicket({ partyId: 'draft-party', offerName: 'Early' }, caller(), now, root), /event is not published/);
@@ -119,17 +122,25 @@ describe('tickets', () => {
     assert.throws(() => issueTicket(file, [], [], [], [euroParty()], { partyId, offerName: 'Early' }, caller(buyerId, 'door'), now), /not allowed/);
     assert.throws(() => issueTicket(file, [], [], [], [euroParty()], { partyId, offerName: 'Early' }, caller('admin-1', 'admin'), now), /not allowed/);
 
-    const ticket = await commitTicket({ partyId, offerName: 'Early' }, caller(), now, root, [euroParty()]);
-    assert.equal(ticket.validForEntry, false);
+    await assert.rejects(
+      () => commitTicket({ partyId, offerName: 'Early' }, caller(), now, root, [{ ...euroParty(), publication: 'draft' }]),
+      /event is not published/,
+    );
+    const ticket = await commitTicket({ partyId, offerName: 'Early' }, caller(), now, root, [euroParty(1)]);
+    assert.equal(ticket.validForEntry, true);
     assert.equal(ticket.buyerId, buyerId);
     assert.equal(ticket.partyId, partyId);
     assert.notEqual(ticket.secret, partyId);
     assert.notEqual(ticket.secret, `${partyId}${buyerId}`);
     assert.notEqual(ticket.secret, `${buyerId}${partyId}`);
-    const stored = readOperational('issued-tickets', root).records[0] as { validForEntry: boolean; secret: string };
-    assert.equal(stored.validForEntry, false);
+    const stored = readOperational('issued-tickets', root).records[0] as { validForEntry: boolean; secret: string; secretBox?: string };
+    assert.equal(stored.validForEntry, true);
+    assert.equal(stored.secret, createHash('sha256').update(ticket.secret, 'utf8').digest('hex'));
+    assert.equal(typeof stored.secretBox, 'string');
+    assert.equal(JSON.stringify(stored).includes(`"${ticket.secret}"`), false);
+    await assert.rejects(() => commitTicket({ partyId, offerName: 'Early' }, caller(), now, root, [euroParty(1)]), /sold out/);
     const trace = readOperational('payment-traces', root).records[0] as { status: string; currency: string; purpose: string; amount: number };
-    assert.equal(trace.status, 'pending_provider');
+    assert.equal(trace.status, 'confirmed');
     assert.equal(trace.currency, 'EUR');
     assert.equal(trace.purpose, 'tickets');
     assert.equal(trace.amount, 15);

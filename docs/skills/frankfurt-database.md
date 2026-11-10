@@ -16,20 +16,23 @@ The API image copies `database/` and the public catalog. Do not copy `data/opera
 
 `https://api-dev.tropical-nomads.com` is the HTTPS listener on the existing API load balancer. The task still has no public IP. The Amplify `dev` branch has `API_BASE_URL=https://api-dev.tropical-nomads.com`. It does not have `DB_PASSWORD`. `ACCOUNT_SESSION_SECRET` is the Secrets Manager secret `tropical-nomads/api/session`, and the ECS task receives the same secret. Server actions that are only in this working tree are not on the Amplify branch until that code is pushed.
 
-## Local keys
+## Local development
 
-`database/tunnel.sh` reads the current RDS secret, does not print it, and rewrites only the database lines in the gitignored `.env`:
+`pnpm dev:web` runs the website on `http://127.0.0.1:3100` with `API_BASE_URL=https://api-dev.tropical-nomads.com`. It does not start the API and does not open a database. Cognito lines and `ACCOUNT_SESSION_SECRET` stay in the gitignored `.env`.
 
+`pnpm dev` runs the website and the API. The API reads a PostgreSQL 16 service on this machine. The gitignored `.env` holds:
+
+- `API_BASE_URL=http://127.0.0.1:3101`
 - `DB_HOST=127.0.0.1`
 - `DB_PORT=5432`
 - `DB_NAME=postgres`
 - `DB_USER=tn_app`
-- `DB_PASSWORD` from the current secret
-- `DB_TLS_SERVERNAME` is the RDS hostname, because the certificate is not valid for `127.0.0.1`
+- `DB_PASSWORD` for that local role
+- `DB_SSL=false`
 - `DB_STARTUP_CHECK=true`
 
-Cognito lines and `ACCOUNT_SESSION_SECRET` stay as they are. Leave `API_BASE_URL` on `http://127.0.0.1:3101`.
+Leave `DB_TLS_SERVERNAME` unset. The password stays in `.env`. Apply `node database/migrate.mjs` and `node database/seed.mjs` to this local database.
 
-The EC2 tunnel template is `infra/frankfurt/db-bastion.yaml`. It has no public IP and no SSH. This account cannot create or read an instance profile, so that host is not running. The script instead starts a private Fargate task in the API security group and forwards port 5432 with SSM. Opening the session needs `ssm:StartSession` on that task. This user does not have that permission, so the port does not open yet. Do not work around it by making the database public.
+`database/tunnel.sh` can still open a private session to Frankfurt. The dev commands do not run it. Do not work around a missing session by making the database public.
 
 The next change must not set `PubliclyAccessible`, add `0.0.0.0/0` on 5432, turn on Multi-AZ, or commit a password, a connection string, or an account id.

@@ -106,7 +106,11 @@ const catalogKeys = {
 
 export async function readStoredCatalog(name: StoredCatalog): Promise<unknown> {
   const table = catalogTables[name];
-  const rows = await db().query(`select document from ${table} order by source_order, id`);
+  const rows = await db().query(
+    name === 'events'
+      ? `select document from party where publication = 'published' order by source_order, id`
+      : `select document from ${table} order by source_order, id`,
+  );
   const records = documents(rows.rows);
   if (name === 'socials') {
     return records;
@@ -352,14 +356,15 @@ async function insertCollectionRow(client: Queryable, name: Exclude<StoredCollec
       return;
     case 'issued-tickets':
       await client.query(
-        `insert into issued_ticket (id, party_id, trace_id, buyer_id, secret, created_at, valid_for_entry, document)
-         values ($1, $2, $3, $4, $5, $6, $7, $8::jsonb)`,
+        `insert into issued_ticket (id, party_id, trace_id, buyer_id, secret, secret_box, created_at, valid_for_entry, document)
+         values ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb)`,
         [
           requiredText(record, 'id', name),
           requiredText(record, 'partyId', name),
           requiredText(record, 'traceId', name),
           requiredText(record, 'buyerId', name),
           requiredText(record, 'secret', name),
+          text(record, 'secretBox'),
           requiredText(record, 'createdAt', name),
           record.validForEntry === true,
           document,
@@ -441,4 +446,120 @@ export async function readStoredAvatar(key: string): Promise<Uint8Array | undefi
     return undefined;
   }
   return new Uint8Array(bytes);
+}
+
+export interface StoredPartyRow {
+  origin: string;
+  publication: string;
+  revisions: unknown;
+  offersManaged: boolean;
+  document: unknown;
+}
+
+export interface StoredPartyWrite {
+  origin: string;
+  publication: string;
+  revisions: unknown;
+  offersManaged: boolean;
+  event: Record<string, unknown>;
+}
+
+export async function readStoredPartyRows(): Promise<StoredPartyRow[]> {
+  const rows = await db().query(
+    'select origin, publication, revisions, offers_managed, document from party order by source_order, id',
+  );
+  return rows.rows.map((row) => ({
+    origin: String(row.origin),
+    publication: String(row.publication),
+    revisions: row.revisions,
+    offersManaged: row.offers_managed === true,
+    document: row.document,
+  }));
+}
+
+function partyText(event: Record<string, unknown>, key: string): string | null {
+  const value = event[key];
+  return typeof value === 'string' && value.trim() !== '' ? value : null;
+}
+
+function partyJson(value: unknown): string | null {
+  return value === undefined ? null : JSON.stringify(value);
+}
+
+export async function upsertStoredParty(party: StoredPartyWrite): Promise<void> {
+  const event = party.event;
+  const id = requiredText(event, 'id', 'party');
+  const venue = asRecord(event.venue ?? {}, 'party venue');
+  const offers = partyJson(event.offers);
+  const document = JSON.stringify(event);
+  await withTransaction(async (client) => {
+    const order = await client.query('select coalesce(max(source_order), 0) + 1 as next from party');
+    const sourceOrder = Number(order.rows[0]?.next ?? 1);
+    await client.query(
+      `insert into party (
+        id, title, type, date_start, date_end, timezone, duration_hours, venue_id, venue, lineup_raw,
+        stages, card_artists, partner_ids, timetable_festival_id, media, description, organizer, images,
+        links, source, offers, document, source_order, origin, publication, revisions, offers_managed
+      ) values (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10,
+        $11::jsonb, $12::jsonb, $13, $14, $15::jsonb, $16, $17, $18::jsonb,
+        $19::jsonb, $20::jsonb, $21::jsonb, $22::jsonb, $23, $24, $25, $26::jsonb, $27
+      )
+      on conflict (id) do update set
+        title = excluded.title,
+        type = excluded.type,
+        date_start = excluded.date_start,
+        date_end = excluded.date_end,
+        timezone = excluded.timezone,
+        duration_hours = excluded.duration_hours,
+        venue_id = excluded.venue_id,
+        venue = excluded.venue,
+        lineup_raw = excluded.lineup_raw,
+        stages = excluded.stages,
+        card_artists = excluded.card_artists,
+        partner_ids = excluded.partner_ids,
+        timetable_festival_id = excluded.timetable_festival_id,
+        media = excluded.media,
+        description = excluded.description,
+        organizer = excluded.organizer,
+        images = excluded.images,
+        links = excluded.links,
+        source = excluded.source,
+        offers = excluded.offers,
+        document = excluded.document,
+        origin = excluded.origin,
+        publication = excluded.publication,
+        revisions = excluded.revisions,
+        offers_managed = excluded.offers_managed`,
+      [
+        id,
+        requiredText(event, 'title', 'party'),
+        partyText(event, 'type'),
+        requiredText(event, 'dateStart', 'party'),
+        partyText(event, 'dateEnd'),
+        partyText(event, 'timezone'),
+        typeof event.durationHours === 'number' ? event.durationHours : null,
+        partyText(venue, 'id'),
+        partyJson(event.venue),
+        partyText(event, 'lineupRaw'),
+        partyJson(event.stages),
+        partyJson(event.cardArtists),
+        Array.isArray(event.partnerIds) ? event.partnerIds : [],
+        partyText(event, 'timetableFestivalId'),
+        partyJson(event.media),
+        partyText(event, 'description'),
+        partyText(event, 'organizer'),
+        partyJson(event.images),
+        partyJson(event.links ?? {}),
+        partyJson(event.source),
+        offers,
+        document,
+        sourceOrder,
+        party.origin,
+        party.publication,
+        JSON.stringify(party.revisions ?? []),
+        party.offersManaged,
+      ],
+    );
+  });
 }

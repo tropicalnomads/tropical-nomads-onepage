@@ -1,8 +1,9 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import pg from 'pg';
 import { SHOP_PICKUP, SHOP_PRICE_EUR, SHOP_PRODUCTS } from '../apps/one-pager/src/lib/shop.ts';
+import { offersForCatalogSeed } from './party-seed.mjs';
 import { databaseSettings, sslConfig } from './settings.mjs';
 
 const { Client } = pg;
@@ -55,7 +56,11 @@ async function seedCatalog(client) {
   const agenciesFile = readData('agencies.json');
   const socialsFile = readData('socials.json');
 
-  await client.query('delete from party');
+  const existingParties = await client.query('select id, origin, publication, revisions, offers, offers_managed from party');
+  const kept = new Map(existingParties.rows.map((row) => [row.id, row]));
+  const catalogIds = eventsFile.events.map((event) => event.id);
+  await client.query(`delete from party where origin = 'catalog' and not (id = any($1::text[]))`, [catalogIds]);
+
   await client.query('delete from artist');
   await client.query('delete from venue');
   await client.query('delete from partner');
@@ -65,17 +70,53 @@ async function seedCatalog(client) {
 
   let order = 0;
   for (const event of eventsFile.events) {
+    const row = kept.get(event.id);
+    if (row && row.origin === 'admin') {
+      order += 1;
+      continue;
+    }
     const venue = event.venue && typeof event.venue === 'object' ? event.venue : {};
+    const offers = offersForCatalogSeed(row?.offers_managed === true, row?.offers, event.offers);
+    const document = { ...event, offers: offers ?? undefined };
+    if (document.offers === undefined) {
+      delete document.offers;
+    }
     await client.query(
       `insert into party (
         id, title, type, date_start, date_end, timezone, duration_hours, venue_id, venue, lineup_raw,
         stages, card_artists, partner_ids, timetable_festival_id, media, description, organizer, images,
-        links, source, offers, document, source_order
+        links, source, offers, document, source_order, origin, publication, revisions, offers_managed
       ) values (
         $1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10,
         $11::jsonb, $12::jsonb, $13, $14, $15::jsonb, $16, $17, $18::jsonb,
-        $19::jsonb, $20::jsonb, $21::jsonb, $22::jsonb, $23
-      )`,
+        $19::jsonb, $20::jsonb, $21::jsonb, $22::jsonb, $23, 'catalog', 'published', '[]'::jsonb, false
+      )
+      on conflict (id) do update set
+        title = excluded.title,
+        type = excluded.type,
+        date_start = excluded.date_start,
+        date_end = excluded.date_end,
+        timezone = excluded.timezone,
+        duration_hours = excluded.duration_hours,
+        venue_id = excluded.venue_id,
+        venue = excluded.venue,
+        lineup_raw = excluded.lineup_raw,
+        stages = excluded.stages,
+        card_artists = excluded.card_artists,
+        partner_ids = excluded.partner_ids,
+        timetable_festival_id = excluded.timetable_festival_id,
+        media = excluded.media,
+        description = excluded.description,
+        organizer = excluded.organizer,
+        images = excluded.images,
+        links = excluded.links,
+        source = excluded.source,
+        offers = excluded.offers,
+        document = excluded.document,
+        source_order = excluded.source_order,
+        publication = party.publication,
+        revisions = party.revisions,
+        offers_managed = party.offers_managed`,
       [
         event.id,
         event.title,
@@ -97,8 +138,8 @@ async function seedCatalog(client) {
         json(event.images),
         json(event.links),
         json(event.source),
-        json(event.offers),
-        JSON.stringify(event),
+        json(offers),
+        JSON.stringify(document),
         order,
       ],
     );
@@ -264,7 +305,7 @@ export async function seed(env = process.env) {
     user: settings.user,
     password: settings.password,
     database: settings.database,
-    ssl: sslConfig(settings.servername),
+    ssl: sslConfig(settings.servername, env),
   });
   await client.connect();
   try {
@@ -282,6 +323,10 @@ export async function seed(env = process.env) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const envFile = join(dirname(fileURLToPath(import.meta.url)), '../.env');
+  if (existsSync(envFile)) {
+    process.loadEnvFile(envFile);
+  }
   seed()
     .then((counts) => {
       process.stdout.write(`seeded ${JSON.stringify(counts)}\n`);

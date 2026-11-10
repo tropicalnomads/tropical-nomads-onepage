@@ -26,15 +26,40 @@ export function databaseSettings(env: Record<string, string | undefined> = proce
   return { host, port, user, password, database };
 }
 
-/** TLS server name stays the RDS hostname when a local tunnel uses 127.0.0.1. */
-export function databaseTls(env: Record<string, string | undefined> = process.env): ConnectionOptions {
-  const host = env.DB_HOST?.trim() ?? '';
-  const servername = env.DB_TLS_SERVERNAME?.trim() || host;
-  return {
-    rejectUnauthorized: true,
-    servername,
-    ...(existsSync(rdsCaPath) ? { ca: readFileSync(rdsCaPath, 'utf8') } : {}),
-  };
+type DatabaseSsl = 'require' | 'disable';
+
+/** Unset and `true` require TLS. `false` is the local PostgreSQL on this machine. */
+export function databaseSsl(env: Record<string, string | undefined> = process.env): DatabaseSsl {
+  const value = env.DB_SSL?.trim() ?? '';
+  if (value === '' || value === 'true') {
+    return 'require';
+  }
+  if (value === 'false') {
+    return 'disable';
+  }
+  throw new Error('DB_SSL must be true or false');
+}
+
+/** TLS server name stays the RDS hostname when a connection uses another host. */
+export function databaseTls(env: Record<string, string | undefined> = process.env): ConnectionOptions | false {
+  const mode = databaseSsl(env);
+  switch (mode) {
+    case 'disable':
+      return false;
+    case 'require': {
+      const host = env.DB_HOST?.trim() ?? '';
+      const servername = env.DB_TLS_SERVERNAME?.trim() || host;
+      return {
+        rejectUnauthorized: true,
+        servername,
+        ...(existsSync(rdsCaPath) ? { ca: readFileSync(rdsCaPath, 'utf8') } : {}),
+      };
+    }
+    default: {
+      const unreachable: never = mode;
+      throw new Error(`DB_SSL must be true or false: ${String(unreachable)}`);
+    }
+  }
 }
 
 export function usingDatabase(root?: string, env: Record<string, string | undefined> = process.env): boolean {

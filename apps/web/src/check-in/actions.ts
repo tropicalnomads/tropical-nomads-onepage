@@ -10,6 +10,7 @@ import { callPrivate, currentAccounts } from '../remote-store.ts';
 export interface CheckInActionResult {
   admitted: boolean;
   reason?: CheckInOutcome['reason'] | 'denied';
+  buyerName?: string;
 }
 
 const blockedFields = new Set(['role', 'userId', 'result', 'reason', 'status', 'secret', 'actorId']);
@@ -53,7 +54,11 @@ async function parties(): Promise<string[]> {
 }
 
 function fromOutcome(outcome: CheckInOutcome): CheckInActionResult {
-  return { admitted: outcome.admitted, reason: outcome.reason };
+  return {
+    admitted: outcome.admitted,
+    ...(outcome.reason ? { reason: outcome.reason } : {}),
+    ...(outcome.buyerName ? { buyerName: outcome.buyerName } : {}),
+  };
 }
 
 export async function scanAction(partyId: string, payloadText: string): Promise<CheckInActionResult> {

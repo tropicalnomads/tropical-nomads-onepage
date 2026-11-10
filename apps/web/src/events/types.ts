@@ -10,6 +10,7 @@ export interface InAppOffer {
   name: string;
   amount: number;
   currency: 'EUR';
+  capacity: number;
 }
 
 export interface UpcomingEventCard {

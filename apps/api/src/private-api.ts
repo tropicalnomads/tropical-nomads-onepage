@@ -24,6 +24,7 @@ import {
 } from './check-in.ts';
 import { commitPayment, commitPaymentMethod, loadTraces, type PaymentCaller, type PaymentDraft } from './payments.ts';
 import { openSealed, sessionFromCookie } from './session-token.ts';
+import { commitPartySave, loadAdminParties, type PartyOfferInput, type PartySaveInput } from './parties.ts';
 import { commitTicket, loadIssuedTickets, loadOrders, loadPartyTitles, loadPublishedParties } from './tickets.ts';
 
 export interface PrivateResponse {
@@ -56,6 +57,49 @@ function userCaller(value: unknown, sessionSub: string): PaymentCaller {
     throw new Error('request was not accepted');
   }
   return { role: 'user', actorId: sessionSub };
+}
+
+function adminCaller(value: unknown, sessionSub: string): { role: 'admin'; actorId: string } {
+  if (!isRecord(value) || value.role !== 'admin' || value.actorId !== sessionSub) {
+    throw new Error('request was not accepted');
+  }
+  return { role: 'admin', actorId: sessionSub };
+}
+
+function offerField(value: unknown): string {
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return String(value);
+  }
+  return '';
+}
+
+function partyInput(value: unknown): PartySaveInput {
+  if (!isRecord(value) || !Array.isArray(value.offers)) {
+    throw new Error('event was not saved');
+  }
+  const offers: PartyOfferInput[] = value.offers.map((offer) => {
+    if (!isRecord(offer)) {
+      throw new Error('event was not saved');
+    }
+    return { name: offerField(offer.name), amount: offerField(offer.amount), capacity: offerField(offer.capacity) };
+  });
+  return {
+    ...(typeof value.id === 'string' && value.id !== '' ? { id: value.id } : {}),
+    title: text(value.title, 'event'),
+    dateStart: text(value.dateStart, 'event'),
+    dateEnd: typeof value.dateEnd === 'string' ? value.dateEnd : '',
+    timezone: typeof value.timezone === 'string' ? value.timezone : '',
+    venueName: text(value.venueName, 'event'),
+    venueCity: typeof value.venueCity === 'string' ? value.venueCity : '',
+    description: typeof value.description === 'string' ? value.description : '',
+    imageUrl: typeof value.imageUrl === 'string' ? value.imageUrl : '',
+    artists: typeof value.artists === 'string' ? value.artists : '',
+    offers,
+    publish: value.publish === true,
+  };
 }
 
 function staffCaller(value: unknown, sessionSub: string): CheckInCaller {
@@ -272,6 +316,24 @@ async function runAction(action: string, input: unknown, sessionSub: string | un
       }
       await commitAddGuest(caller, text(input.listId, 'guest'), text(input.name, 'guest'), await loadPublishedEventIds(), new Date().toISOString());
       return { saved: true };
+    }
+    case 'admin-parties': {
+      const sub = requireSignedIn(sessionSub);
+      adminCaller(isRecord(input) ? input.caller : undefined, sub);
+      const accounts = await loadAccounts();
+      const profile = accounts.profiles.find((item) => item.sub === sub && item.status === 'active' && item.role === 'admin');
+      if (!profile) {
+        throw new Error('party is not allowed');
+      }
+      return loadAdminParties();
+    }
+    case 'save-party': {
+      const sub = requireSignedIn(sessionSub);
+      if (!isRecord(input)) {
+        throw new Error('event was not saved');
+      }
+      const caller = adminCaller(input.caller, sub);
+      return commitPartySave(partyInput(input.party), await loadAccounts(), caller);
     }
     case 'avatar': {
       const sub = requireSignedIn(sessionSub);

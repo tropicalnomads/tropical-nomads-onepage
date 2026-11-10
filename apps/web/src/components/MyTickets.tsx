@@ -9,6 +9,7 @@ export interface TicketRow {
   title: string;
   offerName: string;
   createdAt: string;
+  ready: boolean;
   qrSvg?: string;
 }
 
@@ -58,8 +59,17 @@ export function MyTickets({ signedIn, tickets }: { signedIn: boolean; tickets: r
             {open?.qrSvg ? (
               <article className="rounded-2xl border border-white/10 bg-black/20 p-4 md:p-6">
                 <h2 className="text-lg font-semibold text-ozora-cream">{open.title}</h2>
-                <p className="mt-2 text-sm text-ozora-yellow">{ticketText(language, 'unpaid')}</p>
-                <p className="mt-1 text-sm text-ozora-cream/80">{ticketText(language, 'notValid')}</p>
+                {open.ready ? (
+                  <>
+                    <p className="mt-2 text-sm text-ozora-yellow">{ticketText(language, 'ready')}</p>
+                    <p className="mt-1 text-sm text-ozora-cream/80">{ticketText(language, 'notCharged')}</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="mt-2 text-sm text-ozora-yellow">{ticketText(language, 'unpaid')}</p>
+                    <p className="mt-1 text-sm text-ozora-cream/80">{ticketText(language, 'notValid')}</p>
+                  </>
+                )}
                 <div
                   className="mx-auto mt-4 w-full min-w-[240px] max-w-[280px] rounded-2xl bg-[#FFF8E7] p-3"
                   role="img"

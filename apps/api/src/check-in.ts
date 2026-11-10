@@ -62,6 +62,7 @@ export interface CheckInOutcome {
   admitted: boolean;
   reason?: CheckIn['reason'];
   checkIn?: CheckIn;
+  buyerName?: string;
 }
 
 export interface InviteChange {
@@ -366,9 +367,14 @@ function storeCheckIn(
   return [...checkIns, parsed.value];
 }
 
-function outcome(checkIns: readonly CheckIn[], admitted: boolean, reason?: CheckIn['reason']): CheckInOutcome {
+function outcome(checkIns: readonly CheckIn[], admitted: boolean, reason?: CheckIn['reason'], buyerName?: string): CheckInOutcome {
   const checkIn = checkIns[checkIns.length - 1];
-  return { admitted, ...(reason ? { reason } : {}), ...(checkIn ? { checkIn } : {}) };
+  return {
+    admitted,
+    ...(reason ? { reason } : {}),
+    ...(checkIn ? { checkIn } : {}),
+    ...(buyerName ? { buyerName } : {}),
+  };
 }
 
 export function checkInTicket(
@@ -415,7 +421,8 @@ export function checkInTicket(
     return { checkIns: next, outcome: outcome(next, false, 'unpaid') };
   }
   const next = storeCheckIn(checkIns, { partyId, actorId: profile.sub, at: now, result: 'accepted', ticketId }, refs);
-  return { checkIns: next, outcome: outcome(next, true) };
+  const buyerName = buyerNames(file.profiles.find((item) => item.sub === ticket.buyerId))[0];
+  return { checkIns: next, outcome: outcome(next, true, undefined, buyerName) };
 }
 
 export function checkInGuest(

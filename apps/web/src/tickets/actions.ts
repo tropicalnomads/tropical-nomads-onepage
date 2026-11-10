@@ -52,6 +52,8 @@ function noticeFrom(error: unknown): PaymentNotice {
     case 'card number is not allowed':
     case 'account file contains a card number':
       return 'card-rejected';
+    case 'offer is sold out':
+      return 'sold-out';
     default:
       return 'cannot-pay';
   }
@@ -80,10 +82,10 @@ export async function issueTicketAction(formData: FormData): Promise<TicketActio
   try {
     const input = { partyId: field(formData, 'partyId'), offerName: field(formData, 'offerName') };
     const ticket = apiOrigin() ? await callPrivate<IssuedTicket>('issue-ticket', { input, caller: actor }) : await commitTicket(input, actor);
-    if (ticket.validForEntry !== false || !/^ticket-[a-f0-9]{18}$/.test(ticket.id)) {
+    if (ticket.validForEntry !== true || !/^ticket-[a-f0-9]{18}$/.test(ticket.id)) {
       return { notice: 'cannot-pay' };
     }
-    return { notice: 'pending-provider', ticketId: ticket.id };
+    return { notice: 'ticket-ready', ticketId: ticket.id };
   } catch (error) {
     return { notice: noticeFrom(error) };
   }

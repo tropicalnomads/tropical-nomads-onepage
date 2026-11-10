@@ -66,7 +66,7 @@ function CartLink({ menu, onClick }: { menu?: boolean; onClick?: () => void }) {
   );
 }
 
-export function ShellHeader({ signedIn }: { signedIn: boolean }) {
+export function ShellHeader({ signedIn, admin = false }: { signedIn: boolean; admin?: boolean }) {
   const { language } = useLanguage();
   const accountHref = signedIn ? '/account' : '/account/sign-in';
   const accountLabel = signedIn ? accountText(language, 'accountTitle') : accountText(language, 'signIn');
@@ -129,6 +129,11 @@ export function ShellHeader({ signedIn }: { signedIn: boolean }) {
             </a>
           ))}
           <BookingsLink />
+          {admin ? (
+            <a href="/admin/events" className={navLinkClass}>
+              {shellText(language, 'eventsAdmin')}
+            </a>
+          ) : null}
         </nav>
 
         <div className="relative z-20 flex items-center gap-2">
@@ -167,6 +172,15 @@ export function ShellHeader({ signedIn }: { signedIn: boolean }) {
             </a>
           ))}
           <BookingsLink menu onClick={closeMenu} />
+          {admin ? (
+            <a
+              href="/admin/events"
+              onClick={closeMenu}
+              className="rounded-lg px-3 py-2.5 text-left text-base font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+            >
+              {shellText(language, 'eventsAdmin')}
+            </a>
+          ) : null}
           <CartLink menu onClick={closeMenu} />
           <div className="mt-2 border-t border-white/10 px-3 pt-3">
             <LanguageSwitch />

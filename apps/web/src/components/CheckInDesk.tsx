@@ -35,7 +35,7 @@ export interface CheckInGuestRow {
 
 function resultText(language: Parameters<typeof checkInText>[0], result: CheckInActionResult): string {
   if (result.admitted) {
-    return checkInText(language, 'admitted');
+    return result.buyerName ? checkInText(language, 'admittedName').replaceAll('{name}', result.buyerName) : checkInText(language, 'admitted');
   }
   switch (result.reason) {
     case 'already used':

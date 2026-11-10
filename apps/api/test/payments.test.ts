@@ -71,6 +71,7 @@ describe('payment interfaces', () => {
     assert.equal(tickets.trace.currency, 'USD');
     assert.equal(tickets.trace.userId, 'sub-ada');
     assert.equal(tickets.trace.status, 'pending_provider');
+    assert.equal(listTraces(caller(), [{ ...tickets.trace, status: 'confirmed' }], 'sub-ada')[0]?.status, 'confirmed');
     assert.equal(shop.trace.purpose, 'shop');
     assert.equal(shop.trace.currency, 'BRL');
     assert.equal(shop.trace.status, 'pending_provider');

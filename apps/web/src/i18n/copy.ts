@@ -20,9 +20,11 @@ export interface ShellCopy {
   areaDescriptions: Record<WebAreaId, string>;
   events: EventCopy;
   tickets: TicketCopy;
+  eventsAdmin: string;
   checkIn: CheckInCopy;
   account: AccountCopy;
   payments: PaymentCopy;
+  admin: AdminCopy;
 }
 
 export interface AccountCopy {
@@ -131,7 +133,46 @@ export interface PaymentCopy {
   notices: Record<PaymentNotice, string>;
 }
 
-export type PaymentNotice = 'not-signed-in' | 'billing-required' | 'card-rejected' | 'billing-saved' | 'method-saved' | 'cannot-pay' | 'pending-provider';
+export type PaymentNotice =
+  | 'not-signed-in'
+  | 'billing-required'
+  | 'card-rejected'
+  | 'billing-saved'
+  | 'method-saved'
+  | 'cannot-pay'
+  | 'pending-provider'
+  | 'ticket-ready'
+  | 'sold-out';
+
+export interface AdminCopy {
+  title: string;
+  deniedTitle: string;
+  deniedBody: string;
+  newEvent: string;
+  editEvent: string;
+  save: string;
+  publish: string;
+  draft: string;
+  published: string;
+  titleLabel: string;
+  start: string;
+  end: string;
+  timezone: string;
+  venue: string;
+  city: string;
+  description: string;
+  image: string;
+  artists: string;
+  offers: string;
+  offerName: string;
+  price: string;
+  capacity: string;
+  addOffer: string;
+  saved: string;
+  invalid: string;
+  back: string;
+  empty: string;
+}
 
 export type AccountNotice =
   | 'username-required'
@@ -214,6 +255,7 @@ export interface EventCopy {
   buyInApp: string;
   buyInAppAria: string;
   inAppNote: string;
+  capacityLabel: string;
   viewTickets: string;
   eventDetails: string;
   eventDetailsAria: string;
@@ -233,6 +275,8 @@ export interface TicketCopy {
   emptyBody: string;
   unpaid: string;
   notValid: string;
+  ready: string;
+  notCharged: string;
   open: string;
   back: string;
   qrLabel: string;
@@ -256,6 +300,7 @@ export interface CheckInCopy {
   cameraBlocked: string;
   chooseImage: string;
   admitted: string;
+  admittedName: string;
   refused: string;
   alreadyUsed: string;
   wrongParty: string;
@@ -273,6 +318,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
     navHome: 'Home',
     navBookings: 'Bookings',
     calendar: 'Calendar',
+    eventsAdmin: 'Events',
     openMenu: 'Open navigation menu',
     closeMenu: 'Close navigation menu',
     primary: 'Primary',
@@ -291,7 +337,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
     },
     areaDescriptions: {
       'upcoming-events': 'Published parties, with the date, the place, and who is playing.',
-      'my-tickets': 'Your tickets and the QR code for the door. An unpaid ticket is not valid for entry.',
+      'my-tickets': 'Your tickets and the QR code for the door.',
       'check-in': 'Door staff and admins check in a published event. A checked person cannot enter again.',
       shop: 'Two embroidered T-shirts. Buy sends the order on WhatsApp. Nothing is charged here.',
     },
@@ -303,8 +349,9 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       buyTickets: 'Buy tickets',
       buyTicketsAria: 'Buy tickets for {title} on the seller site',
       buyInApp: 'Buy ticket',
-      buyInAppAria: 'Buy a euro ticket for {title}. Payment is not confirmed.',
-      inAppNote: 'The amount is in euro. Nothing is charged until a provider confirms it.',
+      buyInAppAria: 'Buy a euro ticket for {title}.',
+      inAppNote: 'The amount is in euro. No card is charged yet. The ticket is ready for entry.',
+      capacityLabel: '{count} available',
       viewTickets: 'View my tickets',
       eventDetails: 'Event details',
       eventDetailsAria: 'Open event details for {title}',
@@ -323,6 +370,8 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       emptyBody: 'A ticket you buy for a published party will show up here.',
       unpaid: 'Payment is not confirmed.',
       notValid: 'This ticket is not valid for entry.',
+      ready: 'This ticket is ready for entry.',
+      notCharged: 'No card is charged yet.',
       open: 'Open ticket',
       back: 'All tickets',
       qrLabel: 'QR code for {title}',
@@ -345,6 +394,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       cameraBlocked: 'The camera is not available. Choose an image of the code instead.',
       chooseImage: 'Choose an image',
       admitted: 'Checked in.',
+      admittedName: 'Checked in. {name}',
       refused: 'Not admitted.',
       alreadyUsed: 'Already checked in.',
       wrongParty: 'Wrong event.',
@@ -389,6 +439,8 @@ export const shellCopy: Record<Locale, ShellCopy> = {
         'method-saved': 'Payment method saved. Nothing has been charged.',
         'cannot-pay': 'This account cannot pay.',
         'pending-provider': 'The payment is pending. It is not confirmed.',
+        'ticket-ready': 'Your ticket is ready.',
+        'sold-out': 'That ticket is sold out.',
       },
     },
     account: {
@@ -495,12 +547,42 @@ export const shellCopy: Record<Locale, ShellCopy> = {
         'profile-saved': 'Profile saved.',
       },
     },
+    admin: {
+      title: 'Events',
+      deniedTitle: 'Events are closed',
+      deniedBody: 'Only an admin can create an event or set its tickets.',
+      newEvent: 'New event',
+      editEvent: 'Edit event',
+      save: 'Save draft',
+      publish: 'Publish',
+      draft: 'Draft',
+      published: 'Published',
+      titleLabel: 'Title',
+      start: 'Starts',
+      end: 'Ends',
+      timezone: 'Timezone',
+      venue: 'Venue',
+      city: 'City',
+      description: 'Description',
+      image: 'Image URL',
+      artists: 'Artists',
+      offers: 'Tickets',
+      offerName: 'Ticket name',
+      price: 'Price in euro',
+      capacity: 'How many',
+      addOffer: 'Add ticket',
+      saved: 'Event saved.',
+      invalid: 'Check the event and try again.',
+      back: 'All events',
+      empty: 'No events yet.',
+    },
   },
   pt: {
     homeAria: 'Início da Tropical Nomads',
     navHome: 'Início',
     navBookings: 'Bookings',
     calendar: 'Calendário',
+    eventsAdmin: 'Eventos',
     openMenu: 'Abrir menu de navegação',
     closeMenu: 'Fechar menu de navegação',
     primary: 'Principal',
@@ -519,7 +601,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
     },
     areaDescriptions: {
       'upcoming-events': 'Festas publicadas, com a data, o lugar e quem toca.',
-      'my-tickets': 'Os seus ingressos e o QR da porta. Um ingresso não pago não vale para entrar.',
+      'my-tickets': 'Os seus ingressos e o QR da porta.',
       'check-in': 'A porta e os admins fazem o check-in de uma festa publicada. Quem já entrou não entra de novo.',
       shop: 'Duas camisetas bordadas. Comprar envia o pedido no WhatsApp. Nada é cobrado aqui.',
     },
@@ -531,8 +613,9 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       buyTickets: 'Comprar ingressos',
       buyTicketsAria: 'Comprar ingressos para {title} no site do vendedor',
       buyInApp: 'Comprar ingresso',
-      buyInAppAria: 'Comprar um ingresso em euro para {title}. O pagamento não está confirmado.',
-      inAppNote: 'O valor é em euro. Nada é cobrado até um provedor confirmar.',
+      buyInAppAria: 'Comprar um ingresso em euro para {title}.',
+      inAppNote: 'O valor é em euro. Nenhum cartão é cobrado ainda. O ingresso vale para entrar.',
+      capacityLabel: '{count} disponíveis',
       viewTickets: 'Ver meus ingressos',
       eventDetails: 'Detalhes do evento',
       eventDetailsAria: 'Abrir detalhes de {title}',
@@ -551,6 +634,8 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       emptyBody: 'Um ingresso comprado para uma festa publicada aparece aqui.',
       unpaid: 'O pagamento não está confirmado.',
       notValid: 'Este ingresso não vale para entrar.',
+      ready: 'Este ingresso vale para entrar.',
+      notCharged: 'Nenhum cartão é cobrado ainda.',
       open: 'Abrir ingresso',
       back: 'Todos os ingressos',
       qrLabel: 'QR de {title}',
@@ -573,6 +658,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       cameraBlocked: 'A câmera não está disponível. Escolha uma imagem do código.',
       chooseImage: 'Escolher imagem',
       admitted: 'Check-in feito.',
+      admittedName: 'Check-in feito. {name}',
       refused: 'Não entrou.',
       alreadyUsed: 'Já fez check-in.',
       wrongParty: 'Evento errado.',
@@ -617,6 +703,8 @@ export const shellCopy: Record<Locale, ShellCopy> = {
         'method-saved': 'Meio de pagamento salvo. Nada foi cobrado.',
         'cannot-pay': 'Esta conta não pode pagar.',
         'pending-provider': 'O pagamento está pendente. Ele não foi confirmado.',
+        'ticket-ready': 'Seu ingresso está pronto.',
+        'sold-out': 'Esse ingresso está esgotado.',
       },
     },
     account: {
@@ -723,6 +811,35 @@ export const shellCopy: Record<Locale, ShellCopy> = {
         'profile-saved': 'Perfil salvo.',
       },
     },
+    admin: {
+      title: 'Eventos',
+      deniedTitle: 'Eventos fechados',
+      deniedBody: 'Só um admin cria um evento ou define os ingressos.',
+      newEvent: 'Novo evento',
+      editEvent: 'Editar evento',
+      save: 'Salvar rascunho',
+      publish: 'Publicar',
+      draft: 'Rascunho',
+      published: 'Publicado',
+      titleLabel: 'Título',
+      start: 'Começa',
+      end: 'Termina',
+      timezone: 'Fuso horário',
+      venue: 'Local',
+      city: 'Cidade',
+      description: 'Descrição',
+      image: 'URL da imagem',
+      artists: 'Artistas',
+      offers: 'Ingressos',
+      offerName: 'Nome do ingresso',
+      price: 'Preço em euro',
+      capacity: 'Quantidade',
+      addOffer: 'Adicionar ingresso',
+      saved: 'Evento salvo.',
+      invalid: 'Confira o evento e tente de novo.',
+      back: 'Todos os eventos',
+      empty: 'Nenhum evento ainda.',
+    },
   },
 };
 
@@ -733,7 +850,11 @@ export function presentText(language: Locale, key: string, value: string | undef
   return value;
 }
 
-export function shellText<K extends keyof Omit<ShellCopy, 'areas' | 'areaDescriptions' | 'events' | 'tickets' | 'checkIn' | 'account' | 'payments' | 'home'>>(
+export function adminText<K extends keyof AdminCopy>(language: Locale, key: K): string {
+  return presentText(language, `admin.${key}`, shellCopy[language].admin[key]);
+}
+
+export function shellText<K extends keyof Omit<ShellCopy, 'areas' | 'areaDescriptions' | 'events' | 'tickets' | 'checkIn' | 'account' | 'payments' | 'home' | 'admin'>>(
   language: Locale,
   key: K,
 ): string {

@@ -71,7 +71,7 @@ export interface IssuedTicket {
   buyerId: string;
   secret: string;
   createdAt: string;
-  validForEntry: false;
+  validForEntry: boolean;
 }
 
 export interface QrPayload {
@@ -230,9 +230,9 @@ export function parseIssuedTicket(input: unknown, refs: SchemaRefs = {}): ParseR
   if (traceId) requireRef(refs.traceIds, traceId, 'traceId', errors);
   if (buyerId) requireRef(refs.profileIds, buyerId, 'buyerId', errors);
   if (secret && partyId && secret === partyId) errors.push('secret must not be the public party id');
-  if (read.value.validForEntry !== false) errors.push('validForEntry must be false');
-  if (!id || !partyId || !traceId || !buyerId || !secret || !createdAt) return fail(errors);
-  return finish(errors, { id, partyId, traceId, buyerId, secret, createdAt, validForEntry: false });
+  if (typeof read.value.validForEntry !== 'boolean') errors.push('validForEntry must be a boolean');
+  if (!id || !partyId || !traceId || !buyerId || !secret || !createdAt || typeof read.value.validForEntry !== 'boolean') return fail(errors);
+  return finish(errors, { id, partyId, traceId, buyerId, secret, createdAt, validForEntry: read.value.validForEntry });
 }
 
 export function parseQrPayload(input: unknown): ParseResult<QrPayload> {

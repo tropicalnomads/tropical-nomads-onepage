@@ -4,7 +4,7 @@ import { describe, it } from 'node:test';
 import { locales } from 'tropical-nomads-shared';
 import { paymentNotice, paymentText, shellCopy, type PaymentNotice } from '../src/i18n/copy.ts';
 
-const notices: PaymentNotice[] = ['not-signed-in', 'billing-required', 'card-rejected', 'billing-saved', 'method-saved', 'cannot-pay', 'pending-provider'];
+const notices: PaymentNotice[] = ['not-signed-in', 'billing-required', 'card-rejected', 'billing-saved', 'method-saved', 'cannot-pay', 'pending-provider', 'ticket-ready', 'sold-out'];
 
 describe('payment interfaces', () => {
   it('keeps the card number off the account screen and leaves the current shop links', () => {

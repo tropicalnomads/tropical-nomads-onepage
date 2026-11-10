@@ -75,6 +75,7 @@ export interface PartyOffer {
   name: string;
   amount: number;
   currency?: string;
+  capacity?: number;
 }
 
 export interface Party {
@@ -321,12 +322,24 @@ export function parseParty(input: unknown): ParseResult<Party> {
           errors.push('offer must be an object');
           continue;
         }
-        rejectUnknown(offerInput, ['name', 'amount', 'currency'], errors);
+        rejectUnknown(offerInput, ['name', 'amount', 'currency', 'capacity'], errors);
         const name = requireString(offerInput, 'name', errors);
         const amount = requireFinite(offerInput, 'amount', errors);
         const currency = optionalString(offerInput, 'currency', errors);
+        let capacity: number | undefined;
+        if ('capacity' in offerInput && offerInput.capacity !== undefined) {
+          if (typeof offerInput.capacity !== 'number' || !Number.isInteger(offerInput.capacity) || offerInput.capacity < 1 || offerInput.capacity > 100000) {
+            errors.push('capacity is not valid');
+          } else {
+            capacity = offerInput.capacity;
+          }
+        }
         if (name && amount !== undefined) {
-          offers.push(currency ? { name, amount, currency } : { name, amount });
+          const offer: PartyOffer = currency ? { name, amount, currency } : { name, amount };
+          if (capacity !== undefined) {
+            offer.capacity = capacity;
+          }
+          offers.push(offer);
         }
       }
       party.offers = offers;

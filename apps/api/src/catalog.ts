@@ -1,10 +1,10 @@
+import { publishedEventList, readManagedPartyFile } from './parties.ts';
 import { eventsView, readCatalog, readEvents, type PublishedEvents } from './published.ts';
 import { schemas } from './schemas.ts';
 
 /**
- * Every stored party and artist is served.
- * This ticket does not remove a record for a draft, and it does not build calendar entries.
- * Ticket 18 owns that later work.
+ * Published parties and every artist are served.
+ * A draft party stays out of this list.
  */
 export function serveStoredRecords<T>(records: readonly T[]): T[] {
   return [...records];
@@ -30,7 +30,7 @@ export function readPartyCatalog(): PublishedEvents {
     throw new Error('party schema is missing a required field');
   }
   const stored = readEvents();
-  return eventsView(stored, serveStoredRecords(stored.events));
+  return eventsView(stored, serveStoredRecords(publishedEventList(stored.events, readManagedPartyFile())));
 }
 
 export function readArtistCatalog(): CatalogArtists {

@@ -92,7 +92,7 @@ function readEvent(value: unknown, partners: Map<string, UpcomingPartner>): Upco
   const country = readString(venue.country);
   const sale = eventSaleChoice(publicLinks, value.offers);
   const timetableUrl = getEventTimetableUrl(readString(value.timetableFestivalId));
-  const flyer = bannerSrc(readString(images.bannerLocal));
+  const flyer = bannerSrc(readString(images.bannerLocal)) ?? publicHttpsUrl(readString(images.full));
   const mapUrl = publicHttpsUrl(readString(venue.mapUrl));
   const durationHours = typeof value.durationHours === 'number' && Number.isFinite(value.durationHours) ? value.durationHours : undefined;
   return {

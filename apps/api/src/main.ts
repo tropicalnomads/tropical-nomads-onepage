@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { databaseReachable, databaseSettings } from './database.ts';
+import { databaseReachable, databaseSettings, databaseSsl } from './database.ts';
 import { apiHostname, listen } from './server.ts';
 
 const localEnv = resolve(dirname(fileURLToPath(import.meta.url)), '../../../.env');
@@ -17,6 +17,14 @@ function databaseCheckEnabled(value: string | undefined): boolean {
     return true;
   }
   throw new Error('DB_STARTUP_CHECK must be true or false');
+}
+
+try {
+  databaseSsl();
+} catch (error) {
+  const message = error instanceof Error ? error.message : String(error);
+  process.stderr.write(`${message}\n`);
+  process.exit(1);
 }
 
 const port = Number(process.env.API_PORT ?? 8787);

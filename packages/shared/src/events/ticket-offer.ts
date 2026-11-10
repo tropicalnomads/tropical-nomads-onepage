@@ -4,12 +4,14 @@ export interface TicketOfferInput {
   name: string;
   amount: number;
   currency?: string;
+  capacity?: number;
 }
 
 export interface EuroTicketOffer {
   name: string;
   amount: number;
   currency: 'EUR';
+  capacity: number;
 }
 
 export interface EventSaleChoice {
@@ -39,12 +41,21 @@ export function readTicketOffers(value: unknown): TicketOfferInput[] {
     const name = typeof record.name === 'string' ? record.name : '';
     const amount = typeof record.amount === 'number' ? record.amount : Number.NaN;
     const currency = typeof record.currency === 'string' ? record.currency : undefined;
-    offers.push(currency === undefined ? { name, amount } : { name, amount, currency });
+    const capacity = typeof record.capacity === 'number' ? record.capacity : undefined;
+    const offer: TicketOfferInput = currency === undefined ? { name, amount } : { name, amount, currency };
+    if (capacity !== undefined) {
+      offer.capacity = capacity;
+    }
+    offers.push(offer);
   }
   return offers;
 }
 
-/** An in-app offer is priced in euro. A missing currency is not treated as euro. */
+function isCapacity(value: number | undefined): value is number {
+  return typeof value === 'number' && Number.isInteger(value) && value > 0 && value <= 100000;
+}
+
+/** An in-app offer is priced in euro and has a positive capacity. A missing currency is not treated as euro. */
 export function euroTicketOffers(offers: readonly TicketOfferInput[] | undefined): EuroTicketOffer[] {
   if (!offers) {
     return [];
@@ -52,10 +63,10 @@ export function euroTicketOffers(offers: readonly TicketOfferInput[] | undefined
   const selected: EuroTicketOffer[] = [];
   for (const offer of offers) {
     const name = offer.name.trim();
-    if (name === '' || name.length > 80 || offer.currency !== 'EUR' || !isPayableAmount(offer.amount)) {
+    if (name === '' || name.length > 80 || offer.currency !== 'EUR' || !isPayableAmount(offer.amount) || !isCapacity(offer.capacity)) {
       continue;
     }
-    selected.push({ name, amount: offer.amount, currency: 'EUR' });
+    selected.push({ name, amount: offer.amount, currency: 'EUR', capacity: offer.capacity });
   }
   return selected;
 }

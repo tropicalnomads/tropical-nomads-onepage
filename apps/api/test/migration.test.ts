@@ -50,5 +50,11 @@ describe('database migration', () => {
     }
     assert.equal(/on\s+issued_ticket\s*\([^)]*\bsecret\b/i.test(sql), false);
     assert.equal(/create\s+(unique\s+)?index\s+\S+\s+on\s+issued_ticket\s*\(\s*secret\s*\)/i.test(sql), false);
+    const ticketing = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../../../database/migrations/002_ticketing.sql'), 'utf8');
+    assert.match(ticketing, /origin text not null default 'catalog'/);
+    assert.match(ticketing, /publication text not null default 'published'/);
+    assert.match(ticketing, /revisions jsonb not null default '\[\]'::jsonb/);
+    assert.match(ticketing, /secret_box text/);
+    assert.equal(/index[\s\S]*secret_box/i.test(ticketing), false);
   });
 });

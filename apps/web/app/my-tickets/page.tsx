@@ -27,7 +27,7 @@ export default async function MyTicketsPage({ searchParams }: { searchParams: Pr
   const rows: TicketRow[] = [];
   for (const view of views) {
     const open = requested !== undefined && requested === view.id && ticketIdPattern.test(view.id);
-    const row: TicketRow = { id: view.id, title: view.title, offerName: view.offerName, createdAt: view.createdAt };
+    const row: TicketRow = { id: view.id, title: view.title, offerName: view.offerName, createdAt: view.createdAt, ready: view.validForEntry };
     if (open) {
       row.qrSvg = await ticketQrSvg(JSON.parse(ownTicketPayload(caller, tickets, view.id)) as unknown);
     }

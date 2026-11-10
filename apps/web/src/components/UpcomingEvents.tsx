@@ -207,7 +207,7 @@ function TicketPurchase({ event }: { event: UpcomingEventCard }) {
           options={event.inAppOffers.map((offer) => ({
             value: offer.name,
             label: offer.name,
-            description: euroAmount(offer.amount, language),
+            description: `${euroAmount(offer.amount, language)} · ${fill(eventText(language, 'capacityLabel'), { count: String(offer.capacity) })}`,
           }))}
         />
       )}
@@ -225,7 +225,7 @@ function TicketPurchase({ event }: { event: UpcomingEventCard }) {
           {paymentNotice(language, result.notice)}
         </p>
       ) : null}
-      {result?.notice === 'pending-provider' && result.ticketId ? (
+      {result?.notice === 'ticket-ready' && result.ticketId ? (
         <a href={`/my-tickets?ticket=${result.ticketId}`} className="text-sm font-semibold text-ozora-turquoise underline-offset-2 hover:underline">
           {eventText(language, 'viewTickets')}
         </a>

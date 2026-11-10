@@ -11,11 +11,12 @@ describe('euro ticket offers', () => {
       { eventbrite: 'https://www.eventbrite.com/e/example', goabase: 'https://www.goabase.net/party/1' },
       [
         { name: 'Door', amount: 20, currency: 'USD' },
-        { name: 'Early', amount: 15, currency: 'EUR' },
+        { name: 'Early', amount: 15, currency: 'EUR', capacity: 40 },
+        { name: 'Open', amount: 18, currency: 'EUR' },
         { name: 'Blank', amount: 10 },
       ],
     );
-    assert.deepEqual(choice.inAppOffers, [{ name: 'Early', amount: 15, currency: 'EUR' }]);
+    assert.deepEqual(choice.inAppOffers, [{ name: 'Early', amount: 15, currency: 'EUR', capacity: 40 }]);
     assert.equal(choice.ticketsOnSale, false);
     assert.equal(choice.ticketUrl, undefined);
 

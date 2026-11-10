@@ -107,8 +107,8 @@ function integerField(value: unknown, min: number, max: number): number | undefi
 
 function parseStoredTrace(input: unknown): PaymentTrace {
   const parsed = parsePaymentTrace(input);
-  if (!parsed.ok || parsed.value.status !== 'pending_provider') {
-    throw new Error('payment trace is not pending');
+  if (!parsed.ok) {
+    throw new Error('payment trace is not stored');
   }
   return parsed.value;
 }
@@ -240,8 +240,7 @@ export function listTraces(caller: PaymentCaller, traces: readonly PaymentTrace[
   if (decision.effect !== 'allow') {
     throw new Error('payment is not allowed');
   }
-  const visible = visibleTraces(caller, traces, subjectId);
-  return visible.map((trace) => ({ ...trace, status: 'pending_provider' as const }));
+  return [...visibleTraces(caller, traces, subjectId)];
 }
 
 export interface AdminTraceRow {
@@ -250,10 +249,10 @@ export interface AdminTraceRow {
   amount: number;
   currency: string;
   purpose: PaymentPurpose;
-  status: 'pending_provider';
+  status: PaymentTrace['status'];
 }
 
-/** Every pending trace, for an admin. The username is the profile name, never the subject. */
+/** Stored traces for an admin. The username is the profile name, never the subject. */
 export function adminTraceRows(
   caller: PaymentCaller,
   traces: readonly PaymentTrace[],
@@ -269,7 +268,7 @@ export function adminTraceRows(
     amount: trace.amount,
     currency: trace.currency,
     purpose: trace.purpose,
-    status: 'pending_provider',
+    status: trace.status,
   }));
 }
 

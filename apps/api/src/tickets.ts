@@ -8,6 +8,7 @@ import {
   parsePaymentTrace,
   qrPayloadText,
   readTicketOffers,
+  ticketSecretMatches,
   type IssuedTicket,
   type Order,
   type PaymentTrace,
@@ -19,11 +20,13 @@ import { operationalDirectory, readOperational, updateOperational, writeOperatio
 import { startTicketPayment, type PaymentCaller } from './payments.ts';
 import { publishedEventsFrom, type PublishedEvent } from './published.ts';
 import { queueDatabase, readStoredCatalog, readStoredCollection, writeStoredState } from './sql-store.ts';
+import { hashTicketSecret, openTicketSecret, sealStoredTicket } from './ticket-seal.ts';
 
 export interface TicketParty {
   id: string;
   offers?: unknown;
   sourceId?: string;
+  publication?: 'draft' | 'published';
 }
 
 export interface IssueInput {
@@ -45,6 +48,7 @@ export interface TicketView {
   title: string;
   offerName: string;
   createdAt: string;
+  validForEntry: boolean;
 }
 
 export function partyFromPublished(event: PublishedEvent): TicketParty {
@@ -83,8 +87,8 @@ function newId(prefix: string): string {
 
 function storedTrace(input: unknown): PaymentTrace {
   const parsed = parsePaymentTrace(input);
-  if (!parsed.ok || parsed.value.status !== 'pending_provider') {
-    throw new Error('payment trace is not pending');
+  if (!parsed.ok) {
+    throw new Error('payment trace is not stored');
   }
   return parsed.value;
 }
@@ -99,10 +103,28 @@ function storedOrder(input: unknown): Order {
 
 function storedTicket(input: unknown): IssuedTicket {
   const parsed = parseIssuedTicket(input);
-  if (!parsed.ok || parsed.value.validForEntry !== false) {
+  if (!parsed.ok) {
     throw new Error('ticket was not stored');
   }
   return parsed.value;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function openStoredTicket(input: unknown): IssuedTicket {
+  if (!isRecord(input) || typeof input.secretBox !== 'string') {
+    return storedTicket(input);
+  }
+  const plain = openTicketSecret(input.secretBox);
+  const hash = typeof input.secret === 'string' ? input.secret : '';
+  if (!ticketSecretMatches(hash, hashTicketSecret(plain))) {
+    throw new Error('ticket was not stored');
+  }
+  const opened: Record<string, unknown> = { ...input, secret: plain };
+  delete opened.secretBox;
+  return storedTicket(opened);
 }
 
 function requireSelf(caller: PaymentCaller): string {
@@ -127,7 +149,7 @@ function offerNameOf(value: string): string {
 }
 
 /**
- * Issue one unpaid ticket. Writes nothing. Currency is euro. The trace stays pending.
+ * Issue one paid ticket. Writes nothing. Currency is euro. The server marks the trace confirmed.
  */
 export function issueTicket(
   file: AccountFile,
@@ -149,13 +171,20 @@ export function issueTicket(
   }
   const partyId = input.partyId.trim();
   const party = parties.find((item) => item.id === partyId);
-  if (!party) {
+  if (!party || party.publication === 'draft') {
     throw new Error('event is not published');
   }
   const offerName = offerNameOf(input.offerName);
   const offer = euroTicketOffers(readTicketOffers(party.offers)).find((item) => item.name === offerName);
   if (!offer) {
     throw new Error('offer is not for sale');
+  }
+  const sold = orders.reduce((count, order) => {
+    const line = order.lines.find((item) => item.kind === 'ticket' && item.partyId === party.id && item.offerName === offer.name);
+    return count + (line !== undefined && line.kind === 'ticket' ? line.quantity : 0);
+  }, 0);
+  if (sold >= offer.capacity) {
+    throw new Error('offer is sold out');
   }
   const orderId = newId('order');
   const ticketId = newId('ticket');
@@ -169,26 +198,28 @@ export function issueTicket(
   if (started.trace.status !== 'pending_provider' || started.trace.currency !== 'EUR' || started.trace.purpose !== 'tickets') {
     throw new Error('payment trace is not pending');
   }
+  const trace = { ...started.trace, status: 'confirmed' as const };
+  const confirmedTraces = started.traces.map((item) => (item.id === trace.id ? trace : item));
   const orderDraft = {
     id: orderId,
     userId,
     purpose: 'tickets' as const,
     lines: [{ kind: 'ticket' as const, partyId: party.id, offerName: offer.name, quantity: 1 }],
-    traceId: started.trace.id,
+    traceId: trace.id,
     createdAt: now,
   };
   const ticketDraft = {
     id: ticketId,
     partyId: party.id,
-    traceId: started.trace.id,
+    traceId: trace.id,
     buyerId: userId,
     secret,
     createdAt: now,
-    validForEntry: false as const,
+    validForEntry: true,
   };
   const profileIds = file.profiles.map((item) => item.sub);
   const partyIds = parties.map((item) => item.id);
-  const traceIds = started.traces.map((item) => item.id);
+  const traceIds = confirmedTraces.map((item) => item.id);
   const parsedOrder = parseOrder(orderDraft, { profileIds, partyIds, traceIds });
   if (!parsedOrder.ok) {
     throw new Error('ticket was not issued');
@@ -202,17 +233,17 @@ export function issueTicket(
     throw new Error('ticket was not issued');
   }
   return {
-    traces: started.traces,
+    traces: confirmedTraces,
     orders: [...orders, parsedOrder.value],
     tickets: [...tickets, parsedTicket.value],
     ticket: parsedTicket.value,
-    trace: started.trace,
+    trace,
     order: parsedOrder.value,
   };
 }
 
 export function readIssuedTickets(root = operationalDirectory()): IssuedTicket[] {
-  return readOperational('issued-tickets', root).records.map(storedTicket);
+  return readOperational('issued-tickets', root).records.map(openStoredTicket);
 }
 
 export function readOrders(root = operationalDirectory()): Order[] {
@@ -221,7 +252,7 @@ export function readOrders(root = operationalDirectory()): Order[] {
 
 export async function loadIssuedTickets(root?: string): Promise<IssuedTicket[]> {
   if (usingDatabase(root)) {
-    return (await readStoredCollection('issued-tickets')).records.map(storedTicket);
+    return (await readStoredCollection('issued-tickets')).records.map(openStoredTicket);
   }
   return readIssuedTickets(root ?? operationalDirectory());
 }
@@ -305,6 +336,7 @@ export function ownTicketViews(
       title: titles.get(ticket.partyId) ?? ticket.partyId,
       offerName,
       createdAt: ticket.createdAt,
+      validForEntry: ticket.validForEntry,
     };
   });
 }
@@ -343,7 +375,7 @@ export function commitTicket(
         readAccounts(directory),
         readOperational('payment-traces', directory).records.map(storedTrace),
         readOperational('orders', directory).records.map(storedOrder),
-        current.records.map(storedTicket),
+        current.records.map(openStoredTicket),
         catalog,
         input,
         caller,
@@ -352,11 +384,11 @@ export function commitTicket(
       writeOperational('payment-traces', { schemaVersion: 1, records: sale.traces }, directory);
       writeOperational('orders', { schemaVersion: 1, records: sale.orders }, directory);
       ticketId = sale.ticket.id;
-      return { schemaVersion: 1, records: sale.tickets };
+      return { schemaVersion: 1, records: sale.tickets.map((ticket) => sealStoredTicket(ticket)) };
     },
     directory,
   ).then((file) => {
-    const ticket = file.records.map(storedTicket).find((item) => item.id === ticketId);
+    const ticket = file.records.map(openStoredTicket).find((item) => item.id === ticketId);
     if (!ticket) {
       throw new Error('ticket was not stored');
     }
@@ -374,17 +406,17 @@ async function commitTicketOnDatabase(
     const accounts = await loadAccounts();
     const traces = (await readStoredCollection('payment-traces')).records.map(storedTrace);
     const orders = (await readStoredCollection('orders')).records.map(storedOrder);
-    const tickets = (await readStoredCollection('issued-tickets')).records.map(storedTicket);
+    const tickets = (await readStoredCollection('issued-tickets')).records.map(openStoredTicket);
     const catalog = parties ?? (await loadPublishedParties());
     const sale = issueTicket(accounts, traces, orders, tickets, catalog, input, caller, now);
     await writeStoredState({
       collections: {
         'payment-traces': { schemaVersion: 1, records: sale.traces },
         orders: { schemaVersion: 1, records: sale.orders },
-        'issued-tickets': { schemaVersion: 1, records: sale.tickets },
+        'issued-tickets': { schemaVersion: 1, records: sale.tickets.map((ticket) => sealStoredTicket(ticket)) },
       },
     });
-    const stored = (await readStoredCollection('issued-tickets')).records.map(storedTicket).find((item) => item.id === sale.ticket.id);
+    const stored = (await readStoredCollection('issued-tickets')).records.map(openStoredTicket).find((item) => item.id === sale.ticket.id);
     if (!stored) {
       throw new Error('ticket was not stored');
     }
