@@ -1,6 +1,13 @@
+function configuredApiBaseUrl(env: Record<string, string | undefined> | undefined): string {
+  if (env !== undefined && env !== process.env) {
+    return env.API_BASE_URL?.trim() ?? '';
+  }
+  return process.env.API_BASE_URL?.trim() ?? '';
+}
+
 /** Public origin of the API, when a working URL has been configured. */
-export function apiOrigin(env: Record<string, string | undefined> = process.env): string | undefined {
-  const raw = env.API_BASE_URL?.trim() ?? '';
+export function apiOrigin(env?: Record<string, string | undefined>): string | undefined {
+  const raw = configuredApiBaseUrl(env);
   if (raw === '') {
     return undefined;
   }

@@ -14,6 +14,9 @@ function isSize(value: unknown): value is ShopSizeCode {
 }
 
 function parseDescription(value: unknown): ShopCatalogProduct['description'] | undefined {
+  if (value === undefined) {
+    return { en: '', pt: '' };
+  }
   if (!isRecord(value) || typeof value.en !== 'string' || value.en.trim() === '' || typeof value.pt !== 'string' || value.pt.trim() === '') {
     return undefined;
   }

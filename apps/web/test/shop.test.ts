@@ -60,7 +60,45 @@ describe('shop', () => {
       ],
     });
     assert.equal(extra[0]?.id, 'night');
+    const live = parseShopCatalog({
+      products: [
+        {
+          id: 'hw',
+          name: 'Tropical Groove Halloween',
+          image: '/shop/HW_TEE_UV.webp',
+          imageAlt: 'Tropical Groove Halloween T-Shirt, UV embroidery',
+          amount: 50,
+          currency: 'EUR',
+          highlighted: true,
+          pickup: 'The Sound House · Dublin',
+          stockNote: 'lastRun',
+          stock: [{ code: 'M', count: 8 }],
+          whatsappItem: 'Halloween',
+        },
+      ],
+    });
+    assert.equal(live[0]?.id, 'hw');
+    assert.deepEqual(live[0]?.description, { en: '', pt: '' });
+    assert.equal(live[0]?.stock[0]?.count, 8);
     assert.throws(() => parseShopCatalog({ products: [{ id: 'hw' }] }), /products are unavailable/);
+    assert.throws(
+      () =>
+        parseShopCatalog({
+          products: [
+            {
+              id: 'hw',
+              name: 'Tropical Groove Halloween',
+              description: { en: 'Only English' },
+              image: '/shop/HW_TEE_UV.webp',
+              imageAlt: 'Tropical Groove Halloween T-Shirt, UV embroidery',
+              amount: 50,
+              currency: 'EUR',
+              stock: [{ code: 'M', count: 1 }],
+            },
+          ],
+        }),
+      /products are unavailable/,
+    );
     assert.equal(shirtSrc('/shop/HW_TEE_UV.webp'), '/catalog-assets/shop/HW_TEE_UV.webp');
     assert.equal(shirtSrc('/shop/PG_TEE_UV.webp'), '/catalog-assets/shop/PG_TEE_UV.webp');
     assert.equal(catalogAsset('shop', '../events.json'), undefined);

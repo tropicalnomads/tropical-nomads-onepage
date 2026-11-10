@@ -11,6 +11,9 @@ if (existsSync(envPath)) {
 }
 
 const nextConfig: NextConfig = {
+  env: {
+    API_BASE_URL: process.env.API_BASE_URL,
+  },
   reactStrictMode: true,
   experimental: {
     serverActions: {
