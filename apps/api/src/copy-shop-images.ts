@@ -57,6 +57,10 @@ async function copyShopImages(): Promise<void> {
       if (!shopObjectKey(product.id)) {
         throw new Error('shop images were not copied');
       }
+      if (product.image.trim() === '') {
+        process.stdout.write(`skipped ${product.id}\n`);
+        continue;
+      }
       const fromTable = storedBytes.get(product.id);
       const bytes = Buffer.isBuffer(fromTable) ? new Uint8Array(fromTable) : diskImage(product.image);
       const media = `/shop/media/${product.id}`;

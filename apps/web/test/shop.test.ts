@@ -143,7 +143,11 @@ describe('shop', () => {
     assert.equal(product.includes('catalogSizes'), true);
     assert.equal(product.includes('soldOutLabel'), true);
     assert.equal(catalog.includes('soldOutLabel'), true);
-    assert.equal(catalog.includes('/admin/shop/new'), true);
+    assert.equal(catalog.includes('/admin/shop/new'), false);
+    assert.equal(catalog.includes('editProduct'), false);
+    assert.equal(catalog.includes('/admin/shop/${'), false);
+    assert.equal((catalog.match(/href="\/admin\/shop"/g) ?? []).length, 1);
+    assert.equal(catalog.includes("shopText(language, 'admin')"), true);
     assert.equal(product.includes('location.assign'), false);
     assert.equal(product.includes('ShopAddedPanel'), true);
     assert.equal(added.includes('/shop/cart'), true);

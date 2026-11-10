@@ -26,7 +26,7 @@ import { commitPayment, commitPaymentMethod, loadTraces, type PaymentCaller, typ
 import { openSealed, sessionFromCookie } from './session-token.ts';
 import { commitPartySave, loadAdminParties, type PartyOfferInput, type PartySaveInput } from './parties.ts';
 import { placeShopOrder, readShopPurchase } from './shop-orders.ts';
-import { listShopOrders, readShopProductDraft, requireShopAdmin, saveShopProduct } from './shop-products.ts';
+import { deleteShopProduct, listAdminShopProducts, listShopOrders, readAdminShopProduct, readShopProductDraft, requireShopAdmin, saveShopProduct } from './shop-products.ts';
 import { commitTicket, loadIssuedTickets, loadOrders, loadPartyTitles, loadPublishedParties } from './tickets.ts';
 
 export interface PrivateResponse {
@@ -265,6 +265,24 @@ async function runAction(action: string, input: unknown, sessionSub: string | un
     case 'admin-shop-orders': {
       await requireShopAdmin(sessionSub);
       return listShopOrders();
+    }
+    case 'admin-shop-products': {
+      await requireShopAdmin(sessionSub);
+      return listAdminShopProducts();
+    }
+    case 'admin-shop-product': {
+      await requireShopAdmin(sessionSub);
+      if (!isRecord(input) || typeof input.id !== 'string') {
+        throw new Error('products are unavailable');
+      }
+      return (await readAdminShopProduct(input.id)) ?? null;
+    }
+    case 'delete-shop-product': {
+      await requireShopAdmin(sessionSub);
+      if (!isRecord(input) || typeof input.id !== 'string') {
+        throw new Error('product was not deleted');
+      }
+      return deleteShopProduct(input.id);
     }
     case 'issue-ticket': {
       const sub = requireSignedIn(sessionSub);

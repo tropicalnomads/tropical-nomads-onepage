@@ -10,6 +10,7 @@ export interface ShopCatalogProduct {
   amount: number;
   currency: string;
   stock: ShopSizeStock[];
+  hidden?: boolean;
 }
 
 const sizeOrder: readonly ShopSizeCode[] = ['P', 'M', 'G', 'GG', '2XL'];

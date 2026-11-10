@@ -1,10 +1,10 @@
 import { adminActor } from '../../../../src/admin/actions';
+import { loadAdminShopProduct } from '../../../../src/admin/shop-actions';
 import { shopProductValues } from '../../../../src/admin/shop-values';
 import { AdminDenied } from '../../../../src/components/AdminEventList';
 import { AdminShopForm } from '../../../../src/components/AdminShopForm';
 import { ShopMissing } from '../../../../src/components/ShopCatalog';
 import { productImageSrc } from '../../../../src/shop/load-images';
-import { loadShopProducts } from '../../../../src/shop/load-products';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +14,7 @@ export default async function EditShopProductPage({ params }: { params: Promise<
     return <AdminDenied />;
   }
   const { productId } = await params;
-  const product = (await loadShopProducts()).find((item) => item.id === productId);
+  const product = await loadAdminShopProduct(productId);
   if (!product) {
     return (
       <main>

@@ -6,11 +6,13 @@ import { sizeLabel, type ShopSizeCode } from '../../../one-pager/src/lib/shop.ts
 import { shopLeft, shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
 import { catalogSizes, shopAmountLabel, shopProductDescription, stockCount } from '../shop/catalog';
+import { ShopMarkdown } from '../shop/markdown';
 import { shopTotalLabel, type ShopLine } from '../shop/order';
 import { useShopProducts } from '../shop/product-context';
 import { useShopCart } from '../shop/useShopCart';
 import { ShopAddedPanel } from './ShopAddedPanel';
 import { ShopMissing } from './ShopCatalog';
+import { ShopImagePlaceholder } from './ShopImagePlaceholder';
 import { QuantityStepper } from './ShopQuantity';
 
 export function ShopProduct({ productId, image }: { productId: string; image?: string }) {
@@ -59,11 +61,13 @@ export function ShopProduct({ productId, image }: { productId: string; image?: s
         </a>
         <div className="grid gap-8 md:grid-cols-[minmax(0,22rem)_1fr] md:items-start">
           <div className="flex aspect-[4/5] items-center justify-center rounded-3xl border border-white/10 bg-ozora-cream/[0.04] p-6">
-            {image ? <img src={image} alt={product.name} className="max-h-full w-full object-contain" /> : null}
+            {image ? <img src={image} alt={product.name} className="max-h-full w-full object-contain" /> : <ShopImagePlaceholder />}
           </div>
           <div>
             <h1 className="font-display text-4xl font-bold tracking-tight text-ozora-cream">{product.name}</h1>
-            <p className="mt-2 text-sm leading-relaxed text-ozora-cream/70">{shopProductDescription(product, language)}</p>
+            <div className="mt-2 text-sm leading-relaxed text-ozora-cream/70">
+              <ShopMarkdown text={shopProductDescription(product, language)} />
+            </div>
             <p className="mt-4 text-3xl font-bold text-ozora-yellow">{shopAmountLabel(product.amount, product.currency)}</p>
             {stockCount(product.stock) === 0 ? (
               <p className="mt-2 text-sm font-bold uppercase tracking-[0.16em] text-ozora-coral">{shopText(language, 'soldOutLabel')}</p>

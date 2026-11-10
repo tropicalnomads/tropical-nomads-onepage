@@ -27,6 +27,7 @@ export interface ShopCopy {
   orderFailed: string;
   addProduct: string;
   editProduct: string;
+  admin: string;
   orders: string;
   orderReady: string;
   openWhatsapp: string;
@@ -36,8 +37,57 @@ export interface ShopCopy {
   productSaved: string;
   productInvalid: string;
   titleLabel: string;
-  textEn: string;
-  textPt: string;
+  descriptionLabel: string;
+  removeImage: string;
+  uploadImage: string;
+  replaceImage: string;
+  noImage: string;
+  imagePlaceholder: string;
+  imageInvalid: string;
+  productImage: string;
+  imageRatio: string;
+  cropImage: string;
+  cropHelp: string;
+  zoom: string;
+  cancel: string;
+  useImage: string;
+  croppingImage: string;
+  productDetails: string;
+  detailsHelp: string;
+  editorIntro: string;
+  boldText: string;
+  italicText: string;
+  markdownHelp: string;
+  preview: string;
+  stockHelp: string;
+  pieces: string;
+  savingProduct: string;
+  visibility: string;
+  visibleHelp: string;
+  hiddenHelp: string;
+  showProduct: string;
+  hideProduct: string;
+  visibleProduct: string;
+  hiddenProduct: string;
+  deleteProduct: string;
+  deleteWarning: string;
+  confirmDelete: string;
+  deletingProduct: string;
+  deleteFailed: string;
+  reviewChanges: string;
+  checkProduct: string;
+  reviewHelp: string;
+  editChanges: string;
+  saveChanges: string;
+  productCreated: string;
+  productUpdated: string;
+  createdNext: string;
+  updatedNext: string;
+  addAnotherProduct: string;
+  continueEditing: string;
+  goToShop: string;
+  productsLabel: string;
+  noProducts: string;
   priceLabel: string;
   imageLabel: string;
   imageHelp: string;
@@ -113,6 +163,7 @@ export const shopCopy: Record<Locale, ShopCopy> = {
     orderFailed: 'The order was not saved. Your cart is unchanged.',
     addProduct: 'Add product',
     editProduct: 'Edit',
+    admin: 'Admin',
     orders: 'Orders',
     orderReady: 'Your order is saved.',
     openWhatsapp: 'Open WhatsApp',
@@ -120,10 +171,59 @@ export const shopCopy: Record<Locale, ShopCopy> = {
     missingOrder: 'This browser does not have an order to show.',
     saveProduct: 'Save product',
     productSaved: 'The product is saved.',
-    productInvalid: 'The product was not saved. Check the title, both texts, the price, and the image.',
+    productInvalid: 'The product was not saved. Check the title, the description, and the price.',
     titleLabel: 'Title',
-    textEn: 'English text',
-    textPt: 'Portuguese text',
+    descriptionLabel: 'Description',
+    removeImage: 'Remove image',
+    uploadImage: 'Upload image',
+    replaceImage: 'Replace image',
+    noImage: 'No image yet',
+    imagePlaceholder: 'Upload a photo and crop it to the same 4:5 frame used in the shop.',
+    imageInvalid: 'Choose a JPEG, PNG, or WebP image up to 5 MB.',
+    productImage: 'Product image',
+    imageRatio: '4:5 shop frame',
+    cropImage: 'Crop product image',
+    cropHelp: 'Move and zoom the photo until the shirt sits cleanly inside the frame.',
+    zoom: 'Zoom',
+    cancel: 'Cancel',
+    useImage: 'Use this photo',
+    croppingImage: 'Preparing photo…',
+    productDetails: 'Product details',
+    detailsHelp: 'Name, description, price, and availability.',
+    editorIntro: 'Keep the product photo, details, and stock together in one clear editor.',
+    boldText: 'Bold',
+    italicText: 'Italic',
+    markdownHelp: 'Emoji, bold, italics, and line breaks are supported.',
+    preview: 'Preview',
+    stockHelp: 'Enter the number available for each size. Use 0 for sold out.',
+    pieces: 'pieces',
+    savingProduct: 'Saving…',
+    visibility: 'Shop visibility',
+    visibleHelp: 'This product is visible and available in the public shop.',
+    hiddenHelp: 'This product is hidden from customers but remains available here.',
+    showProduct: 'Show product in shop',
+    hideProduct: 'Hide product from shop',
+    visibleProduct: 'Visible',
+    hiddenProduct: 'Hidden',
+    deleteProduct: 'Delete product',
+    deleteWarning: 'Delete “{name}”? This removes its stock and image permanently. This action cannot be undone.',
+    confirmDelete: 'Yes, delete product',
+    deletingProduct: 'Deleting…',
+    deleteFailed: 'The product could not be deleted. Try again.',
+    reviewChanges: 'Final review',
+    checkProduct: 'Check before saving',
+    reviewHelp: 'Confirm the photo, details, stock, and visibility.',
+    editChanges: 'Back to edit',
+    saveChanges: 'Save changes',
+    productCreated: 'Product created',
+    productUpdated: 'Changes saved',
+    createdNext: 'The product is ready. Add another one or see it in the shop.',
+    updatedNext: 'The latest product details are saved.',
+    addAnotherProduct: 'Add another product',
+    continueEditing: 'Continue editing',
+    goToShop: 'Go to shop',
+    productsLabel: 'Products',
+    noProducts: 'No products yet.',
     priceLabel: 'Price (EUR)',
     imageLabel: 'Image',
     imageHelp: 'JPEG, PNG, or WebP. At most 5 MB.',
@@ -197,6 +297,7 @@ export const shopCopy: Record<Locale, ShopCopy> = {
     orderFailed: 'O pedido não foi gravado. O carrinho continua igual.',
     addProduct: 'Adicionar produto',
     editProduct: 'Editar',
+    admin: 'Admin',
     orders: 'Pedidos',
     orderReady: 'O pedido foi gravado.',
     openWhatsapp: 'Abrir WhatsApp',
@@ -204,10 +305,59 @@ export const shopCopy: Record<Locale, ShopCopy> = {
     missingOrder: 'Este navegador não tem um pedido para mostrar.',
     saveProduct: 'Salvar produto',
     productSaved: 'O produto foi salvo.',
-    productInvalid: 'O produto não foi salvo. Confira o título, os dois textos, o preço e a imagem.',
+    productInvalid: 'O produto não foi salvo. Confira o título, a descrição e o preço.',
     titleLabel: 'Título',
-    textEn: 'Texto em inglês',
-    textPt: 'Texto em português',
+    descriptionLabel: 'Descrição',
+    removeImage: 'Remover imagem',
+    uploadImage: 'Enviar imagem',
+    replaceImage: 'Trocar imagem',
+    noImage: 'Ainda sem imagem',
+    imagePlaceholder: 'Envie uma foto e recorte no mesmo formato 4:5 usado na loja.',
+    imageInvalid: 'Escolha uma imagem JPEG, PNG ou WebP de até 5 MB.',
+    productImage: 'Imagem do produto',
+    imageRatio: 'Formato 4:5 da loja',
+    cropImage: 'Recortar imagem do produto',
+    cropHelp: 'Mova e amplie a foto até que a camiseta fique bem enquadrada.',
+    zoom: 'Zoom',
+    cancel: 'Cancelar',
+    useImage: 'Usar esta foto',
+    croppingImage: 'Preparando foto…',
+    productDetails: 'Detalhes do produto',
+    detailsHelp: 'Nome, descrição, preço e disponibilidade.',
+    editorIntro: 'Mantenha a foto, os detalhes e o estoque do produto em um único editor.',
+    boldText: 'Negrito',
+    italicText: 'Itálico',
+    markdownHelp: 'Aceita emoji, negrito, itálico e quebras de linha.',
+    preview: 'Prévia',
+    stockHelp: 'Informe a quantidade disponível por tamanho. Use 0 para esgotado.',
+    pieces: 'peças',
+    savingProduct: 'Salvando…',
+    visibility: 'Visibilidade na loja',
+    visibleHelp: 'Este produto está visível e disponível na loja pública.',
+    hiddenHelp: 'Este produto está oculto para clientes, mas continua disponível aqui.',
+    showProduct: 'Mostrar produto na loja',
+    hideProduct: 'Ocultar produto da loja',
+    visibleProduct: 'Visível',
+    hiddenProduct: 'Oculto',
+    deleteProduct: 'Excluir produto',
+    deleteWarning: 'Excluir “{name}”? Isso remove permanentemente o estoque e a imagem. Esta ação não pode ser desfeita.',
+    confirmDelete: 'Sim, excluir produto',
+    deletingProduct: 'Excluindo…',
+    deleteFailed: 'Não foi possível excluir o produto. Tente novamente.',
+    reviewChanges: 'Revisão final',
+    checkProduct: 'Confira antes de salvar',
+    reviewHelp: 'Confirme a foto, os detalhes, o estoque e a visibilidade.',
+    editChanges: 'Voltar para editar',
+    saveChanges: 'Salvar alterações',
+    productCreated: 'Produto criado',
+    productUpdated: 'Alterações salvas',
+    createdNext: 'O produto está pronto. Adicione outro ou veja na loja.',
+    updatedNext: 'Os dados mais recentes do produto foram salvos.',
+    addAnotherProduct: 'Adicionar outro produto',
+    continueEditing: 'Continuar editando',
+    goToShop: 'Ir para a loja',
+    productsLabel: 'Produtos',
+    noProducts: 'Ainda não há produtos.',
     priceLabel: 'Preço (EUR)',
     imageLabel: 'Imagem',
     imageHelp: 'JPEG, PNG ou WebP. No máximo 5 MB.',

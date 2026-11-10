@@ -53,6 +53,23 @@ function parseProduct(value: unknown): ShopCatalogProduct | undefined {
   };
 }
 
+export function parseAdminProductCatalog(body: unknown): ShopCatalogProduct[] {
+  if (!Array.isArray(body)) {
+    throw new Error('products are unavailable');
+  }
+  const products = body.flatMap((item) => {
+    const product = parseProduct(item);
+    if (!product || !isRecord(item)) {
+      return [];
+    }
+    return [{ ...product, hidden: item.hidden === true }];
+  });
+  if (products.length !== body.length) {
+    throw new Error('products are unavailable');
+  }
+  return products;
+}
+
 export function parseShopCatalog(body: unknown): ShopCatalogProduct[] {
   if (!isRecord(body) || !Array.isArray(body.products)) {
     throw new Error('products are unavailable');

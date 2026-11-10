@@ -3,23 +3,25 @@ import { catalogSizes, type ShopCatalogProduct } from '../shop/catalog.ts';
 
 export const shopSizeCodes = ['P', 'M', 'G', 'GG', '2XL'] as const satisfies readonly ShopSizeCode[];
 
+export type ShopImageAction = 'keep' | 'remove';
+
 export interface ShopProductValues {
   id: string;
   name: string;
-  descriptionEn: string;
-  descriptionPt: string;
+  description: string;
   amount: string;
   stock: Record<ShopSizeCode, number>;
+  hidden: boolean;
   image?: string;
 }
 
 export const emptyShopProduct: ShopProductValues = {
   id: '',
   name: '',
-  descriptionEn: '',
-  descriptionPt: '',
+  description: '',
   amount: '',
   stock: { P: 0, M: 0, G: 0, GG: 0, '2XL': 0 },
+  hidden: false,
 };
 
 export function shopProductValues(product: ShopCatalogProduct, image?: string): ShopProductValues {
@@ -30,10 +32,10 @@ export function shopProductValues(product: ShopCatalogProduct, image?: string): 
   return {
     id: product.id,
     name: product.name,
-    descriptionEn: product.description.en,
-    descriptionPt: product.description.pt,
+    description: product.description.en,
     amount: String(product.amount),
     stock,
+    hidden: product.hidden === true,
     ...(image ? { image } : {}),
   };
 }

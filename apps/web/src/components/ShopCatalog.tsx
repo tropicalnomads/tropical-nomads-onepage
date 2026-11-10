@@ -3,8 +3,10 @@
 import { shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
 import { shopAmountLabel, shopProductDescription, stockCount } from '../shop/catalog';
+import { ShopMarkdown } from '../shop/markdown';
 import type { ShopImageSources } from '../shop/images';
 import { useShopProducts } from '../shop/product-context';
+import { ShopImagePlaceholder } from './ShopImagePlaceholder';
 
 export type { ShopImageSources };
 
@@ -22,20 +24,12 @@ export function ShopCatalog({ imageSources, admin = false }: { imageSources: Sho
         <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
           <h1 className="font-display text-4xl font-bold tracking-tight text-ozora-cream md:text-5xl">{shopText(language, 'title')}</h1>
           {admin ? (
-            <div className="flex flex-wrap gap-2">
-              <a
-                href="/admin/shop/new"
-                className="inline-flex h-11 items-center justify-center rounded-full bg-ozora-yellow px-5 text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral"
-              >
-                {shopText(language, 'addProduct')}
-              </a>
-              <a
-                href="/admin/shop"
-                className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-bold text-ozora-cream transition hover:bg-white/10"
-              >
-                {shopText(language, 'orders')}
-              </a>
-            </div>
+            <a
+              href="/admin/shop"
+              className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-bold text-ozora-cream transition hover:bg-white/10"
+            >
+              {shopText(language, 'admin')}
+            </a>
           ) : null}
         </div>
         <p className="mt-3 max-w-2xl text-base leading-relaxed text-ozora-cream/75">{shopText(language, 'subtitle')}</p>
@@ -44,23 +38,19 @@ export function ShopCatalog({ imageSources, admin = false }: { imageSources: Sho
             const pieces = stockCount(product.stock);
             return (
               <article key={product.id} className={cardClass}>
-                {admin ? (
-                  <a
-                    href={`/admin/shop/${product.id}`}
-                    className="absolute right-3 top-3 z-10 inline-flex h-9 items-center rounded-full border border-white/20 bg-ozora-ink/85 px-3 text-xs font-bold text-ozora-cream transition hover:bg-ozora-ink"
-                  >
-                    {shopText(language, 'editProduct')}
-                  </a>
-                ) : null}
                 <a href={`/shop/${product.id}`} className="block">
                   <div className="flex aspect-[4/5] items-center justify-center bg-ozora-cream/[0.04] p-6">
                     {imageSources[product.id] ? (
                       <img src={imageSources[product.id]} alt={product.name} className="max-h-full w-full object-contain transition duration-300 group-hover:scale-[1.02]" />
-                    ) : null}
+                    ) : (
+                      <ShopImagePlaceholder />
+                    )}
                   </div>
                   <div className="space-y-2 p-5">
                     <h2 className="font-display text-2xl font-bold text-ozora-cream">{product.name}</h2>
-                    <p className="text-sm leading-relaxed text-ozora-cream/70">{shopProductDescription(product, language)}</p>
+                    <div className="text-sm leading-relaxed text-ozora-cream/70">
+                      <ShopMarkdown text={shopProductDescription(product, language)} />
+                    </div>
                     <div className="flex items-end justify-between gap-3 pt-2">
                       <p className="text-xl font-bold text-ozora-yellow">{shopAmountLabel(product.amount, product.currency)}</p>
                       <p className={`text-xs font-semibold uppercase tracking-[0.14em] ${pieces === 0 ? 'text-ozora-coral' : 'text-ozora-cream/55'}`}>
