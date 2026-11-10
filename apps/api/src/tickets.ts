@@ -2,7 +2,8 @@ import { randomBytes } from 'node:crypto';
 import {
   accountCanPurchase,
   decideAccess,
-  euroTicketOffers,
+  loteOffers,
+  loteStatusFor,
   parseIssuedTicket,
   parseOrder,
   parsePaymentTrace,
@@ -175,16 +176,34 @@ export function issueTicket(
     throw new Error('event is not published');
   }
   const offerName = offerNameOf(input.offerName);
-  const offer = euroTicketOffers(readTicketOffers(party.offers)).find((item) => item.name === offerName);
+  const catalog = loteOffers(readTicketOffers(party.offers));
+  const offer = catalog.find((item) => item.name === offerName);
   if (!offer) {
     throw new Error('offer is not for sale');
   }
-  const sold = orders.reduce((count, order) => {
-    const line = order.lines.find((item) => item.kind === 'ticket' && item.partyId === party.id && item.offerName === offer.name);
-    return count + (line !== undefined && line.kind === 'ticket' ? line.quantity : 0);
-  }, 0);
-  if (sold >= offer.capacity) {
-    throw new Error('offer is sold out');
+  const soldByName: Record<string, number> = {};
+  for (const order of orders) {
+    for (const line of order.lines) {
+      if (line.kind !== 'ticket' || line.partyId !== party.id) {
+        continue;
+      }
+      soldByName[line.offerName] = (soldByName[line.offerName] ?? 0) + line.quantity;
+    }
+  }
+  const status = loteStatusFor(catalog, offer.name, soldByName, new Date(now));
+  switch (status) {
+    case 'on-sale':
+      break;
+    case 'sold-out':
+      throw new Error('offer is sold out');
+    case 'scheduled':
+    case 'ended':
+    case undefined:
+      throw new Error('offer is not for sale');
+    default: {
+      const unexpected: never = status;
+      throw new Error(unexpected);
+    }
   }
   const orderId = newId('order');
   const ticketId = newId('ticket');
@@ -255,6 +274,25 @@ export async function loadIssuedTickets(root?: string): Promise<IssuedTicket[]> 
     return (await readStoredCollection('issued-tickets')).records.map(openStoredTicket);
   }
   return readIssuedTickets(root ?? operationalDirectory());
+}
+
+export function summarizeTicketSales(orders: readonly Order[]): { partyId: string; offerName: string; sold: number }[] {
+  const counts = new Map<string, { partyId: string; offerName: string; sold: number }>();
+  for (const order of orders) {
+    for (const line of order.lines) {
+      if (line.kind !== 'ticket') {
+        continue;
+      }
+      const key = `${line.partyId}\n${line.offerName}`;
+      const current = counts.get(key);
+      if (current) {
+        current.sold += line.quantity;
+      } else {
+        counts.set(key, { partyId: line.partyId, offerName: line.offerName, sold: line.quantity });
+      }
+    }
+  }
+  return [...counts.values()];
 }
 
 export async function loadOrders(root?: string): Promise<Order[]> {

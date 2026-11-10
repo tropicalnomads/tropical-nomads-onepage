@@ -1,7 +1,8 @@
 import { adminActor } from '../../../../src/admin/actions';
 import { emptyEventValues } from '../../../../src/admin/values';
+import { loadArtistProfiles } from '../../../../src/artists/load';
 import { AdminEventForm } from '../../../../src/components/AdminEventForm';
-import { AdminDenied, AdminEventEditor } from '../../../../src/components/AdminEventList';
+import { AdminDenied } from '../../../../src/components/AdminEventList';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,9 +11,5 @@ export default async function NewAdminEventPage() {
   if (!actor) {
     return <AdminDenied />;
   }
-  return (
-    <AdminEventEditor heading="newEvent">
-      <AdminEventForm values={emptyEventValues()} />
-    </AdminEventEditor>
-  );
+  return <AdminEventForm values={emptyEventValues()} artists={await loadArtistProfiles()} sold={{}} phase="draft" />;
 }

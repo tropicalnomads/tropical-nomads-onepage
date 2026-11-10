@@ -154,6 +154,14 @@ export interface AdminCopy {
   publish: string;
   draft: string;
   published: string;
+  ended: string;
+  comingUp: string;
+  endedSection: string;
+  statusCount: string;
+  ticketType: string;
+  ticketTypes: string;
+  ticketFrom: string;
+  ticketCapacity: string;
   titleLabel: string;
   start: string;
   end: string;
@@ -172,6 +180,74 @@ export interface AdminCopy {
   invalid: string;
   back: string;
   empty: string;
+  detailsTab: string;
+  ticketsTab: string;
+  flyer: string;
+  flyerRatio: string;
+  removeImage: string;
+  uploadImage: string;
+  replaceImage: string;
+  noImage: string;
+  imagePlaceholder: string;
+  imageInvalid: string;
+  imageHelp: string;
+  cropImage: string;
+  cropHelp: string;
+  zoom: string;
+  cancel: string;
+  useImage: string;
+  croppingImage: string;
+  eventDetails: string;
+  detailsHelp: string;
+  when: string;
+  date: string;
+  time: string;
+  place: string;
+  lineup: string;
+  lineupHelp: string;
+  lineupSearch: string;
+  lineupEmpty: string;
+  addName: string;
+  editArtist: string;
+  artistProfile: string;
+  artistBio: string;
+  soundcloud: string;
+  instagram: string;
+  website: string;
+  saveArtist: string;
+  artistSaved: string;
+  artistInvalid: string;
+  artistName: string;
+  artistPhoto: string;
+  artistPhotoRatio: string;
+  artistNoPhoto: string;
+  artistPhotoPlaceholder: string;
+  artistPhotoHelp: string;
+  artistCrop: string;
+  artistCropHelp: string;
+  openArtist: string;
+  noArtists: string;
+  ticketLadder: string;
+  ticketHelp: string;
+  addType: string;
+  typeName: string;
+  addLote: string;
+  loteName: string;
+  loteEnds: string;
+  moveUp: string;
+  moveDown: string;
+  removeLote: string;
+  onSale: string;
+  scheduled: string;
+  soldOut: string;
+  loteEnded: string;
+  preview: string;
+  boldText: string;
+  italicText: string;
+  markdownHelp: string;
+  saving: string;
+  country: string;
+  genres: string;
 }
 
 export type AccountNotice =
@@ -557,6 +633,14 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       publish: 'Publish',
       draft: 'Draft',
       published: 'Published',
+      ended: 'Ended',
+      comingUp: 'Coming up',
+      endedSection: 'Ended',
+      statusCount: '{count} {status}',
+      ticketType: '{count} ticket type',
+      ticketTypes: '{count} ticket types',
+      ticketFrom: 'from {price}',
+      ticketCapacity: 'capacity {count}',
       titleLabel: 'Title',
       start: 'Starts',
       end: 'Ends',
@@ -575,6 +659,74 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       invalid: 'Check the event and try again.',
       back: 'All events',
       empty: 'No events yet.',
+      detailsTab: 'Details',
+      ticketsTab: 'Tickets',
+      flyer: 'Flyer',
+      flyerRatio: 'Portrait 3:4',
+      removeImage: 'Remove',
+      uploadImage: 'Upload image',
+      replaceImage: 'Replace image',
+      noImage: 'No flyer yet',
+      imagePlaceholder: 'JPG, PNG, or WebP. Cropped to the event card.',
+      imageInvalid: 'Use a JPG, PNG, or WebP under 5 MB.',
+      imageHelp: 'This is the image on the event card.',
+      cropImage: 'Crop flyer',
+      cropHelp: 'Drag and zoom until the flyer fills the frame.',
+      zoom: 'Zoom',
+      cancel: 'Cancel',
+      useImage: 'Use image',
+      croppingImage: 'Cropping…',
+      eventDetails: 'Event',
+      detailsHelp: 'Name, description, and when it happens.',
+      when: 'When',
+      date: 'Date',
+      time: 'Time',
+      place: 'Place',
+      lineup: 'Lineup',
+      lineupHelp: 'Search the artist database or add a name.',
+      lineupSearch: 'Search artists',
+      lineupEmpty: 'No artists on the lineup yet.',
+      addName: 'Add name',
+      editArtist: 'Edit profile',
+      artistProfile: 'Artist profile',
+      artistBio: 'Bio',
+      soundcloud: 'SoundCloud',
+      instagram: 'Instagram',
+      website: 'Website',
+      saveArtist: 'Save artist',
+      artistSaved: 'Artist saved.',
+      artistInvalid: 'Check the artist and try again.',
+      artistName: 'Name',
+      artistPhoto: 'Photo',
+      artistPhotoRatio: 'Square',
+      artistNoPhoto: 'No photo yet',
+      artistPhotoPlaceholder: 'JPG, PNG, or WebP. Cropped square.',
+      artistPhotoHelp: 'This photo is on the artist page.',
+      artistCrop: 'Crop photo',
+      artistCropHelp: 'Drag and zoom until the photo fills the frame.',
+      openArtist: 'Artist page',
+      noArtists: 'No matching artists.',
+      ticketLadder: 'Ticket types',
+      ticketHelp: 'Each type sells one lote at a time. The next lote opens when the earlier one sells out or its end date passes.',
+      addType: 'Add ticket type',
+      typeName: 'Type name',
+      addLote: 'Add lote',
+      loteName: 'Lote',
+      loteEnds: 'End date',
+      moveUp: 'Move up',
+      moveDown: 'Move down',
+      removeLote: 'Remove',
+      onSale: 'On sale',
+      scheduled: 'Scheduled',
+      soldOut: 'Sold out',
+      loteEnded: 'Ended',
+      preview: 'Preview',
+      boldText: 'Bold',
+      italicText: 'Italic',
+      markdownHelp: 'Bold and italic',
+      saving: 'Saving…',
+      country: 'Country',
+      genres: 'Genres',
     },
   },
   pt: {
@@ -821,6 +973,14 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       publish: 'Publicar',
       draft: 'Rascunho',
       published: 'Publicado',
+      ended: 'Encerrado',
+      comingUp: 'A seguir',
+      endedSection: 'Encerrados',
+      statusCount: '{count} {status}',
+      ticketType: '{count} tipo de ingresso',
+      ticketTypes: '{count} tipos de ingresso',
+      ticketFrom: 'desde {price}',
+      ticketCapacity: 'capacidade {count}',
       titleLabel: 'Título',
       start: 'Começa',
       end: 'Termina',
@@ -839,6 +999,74 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       invalid: 'Confira o evento e tente de novo.',
       back: 'Todos os eventos',
       empty: 'Nenhum evento ainda.',
+      detailsTab: 'Detalhes',
+      ticketsTab: 'Ingressos',
+      flyer: 'Cartaz',
+      flyerRatio: 'Retrato 3:4',
+      removeImage: 'Remover',
+      uploadImage: 'Enviar imagem',
+      replaceImage: 'Trocar imagem',
+      noImage: 'Ainda sem cartaz',
+      imagePlaceholder: 'JPG, PNG ou WebP. Recortada para o cartão do evento.',
+      imageInvalid: 'Use JPG, PNG ou WebP até 5 MB.',
+      imageHelp: 'Esta é a imagem no cartão do evento.',
+      cropImage: 'Recortar cartaz',
+      cropHelp: 'Arraste e amplie até o cartaz preencher o quadro.',
+      zoom: 'Zoom',
+      cancel: 'Cancelar',
+      useImage: 'Usar imagem',
+      croppingImage: 'Recortando…',
+      eventDetails: 'Evento',
+      detailsHelp: 'Nome, descrição e quando acontece.',
+      when: 'Quando',
+      date: 'Data',
+      time: 'Hora',
+      place: 'Local',
+      lineup: 'Lineup',
+      lineupHelp: 'Procure na base de artistas ou adicione um nome.',
+      lineupSearch: 'Procurar artistas',
+      lineupEmpty: 'Ainda não há artistas no lineup.',
+      addName: 'Adicionar nome',
+      editArtist: 'Editar perfil',
+      artistProfile: 'Perfil do artista',
+      artistBio: 'Bio',
+      soundcloud: 'SoundCloud',
+      instagram: 'Instagram',
+      website: 'Site',
+      saveArtist: 'Salvar artista',
+      artistSaved: 'Artista salvo.',
+      artistInvalid: 'Confira o artista e tente de novo.',
+      artistName: 'Nome',
+      artistPhoto: 'Foto',
+      artistPhotoRatio: 'Quadrada',
+      artistNoPhoto: 'Ainda sem foto',
+      artistPhotoPlaceholder: 'JPG, PNG ou WebP. Recortada em quadrado.',
+      artistPhotoHelp: 'Esta foto aparece na página do artista.',
+      artistCrop: 'Recortar foto',
+      artistCropHelp: 'Arraste e amplie até a foto preencher o quadro.',
+      openArtist: 'Página do artista',
+      noArtists: 'Nenhum artista encontrado.',
+      ticketLadder: 'Tipos de ingresso',
+      ticketHelp: 'Cada tipo vende um lote de cada vez. O próximo lote abre quando o anterior esgota ou a data acaba.',
+      addType: 'Adicionar tipo',
+      typeName: 'Nome do tipo',
+      addLote: 'Adicionar lote',
+      loteName: 'Lote',
+      loteEnds: 'Data final',
+      moveUp: 'Subir',
+      moveDown: 'Descer',
+      removeLote: 'Remover',
+      onSale: 'À venda',
+      scheduled: 'Agendado',
+      soldOut: 'Esgotado',
+      loteEnded: 'Encerrado',
+      preview: 'Pré-visualização',
+      boldText: 'Negrito',
+      italicText: 'Itálico',
+      markdownHelp: 'Negrito e itálico',
+      saving: 'Salvando…',
+      country: 'País',
+      genres: 'Géneros',
     },
   },
 };

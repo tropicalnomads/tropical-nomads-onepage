@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { ExternalLink, Images, MapPin, Music, Video, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { formatEventDate } from 'tropical-nomads-shared';
+import { ShopMarkdown } from '../../shop/markdown';
 import type { HomeEvent, HomeMediaLink } from '../../home/types';
 import { eventText, homeText } from '../../i18n/copy';
 import { fillHome } from '../../i18n/home';
@@ -118,7 +119,11 @@ export function EventDetails({ event, onClose }: { event: HomeEvent | null; onCl
             />
           </div>
         ) : null}
-        {event.description ? <div className="mt-6 whitespace-pre-line text-sm leading-relaxed text-ozora-cream/85">{event.description}</div> : null}
+        {event.description ? (
+          <div className="mt-6 text-sm leading-relaxed text-ozora-cream/85">
+            <ShopMarkdown text={event.description} />
+          </div>
+        ) : null}
         {event.stages.length > 0 ? (
           <div className="mt-6 space-y-4">
             {event.stages.map((stage) => (

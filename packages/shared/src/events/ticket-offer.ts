@@ -1,3 +1,4 @@
+import { openLoteOffers } from './ticket-lotes.ts';
 import { getPrimaryTicketUrl, hasTicketSales, type PublicEventLinks } from './public-list.ts';
 
 export interface TicketOfferInput {
@@ -5,6 +6,8 @@ export interface TicketOfferInput {
   amount: number;
   currency?: string;
   capacity?: number;
+  ticket?: string;
+  endsAt?: string;
 }
 
 export interface EuroTicketOffer {
@@ -42,9 +45,17 @@ export function readTicketOffers(value: unknown): TicketOfferInput[] {
     const amount = typeof record.amount === 'number' ? record.amount : Number.NaN;
     const currency = typeof record.currency === 'string' ? record.currency : undefined;
     const capacity = typeof record.capacity === 'number' ? record.capacity : undefined;
+    const ticket = typeof record.ticket === 'string' ? record.ticket : undefined;
+    const endsAt = typeof record.endsAt === 'string' ? record.endsAt : undefined;
     const offer: TicketOfferInput = currency === undefined ? { name, amount } : { name, amount, currency };
     if (capacity !== undefined) {
       offer.capacity = capacity;
+    }
+    if (ticket !== undefined) {
+      offer.ticket = ticket;
+    }
+    if (endsAt !== undefined) {
+      offer.endsAt = endsAt;
     }
     offers.push(offer);
   }
@@ -75,8 +86,18 @@ export function euroTicketOffers(offers: readonly TicketOfferInput[] | undefined
  * A published party with a euro offer is sold in the app.
  * Every other party keeps the external seller link.
  */
-export function eventSaleChoice(links: PublicEventLinks, offers: unknown): EventSaleChoice {
-  const inAppOffers = euroTicketOffers(readTicketOffers(offers));
+export function eventSaleChoice(
+  links: PublicEventLinks,
+  offers: unknown,
+  now: Date = new Date(),
+  sold: Readonly<Record<string, number>> = {},
+): EventSaleChoice {
+  const inAppOffers = openLoteOffers(readTicketOffers(offers), sold, now).map((offer) => ({
+    name: offer.name,
+    amount: offer.amount,
+    currency: offer.currency,
+    capacity: offer.capacity,
+  }));
   if (inAppOffers.length > 0) {
     return { inAppOffers, ticketsOnSale: false };
   }

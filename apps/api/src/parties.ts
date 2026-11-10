@@ -3,9 +3,10 @@ import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from '
 import { dirname, join } from 'node:path';
 import { decideAccess, euroTicketOffers, isPayableAmount, readTicketOffers, type Role } from 'tropical-nomads-shared';
 import type { AccountFile } from './accounts.ts';
+import { deleteCatalogImage, putCatalogImage } from './catalog-images.ts';
 import { usingDatabase } from './database.ts';
 import { operationalDirectory } from './operational.ts';
-import { readEvents, type PublishedEvent } from './published.ts';
+import { readEvents, type PublishedEvent, type PublishedEventImages } from './published.ts';
 import { queueDatabase, readStoredPartyRows, upsertStoredParty } from './sql-store.ts';
 
 export interface PartyRevision {
@@ -30,10 +31,14 @@ export interface PartyCaller {
   actorId: string;
 }
 
+export type PartyImageAction = 'keep' | 'replace' | 'remove';
+
 export interface PartyOfferInput {
   name: string;
   amount: string;
   capacity: string;
+  ticket?: string;
+  endsAt?: string;
 }
 
 export interface PartySaveInput {
@@ -46,6 +51,8 @@ export interface PartySaveInput {
   venueCity: string;
   description: string;
   imageUrl: string;
+  imageAction?: PartyImageAction;
+  imageBytes?: Uint8Array;
   artists: string;
   offers: PartyOfferInput[];
   publish: boolean;
@@ -61,8 +68,9 @@ interface CleanParty {
   venueCity: string;
   description: string;
   imageUrl: string;
+  imageAction: PartyImageAction;
   artists: string[];
-  offers: { name: string; amount: number; currency: 'EUR'; capacity: number }[];
+  offers: { name: string; amount: number; currency: 'EUR'; capacity: number; ticket?: string; endsAt?: string }[];
   publish: boolean;
 }
 
@@ -151,7 +159,9 @@ function cleanOffers(offers: readonly PartyOfferInput[]): CleanParty['offers'] {
     const name = offer.name.trim();
     const amountText = offer.amount.trim();
     const capacityText = offer.capacity.trim();
-    if (name === '' && amountText === '' && capacityText === '') {
+    const ticket = (offer.ticket ?? '').trim();
+    const endsAt = (offer.endsAt ?? '').trim();
+    if (name === '' && amountText === '' && capacityText === '' && ticket === '' && endsAt === '') {
       continue;
     }
     const amount = Number(amountText);
@@ -162,10 +172,23 @@ function cleanOffers(offers: readonly PartyOfferInput[]): CleanParty['offers'] {
     if (!Number.isInteger(capacity) || capacity < 1 || capacity > 100000) {
       throw new Error('event was not saved');
     }
+    if (ticket.length > 80 || /[\u0000-\u001f]/.test(ticket)) {
+      throw new Error('event was not saved');
+    }
+    if (endsAt !== '' && (Number.isNaN(new Date(endsAt).getTime()) || endsAt.length > 40)) {
+      throw new Error('event was not saved');
+    }
     names.add(name);
-    selected.push({ name, amount, currency: 'EUR', capacity });
+    selected.push({
+      name,
+      amount,
+      currency: 'EUR',
+      capacity,
+      ...(ticket === '' ? {} : { ticket }),
+      ...(endsAt === '' ? {} : { endsAt }),
+    });
   }
-  if (selected.length > 12) {
+  if (selected.length > 40) {
     throw new Error('event was not saved');
   }
   return selected;
@@ -194,6 +217,7 @@ function cleanInput(input: PartySaveInput): CleanParty {
     venueCity: cleanLine(input.venueCity, 80, false),
     description,
     imageUrl: httpsUrl(input.imageUrl),
+    imageAction: input.imageAction ?? 'keep',
     artists: cleanArtists(input.artists),
     offers: cleanOffers(input.offers),
     publish: input.publish,
@@ -209,6 +233,28 @@ function venueOf(event: PublishedEvent, name: string, city: string): Record<stri
     current.city = city;
   }
   return current;
+}
+
+function imagesAfter(current: PublishedEventImages | undefined, cleaned: CleanParty, id: string): PublishedEventImages | undefined {
+  const images = { ...(current ?? {}) };
+  switch (cleaned.imageAction) {
+    case 'keep':
+      if (cleaned.imageUrl === '') {
+        return current;
+      }
+      return { ...images, full: cleaned.imageUrl };
+    case 'replace':
+      return { ...images, full: `/events/media/${id}` };
+    case 'remove':
+      if (typeof images.full === 'string' && images.full.startsWith('/events/media/')) {
+        delete images.full;
+      }
+      return Object.keys(images).length === 0 ? undefined : images;
+    default: {
+      const unexpected: never = cleaned.imageAction;
+      return unexpected;
+    }
+  }
 }
 
 function applyInput(event: PublishedEvent, cleaned: CleanParty, id: string): PublishedEvent {
@@ -236,10 +282,12 @@ function applyInput(event: PublishedEvent, cleaned: CleanParty, id: string): Pub
   } else {
     next.description = cleaned.description;
   }
-  if (cleaned.imageUrl === '') {
-    return next;
+  const images = imagesAfter(event.images, cleaned, id);
+  if (images) {
+    next.images = images;
+  } else {
+    delete next.images;
   }
-  next.images = { ...(event.images ?? {}), full: cleaned.imageUrl };
   return next;
 }
 
@@ -452,6 +500,27 @@ export async function loadAdminParties(root?: string): Promise<ManagedParty[]> {
   return adminPartyList(readEvents().events, readManagedPartyFile(directory));
 }
 
+async function storeFlyer(id: string, input: PartySaveInput): Promise<void> {
+  const action = input.imageAction ?? 'keep';
+  switch (action) {
+    case 'keep':
+      return;
+    case 'remove':
+      await deleteCatalogImage('event', id);
+      return;
+    case 'replace':
+      if (!input.imageBytes) {
+        throw new Error('event was not saved');
+      }
+      await putCatalogImage('event', id, input.imageBytes);
+      return;
+    default: {
+      const unexpected: never = action;
+      throw new Error(unexpected);
+    }
+  }
+}
+
 export async function commitPartySave(input: PartySaveInput, file: AccountFile, caller: PartyCaller, now = new Date().toISOString(), root?: string): Promise<ManagedParty> {
   if (usingDatabase(root)) {
     return queueDatabase(async () => {
@@ -464,12 +533,14 @@ export async function commitPartySave(input: PartySaveInput, file: AccountFile, 
         offersManaged: result.saved.offersManaged,
         event: { ...result.saved.event } as Record<string, unknown>,
       });
+      await storeFlyer(result.saved.id, input);
       return result.saved;
     });
   }
   const directory = root ?? operationalDirectory();
   const result = saveManagedParty(readManagedPartyFile(directory), readEvents().events, input, file, caller, now);
   writeManagedPartyFile(result.managed, directory);
+  await storeFlyer(result.saved.id, input);
   return result.saved;
 }
 

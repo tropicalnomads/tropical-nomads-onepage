@@ -38,6 +38,9 @@ export {
   spansMultipleEventDays,
 } from './events/public-list.ts';
 export type { PublicEventLinks, PublicEventLineup, PublicEventWhen } from './events/public-list.ts';
+export { artistIdFromName, httpsProfileUrl, soundCloudPlayerUrl } from './events/artist-profile.ts';
+export { loteOffers, loteStatusFor, loteStatuses, openLoteOffers } from './events/ticket-lotes.ts';
+export type { LoteOffer, LoteStatus } from './events/ticket-lotes.ts';
 export { euroTicketOffers, eventSaleChoice, isPayableAmount, readTicketOffers } from './events/ticket-offer.ts';
 export type { EuroTicketOffer, EventSaleChoice, TicketOfferInput } from './events/ticket-offer.ts';
 export { webAreas } from './navigation/areas.ts';

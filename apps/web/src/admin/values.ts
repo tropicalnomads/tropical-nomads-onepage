@@ -1,9 +1,14 @@
+import { publicHttpsUrl } from 'tropical-nomads-shared';
 import type { ManagedParty } from 'tropical-nomads-api/parties';
+import { uploadedEventFlyer } from './event-image';
+import { bannerSrc } from '../events/assets';
 
 export interface AdminOfferField {
   name: string;
   amount: string;
   capacity: string;
+  ticket: string;
+  endsAt: string;
 }
 
 export interface AdminEventValues {
@@ -39,7 +44,7 @@ export function emptyEventValues(): AdminEventValues {
     description: '',
     imageUrl: '',
     artists: '',
-    offers: [{ name: '', amount: '', capacity: '' }],
+    offers: [{ name: '', amount: '', capacity: '', ticket: '', endsAt: '' }],
   };
 }
 
@@ -56,6 +61,8 @@ export function eventValues(party: ManagedParty): AdminEventValues {
             name: offer.name,
             amount: typeof offer.amount === 'number' ? String(offer.amount) : '',
             capacity: typeof offer.capacity === 'number' ? String(offer.capacity) : '',
+            ticket: typeof offer.ticket === 'string' ? offer.ticket : '',
+            endsAt: typeof offer.endsAt === 'string' ? offer.endsAt : '',
           },
         ];
       })
@@ -69,7 +76,7 @@ export function eventValues(party: ManagedParty): AdminEventValues {
     venueName: text(venue.name),
     venueCity: text(venue.city),
     description: text(party.event.description),
-    imageUrl: text(images?.full),
+    imageUrl: uploadedEventFlyer(text(images?.full)) ?? bannerSrc(text(images?.bannerLocal)) ?? publicHttpsUrl(text(images?.full)) ?? '',
     artists: (party.event.cardArtists ?? []).join('\n'),
     offers,
   };

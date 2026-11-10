@@ -2,7 +2,7 @@ import { partyFields } from './catalog.ts';
 
 export const schemas = {
   party: partyFields,
-  artist: ['id', 'name', 'country', 'isoCountry', 'countryFlag', 'genres', 'agencies', 'labels', 'stage'],
+  artist: ['id', 'name', 'country', 'isoCountry', 'countryFlag', 'genres', 'agencies', 'labels', 'stage', 'bio', 'soundcloud', 'instagram', 'website', 'photo'],
   venue: ['id', 'name', 'city', 'country', 'isoCountry', 'address', 'geo', 'mapUrl'],
   partner: ['id', 'name', 'city', 'handle', 'instagram'],
   label: ['id', 'name'],

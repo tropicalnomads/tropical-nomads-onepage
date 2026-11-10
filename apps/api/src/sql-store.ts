@@ -582,3 +582,43 @@ export async function upsertStoredParty(party: StoredPartyWrite): Promise<void> 
     );
   });
 }
+
+export async function readStoredArtist(id: string): Promise<Record<string, unknown> | undefined> {
+  const rows = await db().query('select document from artist where id = $1', [id]);
+  const document = rows.rows[0]?.document;
+  if (typeof document !== 'object' || document === null || Array.isArray(document)) {
+    return undefined;
+  }
+  return document as Record<string, unknown>;
+}
+
+export async function upsertStoredArtist(document: Record<string, unknown>): Promise<void> {
+  const id = requiredText(document, 'id', 'artist');
+  const name = requiredText(document, 'name', 'artist');
+  await withTransaction(async (client) => {
+    const order = await client.query('select coalesce(max(source_order), 0) + 1 as next from artist');
+    const sourceOrder = Number(order.rows[0]?.next ?? 1);
+    await client.query(
+      `insert into artist (id, name, country, iso_country, country_flag, genres, agencies, labels, stage, document, source_order)
+       values ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8::jsonb, $9, $10::jsonb, $11)
+       on conflict (id) do update set
+         name = excluded.name,
+         country = excluded.country,
+         genres = excluded.genres,
+         document = excluded.document`,
+      [
+        id,
+        name,
+        text(document, 'country'),
+        text(document, 'isoCountry'),
+        text(document, 'countryFlag'),
+        JSON.stringify(document.genres ?? []),
+        document.agencies === undefined ? null : JSON.stringify(document.agencies),
+        document.labels === undefined ? null : JSON.stringify(document.labels),
+        text(document, 'stage'),
+        JSON.stringify(document),
+        sourceOrder,
+      ],
+    );
+  });
+}

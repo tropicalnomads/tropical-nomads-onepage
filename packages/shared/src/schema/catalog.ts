@@ -1,3 +1,4 @@
+import { httpsProfileUrl, soundCloudPlayerUrl } from '../events/artist-profile.ts';
 import {
   fail,
   finish,
@@ -76,6 +77,8 @@ export interface PartyOffer {
   amount: number;
   currency?: string;
   capacity?: number;
+  ticket?: string;
+  endsAt?: string;
 }
 
 export interface Party {
@@ -103,6 +106,11 @@ export interface Party {
 
 export interface Artist extends StageArtist {
   id: string;
+  bio?: string;
+  soundcloud?: string;
+  instagram?: string;
+  website?: string;
+  photo?: string;
 }
 
 export interface Partner {
@@ -322,10 +330,12 @@ export function parseParty(input: unknown): ParseResult<Party> {
           errors.push('offer must be an object');
           continue;
         }
-        rejectUnknown(offerInput, ['name', 'amount', 'currency', 'capacity'], errors);
+        rejectUnknown(offerInput, ['name', 'amount', 'currency', 'capacity', 'ticket', 'endsAt'], errors);
         const name = requireString(offerInput, 'name', errors);
         const amount = requireFinite(offerInput, 'amount', errors);
         const currency = optionalString(offerInput, 'currency', errors);
+        const ticket = optionalString(offerInput, 'ticket', errors);
+        const endsAt = optionalString(offerInput, 'endsAt', errors);
         let capacity: number | undefined;
         if ('capacity' in offerInput && offerInput.capacity !== undefined) {
           if (typeof offerInput.capacity !== 'number' || !Number.isInteger(offerInput.capacity) || offerInput.capacity < 1 || offerInput.capacity > 100000) {
@@ -338,6 +348,20 @@ export function parseParty(input: unknown): ParseResult<Party> {
           const offer: PartyOffer = currency ? { name, amount, currency } : { name, amount };
           if (capacity !== undefined) {
             offer.capacity = capacity;
+          }
+          if (ticket && ticket.trim() !== '') {
+            if (ticket.trim().length > 80) {
+              errors.push('ticket is not valid');
+            } else {
+              offer.ticket = ticket.trim();
+            }
+          }
+          if (endsAt && endsAt.trim() !== '') {
+            if (Number.isNaN(new Date(endsAt).getTime())) {
+              errors.push('endsAt is not valid');
+            } else {
+              offer.endsAt = endsAt.trim();
+            }
           }
           offers.push(offer);
         }
@@ -354,15 +378,68 @@ export function parseArtist(input: unknown): ParseResult<Artist> {
     return read;
   }
   const errors: string[] = [];
-  rejectUnknown(read.value, ['id', 'name', 'country', 'isoCountry', 'countryFlag', 'genres', 'agencies', 'labels', 'stage'], errors);
+  rejectUnknown(
+    read.value,
+    ['id', 'name', 'country', 'isoCountry', 'countryFlag', 'genres', 'agencies', 'labels', 'stage', 'bio', 'soundcloud', 'instagram', 'website', 'photo'],
+    errors,
+  );
   const id = requireString(read.value, 'id', errors);
   const rest = { ...read.value };
   delete rest.id;
+  delete rest.bio;
+  delete rest.soundcloud;
+  delete rest.instagram;
+  delete rest.website;
+  delete rest.photo;
   const artist = parseStageArtist(rest, errors);
   if (!id || !artist) {
     return fail(errors);
   }
-  return finish(errors, { ...artist, id });
+  const profile: Artist = { ...artist, id };
+  const bio = optionalString(read.value, 'bio', errors);
+  const soundcloud = optionalString(read.value, 'soundcloud', errors);
+  const instagram = optionalString(read.value, 'instagram', errors);
+  const website = optionalString(read.value, 'website', errors);
+  const photo = optionalString(read.value, 'photo', errors);
+  if (bio && bio.trim() !== '') {
+    if (bio.length > 4000) {
+      errors.push('bio is not valid');
+    } else {
+      profile.bio = bio;
+    }
+  }
+  if (soundcloud && soundcloud.trim() !== '') {
+    const player = soundCloudPlayerUrl(soundcloud);
+    if (!player) {
+      errors.push('soundcloud is not valid');
+    } else {
+      profile.soundcloud = soundcloud.trim();
+    }
+  }
+  if (instagram && instagram.trim() !== '') {
+    const link = httpsProfileUrl(instagram, 'instagram.com');
+    if (!link) {
+      errors.push('instagram is not valid');
+    } else {
+      profile.instagram = link;
+    }
+  }
+  if (website && website.trim() !== '') {
+    const link = httpsProfileUrl(website);
+    if (!link) {
+      errors.push('website is not valid');
+    } else {
+      profile.website = link;
+    }
+  }
+  if (photo && photo.trim() !== '') {
+    if (photo !== `/artists/media/${id}`) {
+      errors.push('photo is not valid');
+    } else {
+      profile.photo = photo;
+    }
+  }
+  return finish(errors, profile);
 }
 
 export function parseVenueRecord(input: unknown): ParseResult<Venue> {

@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { secureHeaders } from 'hono/secure-headers';
 import { validator } from 'hono/validator';
 import { artistsFrom, readArtistCatalog, readPartyCatalog, serveStoredRecords } from './catalog.ts';
+import { readCatalogImage } from './catalog-images.ts';
 import { databaseSettings } from './database.ts';
 import { apiHealth } from './health.ts';
 import { handlePrivate } from './private-api.ts';
@@ -9,6 +10,7 @@ import { loadProductCatalog } from './products.ts';
 import { readProductImage } from './shop-products.ts';
 import { assertNoPrivateFields, eventsView, pastEvents, publishedEventsFrom, publishedSchema, readCatalog, upcomingEvents, type PublishedCatalog } from './published.ts';
 import { readStoredCatalog, type StoredCatalog } from './sql-store.ts';
+import { loadOrders, summarizeTicketSales } from './tickets.ts';
 
 export interface TodayQuery {
   today?: string;
@@ -129,6 +131,36 @@ const routes = new Hono()
       return c.json({ error: 'unknown query' } satisfies ApiError, 400);
     }
     const image = await readProductImage(c.req.param('id'));
+    if (!image) {
+      return c.json({ error: 'not found' } satisfies ApiError, 404);
+    }
+    return c.json({ contentType: image.contentType, bytes: Buffer.from(image.bytes).toString('base64') });
+  })
+  .get('/ticket-sales', async (c) => {
+    if (new URL(c.req.url).search !== '') {
+      return c.json({ error: 'unknown query' } satisfies ApiError, 400);
+    }
+    try {
+      return c.json({ sales: summarizeTicketSales(await loadOrders()) });
+    } catch {
+      return c.json({ sales: [] });
+    }
+  })
+  .get('/event-image/:id', async (c) => {
+    if (new URL(c.req.url).search !== '') {
+      return c.json({ error: 'unknown query' } satisfies ApiError, 400);
+    }
+    const image = await readCatalogImage('event', c.req.param('id'));
+    if (!image) {
+      return c.json({ error: 'not found' } satisfies ApiError, 404);
+    }
+    return c.json({ contentType: image.contentType, bytes: Buffer.from(image.bytes).toString('base64') });
+  })
+  .get('/artist-image/:id', async (c) => {
+    if (new URL(c.req.url).search !== '') {
+      return c.json({ error: 'unknown query' } satisfies ApiError, 400);
+    }
+    const image = await readCatalogImage('artist', c.req.param('id'));
     if (!image) {
       return c.json({ error: 'not found' } satisfies ApiError, 404);
     }

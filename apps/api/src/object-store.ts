@@ -2,6 +2,7 @@ import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } fro
 
 const imageLimit = 5_000_000;
 const productIdPattern = /^[A-Za-z0-9_-]{1,40}$/;
+const mediaIdPattern = /^[A-Za-z0-9_-]{1,80}$/;
 const bucketPattern = /^tropical-nomads-assets-[0-9]{12}$/;
 
 export type ShopImageType = 'image/jpeg' | 'image/png' | 'image/webp';
@@ -31,6 +32,22 @@ export function shopObjectKey(productId: string): string | undefined {
     return undefined;
   }
   return `shop/${productId}`;
+}
+
+export function catalogObjectKey(folder: 'events' | 'artists', id: string): string | undefined {
+  if (!mediaIdPattern.test(id)) {
+    return undefined;
+  }
+  switch (folder) {
+    case 'events':
+      return `events/${id}`;
+    case 'artists':
+      return `artists/${id}`;
+    default: {
+      const unexpected: never = folder;
+      return unexpected;
+    }
+  }
 }
 
 export function shopImageType(bytes: Uint8Array): ShopImageType | undefined {
@@ -120,6 +137,61 @@ export async function readShopImage(productId: string): Promise<{ contentType: S
 export async function deleteShopImage(productId: string): Promise<void> {
   const bucket = assetsBucketName();
   const key = shopObjectKey(productId);
+  if (!bucket || !key) {
+    return;
+  }
+  await s3().send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
+}
+
+export async function putCatalogObject(folder: 'events' | 'artists', id: string, bytes: Uint8Array): Promise<void> {
+  const bucket = assetsBucketName();
+  const key = catalogObjectKey(folder, id);
+  const contentType = shopImageType(bytes);
+  if (!bucket || !key || !contentType) {
+    throw new Error('image was not stored');
+  }
+  await s3().send(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: bytes,
+      ContentType: contentType,
+    }),
+  );
+}
+
+export async function readCatalogObject(folder: 'events' | 'artists', id: string): Promise<{ contentType: ShopImageType; bytes: Uint8Array } | undefined> {
+  const bucket = assetsBucketName();
+  const key = catalogObjectKey(folder, id);
+  if (!bucket || !key) {
+    return undefined;
+  }
+  try {
+    const response = await s3().send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+    if (typeof response.ContentLength === 'number' && response.ContentLength > imageLimit) {
+      return undefined;
+    }
+    const payload = response.Body;
+    if (!payload) {
+      return undefined;
+    }
+    const bytes = new Uint8Array(await payload.transformToByteArray());
+    const contentType = shopImageType(bytes);
+    if (!contentType) {
+      return undefined;
+    }
+    return { contentType, bytes };
+  } catch (error) {
+    if (isMissingObject(error)) {
+      return undefined;
+    }
+    throw error;
+  }
+}
+
+export async function deleteCatalogObject(folder: 'events' | 'artists', id: string): Promise<void> {
+  const bucket = assetsBucketName();
+  const key = catalogObjectKey(folder, id);
   if (!bucket || !key) {
     return;
   }

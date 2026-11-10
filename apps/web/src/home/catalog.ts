@@ -136,9 +136,10 @@ function readEvent(value: unknown): HomeEvent | undefined {
   const description = readString(value.description);
   const instagramPost = httpsLink(links.instagramPost);
   const timetableUrl = getEventTimetableUrl(readString(value.timetableFestivalId));
-  const flyer = bannerSrc(readString(images.bannerLocal));
   const fullRaw = readString(images.full);
-  const fullImage = fullRaw?.startsWith('/') ? bannerSrc(fullRaw) : httpsLink(fullRaw);
+  const uploaded = fullRaw && /^\/events\/media\/[A-Za-z0-9_-]{1,80}$/.test(fullRaw) ? fullRaw : undefined;
+  const flyer = uploaded ?? bannerSrc(readString(images.bannerLocal));
+  const fullImage = uploaded ?? (fullRaw?.startsWith('/') ? bannerSrc(fullRaw) : httpsLink(fullRaw));
   const schemaImage = flyer ?? fullImage;
   const durationHours = typeof value.durationHours === 'number' && Number.isFinite(value.durationHours) ? value.durationHours : undefined;
   return {

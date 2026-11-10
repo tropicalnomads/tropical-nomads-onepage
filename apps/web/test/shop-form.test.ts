@@ -110,6 +110,7 @@ describe('shop product form', () => {
 
   it('submits one description field and an image removal flag', () => {
     const source = readFileSync(new URL('../src/components/AdminShopForm.tsx', import.meta.url), 'utf8');
+    const imageField = readFileSync(new URL('../src/components/admin/CroppedImageField.tsx', import.meta.url), 'utf8');
     const catalog = readFileSync(new URL('../src/components/ShopCatalog.tsx', import.meta.url), 'utf8');
     const page = readFileSync(new URL('../src/components/ShopProduct.tsx', import.meta.url), 'utf8');
     const editPage = readFileSync(new URL('../app/admin/shop/[productId]/page.tsx', import.meta.url), 'utf8');
@@ -119,8 +120,10 @@ describe('shop product form', () => {
     assert.equal(source.includes('descriptionEn'), false);
     assert.equal(source.includes('descriptionPt'), false);
     assert.equal(source.includes("formData.set('imageAction', imageRemoved ? 'remove' : 'keep')"), true);
-    assert.equal(source.includes('type="file"'), true);
-    assert.equal(source.includes('className="sr-only"'), true);
+    assert.equal(source.includes('CroppedImageField'), true);
+    assert.equal(source.includes('shopCropSize'), true);
+    assert.equal(imageField.includes('type="file"'), true);
+    assert.equal(imageField.includes('className="sr-only"'), true);
     assert.equal(catalog.includes('ShopMarkdown'), true);
     assert.equal(page.includes('ShopMarkdown'), true);
     assert.equal(editPage.includes('loadAdminShopProduct'), true);

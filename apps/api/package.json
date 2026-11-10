@@ -10,7 +10,8 @@
     "./payments": "./src/payments.ts",
     "./tickets": "./src/tickets.ts",
     "./check-in": "./src/check-in.ts",
-    "./parties": "./src/parties.ts"
+    "./parties": "./src/parties.ts",
+    "./artists": "./src/artists.ts"
   },
   "scripts": {
     "dev": "node --watch src/main.ts",

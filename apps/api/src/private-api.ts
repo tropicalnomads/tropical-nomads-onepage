@@ -26,6 +26,8 @@ import { commitPayment, commitPaymentMethod, loadTraces, type PaymentCaller, typ
 import { openSealed, sessionFromCookie } from './session-token.ts';
 import { commitPartySave, loadAdminParties, type PartyOfferInput, type PartySaveInput } from './parties.ts';
 import { placeShopOrder, readShopPurchase } from './shop-orders.ts';
+import { saveArtistProfile } from './artists.ts';
+import { decodeCatalogImage } from './catalog-images.ts';
 import { deleteShopProduct, listAdminShopProducts, listShopOrders, readAdminShopProduct, readShopProductDraft, requireShopAdmin, saveShopProduct } from './shop-products.ts';
 import { commitTicket, loadIssuedTickets, loadOrders, loadPartyTitles, loadPublishedParties } from './tickets.ts';
 
@@ -86,8 +88,16 @@ function partyInput(value: unknown): PartySaveInput {
     if (!isRecord(offer)) {
       throw new Error('event was not saved');
     }
-    return { name: offerField(offer.name), amount: offerField(offer.amount), capacity: offerField(offer.capacity) };
+    return {
+      name: offerField(offer.name),
+      amount: offerField(offer.amount),
+      capacity: offerField(offer.capacity),
+      ticket: offerField(offer.ticket),
+      endsAt: offerField(offer.endsAt),
+    };
   });
+  const imageAction = value.imageAction === 'replace' || value.imageAction === 'remove' || value.imageAction === 'keep' ? value.imageAction : 'keep';
+  const imageBase64 = typeof value.imageBase64 === 'string' ? value.imageBase64 : '';
   return {
     ...(typeof value.id === 'string' && value.id !== '' ? { id: value.id } : {}),
     title: text(value.title, 'event'),
@@ -98,6 +108,8 @@ function partyInput(value: unknown): PartySaveInput {
     venueCity: typeof value.venueCity === 'string' ? value.venueCity : '',
     description: typeof value.description === 'string' ? value.description : '',
     imageUrl: typeof value.imageUrl === 'string' ? value.imageUrl : '',
+    imageAction: imageBase64 !== '' ? 'replace' : imageAction,
+    ...(imageBase64 === '' ? {} : { imageBytes: decodeCatalogImage(imageBase64) }),
     artists: typeof value.artists === 'string' ? value.artists : '',
     offers,
     publish: value.publish === true,
@@ -365,6 +377,14 @@ async function runAction(action: string, input: unknown, sessionSub: string | un
       }
       const caller = adminCaller(input.caller, sub);
       return commitPartySave(partyInput(input.party), await loadAccounts(), caller);
+    }
+    case 'save-artist': {
+      const sub = requireSignedIn(sessionSub);
+      if (!isRecord(input)) {
+        throw new Error('artist was not saved');
+      }
+      adminCaller(input.caller, sub);
+      return saveArtistProfile(input.artist);
     }
     case 'avatar': {
       const sub = requireSignedIn(sessionSub);
