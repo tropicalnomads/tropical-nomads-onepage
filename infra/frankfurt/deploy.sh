@@ -142,4 +142,6 @@ cluster=$(stack_output tn-frankfurt-ecs-cluster ClusterName)
 deploy_stack tn-frankfurt-ecs-service "$root/ecs-service.yaml" \
   --parameter-overrides "ClusterName=${cluster}" "TaskDefinitionArn=${task_arn}" "PrivateSubnetA=${private_a}" "PrivateSubnetB=${private_b}" "ApiSecurityGroupId=${api_sg}" "TargetGroupArn=${target_group}"
 
+deploy_stack tn-frankfurt-github-dev-deploy "$root/github-dev-deploy.yaml"
+
 echo "Frankfurt templates applied"

@@ -94,6 +94,7 @@ describe('Frankfurt templates', () => {
     assert.equal(amplify.includes('OauthToken'), false);
     assert.equal(amplify.includes('AWS::Amplify::Domain'), false);
     assert.match(onePager, /tropical-nomads-page/);
+    assert.match(onePager, /apps\/one-pager\/dist/);
     assert.match(onePager, /appRoot: apps\/web/);
     assert.match(onePager, /tropical-nomads-web/);
     assert.match(onePager, /ensure-amplify-next\.mjs/);
@@ -163,6 +164,35 @@ describe('Frankfurt templates', () => {
     assert.match(iam, /s3:prefix/);
     assert.equal(iam.includes('Action: "s3:*"'), false);
     assert.match(task, /ASSETS_BUCKET/);
+  });
+
+  it('deploys dev from GitHub Actions without the one-pager or an HTTP listener', () => {
+    const workflow = read(join(repo, '.github/workflows/deploy-dev.yml'));
+    const role = read(join(frankfurt, 'github-dev-deploy.yaml'));
+    const roll = read(join(repo, 'scripts/roll-api-image.mjs'));
+    assert.match(workflow, /branches:\n\s+- dev\n/);
+    assert.equal(workflow.includes('pull_request'), false);
+    assert.equal(workflow.includes('workflow_dispatch'), false);
+    assert.equal(workflow.includes('- master'), false);
+    assert.equal(workflow.includes('www.tropical-nomads.com'), false);
+    assert.match(workflow, /d3rt3rqkclbrw5/);
+    assert.match(workflow, /tropical-nomads-github-dev-deploy/);
+    assert.match(workflow, /apps\/api\/Dockerfile/);
+    assert.equal(workflow.includes('AWS_ACCESS_KEY_ID'), false);
+    assert.equal(workflow.includes('AWS_SECRET_ACCESS_KEY'), false);
+    assert.equal(workflow.includes('.env'), false);
+    assert.equal(workflow.includes('Protocol: HTTP'), false);
+    assert.match(role, /RoleName: tropical-nomads-github-dev-deploy/);
+    assert.match(role, /ref:refs\/heads\/dev/);
+    assert.equal(role.includes('StringLike'), false);
+    assert.equal(role.includes('secretsmanager'), false);
+    assert.equal(role.includes('elasticloadbalancing'), false);
+    assert.equal(role.includes('s3:'), false);
+    assert.equal(role.includes('rds:'), false);
+    assert.match(role, /d3rt3rqkclbrw5/);
+    assert.match(read(join(frankfurt, 'deploy.sh')), /tn-frankfurt-github-dev-deploy/);
+    assert.equal(roll.includes('get-secret-value'), false);
+    assert.equal(roll.includes('.env'), false);
   });
 
   it('keeps operational data and the one-pager build out of the image', () => {

@@ -1,0 +1,90 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Role GitHub Actions assumes on the dev branch to deploy the web app and roll the API image. No database access and no load balancer changes.
+
+Parameters:
+  GitHubOwnerId:
+    Type: String
+    Default: "307920264"
+    AllowedPattern: "^[0-9]+$"
+  GitHubRepositoryId:
+    Type: String
+    Default: "1308584736"
+    AllowedPattern: "^[0-9]+$"
+  AmplifyAppId:
+    Type: String
+    Default: d3rt3rqkclbrw5
+    AllowedPattern: "^[a-z0-9]+$"
+
+Resources:
+  DeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: tropical-nomads-github-dev-deploy
+      Description: Deploy the dev Amplify branch and roll the API service. Assumes only from the dev branch.
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                "token.actions.githubusercontent.com:aud": sts.amazonaws.com
+                "token.actions.githubusercontent.com:sub": !Sub "repo:tropicalnomads@${GitHubOwnerId}/tropical-nomads-onepage@${GitHubRepositoryId}:ref:refs/heads/dev"
+      Policies:
+        - PolicyName: tropical-nomads-github-dev-deploy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: AmplifyDevBranch
+                Effect: Allow
+                Action:
+                  - amplify:StartJob
+                  - amplify:GetJob
+                Resource:
+                  - !Sub "arn:${AWS::Partition}:amplify:${AWS::Region}:${AWS::AccountId}:apps/${AmplifyAppId}"
+                  - !Sub "arn:${AWS::Partition}:amplify:${AWS::Region}:${AWS::AccountId}:apps/${AmplifyAppId}/branches/dev"
+                  - !Sub "arn:${AWS::Partition}:amplify:${AWS::Region}:${AWS::AccountId}:apps/${AmplifyAppId}/branches/dev/jobs/*"
+              - Sid: EcrAuth
+                Effect: Allow
+                Action: ecr:GetAuthorizationToken
+                Resource: "*"
+              - Sid: EcrPushApi
+                Effect: Allow
+                Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:CompleteLayerUpload
+                  - ecr:DescribeImages
+                  - ecr:InitiateLayerUpload
+                  - ecr:PutImage
+                  - ecr:UploadLayerPart
+                Resource: !Sub "arn:${AWS::Partition}:ecr:${AWS::Region}:${AWS::AccountId}:repository/tropical-nomads-api"
+              - Sid: EcsReadTask
+                Effect: Allow
+                Action:
+                  - ecs:DescribeTaskDefinition
+                  - ecs:RegisterTaskDefinition
+                Resource: "*"
+              - Sid: EcsRollService
+                Effect: Allow
+                Action:
+                  - ecs:DescribeServices
+                  - ecs:UpdateService
+                Resource:
+                  - !Sub "arn:${AWS::Partition}:ecs:${AWS::Region}:${AWS::AccountId}:cluster/tropical-nomads"
+                  - !Sub "arn:${AWS::Partition}:ecs:${AWS::Region}:${AWS::AccountId}:service/tropical-nomads/tropical-nomads-api"
+              - Sid: PassApiRoles
+                Effect: Allow
+                Action: iam:PassRole
+                Resource:
+                  - !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/tropical-nomads-api-execution"
+                  - !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/tropical-nomads-api-task"
+                Condition:
+                  StringEquals:
+                    iam:PassedToService: ecs-tasks.amazonaws.com
+
+Outputs:
+  DeployRoleName:
+    Value: !Ref DeployRole
