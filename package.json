@@ -10,7 +10,7 @@
   "scripts": {
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "test": "turbo run test && node --test infra/frankfurt/test/templates.test.ts",
+    "test": "turbo run test && node --test infra/frankfurt/test/templates.test.ts scripts/roll-api-image.test.mjs",
     "dev": "node scripts/dev-preflight.mjs && cross-env API_BASE_URL=http://127.0.0.1:3101 turbo run dev --filter=tropical-nomads-web --filter=tropical-nomads-api",
     "dev:web": "node scripts/dev-preflight.mjs && cross-env API_BASE_URL=https://api-dev.tropical-nomads.com pnpm --filter tropical-nomads-web dev",
     "prestart": "node scripts/dev-preflight.mjs",
