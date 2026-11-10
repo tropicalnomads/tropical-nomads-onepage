@@ -4,7 +4,7 @@ Dated 8 November 2026. The owner asked for this record. DevOps owns later change
 
 The audience is about five admins and parties of about 100–200 people. One copy of the API and one small database cover that. Signed-in people stay admin, door, or user. DevOps is not a product role.
 
-Every resource below is in Frankfurt (`eu-central-1`). The VPC, Cognito pool, Amplify web app, ECR repository, ECS service, load balancer, and `tropical-nomads-frankfurt` database are running. The one-pager still does not read PostgreSQL. JSON remains the store for the one-pager and for unit tests.
+Every resource below is in Frankfurt (`eu-central-1`). The VPC, Cognito pool, Amplify web app, ECR repository, ECS service, load balancer, private assets bucket, and `tropical-nomads-frankfurt` database are running. The one-pager still does not read PostgreSQL. JSON remains the store for the one-pager and for unit tests.
 
 Passwords stay in Amazon Cognito. The database password, when a database exists, stays in AWS Secrets Manager. This file has no password, no account id, and no card number.
 
@@ -27,6 +27,7 @@ Passwords stay in Amazon Cognito. The database password, when a database exists,
 | NAT gateway | 1 | One gateway, in one public subnet. |
 | CloudWatch log group | 1, for the API | Keep logs for 30 days. |
 | Secrets Manager secret | 2 | The RDS-managed database credential, and `tropical-nomads/api/session`. No value is written here. |
+| Amazon S3 bucket | 1 | Private assets bucket. The name is `tropical-nomads-assets-` plus the account id, which is not written here. Shop photos use the prefix `shop/`. |
 | Certificate | 1 | DNS-validated certificate for `api-dev.tropical-nomads.com`, on the API load balancer. |
 
 PostgreSQL 16.15 is the version in the Frankfurt template. The API container port is `8787`. The load balancer forwards 443 for `api-dev.tropical-nomads.com` to that port. www is not attached.
@@ -45,7 +46,7 @@ The one-pager stays on its current Amplify publish path. The web app's Amplify a
 
 The API image lives in one ECR repository. ECS runs one Fargate task at 0.5 vCPU and 1 GB. That pair is a valid Fargate size. A party of 100–200 people, and about five admins, does not need a second task.
 
-The load balancer is the only public door to the API. The task and the database sit in the private subnets. One NAT gateway lets the private task reach Cognito and the image repository.
+The load balancer is the only public door to the API. The task and the database sit in the private subnets. One NAT gateway lets the private task reach Cognito, the image repository, and the private assets bucket.
 
 RDS uses private subnets in two availability zones. The database is one instance: `db.t4g.small`, 2 vCPU and 2 GiB. The disk starts at 20 GiB and may grow to 100 GiB. Backups are kept for 7 days. The instance is not publicly reachable. Aurora is not the choice. The API reads this database. The one-pager does not.
 
@@ -54,9 +55,10 @@ RDS uses private subnets in two availability zones. The database is one instance
 - The load balancer accepts 443 from the internet.
 - The API accepts its container port only from the load balancer.
 - The database accepts 5432 only from the API.
-- The task role can read the database secret and write the API log group. It is not an administrator role.
-- Logs do not store passwords or card numbers.
+- The task role can read the database secret, write the API log group, and read, write, and delete objects only under `shop/` in the private assets bucket. It is not an administrator role.
+- The website does not receive the bucket name or an AWS key. A visitor still loads `/shop/media/<productId>`.
+- Logs do not store passwords, card numbers, or object bytes.
 
 ## Not in this record
 
-No second region. No extra database. No cache. No queue. No email service. No payment service. No new S3 bucket. No quota change. The payment company is ticket 29 and is not named here.
+No second region. No extra database. No cache. No queue. No email service. No payment service. No second S3 bucket. No public bucket. No quota change. The one private assets bucket is the store for files, and a new kind of file gets a new prefix, not another bucket. The payment company is ticket 29 and is not named here.

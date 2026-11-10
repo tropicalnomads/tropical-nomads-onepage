@@ -4,8 +4,8 @@ import { Trash2 } from 'lucide-react';
 import { sizeLabel } from '../../../one-pager/src/lib/shop.ts';
 import { shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
-import { sizeStock } from '../shop/cart';
-import { linePrice, shopTotal } from '../shop/order';
+import { shopAmountLabel, sizeStock } from '../shop/catalog';
+import { linePrice, shopTotalLabel } from '../shop/order';
 import { useShopProducts } from '../shop/product-context';
 import { useShopCart } from '../shop/useShopCart';
 import type { ShopImageSources } from '../shop/images';
@@ -40,7 +40,7 @@ export function ShopCart({ imageSources }: { imageSources: ShopImageSources }) {
             <div className="space-y-4">
               {cart.lines.map((line) => {
                 const product = products.find((item) => item.id === line.productId);
-                const stock = sizeStock(line.productId, line.size);
+                const stock = sizeStock(products, line.productId, line.size);
                 if (!product) {
                   return null;
                 }
@@ -59,7 +59,7 @@ export function ShopCart({ imageSources }: { imageSources: ShopImageSources }) {
                             {shopText(language, 'size')} {sizeLabel(line.size, language)}
                           </p>
                         </div>
-                        <p className="text-sm font-bold text-ozora-yellow">€{linePrice(line.quantity)}</p>
+                        <p className="text-sm font-bold text-ozora-yellow">{shopAmountLabel(linePrice(line.quantity, product.amount), product.currency)}</p>
                       </div>
                       <div className="mt-3 flex items-center justify-between gap-3">
                         <QuantityStepper
@@ -86,13 +86,19 @@ export function ShopCart({ imageSources }: { imageSources: ShopImageSources }) {
             <aside className="rounded-3xl border border-white/10 bg-ozora-navy/55 p-5">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-semibold uppercase tracking-[0.14em] text-ozora-cream/60">{shopText(language, 'subtotal')}</p>
-                <p className="text-2xl font-bold text-ozora-yellow">€{shopTotal(cart.lines)}</p>
+                <p className="text-2xl font-bold text-ozora-yellow">{shopTotalLabel(cart.lines, products)}</p>
               </div>
               <a
                 href="/shop/checkout"
                 className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-full bg-ozora-yellow text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral"
               >
                 {shopText(language, 'checkout')}
+              </a>
+              <a
+                href="/shop"
+                className="mt-3 inline-flex h-12 w-full items-center justify-center rounded-full border border-white/15 text-sm font-bold text-ozora-cream transition hover:bg-white/10"
+              >
+                {shopText(language, 'continue')}
               </a>
             </aside>
           </div>

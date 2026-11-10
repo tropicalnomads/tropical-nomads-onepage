@@ -339,7 +339,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       'upcoming-events': 'Published parties, with the date, the place, and who is playing.',
       'my-tickets': 'Your tickets and the QR code for the door.',
       'check-in': 'Door staff and admins check in a published event. A checked person cannot enter again.',
-      shop: 'Two embroidered T-shirts. Buy sends the order on WhatsApp. Nothing is charged here.',
+      shop: 'Embroidered T-shirts. Buy saves the order and sends it on WhatsApp. Nothing is charged here.',
     },
     events: {
       subtitle: 'All future dates, sorted from the next one.',
@@ -603,7 +603,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       'upcoming-events': 'Festas publicadas, com a data, o lugar e quem toca.',
       'my-tickets': 'Os seus ingressos e o QR da porta.',
       'check-in': 'A porta e os admins fazem o check-in de uma festa publicada. Quem já entrou não entra de novo.',
-      shop: 'Duas camisetas bordadas. Comprar envia o pedido no WhatsApp. Nada é cobrado aqui.',
+      shop: 'Camisetas bordadas. Comprar grava o pedido e envia no WhatsApp. Nada é cobrado aqui.',
     },
     events: {
       subtitle: 'Todas as datas futuras, a partir da próxima.',

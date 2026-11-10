@@ -9,6 +9,7 @@ import {
   parseConsents,
   parseEmailTemplate,
   parseParty,
+  parseOrder,
   parsePaymentMethod,
   parsePaymentTrace,
   parseProfile,
@@ -240,6 +241,35 @@ describe('schemas', () => {
       assert.equal(lookup.fields.includes('secret'), false);
       assert.equal(lookup.fields.includes('cardNumber'), false);
     }
+  });
+
+  it('keeps a shop delivery address on the order and still reads a ticket order', () => {
+    const ticket = {
+      id: 'order-1',
+      userId: 'user-1',
+      purpose: 'tickets',
+      lines: [{ kind: 'ticket', partyId: 'party-1', offerName: 'Full', quantity: 1 }],
+      traceId: 'trace-1',
+      createdAt: '2026-11-10T12:00:00.000Z',
+    };
+    const shop = {
+      ...ticket,
+      purpose: 'shop',
+      lines: [{ kind: 'shop', productId: 'hw', size: 'M', quantity: 1 }],
+      delivery: { name: 'Ada Lovelace', line1: 'Rua A', city: 'Lisbon', postalCode: '1000-001', country: 'Portugal' },
+    };
+    const parsedTicket = parseOrder(ticket);
+    const parsedShop = parseOrder(shop);
+    assert.equal(parsedTicket.ok, true);
+    assert.equal(parsedShop.ok, true);
+    if (parsedTicket.ok) {
+      assert.equal(parsedTicket.value.delivery, undefined);
+    }
+    if (parsedShop.ok) {
+      assert.equal(parsedShop.value.delivery?.city, 'Lisbon');
+    }
+    assert.equal(parseOrder({ ...shop, delivery: { name: 'Ada' } }).ok, false);
+    assert.equal(parseOrder({ ...ticket, cardNumber: '4242424242424242' }).ok, false);
   });
 
   it('rejects a reference to a missing id', () => {

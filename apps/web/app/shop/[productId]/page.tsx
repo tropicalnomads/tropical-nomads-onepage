@@ -1,7 +1,9 @@
 import { ShopMissing } from '../../../src/components/ShopCatalog';
 import { ShopProduct } from '../../../src/components/ShopProduct';
-import { shirtSrc } from '../../../src/events/assets';
 import { loadShopProducts } from '../../../src/shop/load-products';
+import { productImageSrc } from '../../../src/shop/load-images';
+
+export const dynamic = 'force-dynamic';
 
 export default async function ShopProductPage({ params }: { params: Promise<{ productId: string }> }) {
   const { productId } = await params;
@@ -15,7 +17,7 @@ export default async function ShopProductPage({ params }: { params: Promise<{ pr
   }
   return (
     <main>
-      <ShopProduct productId={product.id} image={shirtSrc(product.image)} />
+      <ShopProduct productId={product.id} image={productImageSrc(product.image)} />
     </main>
   );
 }

@@ -44,6 +44,12 @@ function db(): Queryable {
   return pool;
 }
 
+export type StoredQuery = Queryable;
+
+export function runInTransaction<T>(work: (client: StoredQuery) => Promise<T>): Promise<T> {
+  return withTransaction(work);
+}
+
 async function withTransaction<T>(work: (client: Queryable) => Promise<T>): Promise<T> {
   const client = await (db() as InstanceType<typeof Pool>).connect();
   try {
@@ -421,6 +427,19 @@ async function insertCollectionRow(client: Queryable, name: Exclude<StoredCollec
       throw new Error(unexpected);
     }
   }
+}
+
+export async function insertStoredRecord(client: StoredQuery, name: 'orders' | 'payment-traces', record: unknown): Promise<void> {
+  await insertCollectionRow(client, name, record);
+}
+
+export async function closeStoredDatabase(): Promise<void> {
+  if (!pool) {
+    return;
+  }
+  const current = pool;
+  pool = undefined;
+  await current.end();
 }
 
 export async function readStoredProducts(): Promise<unknown[]> {

@@ -36,6 +36,7 @@ export interface ShopSizeStock {
 export interface ShopProduct {
   id: 'hw' | 'pg';
   name: string;
+  description: { en: string; pt: string };
   whatsappItem: string;
   image: string;
   imageAlt: string;
@@ -53,10 +54,14 @@ function stockFrom(
 export const SHOP_PRODUCTS: readonly ShopProduct[] = [
   {
     id: 'hw',
-    name: 'Tropical Groove Halloween',
-    whatsappItem: 'Halloween',
+    name: 'Tropical Nomads Halloween Special',
+    description: {
+      en: 'UV embroidery that glows under blacklight. Tropical Nomads is written across the front, with the Halloween artwork on the back.',
+      pt: 'Bordado que brilha sob luz UV. Tropical Nomads escrito na frente, com a arte de Halloween nas costas.',
+    },
+    whatsappItem: 'Tropical Nomads Halloween Special',
     image: '/shop/HW_TEE_UV.webp',
-    imageAlt: 'Tropical Groove Halloween T-Shirt, UV embroidery',
+    imageAlt: 'Tropical Nomads Halloween Special T-shirt, UV embroidery with Tropical Nomads on the front',
     highlighted: true,
     stockNote: 'lastRun',
     stock: stockFrom(SHOP_STOCK.hw),
@@ -64,9 +69,13 @@ export const SHOP_PRODUCTS: readonly ShopProduct[] = [
   {
     id: 'pg',
     name: 'Psy Groove',
+    description: {
+      en: 'UV embroidery that glows under blacklight. Psy Groove is written across the front, with the artwork on the back.',
+      pt: 'Bordado que brilha sob luz UV. Psy Groove escrito na frente, com a arte nas costas.',
+    },
     whatsappItem: 'Psy Groove',
     image: '/shop/PG_TEE_UV.webp',
-    imageAlt: 'Psy Groove T-Shirt, UV embroidery',
+    imageAlt: 'Psy Groove T-shirt, UV embroidery with Psy Groove on the front',
     highlighted: false,
     stockNote: 'madeToOrder',
     stock: stockFrom(SHOP_STOCK.pg),

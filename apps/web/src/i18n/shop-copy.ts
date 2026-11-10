@@ -5,8 +5,6 @@ export interface ShopCopy {
   title: string;
   subtitle: string;
   price: string;
-  metaHw: string;
-  metaPg: string;
   inStock: string;
   size: string;
   quantity: string;
@@ -24,6 +22,31 @@ export interface ShopCopy {
   total: string;
   buy: string;
   note: string;
+  soldOut: string;
+  soldOutLabel: string;
+  orderFailed: string;
+  addProduct: string;
+  editProduct: string;
+  orders: string;
+  orderReady: string;
+  openWhatsapp: string;
+  orderNumber: string;
+  missingOrder: string;
+  saveProduct: string;
+  productSaved: string;
+  productInvalid: string;
+  titleLabel: string;
+  textEn: string;
+  textPt: string;
+  priceLabel: string;
+  imageLabel: string;
+  imageHelp: string;
+  keepImage: string;
+  stockLabel: string;
+  unpaid: string;
+  paid: string;
+  noOrders: string;
+  backShop: string;
   view: string;
   back: string;
   decrease: string;
@@ -66,10 +89,8 @@ export interface ShopCopy {
 export const shopCopy: Record<Locale, ShopCopy> = {
   en: {
     title: 'Shop',
-    subtitle: 'The two embroidered T-shirts from the Tropical Nomads page. Nothing is charged here. Buy sends the order on WhatsApp.',
+    subtitle: 'Embroidered T-shirts from Tropical Nomads. Nothing is charged here. Buy saves the order and sends it on WhatsApp.',
     price: '50',
-    metaHw: 'Embroidered T-shirt · glows under UV',
-    metaPg: 'Embroidered T-shirt · logo on the front, artwork on the back',
     inStock: 'in stock',
     size: 'Size',
     quantity: 'Quantity',
@@ -86,7 +107,32 @@ export const shopCopy: Record<Locale, ShopCopy> = {
     country: 'Country',
     total: 'Total',
     buy: 'Buy',
-    note: 'Buy opens WhatsApp with the shirts, sizes, delivery address, and the total. We answer there.',
+    note: 'Buy saves the order and updates the stock. The next page shows the order number and opens WhatsApp. Nothing is charged here.',
+    soldOut: 'One of these sizes just sold out. The order was not saved.',
+    soldOutLabel: 'Sold out',
+    orderFailed: 'The order was not saved. Your cart is unchanged.',
+    addProduct: 'Add product',
+    editProduct: 'Edit',
+    orders: 'Orders',
+    orderReady: 'Your order is saved.',
+    openWhatsapp: 'Open WhatsApp',
+    orderNumber: 'Order',
+    missingOrder: 'This browser does not have an order to show.',
+    saveProduct: 'Save product',
+    productSaved: 'The product is saved.',
+    productInvalid: 'The product was not saved. Check the title, both texts, the price, and the image.',
+    titleLabel: 'Title',
+    textEn: 'English text',
+    textPt: 'Portuguese text',
+    priceLabel: 'Price (EUR)',
+    imageLabel: 'Image',
+    imageHelp: 'JPEG, PNG, or WebP. At most 5 MB.',
+    keepImage: 'Leave this empty to keep the current image. A chosen file replaces it.',
+    stockLabel: 'Stock',
+    unpaid: 'Unpaid',
+    paid: 'Paid',
+    noOrders: 'No shop orders yet.',
+    backShop: 'Back to shop',
     view: 'View shirt',
     back: 'Back to shop',
     decrease: 'Decrease quantity',
@@ -95,7 +141,7 @@ export const shopCopy: Record<Locale, ShopCopy> = {
     continue: 'Continue shopping',
     cartAria: 'Open cart',
     missingTitle: 'That shirt is not in the shop.',
-    missingBody: 'The shop has the two embroidered T-shirts.',
+    missingBody: 'Go back to the shop to see what is available.',
     left: '{count} left',
     added: 'Added to cart',
     viewCart: 'View cart',
@@ -127,10 +173,8 @@ export const shopCopy: Record<Locale, ShopCopy> = {
   },
   pt: {
     title: 'Loja',
-    subtitle: 'As duas camisetas bordadas da página da Tropical Nomads. Nada é cobrado aqui. Comprar envia o pedido no WhatsApp.',
+    subtitle: 'Camisetas bordadas da Tropical Nomads. Nada é cobrado aqui. Comprar grava o pedido e envia no WhatsApp.',
     price: '50',
-    metaHw: 'Camiseta bordada · brilha no UV',
-    metaPg: 'Camiseta bordada · logo na frente, arte nas costas',
     inStock: 'em estoque',
     size: 'Tamanho',
     quantity: 'Quantidade',
@@ -147,7 +191,32 @@ export const shopCopy: Record<Locale, ShopCopy> = {
     country: 'País',
     total: 'Total',
     buy: 'Comprar',
-    note: 'Comprar abre o WhatsApp com as camisetas, tamanhos, endereço de entrega e o total. Respondemos por lá.',
+    note: 'Comprar grava o pedido e atualiza o estoque. A página seguinte mostra o número do pedido e abre o WhatsApp. Nada é cobrado aqui.',
+    soldOut: 'Um destes tamanhos acabou de esgotar. O pedido não foi gravado.',
+    soldOutLabel: 'Esgotado',
+    orderFailed: 'O pedido não foi gravado. O carrinho continua igual.',
+    addProduct: 'Adicionar produto',
+    editProduct: 'Editar',
+    orders: 'Pedidos',
+    orderReady: 'O pedido foi gravado.',
+    openWhatsapp: 'Abrir WhatsApp',
+    orderNumber: 'Pedido',
+    missingOrder: 'Este navegador não tem um pedido para mostrar.',
+    saveProduct: 'Salvar produto',
+    productSaved: 'O produto foi salvo.',
+    productInvalid: 'O produto não foi salvo. Confira o título, os dois textos, o preço e a imagem.',
+    titleLabel: 'Título',
+    textEn: 'Texto em inglês',
+    textPt: 'Texto em português',
+    priceLabel: 'Preço (EUR)',
+    imageLabel: 'Imagem',
+    imageHelp: 'JPEG, PNG ou WebP. No máximo 5 MB.',
+    keepImage: 'Deixe vazio para manter a imagem atual. Um arquivo escolhido substitui essa imagem.',
+    stockLabel: 'Estoque',
+    unpaid: 'Não pago',
+    paid: 'Pago',
+    noOrders: 'Ainda não há pedidos da loja.',
+    backShop: 'Voltar à loja',
     view: 'Ver camiseta',
     back: 'Voltar à loja',
     decrease: 'Diminuir quantidade',
@@ -156,7 +225,7 @@ export const shopCopy: Record<Locale, ShopCopy> = {
     continue: 'Continuar comprando',
     cartAria: 'Abrir carrinho',
     missingTitle: 'Essa camiseta não está na loja.',
-    missingBody: 'A loja tem as duas camisetas bordadas.',
+    missingBody: 'Volte à loja para ver o que está disponível.',
     left: '{count} restantes',
     added: 'Adicionado ao carrinho',
     viewCart: 'Ver carrinho',
@@ -190,19 +259,6 @@ export const shopCopy: Record<Locale, ShopCopy> = {
 
 export function shopText<K extends keyof ShopCopy>(language: Locale, key: K): string {
   return presentText(language, `shop.${key}`, shopCopy[language][key]);
-}
-
-export function shopProductMeta(language: Locale, id: 'hw' | 'pg'): string {
-  switch (id) {
-    case 'hw':
-      return shopText(language, 'metaHw');
-    case 'pg':
-      return shopText(language, 'metaPg');
-    default: {
-      const unexpected: never = id;
-      return unexpected;
-    }
-  }
 }
 
 export function shopLeft(language: Locale, count: number): string {

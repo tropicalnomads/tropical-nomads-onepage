@@ -8,6 +8,8 @@ import { callPrivate } from '../remote-store.ts';
 
 export type SaveDeliveryResult = 'saved' | 'not-signed-in' | 'invalid';
 
+export type PlaceShopOrderResult = { ok: true; orderId: string } | { ok: false; reason: 'sold-out' | 'unavailable' };
+
 const limit = 80;
 
 function field(formData: FormData, key: string): string {
@@ -60,4 +62,23 @@ export async function saveDeliveryAddressAction(formData: FormData): Promise<Sav
     return 'invalid';
   }
   return 'saved';
+}
+
+export async function placeShopOrderAction(input: unknown): Promise<PlaceShopOrderResult> {
+  if (!apiOrigin()) {
+    return { ok: false, reason: 'unavailable' };
+  }
+  try {
+    const result = await callPrivate<{ orderId?: unknown }>('place-shop-order', input);
+    if (typeof result.orderId !== 'string' || result.orderId.trim() === '') {
+      return { ok: false, reason: 'unavailable' };
+    }
+    return { ok: true, orderId: result.orderId };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '';
+    if (message === 'sold out') {
+      return { ok: false, reason: 'sold-out' };
+    }
+    return { ok: false, reason: 'unavailable' };
+  }
 }

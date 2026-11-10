@@ -352,9 +352,17 @@ export function ShopCheckout({ presets, signedIn }: { presets: ShopAddressPreset
               ) : null}
 
               <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <a href="/shop/cart" className="text-sm font-semibold text-ozora-turquoise hover:text-ozora-cream">
-                  {shopText(language, 'backCart')}
-                </a>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <a
+                    href="/shop"
+                    className="inline-flex h-12 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-bold text-ozora-cream transition hover:bg-white/10"
+                  >
+                    {shopText(language, 'continue')}
+                  </a>
+                  <a href="/shop/cart" className="text-center text-sm font-semibold text-ozora-turquoise hover:text-ozora-cream">
+                    {shopText(language, 'backCart')}
+                  </a>
+                </div>
                 <button
                   type="button"
                   disabled={!complete || submitting}

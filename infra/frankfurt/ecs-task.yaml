@@ -25,6 +25,11 @@ Parameters:
     Description: Session secret ARN. Do not commit the value.
     AllowedPattern: "^arn:aws:secretsmanager:eu-central-1:[0-9]{12}:secret:.+"
     NoEcho: true
+  AssetsBucketName:
+    Type: String
+    Description: Private assets bucket name. Do not commit the value.
+    AllowedPattern: "^tropical-nomads-assets-[0-9]{12}$"
+    NoEcho: true
 
 Resources:
   TaskDefinition:
@@ -62,6 +67,8 @@ Resources:
               Value: postgres
             - Name: DB_STARTUP_CHECK
               Value: "true"
+            - Name: ASSETS_BUCKET
+              Value: !Ref AssetsBucketName
           Secrets:
             - Name: DB_USER
               ValueFrom: !Sub "${DbSecretArn}:username::"

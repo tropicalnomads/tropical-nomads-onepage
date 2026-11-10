@@ -92,6 +92,9 @@ api_sg=$(stack_output tn-frankfurt-security-groups ApiSecurityGroupId)
 db_sg=$(stack_output tn-frankfurt-security-groups DbSecurityGroupId)
 
 deploy_stack tn-frankfurt-logs "$root/log-group.yaml"
+deploy_stack tn-frankfurt-assets "$root/s3-assets.yaml"
+assets_bucket=$(stack_output tn-frankfurt-assets BucketName)
+assets_arn=$(stack_output tn-frankfurt-assets BucketArn)
 deploy_stack tn-frankfurt-cognito "$root/cognito-user-pool.yaml"
 pool_id=$(stack_output tn-frankfurt-cognito UserPoolId)
 client_id=$(stack_output tn-frankfurt-cognito UserPoolClientId)
@@ -114,7 +117,7 @@ secret_arn=$(stack_output tn-frankfurt-rds DbSecretArn)
 session_arn=$(aws_ff secretsmanager describe-secret --secret-id tropical-nomads/api/session --query ARN --output text)
 
 deploy_stack tn-frankfurt-iam "$root/iam-api.yaml" \
-  --parameter-overrides "DbSecretArn=${secret_arn}" "SessionSecretArn=${session_arn}"
+  --parameter-overrides "DbSecretArn=${secret_arn}" "SessionSecretArn=${session_arn}" "AssetsBucketArn=${assets_arn}"
 execution_role=$(stack_output tn-frankfurt-iam ExecutionRoleArn)
 task_role=$(stack_output tn-frankfurt-iam TaskRoleArn)
 log_group=$(stack_output tn-frankfurt-logs LogGroupName)
@@ -132,7 +135,7 @@ fi
 
 db_host=$(aws_ff rds describe-db-instances --db-instance-identifier tropical-nomads-frankfurt --query 'DBInstances[0].Endpoint.Address' --output text)
 deploy_stack tn-frankfurt-ecs-task "$root/ecs-task.yaml" \
-  --parameter-overrides "ExecutionRoleArn=${execution_role}" "TaskRoleArn=${task_role}" "Image=${image}" "LogGroupName=${log_group}" "DbSecretArn=${secret_arn}" "DbHost=${db_host}" "SessionSecretArn=${session_arn}"
+  --parameter-overrides "ExecutionRoleArn=${execution_role}" "TaskRoleArn=${task_role}" "Image=${image}" "LogGroupName=${log_group}" "DbSecretArn=${secret_arn}" "DbHost=${db_host}" "SessionSecretArn=${session_arn}" "AssetsBucketName=${assets_bucket}"
 task_arn=$(stack_output tn-frankfurt-ecs-task TaskDefinitionArn)
 cluster=$(stack_output tn-frankfurt-ecs-cluster ClusterName)
 

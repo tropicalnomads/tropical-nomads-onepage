@@ -12,6 +12,11 @@ if (existsSync(envPath)) {
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '8mb',
+    },
+  },
   typedRoutes: false,
   poweredByHeader: false,
   transpilePackages: ['tropical-nomads-shared', 'tropical-nomads-api'],

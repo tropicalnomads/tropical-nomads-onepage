@@ -5,10 +5,11 @@ import { useEffect, useRef, useState } from 'react';
 import { sizeLabel } from '../../../one-pager/src/lib/shop.ts';
 import { shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
+import { shopAmountLabel } from '../shop/catalog';
 import { linePrice, type ShopLine } from '../shop/order';
 import { useShopProducts } from '../shop/product-context';
 
-export function ShopAddedPanel({ line, image, subtotal, onClose }: { line: ShopLine; image?: string; subtotal: number; onClose: () => void }) {
+export function ShopAddedPanel({ line, image, subtotal, onClose }: { line: ShopLine; image?: string; subtotal: string; onClose: () => void }) {
   const { language } = useLanguage();
   const onCloseRef = useRef(onClose);
   const [shown, setShown] = useState(false);
@@ -74,12 +75,14 @@ export function ShopAddedPanel({ line, image, subtotal, onClose }: { line: ShopL
               <p className="text-sm text-ozora-cream/65">
                 {shopText(language, 'quantity')} {line.quantity}
               </p>
-              <p className="mt-1 text-sm font-bold text-ozora-yellow">€{linePrice(line.quantity)}</p>
+              <p className="mt-1 text-sm font-bold text-ozora-yellow">
+                {product ? shopAmountLabel(linePrice(line.quantity, product.amount), product.currency) : null}
+              </p>
             </div>
           </div>
           <div className="mt-auto flex items-center justify-between border-t border-white/10 pt-4">
             <p className="text-sm font-semibold uppercase tracking-[0.14em] text-ozora-cream/60">{shopText(language, 'subtotal')}</p>
-            <p className="text-2xl font-bold text-ozora-yellow">€{subtotal}</p>
+            <p className="text-2xl font-bold text-ozora-yellow">{subtotal}</p>
           </div>
           <a
             href="/shop/cart"

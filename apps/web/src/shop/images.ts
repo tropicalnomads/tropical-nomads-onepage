@@ -1,4 +1,1 @@
-export interface ShopImageSources {
-  hw?: string;
-  pg?: string;
-}
+export type ShopImageSources = Readonly<Record<string, string>>;

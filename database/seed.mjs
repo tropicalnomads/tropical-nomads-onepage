@@ -263,6 +263,7 @@ async function seedShop(client) {
     const document = {
       id: product.id,
       name: product.name,
+      description: product.description,
       whatsappItem: product.whatsappItem,
       image: product.image,
       imageAlt: product.imageAlt,

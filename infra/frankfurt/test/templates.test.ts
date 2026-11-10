@@ -146,6 +146,25 @@ describe('Frankfurt templates', () => {
     assert.match(page, /\/api\/\$\{id\}/);
   });
 
+  it('keeps the assets bucket private and shop objects on one prefix', () => {
+    const bucket = read(join(frankfurt, 's3-assets.yaml'));
+    const iam = read(join(frankfurt, 'iam-api.yaml'));
+    const task = read(join(frankfurt, 'ecs-task.yaml'));
+    assert.match(bucket, /BlockPublicAcls: true/);
+    assert.match(bucket, /BlockPublicPolicy: true/);
+    assert.match(bucket, /IgnorePublicAcls: true/);
+    assert.match(bucket, /RestrictPublicBuckets: true/);
+    assert.match(bucket, /SSEAlgorithm: AES256/);
+    assert.match(bucket, /BucketOwnerEnforced/);
+    assert.match(bucket, /aws:SecureTransport/);
+    assert.match(bucket, /Prefix: shop\//);
+    assert.equal(bucket.includes('Effect: Allow'), false);
+    assert.match(iam, /\$\{AssetsBucketArn\}\/shop\/\*/);
+    assert.match(iam, /s3:prefix/);
+    assert.equal(iam.includes('Action: "s3:*"'), false);
+    assert.match(task, /ASSETS_BUCKET/);
+  });
+
   it('keeps operational data and the one-pager build out of the image', () => {
     const dockerfile = read(join(repo, 'apps/api/Dockerfile'));
     const ignore = read(join(repo, '.dockerignore'));

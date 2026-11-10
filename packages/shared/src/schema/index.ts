@@ -41,7 +41,7 @@ export const schemas = {
     'billingAddressId',
     'status',
   ],
-  order: ['id', 'userId', 'purpose', 'lines', 'traceId', 'createdAt'],
+  order: ['id', 'userId', 'purpose', 'lines', 'traceId', 'createdAt', 'delivery'],
   paymentTrace: ['id', 'userId', 'amount', 'currency', 'purpose', 'reference', 'status'],
   issuedTicket: ['id', 'partyId', 'traceId', 'buyerId', 'secret', 'createdAt', 'validForEntry'],
   checkIn: ['id', 'ticketId', 'guestId', 'partyId', 'at', 'actorId', 'result', 'reason'],

@@ -198,7 +198,7 @@ export const translations: Record<Language, TranslationDict> = {
 
     switchLanguageTo: (languageLabel) => `Switch language to ${languageLabel}`,
 
-    shopTagline: 'Shop · Tropical Groove Halloween',
+    shopTagline: 'Shop · Tropical Nomads Halloween Special',
     shopHeadline: 'Reserve your T-Shirt, pick it up at the party',
     shopLead:
       "UV-reactive embroidery, made in Portugal. Limited stock for Saturday's party at The Sound House. Reserve it and it's held under your name.",
@@ -208,8 +208,8 @@ export const translations: Record<Language, TranslationDict> = {
     shopPiecesSubtitle: 'Pick up at the party, Saturday 24/10. Stock updated today.',
     shopChipParty: 'Party edition',
     shopChipDrop: 'Drop 01',
-    shopMetaHw: 'Embroidered T-Shirt · glows under UV',
-    shopMetaPg: 'Embroidered T-Shirt · logo front, artwork back',
+    shopMetaHw: 'UV embroidery that glows under blacklight. Tropical Nomads on the front, Halloween artwork on the back.',
+    shopMetaPg: 'UV embroidery that glows under blacklight. Psy Groove on the front, artwork on the back.',
     shopSizes: 'Sizes',
     shopBookHw: 'Reserve the Halloween T-Shirt',
     shopBookPg: 'Reserve the Psy Groove T-Shirt',
@@ -311,7 +311,7 @@ export const translations: Record<Language, TranslationDict> = {
 
     switchLanguageTo: (languageLabel) => `Mudar idioma para ${languageLabel}`,
 
-    shopTagline: 'Shop · Tropical Groove Halloween',
+    shopTagline: 'Shop · Tropical Nomads Halloween Special',
     shopHeadline: 'Reserva a tua camiseta e retira na festa',
     shopLead:
       'Bordado que brilha no UV, feito em Portugal. Estoque contado pra festa de sábado na Sound House. Reservou, tá guardada com teu nome.',
@@ -321,8 +321,8 @@ export const translations: Record<Language, TranslationDict> = {
     shopPiecesSubtitle: 'Retirada na festa de sábado, 24/10. Estoque atualizado hoje.',
     shopChipParty: 'Edição da festa',
     shopChipDrop: 'Drop 01',
-    shopMetaHw: 'Camiseta bordada · brilha no UV',
-    shopMetaPg: 'Camiseta bordada · logo na frente, arte nas costas',
+    shopMetaHw: 'Bordado que brilha no UV. Tropical Nomads na frente, arte de Halloween nas costas.',
+    shopMetaPg: 'Bordado que brilha no UV. Psy Groove na frente, arte nas costas.',
     shopSizes: 'Tamanhos',
     shopBookHw: 'Reservar a Halloween',
     shopBookPg: 'Reservar a Psy Groove',

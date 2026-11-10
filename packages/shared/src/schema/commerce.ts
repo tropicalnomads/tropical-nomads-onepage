@@ -45,6 +45,16 @@ export interface ShopLine {
 
 export type OrderLine = TicketLine | ShopLine;
 
+export interface OrderDelivery {
+  name: string;
+  line1: string;
+  line2?: string;
+  city: string;
+  region?: string;
+  postalCode: string;
+  country: string;
+}
+
 export interface Order {
   id: string;
   userId: string;
@@ -52,6 +62,7 @@ export interface Order {
   lines: readonly OrderLine[];
   traceId: string;
   createdAt: string;
+  delivery?: OrderDelivery;
 }
 
 export interface PaymentTrace {
@@ -171,7 +182,7 @@ export function parseOrder(input: unknown, refs: SchemaRefs = {}): ParseResult<O
   const read = readRecord(input);
   if (!read.ok) return read;
   const errors: string[] = [];
-  rejectUnknown(read.value, ['id', 'userId', 'purpose', 'lines', 'traceId', 'createdAt'], errors);
+  rejectUnknown(read.value, ['id', 'userId', 'purpose', 'lines', 'traceId', 'createdAt', 'delivery'], errors);
   rejectSensitive(read.value, errors);
   const id = requireString(read.value, 'id', errors);
   const userId = requireString(read.value, 'userId', errors);
@@ -181,6 +192,7 @@ export function parseOrder(input: unknown, refs: SchemaRefs = {}): ParseResult<O
   const traceId = requireString(read.value, 'traceId', errors);
   if (traceId) requireRef(refs.traceIds, traceId, 'traceId', errors);
   const createdAt = requireString(read.value, 'createdAt', errors);
+  const delivery = 'delivery' in read.value && read.value.delivery !== undefined ? parseDelivery(read.value.delivery, errors) : undefined;
   const lines: OrderLine[] = [];
   if (!Array.isArray(read.value.lines)) {
     errors.push('lines is required');
@@ -191,7 +203,30 @@ export function parseOrder(input: unknown, refs: SchemaRefs = {}): ParseResult<O
     }
   }
   if (!id || !userId || !purpose.ok || !traceId || !createdAt) return fail(errors);
-  return finish(errors, { id, userId, purpose: purpose.value, lines, traceId, createdAt });
+  const order: Order = { id, userId, purpose: purpose.value, lines, traceId, createdAt };
+  if (delivery) order.delivery = delivery;
+  return finish(errors, order);
+}
+
+function parseDelivery(input: unknown, errors: string[]): OrderDelivery | undefined {
+  if (!isRecord(input)) {
+    errors.push('delivery must be an object');
+    return undefined;
+  }
+  rejectUnknown(input, ['name', 'line1', 'line2', 'city', 'region', 'postalCode', 'country'], errors);
+  rejectSensitive(input, errors);
+  const name = requireString(input, 'name', errors);
+  const line1 = requireString(input, 'line1', errors);
+  const line2 = optionalString(input, 'line2', errors);
+  const city = requireString(input, 'city', errors);
+  const region = optionalString(input, 'region', errors);
+  const postalCode = requireString(input, 'postalCode', errors);
+  const country = requireString(input, 'country', errors);
+  if (!name || !line1 || !city || !postalCode || !country) return undefined;
+  const delivery: OrderDelivery = { name, line1, city, postalCode, country };
+  if (line2) delivery.line2 = line2;
+  if (region) delivery.region = region;
+  return delivery;
 }
 
 export function parsePaymentTrace(input: unknown, refs: SchemaRefs = {}): ParseResult<PaymentTrace> {

@@ -25,6 +25,8 @@ import {
 import { commitPayment, commitPaymentMethod, loadTraces, type PaymentCaller, type PaymentDraft } from './payments.ts';
 import { openSealed, sessionFromCookie } from './session-token.ts';
 import { commitPartySave, loadAdminParties, type PartyOfferInput, type PartySaveInput } from './parties.ts';
+import { placeShopOrder, readShopPurchase } from './shop-orders.ts';
+import { listShopOrders, readShopProductDraft, requireShopAdmin, saveShopProduct } from './shop-products.ts';
 import { commitTicket, loadIssuedTickets, loadOrders, loadPartyTitles, loadPublishedParties } from './tickets.ts';
 
 export interface PrivateResponse {
@@ -252,6 +254,17 @@ async function runAction(action: string, input: unknown, sessionSub: string | un
       }
       const draft = paymentDraft(input.input, sub);
       return commitPayment(input.purpose, draft, userCaller(input.caller, sub));
+    }
+    case 'place-shop-order': {
+      return placeShopOrder(readShopPurchase(input), sessionSub);
+    }
+    case 'save-shop-product': {
+      const actorId = await requireShopAdmin(sessionSub);
+      return saveShopProduct(readShopProductDraft(input), actorId);
+    }
+    case 'admin-shop-orders': {
+      await requireShopAdmin(sessionSub);
+      return listShopOrders();
     }
     case 'issue-ticket': {
       const sub = requireSignedIn(sessionSub);

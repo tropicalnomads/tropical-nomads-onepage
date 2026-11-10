@@ -12,6 +12,10 @@ Parameters:
     Description: Session secret ARN. Do not commit the value.
     AllowedPattern: "^arn:aws:secretsmanager:eu-central-1:[0-9]{12}:secret:.+"
     NoEcho: true
+  AssetsBucketArn:
+    Type: String
+    Description: Private assets bucket ARN. Do not commit the value.
+    AllowedPattern: "^arn:aws:s3:::tropical-nomads-assets-[0-9]{12}$"
 
 Resources:
   ExecutionRole:
@@ -81,6 +85,20 @@ Resources:
                   - ssmmessages:OpenControlChannel
                   - ssmmessages:OpenDataChannel
                 Resource: "*"
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource: !Sub "${AssetsBucketArn}/shop/*"
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !Ref AssetsBucketArn
+                Condition:
+                  StringLike:
+                    s3:prefix:
+                      - shop/
+                      - shop/*
 
 Outputs:
   ExecutionRoleArn:

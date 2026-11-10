@@ -1,5 +1,6 @@
-import { liveSizes, type ShopSizeCode } from '../../../one-pager/src/lib/shop.ts';
-import { shopProducts, type ShopAddress, type ShopLine } from './order.ts';
+import type { ShopSizeCode } from '../../../one-pager/src/lib/shop.ts';
+import { sizeStock, type ShopCatalogProduct } from './catalog.ts';
+import type { ShopAddress, ShopLine } from './order.ts';
 
 export const shopCartStorageKey = 'tn:shop-cart:v1';
 
@@ -24,22 +25,14 @@ function isSize(value: unknown): value is ShopSizeCode {
   return typeof value === 'string' && sizeCodes.some((code) => code === value);
 }
 
-function isProduct(value: unknown): value is ShopLine['productId'] {
-  return value === 'hw' || value === 'pg';
+function isProductId(value: unknown): value is string {
+  return typeof value === 'string' && value.trim() !== '';
 }
 
-export function sizeStock(productId: ShopLine['productId'], size: ShopSizeCode): number {
-  const product = shopProducts().find((item) => item.id === productId);
-  if (!product) {
-    return 0;
-  }
-  return liveSizes(product).find((item) => item.code === size)?.count ?? 0;
-}
-
-export function clampShopLines(lines: readonly ShopLine[]): ShopLine[] {
+export function clampShopLines(lines: readonly ShopLine[], products: readonly Pick<ShopCatalogProduct, 'id' | 'stock'>[]): ShopLine[] {
   const merged = new Map<string, ShopLine>();
   for (const line of lines) {
-    const stock = sizeStock(line.productId, line.size);
+    const stock = sizeStock(products, line.productId, line.size);
     if (!Number.isInteger(line.quantity) || line.quantity < 1 || stock < 1) {
       continue;
     }
@@ -50,15 +43,21 @@ export function clampShopLines(lines: readonly ShopLine[]): ShopLine[] {
   return [...merged.values()];
 }
 
-export function addShopLine(lines: readonly ShopLine[], line: ShopLine): ShopLine[] {
-  return clampShopLines([...lines, line]);
+export function addShopLine(lines: readonly ShopLine[], line: ShopLine, products: readonly Pick<ShopCatalogProduct, 'id' | 'stock'>[]): ShopLine[] {
+  return clampShopLines([...lines, line], products);
 }
 
-export function setShopLineQuantity(lines: readonly ShopLine[], productId: ShopLine['productId'], size: ShopSizeCode, quantity: number): ShopLine[] {
+export function setShopLineQuantity(
+  lines: readonly ShopLine[],
+  productId: string,
+  size: ShopSizeCode,
+  quantity: number,
+  products: readonly Pick<ShopCatalogProduct, 'id' | 'stock'>[],
+): ShopLine[] {
   if (!Number.isInteger(quantity) || quantity < 1) {
     return lines.filter((line) => line.productId !== productId || line.size !== size);
   }
-  const stock = sizeStock(productId, size);
+  const stock = sizeStock(products, productId, size);
   if (stock < 1) {
     return lines.filter((line) => line.productId !== productId || line.size !== size);
   }
@@ -91,7 +90,7 @@ function readAddress(value: unknown): ShopAddress {
   };
 }
 
-export function parseShopCart(raw: string | null): StoredShopCart {
+export function parseShopCart(raw: string | null, products?: readonly Pick<ShopCatalogProduct, 'id' | 'stock'>[]): StoredShopCart {
   if (!raw) {
     return { lines: [], address: emptyShopAddress };
   }
@@ -107,13 +106,13 @@ export function parseShopCart(raw: string | null): StoredShopCart {
             return [];
           }
           const line = item as Partial<ShopLine>;
-          if (!isProduct(line.productId) || !isSize(line.size) || typeof line.quantity !== 'number') {
+          if (!isProductId(line.productId) || !isSize(line.size) || typeof line.quantity !== 'number') {
             return [];
           }
           return [{ productId: line.productId, size: line.size, quantity: line.quantity }];
         })
       : [];
-    return { lines: clampShopLines(lines), address: readAddress(record.address) };
+    return { lines: products === undefined ? lines : clampShopLines(lines, products), address: readAddress(record.address) };
   } catch {
     return { lines: [], address: emptyShopAddress };
   }

@@ -1,10 +1,10 @@
-import { SHOP_PRICE_EUR, SHOP_PRODUCTS, liveSizes, sizeLabel, type ShopSizeCode } from '../../../one-pager/src/lib/shop.ts';
+import { sizeLabel, type ShopSizeCode } from '../../../one-pager/src/lib/shop.ts';
+import { shopAmountLabel, sizeStock, type ShopCatalogProduct } from './catalog.ts';
 
 export const shopWhatsappE164 = '4917648996011';
-export const shopPriceEur = SHOP_PRICE_EUR;
 
 export interface ShopLine {
-  productId: 'hw' | 'pg';
+  productId: string;
   size: ShopSizeCode;
   quantity: number;
 }
@@ -35,52 +35,86 @@ function addressLines(address: ShopAddress): string[] | undefined {
   );
 }
 
-function sizeStock(productId: ShopLine['productId'], size: ShopSizeCode): number {
-  const product = SHOP_PRODUCTS.find((item) => item.id === productId);
-  if (!product) {
-    return 0;
-  }
-  return liveSizes(product).find((item) => item.code === size)?.count ?? 0;
+export function linePrice(quantity: number, amount: number): number {
+  return quantity * amount;
 }
 
-export function shopProducts(): typeof SHOP_PRODUCTS {
-  return SHOP_PRODUCTS;
+export function shopTotal(lines: readonly ShopLine[], products: readonly Pick<ShopCatalogProduct, 'id' | 'amount'>[]): number {
+  return lines.reduce((sum, line) => sum + linePrice(line.quantity, products.find((product) => product.id === line.productId)?.amount ?? 0), 0);
 }
 
-export function linePrice(quantity: number): number {
-  return quantity * shopPriceEur;
-}
-
-export function shopTotal(lines: readonly ShopLine[]): number {
-  return lines.reduce((sum, line) => sum + linePrice(line.quantity), 0);
+export function shopTotalLabel(lines: readonly ShopLine[], products: readonly Pick<ShopCatalogProduct, 'id' | 'amount' | 'currency'>[]): string {
+  const currencies = lines.flatMap((line) => {
+    const currency = products.find((product) => product.id === line.productId)?.currency;
+    return currency === undefined ? [] : [currency];
+  });
+  const shared = currencies[0];
+  const currency = shared !== undefined && currencies.every((item) => item === shared) ? shared : 'EUR';
+  return shopAmountLabel(shopTotal(lines, products), currency);
 }
 
 export function shopAddressComplete(address: ShopAddress): boolean {
   return addressLines(address) !== undefined;
 }
 
-export function shopOrderMessage(lines: readonly ShopLine[], address: ShopAddress, language: 'en' | 'pt'): string | undefined {
+export function shopOrderMessage(
+  lines: readonly ShopLine[],
+  address: ShopAddress,
+  language: 'en' | 'pt',
+  products: readonly Pick<ShopCatalogProduct, 'id' | 'name' | 'amount' | 'currency' | 'stock'>[],
+  orderId?: string,
+): string | undefined {
   const delivery = addressLines(address);
   if (!delivery || lines.length === 0) {
     return undefined;
   }
   const rows: string[] = [];
   for (const line of lines) {
-    const product = SHOP_PRODUCTS.find((item) => item.id === line.productId);
-    const stock = sizeStock(line.productId, line.size);
+    const product = products.find((item) => item.id === line.productId);
+    const stock = product ? sizeStock(products, line.productId, line.size) : 0;
     if (!product || !Number.isInteger(line.quantity) || line.quantity < 1 || line.quantity > stock) {
       return undefined;
     }
     rows.push(product.name);
-    rows.push(`${line.quantity} × ${sizeLabel(line.size, language)} · €${linePrice(line.quantity)}`);
+    rows.push(`${line.quantity} × ${sizeLabel(line.size, language)} · ${shopAmountLabel(linePrice(line.quantity, product.amount), product.currency)}`);
     rows.push('');
   }
   const heading = language === 'pt' ? 'Pedido da loja Tropical Nomads' : 'Tropical Nomads shop';
   const deliveryLabel = language === 'pt' ? 'Entrega' : 'Delivery';
   const totalLabel = language === 'pt' ? 'Total' : 'Total';
-  return [heading, '', ...rows, deliveryLabel, ...delivery, '', `${totalLabel} €${shopTotal(lines)}`].join('\n');
+  const orderLine = orderId !== undefined && /^order-[a-f0-9]{8,}$/.test(orderId) ? (language === 'pt' ? `Pedido ${orderId}` : `Order ${orderId}`) : undefined;
+  return [heading, '', ...(orderLine ? [orderLine, ''] : []), ...rows, deliveryLabel, ...delivery, '', `${totalLabel} ${shopTotalLabel(lines, products)}`].join('\n');
 }
 
 export function shopWhatsappUrl(message: string): string {
   return `https://wa.me/${shopWhatsappE164}?text=${encodeURIComponent(message)}`;
+}
+
+export const shopConfirmationKey = 'tn:shop-confirmation:v1';
+
+export function shopConfirmationRecord(orderId: string, message: string): { orderId: string; message: string } | undefined {
+  if (!/^order-[a-f0-9]{8,}$/.test(orderId) || message.trim() === '' || message.length > 4000) {
+    return undefined;
+  }
+  return { orderId, message };
+}
+
+export function readShopConfirmation(raw: string | null): { orderId: string; message: string } | undefined {
+  if (!raw) {
+    return undefined;
+  }
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed !== 'object' || parsed === null) {
+      return undefined;
+    }
+    const orderId = 'orderId' in parsed ? parsed.orderId : undefined;
+    const message = 'message' in parsed ? parsed.message : undefined;
+    if (typeof orderId !== 'string' || typeof message !== 'string') {
+      return undefined;
+    }
+    return shopConfirmationRecord(orderId, message);
+  } catch {
+    return undefined;
+  }
 }
