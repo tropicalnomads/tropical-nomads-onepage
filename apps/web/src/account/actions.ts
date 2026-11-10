@@ -306,6 +306,7 @@ export async function providerAction(formData: FormData): Promise<AccountActionR
 export async function signOutAction(): Promise<void> {
   const jar = await cookies();
   jar.delete(sessionCookieName);
+  await clearVerifiedClaims();
 }
 
 export async function currentAccountSub(): Promise<string | undefined> {

@@ -1,8 +1,9 @@
 'use client';
 
-import { LogIn, Menu, ShoppingBag, UserRound, X } from 'lucide-react';
-import { useState } from 'react';
+import { ChevronDown, LogIn, LogOut, Menu, ShoppingBag, UserRound, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { origins, type Locale, type WebAreaId } from 'tropical-nomads-shared';
+import { signOutAction } from '../account/actions';
 import { accountText, areaText, shellText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { shopText } from '../i18n/shop-copy';
@@ -13,6 +14,12 @@ import { LanguageSwitch } from './LanguageSwitch';
 
 const navLinkClass =
   'shrink-0 rounded-full px-3 py-1.5 text-sm font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise';
+
+const accountButtonClass =
+  'group inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full border border-ozora-yellow/80 bg-ozora-yellow px-2.5 text-sm font-bold text-ozora-ink shadow-[0_8px_22px_rgba(250,208,46,0.2)] transition hover:-translate-y-0.5 hover:border-ozora-coral hover:bg-ozora-coral hover:shadow-[0_12px_26px_rgba(255,127,80,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow focus-visible:ring-offset-2 focus-visible:ring-offset-ozora-navy sm:px-4';
+
+const accountMenuItemClass =
+  'flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-ozora-cream/90 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise';
 
 function headerLabel(language: Locale, id: WebAreaId): string {
   if (id === 'upcoming-events') {
@@ -67,11 +74,106 @@ function CartLink({ menu, onClick }: { menu?: boolean; onClick?: () => void }) {
   );
 }
 
-export function ShellHeader({ signedIn, admin = false }: { signedIn: boolean; admin?: boolean }) {
+function AccountControl({ signedIn, onOpen }: { signedIn: boolean; onOpen?: () => void }) {
   const { language } = useLanguage();
   const accountHref = signedIn ? '/account' : '/account/sign-in';
   const accountLabel = signedIn ? accountText(language, 'accountTitle') : accountText(language, 'signIn');
-  const AccountIcon = signedIn ? UserRound : LogIn;
+  const [open, setOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+    const onPointer = (event: MouseEvent): void => {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    const onKey = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onPointer);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  if (!signedIn) {
+    return (
+      <a href={accountHref} className={accountButtonClass}>
+        <LogIn size={16} aria-hidden="true" className="transition-transform group-hover:scale-110" />
+        {accountLabel}
+      </a>
+    );
+  }
+
+  const toggle = (): void => {
+    setOpen((current) => {
+      const next = !current;
+      if (next) {
+        onOpen?.();
+      }
+      return next;
+    });
+  };
+
+  const signOut = async (): Promise<void> => {
+    if (signingOut) {
+      return;
+    }
+    setSigningOut(true);
+    try {
+      await signOutAction();
+      window.location.assign('/');
+    } catch {
+      setSigningOut(false);
+    }
+  };
+
+  return (
+    <div ref={rootRef} className="relative">
+      <button
+        type="button"
+        className={accountButtonClass}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        aria-controls="account-menu"
+        onClick={toggle}
+      >
+        <UserRound size={16} aria-hidden="true" className="transition-transform group-hover:scale-110" />
+        {accountLabel}
+        <ChevronDown size={14} aria-hidden="true" className={`transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open ? (
+        <div
+          id="account-menu"
+          role="menu"
+          aria-label={accountLabel}
+          className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-52 rounded-2xl border border-white/10 bg-ozora-navy/95 p-1.5 shadow-[0_18px_50px_rgba(0,0,0,0.35)] backdrop-blur-md"
+        >
+          <a role="menuitem" href={accountHref} className={accountMenuItemClass} onClick={() => setOpen(false)}>
+            <UserRound size={16} aria-hidden="true" />
+            {accountText(language, 'accountTitle')}
+          </a>
+          <div className="my-1 border-t border-white/10" />
+          <button type="button" role="menuitem" className={accountMenuItemClass} disabled={signingOut} onClick={() => void signOut()}>
+            <LogOut size={16} aria-hidden="true" />
+            {accountText(language, 'signOut')}
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+export function ShellHeader({ signedIn, admin = false }: { signedIn: boolean; admin?: boolean }) {
+  const { language } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const closeMenu = (): void => {
@@ -139,13 +241,7 @@ export function ShellHeader({ signedIn, admin = false }: { signedIn: boolean; ad
 
         <div className="relative z-20 flex items-center gap-2">
           <CartLink />
-          <a
-            href={accountHref}
-            className="group inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full border border-ozora-yellow/80 bg-ozora-yellow px-2.5 text-sm font-bold text-ozora-ink shadow-[0_8px_22px_rgba(250,208,46,0.2)] transition hover:-translate-y-0.5 hover:border-ozora-coral hover:bg-ozora-coral hover:shadow-[0_12px_26px_rgba(255,127,80,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow focus-visible:ring-offset-2 focus-visible:ring-offset-ozora-navy sm:px-4"
-          >
-            <AccountIcon size={16} aria-hidden="true" className="transition-transform group-hover:scale-110" />
-            {accountLabel}
-          </a>
+          <AccountControl signedIn={signedIn} onOpen={closeMenu} />
         </div>
       </div>
 

@@ -216,6 +216,8 @@ describe('shop', () => {
     assert.equal(nameAt < postalAt && postalAt < lineAt && lineAt < countryAt, true);
     assert.equal(checkoutPage.includes('ShopCheckout'), true);
     assert.equal(checkoutPage.includes('billingAddresses'), true);
+    assert.equal(checkoutPage.includes("redirect('/account/sign-in')"), true);
+    assert.equal(reviewPage.includes("redirect('/account/sign-in')"), true);
     assert.equal(postalLookup.includes('nominatim.openstreetmap.org'), true);
     assert.equal(deliveryActions.includes('saveDefaultBillingAddress'), true);
     const complete = readFileSync(new URL('../src/components/ShopOrderComplete.tsx', import.meta.url), 'utf8');

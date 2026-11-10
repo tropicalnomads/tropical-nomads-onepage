@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { readSessionSub, sessionCookieName } from '../../../src/account/session';
 import { currentAccounts } from '../../../src/remote-store';
 import { ShopCheckout, type ShopAddressPreset } from '../../../src/components/ShopCheckout';
@@ -15,6 +16,9 @@ function countryName(value: string | undefined): string {
 export default async function ShopCheckoutPage() {
   const jar = await cookies();
   const sub = readSessionSub(jar.get(sessionCookieName)?.value);
+  if (!sub) {
+    redirect('/account/sign-in');
+  }
   const accounts = await currentAccounts();
   const profile = accounts.profiles.find((item) => item.sub === sub && item.status === 'active');
   const saved = profile?.billingAddressId

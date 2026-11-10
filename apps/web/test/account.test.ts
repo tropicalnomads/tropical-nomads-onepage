@@ -110,6 +110,9 @@ describe('accounts', () => {
     assert.equal(header.includes('LogIn'), true);
     assert.equal(header.includes('UserRound'), true);
     assert.equal(header.includes("signedIn ? '/account' : '/account/sign-in'"), true);
+    assert.equal(header.includes('signOutAction'), true);
+    assert.equal(header.includes('role="menu"'), true);
+    assert.equal(header.includes("accountText(language, 'signOut')"), true);
     const onePager = readFileSync(new URL('../../one-pager/src/app/App.tsx', import.meta.url), 'utf8');
     assert.equal(onePager.includes('/account'), false);
     assert.deepEqual(Object.keys(shellCopy.en.account).sort(), Object.keys(shellCopy.pt.account).sort());
