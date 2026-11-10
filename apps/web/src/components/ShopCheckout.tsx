@@ -4,6 +4,7 @@ import { Check, Loader2, MapPin, UserRound } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
+import { publicHref } from '../seo/urls';
 import { saveDeliveryAddressAction } from '../shop/actions';
 import { shopAddressComplete, type ShopAddress } from '../shop/order';
 import { canonicalCountryName, countryChoices, postalCompact, postalLookupKey } from '../shop/postal';
@@ -240,7 +241,7 @@ export function ShopCheckout({ presets, signedIn }: { presets: ShopAddressPreset
           <div className="mt-8 rounded-3xl border border-white/10 bg-ozora-navy/55 p-8 text-center">
             <p className="text-sm text-ozora-cream/75">{shopText(language, 'empty')}</p>
             <a
-              href="/shop"
+              href={publicHref('/shop', language)}
               className="mt-6 inline-flex h-11 items-center justify-center rounded-full bg-ozora-yellow px-5 text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral"
             >
               {shopText(language, 'continue')}
@@ -354,7 +355,7 @@ export function ShopCheckout({ presets, signedIn }: { presets: ShopAddressPreset
               <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                   <a
-                    href="/shop"
+                    href={publicHref('/shop', language)}
                     className="inline-flex h-12 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-bold text-ozora-cream transition hover:bg-white/10"
                   >
                     {shopText(language, 'continue')}

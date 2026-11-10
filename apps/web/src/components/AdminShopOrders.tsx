@@ -5,6 +5,7 @@ import { sizeLabel, type ShopSizeCode } from '../../../one-pager/src/lib/shop.ts
 import type { ShopOrderRow } from '../admin/shop-values';
 import { shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
+import { publicHref } from '../seo/urls';
 import { shopAmountLabel, type ShopCatalogProduct } from '../shop/catalog';
 import { ShopImagePlaceholder } from './ShopImagePlaceholder';
 
@@ -60,7 +61,7 @@ export function AdminShopOrders({ orders, products }: { orders: readonly ShopOrd
           {shopText(language, 'addProduct')}
         </a>
       </div>
-      <a href="/shop" className="mt-3 inline-block text-sm font-semibold text-ozora-turquoise">
+      <a href={publicHref('/shop', language)} className="mt-3 inline-block text-sm font-semibold text-ozora-turquoise">
         {shopText(language, 'backShop')}
       </a>
 

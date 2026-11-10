@@ -11,6 +11,7 @@ import {
 } from '../../../src/account/cognito';
 import { establishVerifiedAccount } from '../../../src/account/establish';
 import { createSessionToken, openPayload, sealPayload, sessionCookieMaxAge, sessionCookieName } from '../../../src/account/session';
+import { withNoindex } from '../../../src/seo/headers.ts';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -23,6 +24,10 @@ const verifiedCookie = 'tn:cognito:verified';
 
 function oauthClear() {
   return { path: '/account' };
+}
+
+function redirect(url: URL): Response {
+  return withNoindex(Response.redirect(url));
 }
 
 function text(value: unknown): string | undefined {
@@ -45,7 +50,7 @@ export async function GET(request: Request): Promise<Response> {
   const here = new URL(request.url);
   const signIn = new URL('/account/sign-in', here.origin);
   if (!config) {
-    return Response.redirect(signIn);
+    return redirect(signIn);
   }
   const jar = await cookies();
   const state = text(openPayload(jar.get(stateCookie)?.value));
@@ -57,14 +62,14 @@ export async function GET(request: Request): Promise<Response> {
   jar.delete({ name: pendingCookie, ...oauthClear() });
   jar.delete({ name: nonceCookie, ...oauthClear() });
   if (here.searchParams.get('error') || !state || state !== here.searchParams.get('state') || !verifier || !nonce) {
-    return Response.redirect(signIn);
+    return redirect(signIn);
   }
   const code = here.searchParams.get('code') ?? '';
   const token = await exchangeAuthCode(config, code, verifier);
   const jwks = token ? await fetchJwks(config) : undefined;
   const claims = token && jwks ? verifyIdToken(token, config, jwks, nonce) : undefined;
   if (!claims) {
-    return Response.redirect(signIn);
+    return redirect(signIn);
   }
   const email = normalizeAccountEmail(claims.email);
   const existing = (await currentAccounts()).profiles.find((profile) => profile.sub === claims.sub || normalizeAccountEmail(profile.email) === email);
@@ -81,7 +86,7 @@ export async function GET(request: Request): Promise<Response> {
       path: '/account',
       maxAge: 600,
     });
-    return Response.redirect(new URL('/account/register', here.origin));
+    return redirect(new URL('/account/register', here.origin));
   }
   try {
     const sub = await establishVerifiedAccount(verified);
@@ -94,7 +99,7 @@ export async function GET(request: Request): Promise<Response> {
     });
     jar.delete({ name: verifiedCookie, ...oauthClear() });
   } catch {
-    return Response.redirect(signIn);
+    return redirect(signIn);
   }
-  return Response.redirect(new URL('/account', here.origin));
+  return redirect(new URL('/account', here.origin));
 }

@@ -1,7 +1,9 @@
 'use client';
 
 import { acceptLocale, selectLocale, type Locale } from 'tropical-nomads-shared';
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { isPublicPath, localeFromLangParam } from '../seo/urls';
 import { deviceLanguage, readStoredLanguage, storeLocale } from './storage';
 
 interface LanguageContextValue {
@@ -11,26 +13,59 @@ interface LanguageContextValue {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Locale>('en');
+export function LanguageProvider({ initialLanguage, children }: { initialLanguage: Locale; children: ReactNode }) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const publicLanguage = isPublicPath(pathname) ? localeFromLangParam(searchParams.get('lang')) : null;
+  const [privateLanguage, setPrivateLanguage] = useState<Locale>(initialLanguage);
+  const language = publicLanguage ?? privateLanguage;
 
   useEffect(() => {
-    const next = selectLocale(readStoredLanguage(), deviceLanguage());
-    setLanguageState(next);
-    document.documentElement.lang = next;
-  }, []);
-
-  const setLanguage = (nextLanguage: Locale): void => {
-    const accepted = acceptLocale(nextLanguage);
-    if (!accepted.ok) {
+    if (publicLanguage) {
+      document.documentElement.lang = publicLanguage;
+      storeLocale(publicLanguage);
       return;
     }
-    setLanguageState(accepted.locale);
-    storeLocale(accepted.locale);
-    document.documentElement.lang = accepted.locale;
-  };
+    const next = selectLocale(readStoredLanguage(), deviceLanguage());
+    setPrivateLanguage(next);
+    document.documentElement.lang = next;
+  }, [publicLanguage]);
 
-  const value = useMemo<LanguageContextValue>(() => ({ language, setLanguage }), [language]);
+  const setLanguage = useCallback(
+    (nextLanguage: Locale): void => {
+      const accepted = acceptLocale(nextLanguage);
+      if (!accepted.ok) {
+        return;
+      }
+      storeLocale(accepted.locale);
+      document.documentElement.lang = accepted.locale;
+      if (isPublicPath(pathname)) {
+        const url = new URL(window.location.href);
+        switch (accepted.locale) {
+          case 'pt':
+            url.searchParams.set('lang', 'pt');
+            break;
+          case 'en':
+            url.searchParams.delete('lang');
+            break;
+          default: {
+            const unexpected: never = accepted.locale;
+            throw new Error(unexpected);
+          }
+        }
+        const next = `${url.pathname}${url.search}`;
+        if (next !== `${window.location.pathname}${window.location.search}`) {
+          router.push(next);
+        }
+        return;
+      }
+      setPrivateLanguage(accepted.locale);
+    },
+    [pathname, router],
+  );
+
+  const value = useMemo<LanguageContextValue>(() => ({ language, setLanguage }), [language, setLanguage]);
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 }

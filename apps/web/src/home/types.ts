@@ -30,6 +30,7 @@ export interface HomeEvent {
   stages: HomeStage[];
   description?: string;
   bannerSrc?: string;
+  schemaImage?: string;
   ticketUrl?: string;
   ticketsOnSale: boolean;
   timetableUrl?: string;

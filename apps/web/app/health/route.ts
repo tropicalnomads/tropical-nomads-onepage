@@ -1,4 +1,5 @@
 import { webHealth } from '../../src/health.ts';
+import { withNoindex } from '../../src/seo/headers.ts';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -11,5 +12,5 @@ const headers = {
 
 export async function GET(): Promise<Response> {
   const report = await webHealth();
-  return Response.json(report, { headers });
+  return withNoindex(Response.json(report, { headers }));
 }

@@ -18,6 +18,7 @@ import {
 import { passwordChecks } from 'tropical-nomads-shared';
 import { accountNotice, accountText, type AccountNotice } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
+import { publicHref } from '../seo/urls';
 
 const controlClass =
   'h-12 w-full rounded-xl border border-white/15 bg-black/30 pl-11 pr-4 text-base text-ozora-cream shadow-inner outline-none transition placeholder:text-ozora-cream/30 hover:border-white/25 focus:border-ozora-turquoise/70 focus:bg-black/40 focus-visible:ring-2 focus-visible:ring-ozora-turquoise/40 disabled:cursor-not-allowed disabled:opacity-60 md:h-11 md:text-sm';
@@ -33,6 +34,7 @@ interface AuthFrameProps {
 }
 
 export function AuthFrame({ eyebrow, showLogo = true, wide = false, title, subtitle, children, footer }: AuthFrameProps) {
+  const { language } = useLanguage();
   return (
     <main className="relative isolate overflow-hidden">
       <section className="relative px-5 py-10 md:px-8 md:py-16">
@@ -50,7 +52,7 @@ export function AuthFrame({ eyebrow, showLogo = true, wide = false, title, subti
           <div className="p-6 sm:p-8 md:p-10">
             {showLogo ? (
               <a
-                href="/"
+                href={publicHref('/', language)}
                 className="mx-auto flex w-fit rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow"
               >
                 <img

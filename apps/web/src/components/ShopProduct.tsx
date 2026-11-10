@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { sizeLabel, type ShopSizeCode } from '../../../one-pager/src/lib/shop.ts';
 import { shopLeft, shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
+import { publicHref } from '../seo/urls';
 import { catalogSizes, shopAmountLabel, shopProductDescription, stockCount } from '../shop/catalog';
 import { ShopMarkdown } from '../shop/markdown';
 import { shopTotalLabel, type ShopLine } from '../shop/order';
@@ -53,7 +54,7 @@ export function ShopProduct({ productId, image }: { productId: string; image?: s
     <section className="px-5 py-10 md:px-8 md:py-14">
       <div className="mx-auto max-w-5xl">
         <a
-          href="/shop"
+          href={publicHref('/shop', language)}
           className="mb-6 inline-flex h-11 items-center gap-2 rounded-full border border-white/15 px-4 text-sm font-bold text-ozora-cream transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
         >
           <ArrowLeft size={16} aria-hidden="true" />

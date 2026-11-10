@@ -2,6 +2,7 @@
 
 import { shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
+import { publicHref } from '../seo/urls';
 import { shopAmountLabel, shopProductDescription, stockCount } from '../shop/catalog';
 import { ShopMarkdown } from '../shop/markdown';
 import type { ShopImageSources } from '../shop/images';
@@ -77,7 +78,7 @@ export function ShopMissing() {
         <h1 className="font-display text-3xl font-bold text-ozora-cream">{shopText(language, 'missingTitle')}</h1>
         <p className="mt-3 text-sm leading-relaxed text-ozora-cream/70">{shopText(language, 'missingBody')}</p>
         <a
-          href="/shop"
+          href={publicHref('/shop', language)}
           className="mt-6 inline-flex h-11 items-center justify-center rounded-full bg-ozora-yellow px-5 text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral"
         >
           {shopText(language, 'back')}

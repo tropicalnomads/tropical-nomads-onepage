@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { sizeLabel } from '../../../one-pager/src/lib/shop.ts';
 import { shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
+import { publicHref } from '../seo/urls';
 import { shopAmountLabel } from '../shop/catalog';
 import { linePrice, shopConfirmationKey, shopConfirmationRecord, shopOrderMessage, shopTotalLabel } from '../shop/order';
 import { placeShopOrderAction, type PlaceShopOrderResult } from '../shop/actions';
@@ -79,7 +80,7 @@ export function ShopReview({ imageSources }: { imageSources: ShopImageSources })
           <div className="mt-8 rounded-3xl border border-white/10 bg-ozora-navy/55 p-8 text-center">
             <p className="text-sm text-ozora-cream/75">{shopText(language, 'empty')}</p>
             <a
-              href="/shop"
+              href={publicHref('/shop', language)}
               className="mt-6 inline-flex h-11 items-center justify-center rounded-full bg-ozora-yellow px-5 text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral"
             >
               {shopText(language, 'continue')}
@@ -151,7 +152,7 @@ export function ShopReview({ imageSources }: { imageSources: ShopImageSources })
               <p className="mt-3 text-xs leading-relaxed text-ozora-cream/55">{shopText(language, 'note')}</p>
               <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <a
-                  href="/shop"
+                  href={publicHref('/shop', language)}
                   className="inline-flex h-12 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-bold text-ozora-cream transition hover:bg-white/10"
                 >
                   {shopText(language, 'continue')}

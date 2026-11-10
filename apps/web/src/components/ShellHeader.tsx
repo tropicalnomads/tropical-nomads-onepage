@@ -7,6 +7,7 @@ import { accountText, areaText, shellText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { shopText } from '../i18n/shop-copy';
 import { navigation } from '../navigation';
+import { publicHref } from '../seo/urls';
 import { useShopCart } from '../shop/useShopCart';
 import { LanguageSwitch } from './LanguageSwitch';
 
@@ -81,7 +82,7 @@ export function ShellHeader({ signedIn, admin = false }: { signedIn: boolean; ad
     <header className="safe-top sticky top-0 z-40 border-b border-white/10 bg-ozora-navy/70 backdrop-blur-md">
       <div className="relative mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3 md:px-8">
         <a
-          href="/"
+          href={publicHref('/', language)}
           onClick={closeMenu}
           className="absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow lg:hidden"
           aria-label={shellText(language, 'homeAria')}
@@ -105,7 +106,7 @@ export function ShellHeader({ signedIn, admin = false }: { signedIn: boolean; ad
         </button>
 
         <a
-          href="/"
+          href={publicHref('/', language)}
           className="relative z-20 hidden shrink-0 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow lg:flex"
           aria-label={shellText(language, 'homeAria')}
         >
@@ -120,11 +121,11 @@ export function ShellHeader({ signedIn, admin = false }: { signedIn: boolean; ad
           aria-label={shellText(language, 'primary')}
           className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 lg:flex"
         >
-          <a href="/" className={navLinkClass}>
+          <a href={publicHref('/', language)} className={navLinkClass}>
             {shellText(language, 'navHome')}
           </a>
           {navigation.map((item) => (
-            <a key={item.id} href={item.href} className={navLinkClass}>
+            <a key={item.id} href={publicHref(item.href, language)} className={navLinkClass}>
               {headerLabel(language, item.id)}
             </a>
           ))}
@@ -155,7 +156,7 @@ export function ShellHeader({ signedIn, admin = false }: { signedIn: boolean; ad
           className="flex flex-col gap-1 border-t border-white/10 bg-ozora-navy/95 px-5 py-3 lg:hidden"
         >
           <a
-            href="/"
+            href={publicHref('/', language)}
             onClick={closeMenu}
             className="rounded-lg px-3 py-2.5 text-left text-base font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
           >
@@ -164,7 +165,7 @@ export function ShellHeader({ signedIn, admin = false }: { signedIn: boolean; ad
           {navigation.map((item) => (
             <a
               key={item.id}
-              href={item.href}
+              href={publicHref(item.href, language)}
               onClick={closeMenu}
               className="rounded-lg px-3 py-2.5 text-left text-base font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
             >

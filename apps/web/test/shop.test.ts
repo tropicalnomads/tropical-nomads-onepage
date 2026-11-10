@@ -156,11 +156,11 @@ describe('shop', () => {
     assert.equal(cart.includes('shopWhatsappUrl'), false);
     assert.equal(cart.includes('/shop/checkout'), true);
     const cartCheckoutAt = cart.indexOf('href="/shop/checkout"');
-    assert.equal(cart.indexOf('href="/shop"', cartCheckoutAt) > cartCheckoutAt, true);
+    assert.equal(cart.indexOf("publicHref('/shop', language)", cartCheckoutAt) > cartCheckoutAt, true);
     const checkoutFormAt = checkout.indexOf('<form');
-    assert.equal(checkout.indexOf('href="/shop"', checkoutFormAt) > checkoutFormAt, true);
+    assert.equal(checkout.indexOf("publicHref('/shop', language)", checkoutFormAt) > checkoutFormAt, true);
     const reviewNoteAt = review.lastIndexOf("shopText(language, 'note')");
-    assert.equal(review.indexOf('href="/shop"', reviewNoteAt) > reviewNoteAt, true);
+    assert.equal(review.indexOf("publicHref('/shop', language)", reviewNoteAt) > reviewNoteAt, true);
     assert.equal(cartPage.includes('ShopCart'), true);
     assert.equal(checkout.includes('postalCode'), true);
     assert.equal(checkout.includes('<select'), false);

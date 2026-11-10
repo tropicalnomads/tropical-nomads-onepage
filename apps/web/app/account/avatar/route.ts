@@ -2,6 +2,7 @@ import { loadAvatar } from 'tropical-nomads-api/accounts';
 import { currentAccountSub } from '../../../src/account/actions';
 import { apiOrigin } from '../../../src/api-origin';
 import { callPrivate, currentAccounts } from '../../../src/remote-store';
+import { withNoindex } from '../../../src/seo/headers.ts';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -27,9 +28,9 @@ export async function GET(): Promise<Response> {
   if (apiOrigin()) {
     const stored = await callPrivate<{ bytes: string | null; key: string | null }>('avatar');
     if (!stored.bytes) {
-      return new Response(null, { status: 404, headers: { 'cache-control': 'no-store' } });
+      return withNoindex(new Response(null, { status: 404, headers: { 'cache-control': 'no-store' } }));
     }
-    return new Response(Buffer.from(stored.bytes, 'base64'), {
+    return withNoindex(new Response(Buffer.from(stored.bytes, 'base64'), {
       status: 200,
       headers: {
         'content-type': types[avatarType(stored.key ?? undefined)],
@@ -37,15 +38,15 @@ export async function GET(): Promise<Response> {
         'x-content-type-options': 'nosniff',
         'content-security-policy': "default-src 'none'; base-uri 'none'; frame-ancestors 'none'",
       },
-    });
+    }));
   }
   const profile = sub ? (await currentAccounts()).profiles.find((item) => item.sub === sub && item.status === 'active') : undefined;
   const key = profile?.avatarKey;
   const bytes = key ? await loadAvatar(key) : undefined;
   if (!bytes) {
-    return new Response(null, { status: 404, headers: { 'cache-control': 'no-store' } });
+    return withNoindex(new Response(null, { status: 404, headers: { 'cache-control': 'no-store' } }));
   }
-  return new Response(Buffer.from(bytes), {
+  return withNoindex(new Response(Buffer.from(bytes), {
     status: 200,
     headers: {
       'content-type': types[avatarType(key)],
@@ -53,5 +54,5 @@ export async function GET(): Promise<Response> {
       'x-content-type-options': 'nosniff',
       'content-security-policy': "default-src 'none'; base-uri 'none'; frame-ancestors 'none'",
     },
-  });
+  }));
 }

@@ -137,6 +137,9 @@ function readEvent(value: unknown): HomeEvent | undefined {
   const instagramPost = httpsLink(links.instagramPost);
   const timetableUrl = getEventTimetableUrl(readString(value.timetableFestivalId));
   const flyer = bannerSrc(readString(images.bannerLocal));
+  const fullRaw = readString(images.full);
+  const fullImage = fullRaw?.startsWith('/') ? bannerSrc(fullRaw) : httpsLink(fullRaw);
+  const schemaImage = flyer ?? fullImage;
   const durationHours = typeof value.durationHours === 'number' && Number.isFinite(value.durationHours) ? value.durationHours : undefined;
   return {
     id,
@@ -154,6 +157,7 @@ function readEvent(value: unknown): HomeEvent | undefined {
     stages: readStages(value.stages),
     ...(description ? { description } : {}),
     ...(flyer ? { bannerSrc: flyer } : {}),
+    ...(schemaImage ? { schemaImage } : {}),
     ...(ticketUrl ? { ticketUrl } : {}),
     ticketsOnSale: eventbrite !== undefined || tickets !== undefined,
     ...(timetableUrl ? { timetableUrl } : {}),

@@ -9,6 +9,7 @@ import { deleteShopProductAction, saveShopProductAction, type ShopDeleteNotice, 
 import { shopSizeCodes, type ShopProductValues } from '../admin/shop-values';
 import { shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
+import { publicHref } from '../seo/urls';
 import { croppedShopImage } from '../shop/crop-image';
 import { ShopMarkdown } from '../shop/markdown';
 import { ShopImagePlaceholder } from './ShopImagePlaceholder';
@@ -252,7 +253,7 @@ export function AdminShopForm({ values }: { values: ShopProductValues }) {
   return (
     <div className="mx-auto max-w-6xl px-1">
       <a
-        href="/shop"
+        href={publicHref('/shop', language)}
         className="inline-flex h-10 items-center gap-2 rounded-full border border-white/10 px-4 text-sm font-bold text-ozora-cream transition hover:border-ozora-turquoise/60 hover:bg-white/5"
       >
         <ArrowLeft size={16} aria-hidden="true" />
@@ -645,7 +646,7 @@ export function AdminShopForm({ values }: { values: ShopProductValues }) {
                   {shopText(language, 'continueEditing')}
                 </button>
               )}
-              <a href="/shop" className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-ozora-yellow px-5 text-sm font-bold text-ozora-ink hover:bg-ozora-coral">
+              <a href={publicHref('/shop', language)} className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-ozora-yellow px-5 text-sm font-bold text-ozora-ink hover:bg-ozora-coral">
                 <Store size={17} aria-hidden="true" />
                 {shopText(language, 'goToShop')}
               </a>
