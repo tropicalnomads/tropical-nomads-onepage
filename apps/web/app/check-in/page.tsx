@@ -26,7 +26,7 @@ export default async function CheckInPage({ searchParams }: { searchParams: Prom
   if (!staff) {
     return (
       <main>
-        <CheckInGate signedIn={Boolean(profile)} />
+        <CheckInGate signedIn={Boolean(sub)} />
       </main>
     );
   }

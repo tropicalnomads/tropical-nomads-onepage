@@ -20,6 +20,9 @@ export default async function ShopCheckoutPage() {
     redirect('/account/sign-in');
   }
   const accounts = await currentAccounts();
+  if (!accounts.profiles.some((item) => item.sub === sub)) {
+    redirect('/account/profile');
+  }
   const profile = accounts.profiles.find((item) => item.sub === sub && item.status === 'active');
   const saved = profile?.billingAddressId
     ? accounts.billingAddresses.find((address) => address.id === profile.billingAddressId)

@@ -604,14 +604,6 @@ export function ProfileSetupScreen({ initialNotice = null }: { initialNotice?: A
       wide
       title={accountText(language, 'profileTitle')}
       subtitle={accountText(language, 'profileHelp')}
-      footer={
-        <a
-          href="/account/sign-in"
-          className="text-sm font-bold text-ozora-turquoise underline-offset-4 transition hover:text-ozora-yellow hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
-        >
-          {accountText(language, 'signIn')}
-        </a>
-      }
     >
       <form onSubmit={onSubmit} className="space-y-7" encType="multipart/form-data" noValidate aria-busy={pending}>
         <ProfileFields pending={pending} />

@@ -255,6 +255,7 @@ async function finishSignIn(claims: IdClaims): Promise<AccountActionResult> {
 }
 
 async function holdForProfile(claims: IdClaims): Promise<AccountActionResult> {
+  await remember(claims.sub);
   await rememberVerifiedClaims(claims);
   return { redirect: '/account/profile' };
 }

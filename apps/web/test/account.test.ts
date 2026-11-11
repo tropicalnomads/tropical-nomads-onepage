@@ -117,6 +117,11 @@ describe('accounts', () => {
     assert.equal(header.includes("accountText(language, 'signOut')"), true);
     assert.equal(actions.includes('noticeForSignInFailure'), true);
     assert.equal(actions.includes('finishSignIn'), true);
+    assert.equal(actions.includes('await remember(claims.sub)'), true);
+    const profileSetup = form.slice(form.indexOf('export function ProfileSetupScreen'));
+    assert.equal(profileSetup.includes('href="/account/sign-in"'), false);
+    const accountPage = readFileSync(new URL('../app/account/page.tsx', import.meta.url), 'utf8');
+    assert.equal(accountPage.includes("redirect('/account/profile')"), true);
     const signInForm = form.slice(form.indexOf('export function SignInForm'), form.indexOf('function ConfirmEmailForm'));
     assert.equal(signInForm.includes('noteActionFailure(setNotice)'), true);
     const built = 'b'.repeat(40);

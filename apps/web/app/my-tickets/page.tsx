@@ -20,7 +20,7 @@ export default async function MyTicketsPage({ searchParams }: { searchParams: Pr
   const profile = sub ? snapshot.accounts.profiles.find((item) => item.sub === sub) : undefined;
   const caller = profile && accountCanPurchase(profile) ? { role: 'user' as const, actorId: profile.sub } : undefined;
   if (!caller) {
-    return <MyTickets signedIn={Boolean(profile)} tickets={[]} />;
+    return <MyTickets signedIn={Boolean(sub)} tickets={[]} />;
   }
   const tickets = snapshot.tickets;
   const views = ownTicketViews(caller, tickets, snapshot.orders, new Map(snapshot.titles));
