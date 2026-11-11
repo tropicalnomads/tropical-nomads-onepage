@@ -19,7 +19,6 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
   }
   const summary: AccountSummary | null = profile
     ? {
-        username: profile.username,
         givenName: profile.givenName,
         familyName: profile.familyName,
         displayName: profile.displayName,

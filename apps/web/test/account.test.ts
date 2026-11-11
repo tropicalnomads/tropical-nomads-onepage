@@ -5,7 +5,7 @@ import { locales } from 'tropical-nomads-shared';
 import { reviewConfirmationCode, reviewEmail, reviewPasswordSignIn, reviewProfileNames, reviewProvider, reviewRegistration } from '../src/account/review.ts';
 import { configuredSessionSecret, createSessionToken, readSessionSub, sessionSecretConfigured } from '../src/account/session.ts';
 import { noticeForProfileFailure } from '../src/account/profile-failure.ts';
-import { canonicalProfilePhone, profileFieldIssues, profileIssueCopyKey, type ProfileFieldInput } from '../src/account/profile-form.ts';
+import { accountIdentity, canonicalProfilePhone, profileFieldIssues, profileIssueCopyKey, type ProfileFieldInput } from '../src/account/profile-form.ts';
 import { noticeForSignInFailure } from '../src/account/sign-in-failure.ts';
 import { shellCopy, type AccountNotice } from '../src/i18n/copy.ts';
 
@@ -158,6 +158,8 @@ describe('accounts', () => {
       profileFieldIssues({ ...blank, givenName: 'Ada', familyName: 'Lovelace', displayName: 'x'.repeat(81) }).displayName,
       'too-long',
     );
+    assert.equal(accountIdentity({ displayName: 'AfterJune', givenName: 'Júlio', familyName: 'Locatelli Piva' }), 'AfterJune');
+    assert.equal(accountIdentity({ displayName: '  ', givenName: 'Júlio', familyName: 'Locatelli Piva' }), 'Júlio Locatelli Piva');
     assert.equal(profileIssueCopyKey('givenName', 'required'), 'givenNameRequired');
     assert.equal(profileIssueCopyKey('phone', 'phone'), 'phoneInvalid');
     assert.equal(shellCopy.en.account.givenNameRequired, 'Enter your given name.');

@@ -3,7 +3,7 @@
 import { BadgeCheck } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { noticeForProfileFailure } from '../account/profile-failure';
-import { firstProfileField, profileFieldIssues, profileInputFromFormData, type ProfileFieldIssues, type ProfileFieldName } from '../account/profile-form';
+import { accountIdentity, firstProfileField, profileFieldIssues, profileInputFromFormData, type ProfileFieldIssues, type ProfileFieldName } from '../account/profile-form';
 import { saveAccountProfileAction } from '../account/profile';
 import { accountText, type AccountNotice } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
@@ -11,7 +11,6 @@ import { AuthFrame, AuthNotice, AuthSubmitButton } from './AuthUi';
 import { ProfileFields, type ProfileValues } from './ProfileFields';
 
 export interface AccountSummary extends ProfileValues {
-  username: string;
   email: string;
   status: 'active' | 'disabled';
 }
@@ -122,7 +121,7 @@ function AccountProfileForm({
         <BadgeCheck size={21} aria-hidden="true" className="mt-0.5 shrink-0 text-ozora-turquoise" />
         <div className="min-w-0">
           <p className="truncate font-bold text-ozora-cream">{profile.email}</p>
-          <p className="mt-0.5 text-sm text-ozora-cream/55">@{profile.username}</p>
+          <p className="mt-0.5 text-sm text-ozora-cream/55">{accountIdentity(profile)}</p>
         </div>
       </div>
       {profile.status === 'disabled' ? (

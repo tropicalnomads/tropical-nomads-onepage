@@ -94,6 +94,14 @@ export function cleanedProfileInput(input: ProfileFieldInput): ProfileFieldInput
   };
 }
 
+export function accountIdentity(profile: { displayName?: string; givenName: string; familyName: string }): string {
+  const displayName = profile.displayName?.trim() ?? '';
+  if (displayName !== '') {
+    return displayName;
+  }
+  return [profile.givenName, profile.familyName].map((part) => part.trim()).filter((part) => part !== '').join(' ');
+}
+
 export function firstProfileField(issues: ProfileFieldIssues): ProfileFieldName | undefined {
   return profileFieldOrder.find((field) => issues[field] !== undefined);
 }
