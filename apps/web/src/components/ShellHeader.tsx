@@ -60,8 +60,8 @@ function CartLink({ menu, onClick, cartCount }: { menu?: boolean; onClick?: () =
     );
   }
   return (
-    <Button href="/shop/cart" tone="ghost" size="sm" aria-label={shopText(language, 'cartAria')} className="relative hidden h-9 w-9 px-0 lg:inline-flex">
-      <ShoppingBag size={18} aria-hidden="true" />
+    <Button href="/shop/cart" tone="ghost" size="icon" aria-label={shopText(language, 'cartAria')} className="relative hidden lg:inline-flex">
+      <ShoppingBag size={18} aria-hidden="true" className="shrink-0" />
       {shown > 0 ? (
         <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-ozora-yellow px-1 text-[11px] font-bold text-ozora-ink">{shown}</span>
       ) : null}

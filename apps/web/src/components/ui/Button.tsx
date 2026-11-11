@@ -2,7 +2,7 @@ import { ArrowLeft } from 'lucide-react';
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react';
 
 export type ButtonTone = 'primary' | 'secondary' | 'ghost' | 'back';
-export type ButtonSize = 'sm' | 'md';
+export type ButtonSize = 'sm' | 'md' | 'icon';
 
 type SharedProps = {
   tone?: ButtonTone;
@@ -51,6 +51,8 @@ function sizeClass(size: ButtonSize): string {
       return 'h-10 px-4 text-sm';
     case 'md':
       return 'h-12 px-5 text-sm';
+    case 'icon':
+      return 'h-9 w-9 p-0';
     default: {
       const unexpected: never = size;
       return unexpected;
