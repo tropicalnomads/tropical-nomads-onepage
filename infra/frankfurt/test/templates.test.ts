@@ -99,6 +99,11 @@ describe('Frankfurt templates', () => {
     assert.match(onePager, /tropical-nomads-web/);
     assert.match(onePager, /ensure-amplify-next\.mjs/);
     assert.match(amplify, /ensure-amplify-next\.mjs/);
+    assert.match(amplify, /API_BASE_URL/);
+    assert.match(amplify, /https:\/\/api-dev\.tropical-nomads\.com/);
+    assert.match(amplify, /COGNITO_REDIRECT_URI/);
+    assert.match(amplify, /https:\/\/dev\.tropical-nomads\.com\/account\/callback/);
+    assert.equal(amplify.includes('ACCOUNT_SESSION_SECRET'), false);
     assert.match(read(join(repo, 'pnpm-workspace.yaml')), /nodeLinker: hoisted/);
     assert.equal(onePager.includes('AccessToken'), false);
     assert.equal(onePager.includes('OauthToken'), false);
@@ -175,7 +180,8 @@ describe('Frankfurt templates', () => {
     assert.equal(workflow.includes('workflow_dispatch'), false);
     assert.equal(workflow.includes('- master'), false);
     assert.equal(workflow.includes('www.tropical-nomads.com'), false);
-    assert.match(workflow, /d3rt3rqkclbrw5/);
+    assert.equal(workflow.includes('amplify start-job'), false);
+    assert.equal(workflow.includes('d3rt3rqkclbrw5'), false);
     assert.match(workflow, /tropical-nomads-github-dev-deploy/);
     assert.match(workflow, /apps\/api\/Dockerfile/);
     assert.equal(workflow.includes('AWS_ACCESS_KEY_ID'), false);
@@ -183,6 +189,9 @@ describe('Frankfurt templates', () => {
     assert.equal(workflow.includes('.env'), false);
     assert.equal(workflow.includes('Protocol: HTTP'), false);
     assert.match(role, /RoleName: tropical-nomads-github-dev-deploy/);
+    assert.match(role, /AWS::IAM::OIDCProvider/);
+    assert.match(role, /https:\/\/token\.actions\.githubusercontent\.com/);
+    assert.match(role, /sts\.amazonaws\.com/);
     assert.match(role, /ref:refs\/heads\/dev/);
     assert.equal(role.includes('StringLike'), false);
     assert.equal(role.includes('secretsmanager'), false);

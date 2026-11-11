@@ -1,5 +1,6 @@
-# Push to dev deploys the web app and rolls the API.
-# The one-pager publish stays in amplify.yml. This workflow does not change it.
+# Push to dev rolls the API image.
+# Amplify's own dev-branch build publishes the web app. This workflow does not start a second one.
+# The one-pager publish stays in amplify.yml.
 name: Deploy dev
 
 on:
@@ -29,39 +30,6 @@ jobs:
           role-to-assume: arn:aws:iam::624248574874:role/tropical-nomads-github-dev-deploy
           aws-region: eu-central-1
 
-      - name: Start web deploy
-        id: web
-        run: |
-          set -euo pipefail
-          job_id=""
-          attempt=1
-          while [[ "$attempt" -le 5 ]]; do
-            if job_id=$(aws amplify start-job \
-              --app-id d3rt3rqkclbrw5 \
-              --branch-name dev \
-              --job-type RELEASE \
-              --commit-id "$GITHUB_SHA" \
-              --commit-time "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-              --job-reason "deploy ${GITHUB_SHA}" \
-              --query jobSummary.jobId \
-              --output text); then
-              job_id="${job_id//$'\n'/}"
-              job_id="${job_id// /}"
-              if [[ -n "$job_id" && "$job_id" != "None" ]]; then
-                break
-              fi
-            fi
-            job_id=""
-            if [[ "$attempt" -eq 5 ]]; then
-              echo "Amplify did not start a job." >&2
-              exit 1
-            fi
-            sleep 10
-            attempt=$((attempt + 1))
-          done
-          echo "job_id=${job_id}" >> "$GITHUB_OUTPUT"
-          echo "amplify job ${job_id}"
-
       - name: Build and roll the API
         id: api
         run: |
@@ -77,28 +45,3 @@ jobs:
             docker push "$image"
           fi
           node scripts/roll-api-image.mjs --image "$image"
-
-      - name: Wait for the web deploy
-        if: always() && steps.web.outputs.job_id != ''
-        run: |
-          set -euo pipefail
-          job_id="${{ steps.web.outputs.job_id }}"
-          for _ in $(seq 1 80); do
-            status=$(aws amplify get-job \
-              --app-id d3rt3rqkclbrw5 \
-              --branch-name dev \
-              --job-id "$job_id" \
-              --query job.summary.status \
-              --output text)
-            echo "amplify status ${status}"
-            case "$status" in
-              SUCCEED) exit 0 ;;
-              FAILED|CANCELLED)
-                echo "Amplify job ${status}." >&2
-                exit 1
-                ;;
-            esac
-            sleep 15
-          done
-          echo "Amplify job timed out." >&2
-          exit 1

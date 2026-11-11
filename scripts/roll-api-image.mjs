@@ -48,6 +48,20 @@ const containerKeys = [
   'dependsOn',
 ];
 
+function assetsBucketName(image) {
+  const account = image.slice(0, image.indexOf('.'));
+  return `tropical-nomads-assets-${account}`;
+}
+
+function environmentWithAssets(environment, image) {
+  const entries = Array.isArray(environment) ? environment.filter((item) => item?.name !== 'ASSETS_BUCKET') : [];
+  const existing = Array.isArray(environment)
+    ? environment.find((item) => item?.name === 'ASSETS_BUCKET' && typeof item.value === 'string' && item.value !== '')
+    : undefined;
+  entries.push({ name: 'ASSETS_BUCKET', value: existing?.value ?? assetsBucketName(image) });
+  return entries;
+}
+
 function isEmpty(value) {
   if (value == null) return true;
   if (Array.isArray(value)) return value.length === 0;
@@ -85,6 +99,7 @@ export function taskDefinitionForImage(taskDefinition, image) {
       throw new Error(`Refusing to roll a task that does not wire ${name}.`);
     }
   }
+  container['environment'] = environmentWithAssets(source['environment'], image);
   next.containerDefinitions = [container];
   return next;
 }

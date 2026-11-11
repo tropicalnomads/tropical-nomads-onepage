@@ -58,7 +58,10 @@ describe('task definition image roll', () => {
     const container = next.containerDefinitions[0];
     assert.equal(container.image, image);
     assert.deepEqual(container.secrets, source.containerDefinitions[0].secrets);
-    assert.deepEqual(container.environment, source.containerDefinitions[0].environment);
+    assert.deepEqual(container.environment, [
+      ...source.containerDefinitions[0].environment,
+      { name: 'ASSETS_BUCKET', value: 'tropical-nomads-assets-111111111111' },
+    ]);
     assert.equal(container.user, '1000');
     assert.equal(next.cpu, '512');
     assert.equal(next.memory, '1024');
@@ -67,6 +70,14 @@ describe('task definition image roll', () => {
     assert.equal(container.command, undefined);
     assert.equal(container.cpu, undefined);
     assert.equal(next.volumes, undefined);
+  });
+
+  it('keeps an assets bucket that is already set', () => {
+    const source = currentTask();
+    source.containerDefinitions[0].environment.push({ name: 'ASSETS_BUCKET', value: 'tropical-nomads-assets-000000000000' });
+    const next = taskDefinitionForImage(source, image);
+    const bucket = next.containerDefinitions[0].environment.find((item) => item.name === 'ASSETS_BUCKET');
+    assert.equal(bucket.value, 'tropical-nomads-assets-000000000000');
   });
 
   it('rejects an image that is not the Frankfurt API repository', () => {

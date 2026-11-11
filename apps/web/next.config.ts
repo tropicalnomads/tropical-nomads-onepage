@@ -13,6 +13,13 @@ if (existsSync(envPath)) {
 const nextConfig: NextConfig = {
   env: {
     API_BASE_URL: process.env.API_BASE_URL,
+    COGNITO_REGION: process.env.COGNITO_REGION,
+    COGNITO_USER_POOL_ID: process.env.COGNITO_USER_POOL_ID,
+    COGNITO_CLIENT_ID: process.env.COGNITO_CLIENT_ID,
+    COGNITO_HOSTED_DOMAIN: process.env.COGNITO_HOSTED_DOMAIN,
+    COGNITO_REDIRECT_URI: process.env.COGNITO_REDIRECT_URI,
+    COGNITO_GOOGLE: process.env.COGNITO_GOOGLE,
+    COGNITO_APPLE: process.env.COGNITO_APPLE,
   },
   reactStrictMode: true,
   experimental: {

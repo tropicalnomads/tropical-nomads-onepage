@@ -48,10 +48,22 @@ Resources:
           Value: apps/web
         - Name: NEXT_TELEMETRY_DISABLED
           Value: "1"
+        - Name: API_BASE_URL
+          Value: https://api-dev.tropical-nomads.com
+        - Name: COGNITO_REGION
+          Value: eu-central-1
         - Name: COGNITO_USER_POOL_ID
           Value: !Ref CognitoUserPoolId
         - Name: COGNITO_CLIENT_ID
           Value: !Ref CognitoClientId
+        - Name: COGNITO_HOSTED_DOMAIN
+          Value: tropical-nomads-web
+        - Name: COGNITO_REDIRECT_URI
+          Value: https://dev.tropical-nomads.com/account/callback
+        - Name: COGNITO_GOOGLE
+          Value: "false"
+        - Name: COGNITO_APPLE
+          Value: "false"
       Tags:
         - Key: Name
           Value: tropical-nomads-web

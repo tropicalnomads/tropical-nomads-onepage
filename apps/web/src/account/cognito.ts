@@ -37,15 +37,53 @@ type TokenKey = JsonWebKey & { kid?: string };
 
 const poolIdPattern = /^eu-central-1_[A-Za-z0-9]+$/;
 
-export function readCognitoConfig(env: EnvMap = process.env): CognitoConfig | undefined {
-  const region = env.COGNITO_REGION?.trim() || 'eu-central-1';
+const cognitoEnvNames = [
+  'COGNITO_REGION',
+  'COGNITO_USER_POOL_ID',
+  'COGNITO_CLIENT_ID',
+  'COGNITO_HOSTED_DOMAIN',
+  'COGNITO_REDIRECT_URI',
+  'COGNITO_GOOGLE',
+  'COGNITO_APPLE',
+] as const;
+
+type CognitoEnvName = (typeof cognitoEnvNames)[number];
+
+function configuredCognitoValue(env: EnvMap | undefined, name: CognitoEnvName): string | undefined {
+  if (env !== undefined && env !== process.env) {
+    return env[name];
+  }
+  switch (name) {
+    case 'COGNITO_REGION':
+      return process.env.COGNITO_REGION;
+    case 'COGNITO_USER_POOL_ID':
+      return process.env.COGNITO_USER_POOL_ID;
+    case 'COGNITO_CLIENT_ID':
+      return process.env.COGNITO_CLIENT_ID;
+    case 'COGNITO_HOSTED_DOMAIN':
+      return process.env.COGNITO_HOSTED_DOMAIN;
+    case 'COGNITO_REDIRECT_URI':
+      return process.env.COGNITO_REDIRECT_URI;
+    case 'COGNITO_GOOGLE':
+      return process.env.COGNITO_GOOGLE;
+    case 'COGNITO_APPLE':
+      return process.env.COGNITO_APPLE;
+    default: {
+      const unexpected: never = name;
+      return unexpected;
+    }
+  }
+}
+
+export function readCognitoConfig(env?: EnvMap): CognitoConfig | undefined {
+  const region = configuredCognitoValue(env, 'COGNITO_REGION')?.trim() || 'eu-central-1';
   if (region !== 'eu-central-1') {
     return undefined;
   }
-  const userPoolId = env.COGNITO_USER_POOL_ID?.trim() ?? '';
-  const clientId = env.COGNITO_CLIENT_ID?.trim() ?? '';
-  const hostedDomain = hostedHost(env.COGNITO_HOSTED_DOMAIN ?? '');
-  const redirectUri = allowedRedirect(env.COGNITO_REDIRECT_URI ?? '');
+  const userPoolId = configuredCognitoValue(env, 'COGNITO_USER_POOL_ID')?.trim() ?? '';
+  const clientId = configuredCognitoValue(env, 'COGNITO_CLIENT_ID')?.trim() ?? '';
+  const hostedDomain = hostedHost(configuredCognitoValue(env, 'COGNITO_HOSTED_DOMAIN') ?? '');
+  const redirectUri = allowedRedirect(configuredCognitoValue(env, 'COGNITO_REDIRECT_URI') ?? '');
   if (!poolIdPattern.test(userPoolId) || !/^[A-Za-z0-9]{1,128}$/.test(clientId) || !hostedDomain || !redirectUri) {
     return undefined;
   }
@@ -55,8 +93,8 @@ export function readCognitoConfig(env: EnvMap = process.env): CognitoConfig | un
     clientId,
     hostedDomain,
     redirectUri,
-    google: env.COGNITO_GOOGLE === 'true',
-    apple: env.COGNITO_APPLE === 'true',
+    google: configuredCognitoValue(env, 'COGNITO_GOOGLE') === 'true',
+    apple: configuredCognitoValue(env, 'COGNITO_APPLE') === 'true',
   };
 }
 
@@ -368,9 +406,9 @@ export interface CognitoTarget {
 
 type FetchLike = (input: string, init: { method: string; headers: Record<string, string>; body: string }) => Promise<{ ok: boolean; status: number; json: () => Promise<unknown> }>;
 
-export function cognitoTarget(env: Record<string, string | undefined> = process.env): CognitoTarget | undefined {
-  const userPoolId = env.COGNITO_USER_POOL_ID?.trim() ?? '';
-  const clientId = env.COGNITO_CLIENT_ID?.trim() ?? '';
+export function cognitoTarget(env?: EnvMap): CognitoTarget | undefined {
+  const userPoolId = configuredCognitoValue(env, 'COGNITO_USER_POOL_ID')?.trim() ?? '';
+  const clientId = configuredCognitoValue(env, 'COGNITO_CLIENT_ID')?.trim() ?? '';
   if (!/^eu-central-1_[A-Za-z0-9]+$/.test(userPoolId) || !/^[A-Za-z0-9]{20,128}$/.test(clientId)) {
     return undefined;
   }

@@ -16,6 +16,17 @@ Parameters:
     AllowedPattern: "^[a-z0-9]+$"
 
 Resources:
+  GitHubOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList:
+        - sts.amazonaws.com
+      ThumbprintList:
+        - d367a47959a77b088bec4fe3e7dd3ec9ba733ab5
+        - cbcfd09ce3cd22d99d94e58f92e9898fbee51a5e
+        - ab9d0263244dd0326eb67015705a667e79cfe998
+
   DeployRole:
     Type: AWS::IAM::Role
     Properties:
@@ -27,7 +38,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Federated: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
+              Federated: !Ref GitHubOidcProvider
             Action: sts:AssumeRoleWithWebIdentity
             Condition:
               StringEquals:
