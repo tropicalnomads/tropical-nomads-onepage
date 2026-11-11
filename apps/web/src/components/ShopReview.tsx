@@ -13,7 +13,7 @@ import { useShopProducts } from '../shop/product-context';
 import { useShopCart } from '../shop/useShopCart';
 import type { ShopImageSources } from '../shop/images';
 import { ShopSteps } from './ShopSteps';
-import { Button, TextLink } from './ui/Button';
+import { Button } from './ui/Button';
 
 function orderFailure(reason: Extract<PlaceShopOrderResult, { ok: false }>['reason'], language: 'en' | 'pt'): string {
   switch (reason) {
@@ -141,7 +141,9 @@ export function ShopReview({ imageSources }: { imageSources: ShopImageSources })
                 <Button href={publicHref('/shop', language)} tone="ghost">
                   {shopText(language, 'continue')}
                 </Button>
-                <TextLink href="/shop/checkout">{shopText(language, 'backAddress')}</TextLink>
+                <Button href="/shop/checkout" tone="back">
+                  {shopText(language, 'backAddress')}
+                </Button>
               </div>
             </div>
           </div>

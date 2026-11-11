@@ -5,7 +5,7 @@ import { locales } from 'tropical-nomads-shared';
 import { SHOP_PRODUCTS, SHOP_PRICE_EUR } from '../../one-pager/src/lib/shop.ts';
 import { catalogAsset, shirtSrc } from '../src/events/assets.ts';
 import { shopCopy } from '../src/i18n/shop-copy.ts';
-import { addShopLine, parseShopCart, setShopLineQuantity } from '../src/shop/cart.ts';
+import { addShopLine, parseShopCart, readShopCartCount, setShopLineQuantity } from '../src/shop/cart.ts';
 import { catalogSizes } from '../src/shop/catalog.ts';
 import { productImageSrc } from '../src/shop/load-images.ts';
 import { parseShopCatalog } from '../src/shop/load-products.ts';
@@ -138,6 +138,13 @@ describe('shop', () => {
     assert.equal(shopOrderMessage([{ productId: 'hw', size: 'G', quantity: 99 }], address, 'en', catalog), undefined);
     assert.equal(shopAddressComplete(address), true);
     assert.equal(shopAddressComplete({ ...address, city: '   ' }), false);
+  });
+
+  it('reads a stored cart count and ignores anything else', () => {
+    assert.equal(readShopCartCount('2'), 2);
+    assert.equal(readShopCartCount('0'), 0);
+    assert.equal(readShopCartCount(undefined), 0);
+    assert.equal(readShopCartCount('2 items'), 0);
   });
 
   it('merges the same shirt and size and keeps the quantity inside stock', () => {

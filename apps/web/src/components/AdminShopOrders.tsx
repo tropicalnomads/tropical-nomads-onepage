@@ -8,7 +8,7 @@ import { useLanguage } from '../i18n/provider';
 import { publicHref } from '../seo/urls';
 import { shopAmountLabel, type ShopCatalogProduct } from '../shop/catalog';
 import { ShopImagePlaceholder } from './ShopImagePlaceholder';
-import { Button, TextLink } from './ui/Button';
+import { Button } from './ui/Button';
 
 function adminProductImageSrc(product: ShopCatalogProduct): string | undefined {
   if (!product.image.startsWith('/shop/media/')) {
@@ -56,9 +56,9 @@ export function AdminShopOrders({ orders, products }: { orders: readonly ShopOrd
   const { language } = useLanguage();
   return (
     <>
-      <TextLink href={publicHref('/shop', language)} className="mt-8 inline-block text-sm">
+      <Button href={publicHref('/shop', language)} tone="back" size="sm" className="mt-8">
         {shopText(language, 'backShop')}
-      </TextLink>
+      </Button>
 
       <section className="mt-8">
         <div className="flex items-center justify-between gap-3">

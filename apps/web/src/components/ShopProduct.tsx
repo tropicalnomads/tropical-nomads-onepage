@@ -1,6 +1,5 @@
 'use client';
 
-import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { sizeLabel, type ShopSizeCode } from '../../../one-pager/src/lib/shop.ts';
 import { shopLeft, shopText } from '../i18n/shop-copy';
@@ -54,13 +53,9 @@ export function ShopProduct({ productId, image }: { productId: string; image?: s
   return (
     <section className="px-5 py-10 md:px-8 md:py-14">
       <div className="mx-auto max-w-5xl">
-        <a
-          href={publicHref('/shop', language)}
-          className="mb-6 inline-flex h-11 items-center gap-2 rounded-full border border-white/15 px-4 text-sm font-bold text-ozora-cream transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
-        >
-          <ArrowLeft size={16} aria-hidden="true" />
+        <Button href={publicHref('/shop', language)} tone="back" size="sm" className="mb-6">
           {shopText(language, 'back')}
-        </a>
+        </Button>
         <div className="grid gap-8 md:grid-cols-[minmax(0,22rem)_1fr] md:items-start">
           <div className="flex aspect-[4/5] items-center justify-center rounded-3xl border border-white/10 bg-ozora-cream/[0.04] p-6">
             {image ? <img src={image} alt={product.name} className="max-h-full w-full object-contain" /> : <ShopImagePlaceholder />}

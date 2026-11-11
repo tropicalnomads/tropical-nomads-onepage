@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertTriangle, ArrowLeft, Bold, CheckCircle2, Eye, EyeOff, Italic, PackageOpen, Plus, Store, Trash2 } from 'lucide-react';
+import { AlertTriangle, Bold, CheckCircle2, Eye, EyeOff, Italic, PackageOpen, Plus, Store, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { sizeLabel } from '../../../one-pager/src/lib/shop.ts';
 import { deleteShopProductAction, saveShopProductAction, type ShopDeleteNotice, type ShopProductNotice } from '../admin/shop-actions';
@@ -151,7 +151,7 @@ export function AdminShopForm({ values }: { values: ShopProductValues }) {
 
   return (
     <div className="mx-auto max-w-6xl px-1">
-      <Button href={publicHref('/shop', language)} tone="ghost" size="sm" icon={<ArrowLeft size={16} aria-hidden="true" />}>
+      <Button href={publicHref('/shop', language)} tone="back" size="sm">
         {shopText(language, 'backShop')}
       </Button>
       <div className="mt-5">

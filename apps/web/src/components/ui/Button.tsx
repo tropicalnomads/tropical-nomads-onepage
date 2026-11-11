@@ -1,6 +1,7 @@
+import { ArrowLeft } from 'lucide-react';
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react';
 
-export type ButtonTone = 'primary' | 'secondary' | 'ghost';
+export type ButtonTone = 'primary' | 'secondary' | 'ghost' | 'back';
 export type ButtonSize = 'sm' | 'md';
 
 type SharedProps = {
@@ -30,11 +31,13 @@ const baseClass =
 function toneClass(tone: ButtonTone): string {
   switch (tone) {
     case 'primary':
-      return 'bg-ozora-yellow text-ozora-ink hover:bg-ozora-coral disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-ozora-cream/40 disabled:hover:bg-white/10';
+      return 'border border-ozora-ink/20 bg-ozora-yellow text-ozora-ink hover:border-ozora-ink/50 hover:brightness-95 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-ozora-cream/40 disabled:hover:bg-white/10 disabled:hover:brightness-100';
     case 'secondary':
-      return 'bg-ozora-coral text-ozora-ink hover:bg-ozora-yellow disabled:cursor-not-allowed disabled:opacity-40';
+      return 'border border-ozora-ink/20 bg-ozora-coral text-ozora-ink hover:border-ozora-ink/50 hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100';
     case 'ghost':
       return 'border border-white/15 text-ozora-cream hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40';
+    case 'back':
+      return 'border border-white/15 text-ozora-cream hover:border-white/40 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40';
     default: {
       const unexpected: never = tone;
       return unexpected;
@@ -61,9 +64,10 @@ export function buttonClass(tone: ButtonTone = 'primary', size: ButtonSize = 'md
 
 export function Button({ tone = 'primary', size = 'md', icon, className, children, ...props }: ButtonProps) {
   const classes = buttonClass(tone, size, className);
+  const leading = tone === 'back' && icon === undefined ? <ArrowLeft size={16} aria-hidden="true" /> : icon;
   const content = (
     <>
-      {icon}
+      {leading}
       {children}
     </>
   );

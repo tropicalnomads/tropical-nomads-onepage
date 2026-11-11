@@ -11,7 +11,7 @@ import { canonicalCountryName, countryChoices, postalCompact, postalLookupKey } 
 import { useShopCart } from '../shop/useShopCart';
 import { SelectField } from './SelectField';
 import { ShopSteps } from './ShopSteps';
-import { Button, TextLink } from './ui/Button';
+import { Button } from './ui/Button';
 import { fieldControlClass } from './ui/field';
 
 const fieldClass = `${fieldControlClass} h-12 text-sm`;
@@ -351,7 +351,9 @@ export function ShopCheckout({ presets, signedIn }: { presets: ShopAddressPreset
                   <Button href={publicHref('/shop', language)} tone="ghost">
                     {shopText(language, 'continue')}
                   </Button>
-                  <TextLink href="/shop/cart">{shopText(language, 'backCart')}</TextLink>
+                  <Button href="/shop/cart" tone="back">
+                    {shopText(language, 'backCart')}
+                  </Button>
                 </div>
                 <Button type="button" disabled={!complete || submitting} onClick={() => void continueCheckout()}>
                   {shopText(language, 'next')}

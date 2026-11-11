@@ -38,7 +38,7 @@ export function ShopOrderComplete() {
         ) : (
           <h1 className="font-display text-3xl font-bold text-ozora-cream">{shopText(language, 'missingOrder')}</h1>
         )}
-        <Button href={publicHref('/shop', language)} tone="ghost" className="mt-4">
+        <Button href={publicHref('/shop', language)} tone="back" size="sm" className="mt-4">
           {shopText(language, 'backShop')}
         </Button>
       </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeft, CalendarDays, MapPin, Music2, Plus, Ticket } from 'lucide-react';
+import { CalendarDays, MapPin, Music2, Plus, Ticket } from 'lucide-react';
 import { useMemo, useState, type FormEvent } from 'react';
 import { loteOffers, loteStatuses, type LoteOffer, type LoteStatus } from 'tropical-nomads-shared';
 import { savePartyAction, type PartyFormResult } from '../admin/actions';
@@ -238,7 +238,7 @@ export function AdminEventForm({
   return (
     <main className="px-5 py-10 md:px-8 md:py-14">
       <form onSubmit={onSubmit} className="mx-auto max-w-6xl">
-        <Button href="/admin/events" tone="ghost" size="sm" icon={<ArrowLeft size={16} aria-hidden="true" />}>
+        <Button href="/admin/events" tone="back" size="sm">
           {text('back')}
         </Button>
         <div className="mt-5 flex flex-wrap items-center gap-3">

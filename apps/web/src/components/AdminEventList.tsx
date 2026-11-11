@@ -17,7 +17,7 @@ import { eventBoardDetails, eventPhase, eventPhaseCounts, groupEventBoard, type 
 import { uploadedEventFlyer } from '../admin/event-image';
 import { adminText, eventText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
-import { TextLink } from './ui/Button';
+import { Button } from './ui/Button';
 
 const phaseOrder = ['draft', 'published', 'ended'] as const satisfies readonly EventPhase[];
 const phaseCountStyles: Record<EventPhase, string> = {
@@ -267,10 +267,9 @@ export function AdminEventEditor({
   return (
     <main className="px-5 py-10 md:px-8 md:py-14">
       <div className="mx-auto max-w-4xl">
-        <TextLink href="/admin/events" className="inline-flex items-center gap-2 text-sm">
-          <ArrowRight className="rotate-180" size={16} aria-hidden="true" />
+        <Button href="/admin/events" tone="back" size="sm">
           {adminText(language, 'back')}
-        </TextLink>
+        </Button>
         <div className="mt-5 flex flex-wrap items-center gap-3 border-b border-white/10 pb-6">
           <h1 className="font-display text-3xl font-bold text-ozora-cream md:text-4xl">{adminText(language, heading)}</h1>
           {phase ? (

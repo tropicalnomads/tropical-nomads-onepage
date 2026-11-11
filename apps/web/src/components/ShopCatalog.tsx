@@ -68,7 +68,7 @@ export function ShopMissing() {
       <div className="mx-auto max-w-xl rounded-3xl border border-white/10 bg-ozora-navy/55 p-8 text-center">
         <h1 className="font-display text-3xl font-bold text-ozora-cream">{shopText(language, 'missingTitle')}</h1>
         <p className="mt-3 text-sm leading-relaxed text-ozora-cream/70">{shopText(language, 'missingBody')}</p>
-        <Button href={publicHref('/shop', language)} className="mt-6">
+        <Button href={publicHref('/shop', language)} tone="back" size="sm" className="mt-6">
           {shopText(language, 'back')}
         </Button>
       </div>

@@ -10,6 +10,7 @@ import { LanguageProvider } from '../src/i18n/provider';
 import { rootMetadata, siteViewport } from '../src/seo/metadata';
 import { PublicSearchLinks } from '../src/seo/links';
 import { localeFromHeader } from '../src/seo/urls';
+import { readShopCartCount, shopCartCountCookie } from '../src/shop/cart';
 import './globals.css';
 
 export const metadata = rootMetadata;
@@ -60,6 +61,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const urlLanguage = localeFromHeader(headerList.get('x-tn-locale'));
   const initialLanguage = urlLanguage ?? 'en';
   const signedIn = readSessionSub(jar.get(sessionCookieName)?.value) !== undefined;
+  const cartCount = readShopCartCount(jar.get(shopCartCountCookie)?.value);
   let admin = false;
   if (signedIn) {
     try {
@@ -78,7 +80,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <body className="font-sans" suppressHydrationWarning>
         <LanguageProvider initialLanguage={initialLanguage}>
           <div className="flex min-h-dvh flex-col">
-            <ShellHeader signedIn={signedIn} admin={admin} />
+            <ShellHeader signedIn={signedIn} admin={admin} cartCount={cartCount} />
             {children}
             <ShellFooter />
           </div>

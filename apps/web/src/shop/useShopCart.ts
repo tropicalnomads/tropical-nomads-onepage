@@ -7,6 +7,7 @@ import {
   parseShopCart,
   removeShopLine,
   setShopLineQuantity,
+  shopCartCountCookie,
   shopCartStorageKey,
   shopPieceCount,
   type StoredShopCart,
@@ -26,12 +27,19 @@ function readCart(catalog: ReturnType<typeof useShopCatalog>): StoredShopCart {
   }
 }
 
+const countCookieMaxAge = 60 * 60 * 24 * 365;
+
+function writeCountCookie(count: number): void {
+  document.cookie = `${shopCartCountCookie}=${count}; Path=/; Max-Age=${countCookieMaxAge}; SameSite=Lax`;
+}
+
 function writeCart(cart: StoredShopCart): void {
   try {
     window.localStorage.setItem(shopCartStorageKey, JSON.stringify(cart));
   } catch {
     return;
   }
+  writeCountCookie(shopPieceCount(cart.lines));
   window.dispatchEvent(new Event(cartEvent));
 }
 
@@ -51,12 +59,14 @@ export function useShopCart() {
         try {
           window.localStorage.setItem(shopCartStorageKey, serialized);
         } catch {
+          writeCountCookie(shopPieceCount(next.lines));
           setCart(next);
           setReady(true);
           return;
         }
         window.dispatchEvent(new Event(cartEvent));
       }
+      writeCountCookie(shopPieceCount(next.lines));
       setCart(next);
       setReady(true);
     };

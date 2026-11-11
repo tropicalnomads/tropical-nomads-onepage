@@ -318,7 +318,7 @@ export function CroppedImageField({
               title={labels.placeholder}
               disabled={disabled}
               onClick={() => fileRef.current?.click()}
-              className="absolute bottom-1 right-1 h-8 w-8 border-2 border-ozora-navy bg-ozora-yellow text-ozora-ink shadow-lg hover:bg-ozora-coral hover:text-ozora-ink"
+              className="absolute bottom-1 right-1 h-8 w-8 border-2 border-ozora-navy bg-ozora-yellow text-ozora-ink shadow-lg hover:border-ozora-ink/50 hover:brightness-95 hover:text-ozora-ink"
             >
               <Camera size={15} aria-hidden="true" />
             </IconButton>

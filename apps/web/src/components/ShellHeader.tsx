@@ -43,9 +43,10 @@ function BookingsLink({ menu, onClick }: { menu?: boolean; onClick?: () => void 
   );
 }
 
-function CartLink({ menu, onClick }: { menu?: boolean; onClick?: () => void }) {
+function CartLink({ menu, onClick, cartCount }: { menu?: boolean; onClick?: () => void; cartCount: number }) {
   const { language } = useLanguage();
-  const { count } = useShopCart();
+  const { count, ready } = useShopCart();
+  const shown = ready ? count : cartCount;
   if (menu) {
     return (
       <a
@@ -54,15 +55,15 @@ function CartLink({ menu, onClick }: { menu?: boolean; onClick?: () => void }) {
         className="flex items-center justify-between rounded-lg px-3 py-2.5 text-left text-base font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
       >
         <span>{shopText(language, 'cart')}</span>
-        {count > 0 ? <span className="rounded-full bg-ozora-yellow px-2 py-0.5 text-xs font-bold text-ozora-ink">{count}</span> : null}
+        {shown > 0 ? <span className="rounded-full bg-ozora-yellow px-2 py-0.5 text-xs font-bold text-ozora-ink">{shown}</span> : null}
       </a>
     );
   }
   return (
     <Button href="/shop/cart" tone="ghost" size="sm" aria-label={shopText(language, 'cartAria')} className="relative hidden h-9 w-9 px-0 lg:inline-flex">
       <ShoppingBag size={18} aria-hidden="true" />
-      {count > 0 ? (
-        <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-ozora-yellow px-1 text-[11px] font-bold text-ozora-ink">{count}</span>
+      {shown > 0 ? (
+        <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-ozora-yellow px-1 text-[11px] font-bold text-ozora-ink">{shown}</span>
       ) : null}
     </Button>
   );
@@ -130,7 +131,7 @@ function AccountControl({ signedIn, onOpen }: { signedIn: boolean; onOpen?: () =
   );
 }
 
-export function ShellHeader({ signedIn, admin = false }: { signedIn: boolean; admin?: boolean }) {
+export function ShellHeader({ signedIn, admin = false, cartCount = 0 }: { signedIn: boolean; admin?: boolean; cartCount?: number }) {
   const { language } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -197,7 +198,7 @@ export function ShellHeader({ signedIn, admin = false }: { signedIn: boolean; ad
         </nav>
 
         <div className="relative z-20 flex items-center gap-2">
-          <CartLink />
+          <CartLink cartCount={cartCount} />
           <AccountControl signedIn={signedIn} onOpen={closeMenu} />
         </div>
       </div>
@@ -235,7 +236,7 @@ export function ShellHeader({ signedIn, admin = false }: { signedIn: boolean; ad
               {shellText(language, 'navAdmin')}
             </a>
           ) : null}
-          <CartLink menu onClick={closeMenu} />
+          <CartLink menu onClick={closeMenu} cartCount={cartCount} />
           <div className="mt-2 border-t border-white/10 px-3 pt-3">
             <LanguageSwitch />
           </div>

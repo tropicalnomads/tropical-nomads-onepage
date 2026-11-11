@@ -4,7 +4,7 @@ import { useSignInHref } from '../account/use-return-path';
 import { accountText, areaText, ticketText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { EmptyState } from '../../../one-pager/src/components/EmptyState';
-import { Button, TextLink } from './ui/Button';
+import { Button } from './ui/Button';
 
 export interface TicketRow {
   id: string;
@@ -76,9 +76,9 @@ export function MyTickets({ signedIn, tickets }: { signedIn: boolean; tickets: r
                   aria-label={ticketText(language, 'qrLabel').replaceAll('{title}', open.title)}
                   dangerouslySetInnerHTML={{ __html: open.qrSvg }}
                 />
-                <TextLink href="/my-tickets" className="mt-4 inline-flex text-sm">
+                <Button href="/my-tickets" tone="back" size="sm" className="mt-4">
                   {ticketText(language, 'back')}
-                </TextLink>
+                </Button>
               </article>
             ) : null}
           </div>

@@ -3,6 +3,14 @@ import { sizeStock, type ShopCatalogProduct } from './catalog.ts';
 import type { ShopAddress, ShopLine } from './order.ts';
 
 export const shopCartStorageKey = 'tn:shop-cart:v1';
+export const shopCartCountCookie = 'tn:shop-count';
+
+export function readShopCartCount(value: string | undefined): number {
+  if (value === undefined || !/^\d{1,4}$/.test(value)) {
+    return 0;
+  }
+  return Number(value);
+}
 
 export const emptyShopAddress: ShopAddress = {
   name: '',
