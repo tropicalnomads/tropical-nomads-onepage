@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, LogIn, LogOut, Menu, ShoppingBag, UserRound, X } from 'lucide-react';
+import { ChevronDown, LogIn, LogOut, Menu, ShoppingBag, Ticket, UserRound, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { origins, type Locale, type WebAreaId } from 'tropical-nomads-shared';
 import { signOutAction } from '../account/actions';
@@ -160,6 +160,10 @@ function AccountControl({ signedIn, onOpen }: { signedIn: boolean; onOpen?: () =
           <a role="menuitem" href={accountHref} className={accountMenuItemClass} onClick={() => setOpen(false)}>
             <UserRound size={16} aria-hidden="true" />
             {accountText(language, 'accountTitle')}
+          </a>
+          <a role="menuitem" href="/my-tickets" className={accountMenuItemClass} onClick={() => setOpen(false)}>
+            <Ticket size={16} aria-hidden="true" />
+            {areaText(language, 'my-tickets')}
           </a>
           <div className="my-1 border-t border-white/10" />
           <button type="button" role="menuitem" className={accountMenuItemClass} disabled={signingOut} onClick={() => void signOut()}>

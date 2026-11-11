@@ -56,6 +56,10 @@ export interface AccountCopy {
   profileDetailsTitle: string;
   profileDetailsHelp: string;
   required: string;
+  givenNameRequired: string;
+  familyNameRequired: string;
+  profileValueTooLong: string;
+  phoneInvalid: string;
   saveProfile: string;
   username: string;
   givenName: string;
@@ -566,6 +570,10 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       profileDetailsTitle: 'Your profile',
       profileDetailsHelp: 'These details can be reused for tickets, orders, and future checkouts.',
       required: 'Required',
+      givenNameRequired: 'Enter your given name.',
+      familyNameRequired: 'Enter your family name.',
+      profileValueTooLong: 'Shorten this so it fits.',
+      phoneInvalid: 'Use a country code and digits only, like +353871234567.',
       saveProfile: 'Save profile',
       username: 'Username',
       givenName: 'Given name',
@@ -608,9 +616,9 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       noPaymentMethod: 'No payment method is saved.',
       disabled: 'This account is disabled. It cannot buy or scan.',
       avatarTitle: 'Profile photo',
-      avatarHelp: 'Drag and zoom until the photo fills the square. Saved photos stay under 5 MB.',
+      avatarHelp: 'Drag and zoom until the photo fills the circle. Saved photos stay under 5 MB.',
       avatarChoose: 'Choose photo',
-      avatarRatio: 'Square',
+      avatarRatio: 'Circle',
       avatarRemove: 'Remove',
       avatarEmpty: 'No photo yet',
       avatarPlaceholder: 'JPG, PNG, or WebP up to 5 MB.',
@@ -921,6 +929,10 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       profileDetailsTitle: 'Seu perfil',
       profileDetailsHelp: 'Esses dados podem ser reutilizados em ingressos, pedidos e compras futuras.',
       required: 'Obrigatório',
+      givenNameRequired: 'Informe o nome.',
+      familyNameRequired: 'Informe o apelido.',
+      profileValueTooLong: 'Encurte este campo para caber.',
+      phoneInvalid: 'Use o código do país e só números, como +353871234567.',
       saveProfile: 'Salvar perfil',
       username: 'Nome de usuário',
       givenName: 'Nome',
@@ -963,9 +975,9 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       noPaymentMethod: 'Nenhum meio de pagamento foi salvo.',
       disabled: 'Esta conta está desativada. Ela não pode comprar nem fazer a leitura.',
       avatarTitle: 'Foto do perfil',
-      avatarHelp: 'Arraste e amplie até a foto preencher o quadrado. A foto salva fica abaixo de 5 MB.',
+      avatarHelp: 'Arraste e amplie até a foto preencher o círculo. A foto salva fica abaixo de 5 MB.',
       avatarChoose: 'Escolher foto',
-      avatarRatio: 'Quadrada',
+      avatarRatio: 'Círculo',
       avatarRemove: 'Remover',
       avatarEmpty: 'Ainda sem foto',
       avatarPlaceholder: 'JPG, PNG ou WebP de até 5 MB.',

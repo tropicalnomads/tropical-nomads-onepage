@@ -7,6 +7,7 @@ import { apiOrigin } from '../api-origin.ts';
 import type { AccountNotice } from '../i18n/copy';
 import { callPrivate } from '../remote-store.ts';
 import { noticeForProfileFailure } from './profile-failure';
+import { cleanedProfileInput, firstProfileField, profileFieldIssues, profileInputFromFormData } from './profile-form';
 import { readSessionSub, sessionCookieName } from './session';
 
 export interface ProfileActionResult {
@@ -14,37 +15,16 @@ export interface ProfileActionResult {
   redirect?: '/account';
 }
 
-const fieldLimits = {
-  givenName: 80,
-  familyName: 80,
-  displayName: 80,
-  phone: 16,
-  city: 100,
-  region: 100,
-  postalCode: 24,
-  country: 100,
-} as const;
-
-function text(formData: FormData, key: keyof typeof fieldLimits): string {
-  const value = formData.get(key);
-  return typeof value === 'string' ? value.trim() : '';
-}
-
 export async function readProfileDetails(formData: FormData): Promise<{ details?: ProfileDetails; notice?: AccountNotice }> {
-  const values = Object.fromEntries(
-    Object.keys(fieldLimits).map((key) => [key, text(formData, key as keyof typeof fieldLimits)]),
-  ) as Record<keyof typeof fieldLimits, string>;
-  if (values.givenName === '' || values.familyName === '') {
+  const input = profileInputFromFormData(formData);
+  const issues = profileFieldIssues(input);
+  if (issues.givenName === 'required' || issues.familyName === 'required') {
     return { notice: 'name-required' };
   }
-  for (const [key, limit] of Object.entries(fieldLimits) as [keyof typeof fieldLimits, number][]) {
-    if (values[key].length > limit) {
-      return { notice: 'profile-invalid' };
-    }
-  }
-  if (values.phone !== '' && !/^\+[1-9]\d{1,14}$/.test(values.phone)) {
+  if (firstProfileField(issues)) {
     return { notice: 'profile-invalid' };
   }
+  const values = cleanedProfileInput(input);
   const details: ProfileDetails = {
     givenName: values.givenName,
     familyName: values.familyName,

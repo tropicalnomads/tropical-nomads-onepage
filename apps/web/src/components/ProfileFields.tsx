@@ -2,6 +2,7 @@
 
 import { AtSign, Globe2, MapPin, Phone, User, Warehouse } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { profileIssueCopyKey, type ProfileFieldIssue, type ProfileFieldIssues, type ProfileFieldName } from '../account/profile-form';
 import { accountText, type AccountNotice } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { avatarCropSize } from '../shop/crop-image';
@@ -20,13 +21,16 @@ export interface ProfileValues {
   hasAvatar?: boolean;
 }
 
-function requiredLabel(label: string, badge: string) {
+function fieldLabel(label: string, requiredText?: string) {
+  if (!requiredText) {
+    return label;
+  }
   return (
-    <span className="flex items-center justify-between gap-3">
-      <span>{label}</span>
-      <span className="rounded-full border border-ozora-yellow/30 bg-ozora-yellow/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] text-ozora-yellow">
-        {badge}
-      </span>
+    <span>
+      {label}
+      <abbr title={requiredText} className="ml-1 text-ozora-coral no-underline">
+        *
+      </abbr>
     </span>
   );
 }
@@ -34,11 +38,15 @@ function requiredLabel(label: string, badge: string) {
 export function ProfileFields({
   values,
   pending,
+  issues,
   onNotice,
+  onClearIssue,
 }: {
   values?: Partial<ProfileValues>;
   pending: boolean;
+  issues?: ProfileFieldIssues;
   onNotice?: (notice: AccountNotice | null) => void;
+  onClearIssue?: (field: ProfileFieldName) => void;
 }) {
   const { language } = useLanguage();
   const [preview, setPreview] = useState<string>();
@@ -58,54 +66,58 @@ export function ProfileFields({
     input.files = transfer.files;
   }
 
-  return (
-    <div className="space-y-8">
-      <CroppedImageField
-        preview={preview ?? savedAvatar}
-        aspect={1}
-        aspectClass="aspect-square"
-        output={avatarCropSize}
-        fileName="avatar.webp"
-        disabled={pending}
-        labels={{
-          title: accountText(language, 'avatarTitle'),
-          ratio: accountText(language, 'avatarRatio'),
-          remove: accountText(language, 'avatarRemove'),
-          noImage: accountText(language, 'avatarEmpty'),
-          placeholder: accountText(language, 'avatarPlaceholder'),
-          replace: accountText(language, 'avatarReplace'),
-          upload: accountText(language, 'avatarChoose'),
-          help: accountText(language, 'avatarHelp'),
-          invalid: accountText(language, 'avatarInvalid'),
-          cropTitle: accountText(language, 'avatarCropTitle'),
-          cropHelp: accountText(language, 'avatarCropHelp'),
-          cancel: accountText(language, 'avatarCancel'),
-          zoom: accountText(language, 'avatarZoom'),
-          cropping: accountText(language, 'avatarCropping'),
-          use: accountText(language, 'avatarUse'),
-        }}
-        onInvalid={(reason) => onNotice?.(reason === 'too-large' ? 'avatar-too-large' : 'avatar-rejected')}
-        onChange={(next) => {
-          onNotice?.(null);
-          if (next.removed) {
-            setPreview(undefined);
-            assignAvatar(undefined);
-            return;
-          }
-          setPreview(next.preview);
-          assignAvatar(next.file);
-        }}
-      />
-      <input ref={avatarRef} name="avatar" type="file" tabIndex={-1} aria-hidden="true" className="sr-only" />
+  function errorFor(field: ProfileFieldName): string | undefined {
+    const issue: ProfileFieldIssue | undefined = issues?.[field];
+    if (!issue) {
+      return undefined;
+    }
+    return accountText(language, profileIssueCopyKey(field, issue));
+  }
 
-      <div>
-        <div className="mb-5">
-          <h2 className="text-lg font-bold text-ozora-cream">{accountText(language, 'profileDetailsTitle')}</h2>
-          <p className="mt-1 text-sm leading-relaxed text-ozora-cream/60">{accountText(language, 'profileDetailsHelp')}</p>
-        </div>
-        <div className="grid gap-5 sm:grid-cols-2">
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+        <CroppedImageField
+          preview={preview ?? savedAvatar}
+          aspect={1}
+          aspectClass="aspect-square"
+          output={avatarCropSize}
+          fileName="avatar.webp"
+          disabled={pending}
+          presentation="avatar"
+          cropShape="round"
+          labels={{
+            title: accountText(language, 'avatarTitle'),
+            ratio: accountText(language, 'avatarRatio'),
+            remove: accountText(language, 'avatarRemove'),
+            noImage: accountText(language, 'avatarEmpty'),
+            placeholder: accountText(language, 'avatarPlaceholder'),
+            replace: accountText(language, 'avatarReplace'),
+            upload: accountText(language, 'avatarChoose'),
+            help: accountText(language, 'avatarHelp'),
+            invalid: accountText(language, 'avatarInvalid'),
+            cropTitle: accountText(language, 'avatarCropTitle'),
+            cropHelp: accountText(language, 'avatarCropHelp'),
+            cancel: accountText(language, 'avatarCancel'),
+            zoom: accountText(language, 'avatarZoom'),
+            cropping: accountText(language, 'avatarCropping'),
+            use: accountText(language, 'avatarUse'),
+          }}
+          onInvalid={(reason) => onNotice?.(reason === 'too-large' ? 'avatar-too-large' : 'avatar-rejected')}
+          onChange={(next) => {
+            onNotice?.(null);
+            if (next.removed) {
+              setPreview(undefined);
+              assignAvatar(undefined);
+              return;
+            }
+            setPreview(next.preview);
+            assignAvatar(next.file);
+          }}
+        />
+        <div className="grid min-w-0 flex-1 gap-4 sm:grid-cols-2">
           <AuthField
-            label={requiredLabel(accountText(language, 'givenName'), requiredText)}
+            label={fieldLabel(accountText(language, 'givenName'), requiredText)}
             name="givenName"
             icon={User}
             autoComplete="given-name"
@@ -113,9 +125,11 @@ export function ProfileFields({
             disabled={pending}
             defaultValue={values?.givenName}
             maxLength={80}
+            error={errorFor('givenName')}
+            onValueChange={() => onClearIssue?.('givenName')}
           />
           <AuthField
-            label={requiredLabel(accountText(language, 'familyName'), requiredText)}
+            label={fieldLabel(accountText(language, 'familyName'), requiredText)}
             name="familyName"
             icon={User}
             autoComplete="family-name"
@@ -123,7 +137,19 @@ export function ProfileFields({
             disabled={pending}
             defaultValue={values?.familyName}
             maxLength={80}
+            error={errorFor('familyName')}
+            onValueChange={() => onClearIssue?.('familyName')}
           />
+        </div>
+      </div>
+      <input ref={avatarRef} name="avatar" type="file" tabIndex={-1} aria-hidden="true" className="sr-only" />
+
+      <div className="border-t border-white/10 pt-6">
+        <div className="mb-4">
+          <h2 className="text-base font-bold text-ozora-cream">{accountText(language, 'profileDetailsTitle')}</h2>
+          <p className="mt-1 text-sm leading-relaxed text-ozora-cream/55">{accountText(language, 'profileDetailsHelp')}</p>
+        </div>
+        <div className="grid gap-x-5 gap-y-4 sm:grid-cols-2">
           <AuthField
             label={accountText(language, 'displayName')}
             name="displayName"
@@ -132,6 +158,8 @@ export function ProfileFields({
             disabled={pending}
             defaultValue={values?.displayName}
             maxLength={80}
+            error={errorFor('displayName')}
+            onValueChange={() => onClearIssue?.('displayName')}
           />
           <AuthField
             label={accountText(language, 'phone')}
@@ -142,8 +170,10 @@ export function ProfileFields({
             autoComplete="tel"
             disabled={pending}
             defaultValue={values?.phone}
-            maxLength={16}
-            placeholder="+353…"
+            maxLength={24}
+            placeholder="+353871234567"
+            error={errorFor('phone')}
+            onValueChange={() => onClearIssue?.('phone')}
           />
           <AuthField
             label={accountText(language, 'city')}
@@ -153,6 +183,8 @@ export function ProfileFields({
             disabled={pending}
             defaultValue={values?.city}
             maxLength={100}
+            error={errorFor('city')}
+            onValueChange={() => onClearIssue?.('city')}
           />
           <AuthField
             label={accountText(language, 'region')}
@@ -162,6 +194,8 @@ export function ProfileFields({
             disabled={pending}
             defaultValue={values?.region}
             maxLength={100}
+            error={errorFor('region')}
+            onValueChange={() => onClearIssue?.('region')}
           />
           <AuthField
             label={accountText(language, 'postalCode')}
@@ -171,6 +205,8 @@ export function ProfileFields({
             disabled={pending}
             defaultValue={values?.postalCode}
             maxLength={24}
+            error={errorFor('postalCode')}
+            onValueChange={() => onClearIssue?.('postalCode')}
           />
           <AuthField
             label={accountText(language, 'country')}
@@ -180,6 +216,8 @@ export function ProfileFields({
             disabled={pending}
             defaultValue={values?.country}
             maxLength={100}
+            error={errorFor('country')}
+            onValueChange={() => onClearIssue?.('country')}
           />
         </div>
       </div>

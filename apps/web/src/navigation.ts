@@ -5,7 +5,11 @@ export interface NavigationItem {
   href: string;
 }
 
-export const navigation: readonly NavigationItem[] = webAreas.map((area) => ({
-  id: area.id,
-  href: area.path,
-}));
+const omittedFromBar = new Set<WebAreaId>(['my-tickets', 'check-in']);
+
+export const navigation: readonly NavigationItem[] = webAreas
+  .filter((area) => !omittedFromBar.has(area.id))
+  .map((area) => ({
+    id: area.id,
+    href: area.path,
+  }));

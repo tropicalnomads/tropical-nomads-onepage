@@ -5,6 +5,7 @@ import { locales } from 'tropical-nomads-shared';
 import { reviewConfirmationCode, reviewEmail, reviewPasswordSignIn, reviewProfileNames, reviewProvider, reviewRegistration } from '../src/account/review.ts';
 import { configuredSessionSecret, createSessionToken, readSessionSub, sessionSecretConfigured } from '../src/account/session.ts';
 import { noticeForProfileFailure } from '../src/account/profile-failure.ts';
+import { canonicalProfilePhone, profileFieldIssues, profileIssueCopyKey, type ProfileFieldInput } from '../src/account/profile-form.ts';
 import { noticeForSignInFailure } from '../src/account/sign-in-failure.ts';
 import { shellCopy, type AccountNotice } from '../src/i18n/copy.ts';
 
@@ -118,6 +119,9 @@ describe('accounts', () => {
     assert.equal(header.includes('signOutAction'), true);
     assert.equal(header.includes('role="menu"'), true);
     assert.equal(header.includes("accountText(language, 'signOut')"), true);
+    assert.equal(header.includes('href="/my-tickets"'), true);
+    assert.equal(header.includes("areaText(language, 'my-tickets')"), true);
+    assert.equal(header.includes('/check-in'), false);
     assert.equal(actions.includes('noticeForSignInFailure'), true);
     assert.equal(actions.includes('finishSignIn'), true);
     assert.equal(actions.includes('await remember(claims.sub)'), true);
@@ -127,8 +131,38 @@ describe('accounts', () => {
     assert.equal(profileSetup.includes('noteActionFailure'), false);
     const profileFields = readFileSync(new URL('../src/components/ProfileFields.tsx', import.meta.url), 'utf8');
     assert.equal(profileFields.includes('CroppedImageField'), true);
+    assert.equal(profileFields.includes('presentation="avatar"'), true);
+    assert.equal(profileFields.includes('cropShape="round"'), true);
     assert.equal(profileFields.includes('avatarCropSize'), true);
     assert.equal(profileFields.includes("onNotice?.(reason === 'too-large' ? 'avatar-too-large' : 'avatar-rejected')"), true);
+    assert.equal(profileFields.includes('error={errorFor('), true);
+    assert.equal(profileSetup.includes('profileFieldIssues'), true);
+    const blank: ProfileFieldInput = {
+      givenName: '',
+      familyName: ' ',
+      displayName: '',
+      phone: '',
+      city: '',
+      region: '',
+      postalCode: '',
+      country: '',
+    };
+    assert.deepEqual(profileFieldIssues(blank), { givenName: 'required', familyName: 'required' });
+    assert.deepEqual(
+      profileFieldIssues({ ...blank, givenName: 'Ada', familyName: 'Lovelace', phone: '+353 87 123 4567' }),
+      {},
+    );
+    assert.equal(canonicalProfilePhone('+353 87 123 4567'), '+353871234567');
+    assert.equal(profileFieldIssues({ ...blank, givenName: 'Ada', familyName: 'Lovelace', phone: '0871234567' }).phone, 'phone');
+    assert.equal(
+      profileFieldIssues({ ...blank, givenName: 'Ada', familyName: 'Lovelace', displayName: 'x'.repeat(81) }).displayName,
+      'too-long',
+    );
+    assert.equal(profileIssueCopyKey('givenName', 'required'), 'givenNameRequired');
+    assert.equal(profileIssueCopyKey('phone', 'phone'), 'phoneInvalid');
+    assert.equal(shellCopy.en.account.givenNameRequired, 'Enter your given name.');
+    assert.equal(shellCopy.pt.account.familyNameRequired, 'Informe o apelido.');
+    assert.equal(shellCopy.en.account.phoneInvalid, 'Use a country code and digits only, like +353871234567.');
     assert.equal(noticeForProfileFailure(new Error('payload is too large')), 'avatar-too-large');
     assert.equal(noticeForProfileFailure(new Error('Body exceeded 1 MB limit')), 'avatar-too-large');
     assert.equal(noticeForProfileFailure(new Error('avatar is not an image')), 'avatar-rejected');

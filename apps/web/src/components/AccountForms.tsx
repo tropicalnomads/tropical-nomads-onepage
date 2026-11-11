@@ -5,6 +5,7 @@ import { useState, type FormEvent } from 'react';
 import { completeProfileAction, confirmPasswordResetAction, confirmRegistrationAction, providerAction, registerAction, rememberConfirmationEmailAction, requestPasswordResetAction, resendConfirmationAction, signInAction, type AccountActionResult } from '../account/actions';
 import { startHostedSignIn } from '../account/cognito-actions';
 import { noticeForProfileFailure } from '../account/profile-failure';
+import { firstProfileField, profileFieldIssues, profileInputFromFormData, type ProfileFieldIssues, type ProfileFieldName } from '../account/profile-form';
 import { accountEmail } from '../account/review';
 import { accountText, type AccountNotice } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
@@ -582,9 +583,28 @@ export function ProfileSetupScreen({ initialNotice = null }: { initialNotice?: A
   const { language } = useLanguage();
   const [notice, setNotice] = useState<AccountActionResult['notice'] | null>(initialNotice);
   const [pending, setPending] = useState(false);
+  const [issues, setIssues] = useState<ProfileFieldIssues>({});
+
+  function clearIssue(field: ProfileFieldName): void {
+    setIssues((current) => {
+      if (!current[field]) {
+        return current;
+      }
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
+  }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
+    const nextIssues = profileFieldIssues(profileInputFromFormData(new FormData(event.currentTarget)));
+    setIssues(nextIssues);
+    const first = firstProfileField(nextIssues);
+    if (first) {
+      event.currentTarget.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
+      return;
+    }
     setPending(true);
     setNotice(null);
     try {
@@ -607,7 +627,7 @@ export function ProfileSetupScreen({ initialNotice = null }: { initialNotice?: A
       subtitle={accountText(language, 'profileHelp')}
     >
       <form onSubmit={onSubmit} className="space-y-7" encType="multipart/form-data" noValidate aria-busy={pending}>
-        <ProfileFields pending={pending} onNotice={setNotice} />
+        <ProfileFields pending={pending} issues={issues} onNotice={setNotice} onClearIssue={clearIssue} />
         <AuthSubmitButton pending={pending}>{accountText(language, 'saveProfile')}</AuthSubmitButton>
         <AuthNotice notice={notice} />
       </form>

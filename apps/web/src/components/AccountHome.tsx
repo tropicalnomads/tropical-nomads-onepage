@@ -3,6 +3,7 @@
 import { BadgeCheck } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { noticeForProfileFailure } from '../account/profile-failure';
+import { firstProfileField, profileFieldIssues, profileInputFromFormData, type ProfileFieldIssues, type ProfileFieldName } from '../account/profile-form';
 import { saveAccountProfileAction } from '../account/profile';
 import { accountText, type AccountNotice } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
@@ -77,9 +78,28 @@ function AccountProfileForm({
   const { language } = useLanguage();
   const [notice, setNotice] = useState<AccountNotice | null>(initialNotice);
   const [pending, setPending] = useState(false);
+  const [issues, setIssues] = useState<ProfileFieldIssues>({});
+
+  function clearIssue(field: ProfileFieldName): void {
+    setIssues((current) => {
+      if (!current[field]) {
+        return current;
+      }
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
+  }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
+    const nextIssues = profileFieldIssues(profileInputFromFormData(new FormData(event.currentTarget)));
+    setIssues(nextIssues);
+    const first = firstProfileField(nextIssues);
+    if (first) {
+      event.currentTarget.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
+      return;
+    }
     setPending(true);
     setNotice(null);
     try {
@@ -110,7 +130,7 @@ function AccountProfileForm({
           {accountText(language, 'disabled')}
         </p>
       ) : null}
-      <ProfileFields values={profile} pending={pending || profile.status === 'disabled'} onNotice={setNotice} />
+      <ProfileFields values={profile} pending={pending || profile.status === 'disabled'} issues={issues} onNotice={setNotice} onClearIssue={clearIssue} />
       {profile.status === 'active' ? (
         <AuthSubmitButton pending={pending}>{accountText(language, 'saveProfile')}</AuthSubmitButton>
       ) : null}

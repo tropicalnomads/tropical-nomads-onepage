@@ -98,6 +98,8 @@ interface AuthFieldProps {
   autoFocus?: boolean;
   maxLength?: number;
   placeholder?: string;
+  error?: string;
+  onValueChange?: (value: string) => void;
 }
 
 export function AuthField({
@@ -114,8 +116,14 @@ export function AuthField({
   autoFocus = false,
   maxLength,
   placeholder,
+  error,
+  onValueChange,
 }: AuthFieldProps) {
   const id = useId();
+  const errorId = useId();
+  const fieldClass = error
+    ? `${controlClass} !border-ozora-coral/80 focus:!border-ozora-coral focus-visible:!ring-ozora-coral/40`
+    : controlClass;
 
   return (
     <label htmlFor={id} className="block">
@@ -139,9 +147,17 @@ export function AuthField({
           autoFocus={autoFocus}
           maxLength={maxLength}
           placeholder={placeholder}
-          className={controlClass}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? errorId : undefined}
+          onChange={onValueChange ? (event) => onValueChange(event.target.value) : undefined}
+          className={fieldClass}
         />
       </span>
+      {error ? (
+        <p id={errorId} role="alert" className="mt-1.5 text-xs font-semibold leading-relaxed text-ozora-coral">
+          {error}
+        </p>
+      ) : null}
     </label>
   );
 }

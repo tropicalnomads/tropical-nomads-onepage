@@ -1,6 +1,6 @@
 'use client';
 
-import { ImagePlus, Trash2, Upload } from 'lucide-react';
+import { Camera, ImagePlus, Trash2, Upload } from 'lucide-react';
 import { useEffect, useRef, useState, type ChangeEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import Cropper, { type Area, type Point } from 'react-easy-crop';
@@ -34,6 +34,9 @@ export interface CroppedImageChange {
   removed: boolean;
 }
 
+type CroppedImagePresentation = 'panel' | 'avatar';
+type CroppedImageCropShape = 'rect' | 'round';
+
 export function CroppedImageField({
   preview,
   aspect,
@@ -42,6 +45,8 @@ export function CroppedImageField({
   fileName,
   labels,
   disabled = false,
+  presentation = 'panel',
+  cropShape = 'rect',
   onInvalid,
   onChange,
 }: {
@@ -52,6 +57,8 @@ export function CroppedImageField({
   fileName: string;
   labels: CroppedImageLabels;
   disabled?: boolean;
+  presentation?: CroppedImagePresentation;
+  cropShape?: CroppedImageCropShape;
   onInvalid?: (reason: 'too-large' | 'invalid') => void;
   onChange: (next: CroppedImageChange) => void;
 }) {
@@ -162,6 +169,25 @@ export function CroppedImageField({
     onChange({ preview: undefined, file: undefined, removed: true });
   }
 
+  let dialogClassName: string;
+  let cropStageClassName: string;
+  switch (cropShape) {
+    case 'rect':
+      dialogClassName =
+        'm-auto w-[min(92vw,42rem)] rounded-[2rem] border border-white/15 bg-ozora-navy p-0 text-ozora-cream shadow-[0_30px_120px_rgba(0,0,0,0.7)] backdrop:bg-black/80';
+      cropStageClassName = `relative mt-5 max-h-[58vh] overflow-hidden rounded-2xl bg-black/40 ${aspectClass}`;
+      break;
+    case 'round':
+      dialogClassName =
+        'm-auto w-[min(92vw,28rem)] rounded-[2rem] border border-white/15 bg-ozora-navy p-0 text-ozora-cream shadow-[0_30px_120px_rgba(0,0,0,0.7)] backdrop:bg-black/80';
+      cropStageClassName = 'relative mx-auto mt-5 h-72 w-72 aspect-square overflow-hidden rounded-full bg-black/40';
+      break;
+    default: {
+      const exhaustiveCropShape: never = cropShape;
+      throw new Error(`Unsupported crop shape: ${exhaustiveCropShape}`);
+    }
+  }
+
   const cropDialog: ReactNode = (
     <dialog
       ref={dialogRef}
@@ -169,7 +195,7 @@ export function CroppedImageField({
         event.preventDefault();
         closeCrop();
       }}
-      className="m-auto w-[min(92vw,42rem)] rounded-[2rem] border border-white/15 bg-ozora-navy p-0 text-ozora-cream shadow-[0_30px_120px_rgba(0,0,0,0.7)] backdrop:bg-black/80"
+      className={dialogClassName}
     >
       <div className="p-5 md:p-6">
         <div className="flex items-start justify-between gap-4">
@@ -181,13 +207,14 @@ export function CroppedImageField({
             {labels.cancel}
           </button>
         </div>
-        <div className={`relative mt-5 max-h-[58vh] overflow-hidden rounded-2xl bg-black/40 ${aspectClass}`}>
+        <div className={cropStageClassName}>
           {cropSource ? (
             <Cropper
               image={cropSource}
               crop={crop}
               zoom={zoom}
               aspect={aspect}
+              cropShape={cropShape}
               showGrid
               onCropChange={setCrop}
               onZoomChange={setZoom}
@@ -228,54 +255,120 @@ export function CroppedImageField({
     </dialog>
   );
 
-  return (
-    <>
-      <section className="lg:sticky lg:top-6">
-        <div className="rounded-[2rem] border border-white/10 bg-ozora-navy/55 p-4 shadow-[0_24px_70px_rgba(0,0,0,0.28)]">
-          <div className="mb-3 flex items-center justify-between gap-3 px-1">
-            <div>
-              <h2 className="text-sm font-bold text-ozora-cream">{labels.title}</h2>
-              <p className="mt-0.5 text-xs text-ozora-cream/45">{labels.ratio}</p>
+  const fileInput: ReactNode = (
+    <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" disabled={disabled} onChange={chooseImage} className="sr-only" tabIndex={-1} />
+  );
+
+  let field: ReactNode;
+  switch (presentation) {
+    case 'panel':
+      field = (
+        <section className="lg:sticky lg:top-6">
+          <div className="rounded-[2rem] border border-white/10 bg-ozora-navy/55 p-4 shadow-[0_24px_70px_rgba(0,0,0,0.28)]">
+            <div className="mb-3 flex items-center justify-between gap-3 px-1">
+              <div>
+                <h2 className="text-sm font-bold text-ozora-cream">{labels.title}</h2>
+                <p className="mt-0.5 text-xs text-ozora-cream/45">{labels.ratio}</p>
+              </div>
+              {preview ? (
+                <button
+                  type="button"
+                  onClick={removeImage}
+                  disabled={disabled}
+                  className="inline-flex h-9 items-center gap-2 rounded-full border border-ozora-coral/35 px-3 text-xs font-bold text-ozora-coral transition hover:bg-ozora-coral/10 disabled:opacity-40"
+                >
+                  <Trash2 size={14} aria-hidden="true" />
+                  {labels.remove}
+                </button>
+              ) : null}
             </div>
+            <div className={`relative flex overflow-hidden rounded-[1.5rem] border border-white/10 bg-black/20 ${aspectClass}`}>
+              {preview ? (
+                <img src={preview} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex w-full flex-col items-center justify-center border-2 border-dashed border-white/10 px-8 text-center">
+                  <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/[0.05] text-ozora-cream/45">
+                    <ImagePlus size={28} aria-hidden="true" />
+                  </span>
+                  <p className="mt-4 font-bold text-ozora-cream">{labels.noImage}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-ozora-cream/45">{labels.placeholder}</p>
+                </div>
+              )}
+            </div>
+            {fileInput}
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={disabled}
+              className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-white/10 px-5 text-sm font-bold text-ozora-cream transition hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise disabled:opacity-40"
+            >
+              <Upload size={17} aria-hidden="true" />
+              {preview ? labels.replace : labels.upload}
+            </button>
+            <p className="mt-3 text-center text-xs leading-relaxed text-ozora-cream/45">{labels.help}</p>
+            {imageError ? <p className="mt-2 text-center text-sm font-semibold text-ozora-coral">{imageError}</p> : null}
+          </div>
+        </section>
+      );
+      break;
+    case 'avatar':
+      field = (
+        <div className="flex w-24 shrink-0 flex-col items-center gap-3">
+          <div className="relative h-24 w-24">
+            <div className="h-24 w-24 overflow-hidden rounded-full border border-white/15 bg-black/25">
+              {preview ? (
+                <img src={preview} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-ozora-cream/40">
+                  <ImagePlus size={26} aria-hidden="true" />
+                </div>
+              )}
+            </div>
+            {fileInput}
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={disabled}
+              aria-label={preview ? labels.replace : labels.upload}
+              title={labels.placeholder}
+              className="absolute bottom-1 right-1 inline-flex h-8 w-8 items-center justify-center rounded-full border-2 border-ozora-navy bg-ozora-yellow text-ozora-ink shadow-lg transition hover:bg-ozora-coral focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow disabled:opacity-40"
+            >
+              <Camera size={15} aria-hidden="true" />
+            </button>
             {preview ? (
               <button
                 type="button"
                 onClick={removeImage}
                 disabled={disabled}
-                className="inline-flex h-9 items-center gap-2 rounded-full border border-ozora-coral/35 px-3 text-xs font-bold text-ozora-coral transition hover:bg-ozora-coral/10 disabled:opacity-40"
+                aria-label={labels.remove}
+                title={labels.remove}
+                className="absolute -right-1 -top-1 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/15 bg-ozora-navy text-ozora-coral shadow-lg transition hover:bg-ozora-coral/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-coral disabled:opacity-40"
               >
-                <Trash2 size={14} aria-hidden="true" />
-                {labels.remove}
+                <Trash2 size={13} aria-hidden="true" />
               </button>
             ) : null}
           </div>
-          <div className={`relative flex overflow-hidden rounded-[1.5rem] border border-white/10 bg-black/20 ${aspectClass}`}>
-            {preview ? (
-              <img src={preview} alt="" className="h-full w-full object-cover" />
-            ) : (
-              <div className="flex w-full flex-col items-center justify-center border-2 border-dashed border-white/10 px-8 text-center">
-                <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/[0.05] text-ozora-cream/45">
-                  <ImagePlus size={28} aria-hidden="true" />
-                </span>
-                <p className="mt-4 font-bold text-ozora-cream">{labels.noImage}</p>
-                <p className="mt-1 text-xs leading-relaxed text-ozora-cream/45">{labels.placeholder}</p>
-              </div>
-            )}
-          </div>
-          <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" disabled={disabled} onChange={chooseImage} className="sr-only" tabIndex={-1} />
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
             disabled={disabled}
-            className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-white/10 px-5 text-sm font-bold text-ozora-cream transition hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise disabled:opacity-40"
+            className="text-xs font-bold text-ozora-turquoise underline-offset-4 transition hover:text-ozora-yellow hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise disabled:opacity-40"
           >
-            <Upload size={17} aria-hidden="true" />
             {preview ? labels.replace : labels.upload}
           </button>
-          <p className="mt-3 text-center text-xs leading-relaxed text-ozora-cream/45">{labels.help}</p>
-          {imageError ? <p className="mt-2 text-center text-sm font-semibold text-ozora-coral">{imageError}</p> : null}
+          {imageError ? <p className="w-28 text-center text-xs font-semibold leading-relaxed text-ozora-coral">{imageError}</p> : null}
         </div>
-      </section>
+      );
+      break;
+    default: {
+      const exhaustivePresentation: never = presentation;
+      throw new Error(`Unsupported presentation: ${exhaustivePresentation}`);
+    }
+  }
+
+  return (
+    <>
+      {field}
       {mounted && cropSource ? createPortal(cropDialog, document.body) : null}
     </>
   );
