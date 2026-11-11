@@ -115,6 +115,7 @@ describe('accounts', () => {
     jpeg[2] = 0xff;
     assert.equal(inspectAvatar(jpeg), 'jpg');
     assert.equal(inspectAvatar(new Uint8Array([0x3c, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74])), undefined);
+    assert.equal(inspectAvatar(new Uint8Array(5_000_001)), undefined);
     const storedFile = saveAvatarFile(saved, 'sub-ada', jpeg, now, root);
     const key = storedFile.profiles.find((profile) => profile.sub === 'sub-ada')?.avatarKey ?? '';
     assert.match(key, /^avatars\/[a-f0-9]{32}\.jpg$/);

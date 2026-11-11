@@ -100,6 +100,18 @@ export interface AccountCopy {
   avatarTitle: string;
   avatarHelp: string;
   avatarChoose: string;
+  avatarRatio: string;
+  avatarRemove: string;
+  avatarEmpty: string;
+  avatarPlaceholder: string;
+  avatarReplace: string;
+  avatarInvalid: string;
+  avatarCropTitle: string;
+  avatarCropHelp: string;
+  avatarCancel: string;
+  avatarZoom: string;
+  avatarCropping: string;
+  avatarUse: string;
   saveAvatar: string;
   notices: Record<AccountNotice, string>;
 }
@@ -275,9 +287,11 @@ export type AccountNotice =
   | 'provider-not-allowed'
   | 'not-signed-in'
   | 'avatar-rejected'
+  | 'avatar-too-large'
   | 'avatar-saved'
   | 'profile-invalid'
   | 'profile-saved'
+  | 'profile-save-failed'
   | 'sign-in-failed';
 
 const accountNotices: readonly AccountNotice[] = [
@@ -305,9 +319,11 @@ const accountNotices: readonly AccountNotice[] = [
   'provider-not-allowed',
   'not-signed-in',
   'avatar-rejected',
+  'avatar-too-large',
   'avatar-saved',
   'profile-invalid',
   'profile-saved',
+  'profile-save-failed',
   'sign-in-failed',
 ];
 
@@ -592,8 +608,20 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       noPaymentMethod: 'No payment method is saved.',
       disabled: 'This account is disabled. It cannot buy or scan.',
       avatarTitle: 'Profile photo',
-      avatarHelp: 'JPEG, PNG, or WebP. At most 1 MB.',
+      avatarHelp: 'Drag and zoom until the photo fills the square. Saved photos stay under 5 MB.',
       avatarChoose: 'Choose photo',
+      avatarRatio: 'Square',
+      avatarRemove: 'Remove',
+      avatarEmpty: 'No photo yet',
+      avatarPlaceholder: 'JPG, PNG, or WebP up to 5 MB.',
+      avatarReplace: 'Replace photo',
+      avatarInvalid: 'Use a JPEG, PNG, or WebP up to 5 MB.',
+      avatarCropTitle: 'Crop photo',
+      avatarCropHelp: 'Drag and zoom until the photo fills the frame.',
+      avatarCancel: 'Cancel',
+      avatarZoom: 'Zoom',
+      avatarCropping: 'Cropping…',
+      avatarUse: 'Use photo',
       saveAvatar: 'Save photo',
       notices: {
         'username-required': 'Choose a username.',
@@ -619,8 +647,10 @@ export const shellCopy: Record<Locale, ShellCopy> = {
         'password-reset': 'Password saved. Sign in with the new one.',
         'provider-not-allowed': 'That sign-in provider is not available.',
         'not-signed-in': 'Sign in before changing the account.',
-        'avatar-rejected': 'That photo was not saved.',
+        'avatar-rejected': 'That photo could not be used. Choose a JPEG, PNG, or WebP up to 5 MB.',
+        'avatar-too-large': 'That photo is larger than 5 MB.',
         'avatar-saved': 'Profile photo saved.',
+        'profile-save-failed': 'The profile could not be saved. Try again.',
         'profile-invalid': 'Check the profile details and try again.',
         'profile-saved': 'Profile saved.',
         'sign-in-failed': 'Sign-in could not be completed. Try again.',
@@ -933,8 +963,20 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       noPaymentMethod: 'Nenhum meio de pagamento foi salvo.',
       disabled: 'Esta conta está desativada. Ela não pode comprar nem fazer a leitura.',
       avatarTitle: 'Foto do perfil',
-      avatarHelp: 'JPEG, PNG ou WebP. No máximo 1 MB.',
+      avatarHelp: 'Arraste e amplie até a foto preencher o quadrado. A foto salva fica abaixo de 5 MB.',
       avatarChoose: 'Escolher foto',
+      avatarRatio: 'Quadrada',
+      avatarRemove: 'Remover',
+      avatarEmpty: 'Ainda sem foto',
+      avatarPlaceholder: 'JPG, PNG ou WebP de até 5 MB.',
+      avatarReplace: 'Trocar foto',
+      avatarInvalid: 'Use JPEG, PNG ou WebP de até 5 MB.',
+      avatarCropTitle: 'Recortar foto',
+      avatarCropHelp: 'Arraste e amplie até a foto preencher o quadro.',
+      avatarCancel: 'Cancelar',
+      avatarZoom: 'Zoom',
+      avatarCropping: 'Recortando…',
+      avatarUse: 'Usar foto',
       saveAvatar: 'Salvar foto',
       notices: {
         'username-required': 'Escolha um nome de usuário.',
@@ -960,8 +1002,10 @@ export const shellCopy: Record<Locale, ShellCopy> = {
         'password-reset': 'Senha salva. Entre com a nova senha.',
         'provider-not-allowed': 'Esse provedor de entrada não está disponível.',
         'not-signed-in': 'Entre antes de alterar a conta.',
-        'avatar-rejected': 'Essa foto não foi salva.',
+        'avatar-rejected': 'Essa foto não pôde ser usada. Escolha JPEG, PNG ou WebP de até 5 MB.',
+        'avatar-too-large': 'Essa foto é maior que 5 MB.',
         'avatar-saved': 'Foto do perfil salva.',
+        'profile-save-failed': 'Não foi possível salvar o perfil. Tente de novo.',
         'profile-invalid': 'Confira os dados do perfil e tente novamente.',
         'profile-saved': 'Perfil salvo.',
         'sign-in-failed': 'Não foi possível entrar. Tente de novo.',

@@ -21,6 +21,7 @@ import { establishVerifiedAccount } from './establish';
 import { readProfileAvatar, readProfileDetails } from './profile';
 import { accountEmail, pendingEmailCookie, reviewConfirmationCode, reviewEmail, reviewPasswordSignIn, reviewProvider, reviewRegistration } from './review';
 import { createSessionToken, readSessionSub, sessionCookieName } from './session';
+import { noticeForProfileFailure } from './profile-failure';
 import { noticeForSignInFailure } from './sign-in-failure';
 import { apiOrigin } from '../api-origin.ts';
 import { callPrivate, loadSnapshot } from '../remote-store.ts';
@@ -158,8 +159,8 @@ export async function completeProfileAction(formData: FormData): Promise<Account
         return bytes ? saveAvatarFile(withDetails, admitted, bytes, now) : withDetails;
       });
     }
-  } catch {
-    return { notice: bytes ? 'avatar-rejected' : 'profile-invalid' };
+  } catch (error) {
+    return { notice: noticeForProfileFailure(error) };
   }
   await remember(admitted);
   await clearVerifiedClaims();

@@ -1,3 +1,4 @@
+export { avatarByteLimit } from './account/avatar.ts';
 export {
   accountCanPurchase,
   accountCanScan,

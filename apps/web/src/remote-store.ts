@@ -41,9 +41,14 @@ export async function callPrivate<T>(action: string, input: unknown = {}): Promi
     body: JSON.stringify({ token }),
     cache: 'no-store',
   });
-  const body: unknown = await response.json();
-  if (!isRecord(body) || body.ok !== true) {
-    const error = isRecord(body) && typeof body.error === 'string' ? body.error : 'request failed';
+  let body: unknown;
+  try {
+    body = await response.json();
+  } catch {
+    throw new Error(response.status === 413 ? 'payload is too large' : 'request failed');
+  }
+  if (!response.ok || !isRecord(body) || body.ok !== true) {
+    const error = isRecord(body) && typeof body.error === 'string' ? body.error : response.status === 413 ? 'payload is too large' : 'request failed';
     throw new Error(error);
   }
   return body.result as T;

@@ -1,9 +1,11 @@
 'use client';
 
-import { AtSign, Camera, Globe2, MapPin, Phone, User, Warehouse } from 'lucide-react';
-import { useEffect, useState, type ChangeEvent } from 'react';
-import { accountText } from '../i18n/copy';
+import { AtSign, Globe2, MapPin, Phone, User, Warehouse } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { accountText, type AccountNotice } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
+import { avatarCropSize } from '../shop/crop-image';
+import { CroppedImageField } from './admin/CroppedImageField';
 import { AuthField } from './AuthUi';
 
 export interface ProfileValues {
@@ -32,60 +34,69 @@ function requiredLabel(label: string, badge: string) {
 export function ProfileFields({
   values,
   pending,
+  onNotice,
 }: {
   values?: Partial<ProfileValues>;
   pending: boolean;
+  onNotice?: (notice: AccountNotice | null) => void;
 }) {
   const { language } = useLanguage();
   const [preview, setPreview] = useState<string>();
-
-  useEffect(() => {
-    return () => {
-      if (preview) {
-        URL.revokeObjectURL(preview);
-      }
-    };
-  }, [preview]);
-
-  function previewAvatar(event: ChangeEvent<HTMLInputElement>): void {
-    const file = event.target.files?.[0];
-    setPreview((current) => {
-      if (current) {
-        URL.revokeObjectURL(current);
-      }
-      return file ? URL.createObjectURL(file) : undefined;
-    });
-  }
-
-  const avatarSrc = preview ?? (values?.hasAvatar ? '/account/avatar' : undefined);
-  const initial = (values?.displayName || values?.givenName || '?').trim().slice(0, 1).toUpperCase();
+  const avatarRef = useRef<HTMLInputElement>(null);
+  const savedAvatar = values?.hasAvatar ? '/account/avatar' : undefined;
   const requiredText = accountText(language, 'required');
+
+  function assignAvatar(file: File | undefined): void {
+    const input = avatarRef.current;
+    if (!input) {
+      return;
+    }
+    const transfer = new DataTransfer();
+    if (file) {
+      transfer.items.add(file);
+    }
+    input.files = transfer.files;
+  }
 
   return (
     <div className="space-y-8">
-      <section className="rounded-2xl border border-white/10 bg-black/20 p-4 sm:p-5">
-        <div className="flex flex-col items-center gap-4 sm:flex-row">
-          <div className="relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-gradient-to-br from-ozora-turquoise/30 to-ozora-pink/25 text-3xl font-bold text-ozora-cream shadow-[0_12px_32px_rgba(0,0,0,0.28)]">
-            {avatarSrc ? <img src={avatarSrc} alt="" className="h-full w-full object-cover" /> : <span>{initial}</span>}
-          </div>
-          <div className="text-center sm:text-left">
-            <h2 className="font-bold text-ozora-cream">{accountText(language, 'avatarTitle')}</h2>
-            <p className="mt-1 text-sm leading-relaxed text-ozora-cream/60">{accountText(language, 'avatarHelp')}</p>
-            <label className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-bold text-ozora-cream transition hover:border-ozora-turquoise/50 hover:bg-ozora-turquoise/10 focus-within:ring-2 focus-within:ring-ozora-turquoise">
-              <Camera size={17} aria-hidden="true" />
-              {accountText(language, 'avatarChoose')}
-              <input
-                name="avatar"
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                disabled={pending}
-                onChange={previewAvatar}
-                className="sr-only"
-              />
-            </label>
-          </div>
-        </div>
-      </section>
+      <CroppedImageField
+        preview={preview ?? savedAvatar}
+        aspect={1}
+        aspectClass="aspect-square"
+        output={avatarCropSize}
+        fileName="avatar.webp"
+        disabled={pending}
+        labels={{
+          title: accountText(language, 'avatarTitle'),
+          ratio: accountText(language, 'avatarRatio'),
+          remove: accountText(language, 'avatarRemove'),
+          noImage: accountText(language, 'avatarEmpty'),
+          placeholder: accountText(language, 'avatarPlaceholder'),
+          replace: accountText(language, 'avatarReplace'),
+          upload: accountText(language, 'avatarChoose'),
+          help: accountText(language, 'avatarHelp'),
+          invalid: accountText(language, 'avatarInvalid'),
+          cropTitle: accountText(language, 'avatarCropTitle'),
+          cropHelp: accountText(language, 'avatarCropHelp'),
+          cancel: accountText(language, 'avatarCancel'),
+          zoom: accountText(language, 'avatarZoom'),
+          cropping: accountText(language, 'avatarCropping'),
+          use: accountText(language, 'avatarUse'),
+        }}
+        onInvalid={(reason) => onNotice?.(reason === 'too-large' ? 'avatar-too-large' : 'avatar-rejected')}
+        onChange={(next) => {
+          onNotice?.(null);
+          if (next.removed) {
+            setPreview(undefined);
+            assignAvatar(undefined);
+            return;
+          }
+          setPreview(next.preview);
+          assignAvatar(next.file);
+        }}
+      />
+      <input ref={avatarRef} name="avatar" type="file" tabIndex={-1} aria-hidden="true" className="sr-only" />
 
       <div>
         <div className="mb-5">

@@ -2,6 +2,7 @@
 
 import { BadgeCheck } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
+import { noticeForProfileFailure } from '../account/profile-failure';
 import { saveAccountProfileAction } from '../account/profile';
 import { accountText, type AccountNotice } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
@@ -88,6 +89,8 @@ function AccountProfileForm({
         return;
       }
       setNotice(result.notice ?? 'profile-invalid');
+    } catch (error) {
+      setNotice(noticeForProfileFailure(error));
     } finally {
       setPending(false);
     }
@@ -107,7 +110,7 @@ function AccountProfileForm({
           {accountText(language, 'disabled')}
         </p>
       ) : null}
-      <ProfileFields values={profile} pending={pending || profile.status === 'disabled'} />
+      <ProfileFields values={profile} pending={pending || profile.status === 'disabled'} onNotice={setNotice} />
       {profile.status === 'active' ? (
         <AuthSubmitButton pending={pending}>{accountText(language, 'saveProfile')}</AuthSubmitButton>
       ) : null}

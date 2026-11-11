@@ -4,6 +4,7 @@ import { describe, it } from 'node:test';
 import { locales } from 'tropical-nomads-shared';
 import { reviewConfirmationCode, reviewEmail, reviewPasswordSignIn, reviewProfileNames, reviewProvider, reviewRegistration } from '../src/account/review.ts';
 import { configuredSessionSecret, createSessionToken, readSessionSub, sessionSecretConfigured } from '../src/account/session.ts';
+import { noticeForProfileFailure } from '../src/account/profile-failure.ts';
 import { noticeForSignInFailure } from '../src/account/sign-in-failure.ts';
 import { shellCopy, type AccountNotice } from '../src/i18n/copy.ts';
 
@@ -32,9 +33,11 @@ const notices: AccountNotice[] = [
   'provider-not-allowed',
   'not-signed-in',
   'avatar-rejected',
+  'avatar-too-large',
   'avatar-saved',
   'profile-invalid',
   'profile-saved',
+  'profile-save-failed',
   'sign-in-failed',
 ];
 
@@ -120,6 +123,20 @@ describe('accounts', () => {
     assert.equal(actions.includes('await remember(claims.sub)'), true);
     const profileSetup = form.slice(form.indexOf('export function ProfileSetupScreen'));
     assert.equal(profileSetup.includes('href="/account/sign-in"'), false);
+    assert.equal(profileSetup.includes('noticeForProfileFailure'), true);
+    assert.equal(profileSetup.includes('noteActionFailure'), false);
+    const profileFields = readFileSync(new URL('../src/components/ProfileFields.tsx', import.meta.url), 'utf8');
+    assert.equal(profileFields.includes('CroppedImageField'), true);
+    assert.equal(profileFields.includes('avatarCropSize'), true);
+    assert.equal(profileFields.includes("onNotice?.(reason === 'too-large' ? 'avatar-too-large' : 'avatar-rejected')"), true);
+    assert.equal(noticeForProfileFailure(new Error('payload is too large')), 'avatar-too-large');
+    assert.equal(noticeForProfileFailure(new Error('Body exceeded 1 MB limit')), 'avatar-too-large');
+    assert.equal(noticeForProfileFailure(new Error('avatar is not an image')), 'avatar-rejected');
+    assert.equal(noticeForProfileFailure(new Error('catalog unavailable')), 'profile-save-failed');
+    assert.equal(shellCopy.en.account.notices['avatar-too-large'], 'That photo is larger than 5 MB.');
+    assert.equal(shellCopy.pt.account.notices['avatar-too-large'], 'Essa foto é maior que 5 MB.');
+    assert.equal(shellCopy.en.account.notices['profile-save-failed'], 'The profile could not be saved. Try again.');
+    assert.equal(shellCopy.pt.account.notices['profile-save-failed'], 'Não foi possível salvar o perfil. Tente de novo.');
     const accountPage = readFileSync(new URL('../app/account/page.tsx', import.meta.url), 'utf8');
     assert.equal(accountPage.includes("redirect('/account/profile')"), true);
     const signInForm = form.slice(form.indexOf('export function SignInForm'), form.indexOf('function ConfirmEmailForm'));

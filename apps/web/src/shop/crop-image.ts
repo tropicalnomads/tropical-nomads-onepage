@@ -3,6 +3,7 @@ import type { Area } from 'react-easy-crop';
 export const shopCropSize = { width: 1000, height: 1250 } as const;
 export const eventCropSize = { width: 1200, height: 1600 } as const;
 export const artistCropSize = { width: 1000, height: 1000 } as const;
+export const avatarCropSize = { width: 1000, height: 1000 } as const;
 
 function loadImage(source: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {

@@ -3,6 +3,7 @@ import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, resolve, sep } from 'node:path';
 import {
   attachVerifiedSignIn,
+  avatarByteLimit,
   containsCardNumber,
   parseBillingAddress,
   parsePaymentMethod,
@@ -250,10 +251,8 @@ export function saveDefaultBillingAddress(file: AccountFile, sub: string, input:
   return assertAccountFile({ ...file, profiles, billingAddresses });
 }
 
-const avatarLimit = 1_000_000;
-
 export function inspectAvatar(bytes: Uint8Array): 'jpg' | 'png' | 'webp' | undefined {
-  if (bytes.length < 12 || bytes.length > avatarLimit) {
+  if (bytes.length < 12 || bytes.length > avatarByteLimit) {
     return undefined;
   }
   if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) {

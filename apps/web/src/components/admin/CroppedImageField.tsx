@@ -4,6 +4,7 @@ import { ImagePlus, Trash2, Upload } from 'lucide-react';
 import { useEffect, useRef, useState, type ChangeEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import Cropper, { type Area, type Point } from 'react-easy-crop';
+import { avatarByteLimit } from 'tropical-nomads-shared';
 import 'react-easy-crop/react-easy-crop.css';
 import { croppedImage } from '../../shop/crop-image';
 
@@ -40,6 +41,8 @@ export function CroppedImageField({
   output,
   fileName,
   labels,
+  disabled = false,
+  onInvalid,
   onChange,
 }: {
   preview?: string;
@@ -48,6 +51,8 @@ export function CroppedImageField({
   output: { width: number; height: number };
   fileName: string;
   labels: CroppedImageLabels;
+  disabled?: boolean;
+  onInvalid?: (reason: 'too-large' | 'invalid') => void;
   onChange: (next: CroppedImageChange) => void;
 }) {
   const [mounted, setMounted] = useState(false);
@@ -103,11 +108,18 @@ export function CroppedImageField({
   function chooseImage(event: ChangeEvent<HTMLInputElement>): void {
     const file = event.target.files?.[0];
     setImageError('');
-    if (!file) {
+    if (!file || disabled) {
       return;
     }
-    if (!imageTypes.includes(file.type) || file.size > 5_000_000) {
+    if (file.size > avatarByteLimit) {
       setImageError(labels.invalid);
+      onInvalid?.('too-large');
+      event.target.value = '';
+      return;
+    }
+    if (!imageTypes.includes(file.type)) {
+      setImageError(labels.invalid);
+      onInvalid?.('invalid');
       event.target.value = '';
       return;
     }
@@ -229,7 +241,8 @@ export function CroppedImageField({
               <button
                 type="button"
                 onClick={removeImage}
-                className="inline-flex h-9 items-center gap-2 rounded-full border border-ozora-coral/35 px-3 text-xs font-bold text-ozora-coral transition hover:bg-ozora-coral/10"
+                disabled={disabled}
+                className="inline-flex h-9 items-center gap-2 rounded-full border border-ozora-coral/35 px-3 text-xs font-bold text-ozora-coral transition hover:bg-ozora-coral/10 disabled:opacity-40"
               >
                 <Trash2 size={14} aria-hidden="true" />
                 {labels.remove}
@@ -249,11 +262,12 @@ export function CroppedImageField({
               </div>
             )}
           </div>
-          <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={chooseImage} className="sr-only" tabIndex={-1} />
+          <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" disabled={disabled} onChange={chooseImage} className="sr-only" tabIndex={-1} />
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
-            className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-white/10 px-5 text-sm font-bold text-ozora-cream transition hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+            disabled={disabled}
+            className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-white/10 px-5 text-sm font-bold text-ozora-cream transition hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise disabled:opacity-40"
           >
             <Upload size={17} aria-hidden="true" />
             {preview ? labels.replace : labels.upload}

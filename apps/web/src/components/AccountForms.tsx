@@ -4,6 +4,7 @@ import { KeyRound, Mail } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { completeProfileAction, confirmPasswordResetAction, confirmRegistrationAction, providerAction, registerAction, rememberConfirmationEmailAction, requestPasswordResetAction, resendConfirmationAction, signInAction, type AccountActionResult } from '../account/actions';
 import { startHostedSignIn } from '../account/cognito-actions';
+import { noticeForProfileFailure } from '../account/profile-failure';
 import { accountEmail } from '../account/review';
 import { accountText, type AccountNotice } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
@@ -591,8 +592,8 @@ export function ProfileSetupScreen({ initialNotice = null }: { initialNotice?: A
       if (!follow(result)) {
         setNotice(result.notice ?? null);
       }
-    } catch {
-      noteActionFailure(setNotice);
+    } catch (error) {
+      setNotice(noticeForProfileFailure(error));
     } finally {
       setPending(false);
     }
@@ -606,7 +607,7 @@ export function ProfileSetupScreen({ initialNotice = null }: { initialNotice?: A
       subtitle={accountText(language, 'profileHelp')}
     >
       <form onSubmit={onSubmit} className="space-y-7" encType="multipart/form-data" noValidate aria-busy={pending}>
-        <ProfileFields pending={pending} />
+        <ProfileFields pending={pending} onNotice={setNotice} />
         <AuthSubmitButton pending={pending}>{accountText(language, 'saveProfile')}</AuthSubmitButton>
         <AuthNotice notice={notice} />
       </form>

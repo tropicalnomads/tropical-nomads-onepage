@@ -1,10 +1,12 @@
 'use server';
 
 import { cookies } from 'next/headers';
+import { avatarByteLimit } from 'tropical-nomads-shared';
 import { saveAvatarFile, saveProfileDetails, updateAccounts, type ProfileDetails } from 'tropical-nomads-api/accounts';
 import { apiOrigin } from '../api-origin.ts';
 import type { AccountNotice } from '../i18n/copy';
 import { callPrivate } from '../remote-store.ts';
+import { noticeForProfileFailure } from './profile-failure';
 import { readSessionSub, sessionCookieName } from './session';
 
 export interface ProfileActionResult {
@@ -56,7 +58,10 @@ export async function readProfileDetails(formData: FormData): Promise<{ details?
   if (!(file instanceof File) || file.size === 0) {
     return { details };
   }
-  if (file.size < 12 || file.size > 1_000_000) {
+  if (file.size > avatarByteLimit) {
+    return { notice: 'avatar-too-large' };
+  }
+  if (file.size < 12) {
     return { notice: 'avatar-rejected' };
   }
   return { details };
@@ -96,8 +101,8 @@ export async function saveAccountProfileAction(formData: FormData): Promise<Prof
         return bytes ? saveAvatarFile(withDetails, sub, bytes, now) : withDetails;
       });
     }
-  } catch {
-    return { notice: bytes ? 'avatar-rejected' : 'profile-invalid' };
+  } catch (error) {
+    return { notice: noticeForProfileFailure(error) };
   }
   return { notice: 'profile-saved', redirect: '/account' };
 }

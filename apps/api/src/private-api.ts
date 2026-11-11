@@ -1,4 +1,4 @@
-import { normalizeAccountEmail, type VerifiedSignIn } from 'tropical-nomads-shared';
+import { avatarByteLimit, normalizeAccountEmail, type VerifiedSignIn } from 'tropical-nomads-shared';
 import {
   loadAccounts,
   loadAvatar,
@@ -136,11 +136,16 @@ function profileDetails(value: unknown): ProfileDetails {
   return details;
 }
 
+const avatarBase64Limit = 4 * Math.ceil(avatarByteLimit / 3);
+
 function avatarBytes(value: unknown): Uint8Array | undefined {
   if (value === undefined) {
     return undefined;
   }
-  if (typeof value !== 'string' || value.length > 1_400_000) {
+  if (typeof value === 'string' && value.length > avatarBase64Limit) {
+    throw new Error('avatar is too large');
+  }
+  if (typeof value !== 'string') {
     throw new Error('avatar is not an image');
   }
   return new Uint8Array(Buffer.from(value, 'base64'));
