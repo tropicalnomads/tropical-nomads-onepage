@@ -1,3 +1,4 @@
+import { sessionSecretConfigured } from './account/session.ts';
 import { apiOrigin } from './api-origin.ts';
 
 export type ApiCheck = 'not-configured' | 'ok' | 'unreachable';
@@ -7,6 +8,7 @@ export interface WebHealth {
   service: 'tropical-nomads-web';
   uptimeSeconds: number;
   api: ApiCheck;
+  sessionConfigured: boolean;
 }
 
 const processStartedAt = Date.now();
@@ -19,6 +21,10 @@ async function probeApi(url: string): Promise<{ ok: boolean }> {
     signal: AbortSignal.timeout(2000),
   });
   return { ok: response.ok };
+}
+
+function sessionIsConfigured(env: Record<string, string | undefined>): boolean {
+  return sessionSecretConfigured(env);
 }
 
 function statusFor(api: ApiCheck): WebHealth['status'] {
@@ -62,5 +68,6 @@ export async function webHealth(
     service: 'tropical-nomads-web',
     uptimeSeconds: Math.floor(elapsed / 1000),
     api,
+    sessionConfigured: sessionIsConfigured(env),
   };
 }

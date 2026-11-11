@@ -1,4 +1,5 @@
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
+import { builtSessionSecret } from './session-secret.ts';
 
 export const sessionCookieName = 'tn:account:v1';
 
@@ -6,9 +7,26 @@ const lifetimeSeconds = 60 * 60 * 12;
 
 let processSecret: string | undefined;
 
+export function configuredSessionSecret(envValue: string | undefined, built = builtSessionSecret): string | undefined {
+  if (envValue && envValue.length >= 32) {
+    return envValue;
+  }
+  if (built.length >= 32) {
+    return built;
+  }
+  return undefined;
+}
+
+export function sessionSecretConfigured(
+  env: Record<string, string | undefined> = process.env,
+  built = builtSessionSecret,
+): boolean {
+  return configuredSessionSecret(env.ACCOUNT_SESSION_SECRET, built) !== undefined;
+}
+
 function sessionSecret(): string {
-  const configured = process.env.ACCOUNT_SESSION_SECRET;
-  if (configured && configured.length >= 32) {
+  const configured = configuredSessionSecret(process.env.ACCOUNT_SESSION_SECRET);
+  if (configured) {
     return configured;
   }
   if (!processSecret) {

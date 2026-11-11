@@ -14,6 +14,9 @@ describe('public build environment', () => {
       assert.match(envBlock, new RegExp(key));
     }
     assert.equal(envBlock.includes('ACCOUNT_SESSION_SECRET'), false);
+    const baked = readFileSync(join(repo, 'apps/web/src/account/session-secret.ts'), 'utf8');
+    assert.match(baked, /builtSessionSecret = "";/);
+    assert.match(readFileSync(join(repo, 'amplify.yml'), 'utf8'), /node scripts\/write-session-secret\.mjs/);
     assert.match(readFileSync(join(repo, 'apps/web/src/account/cognito.ts'), 'utf8'), /process\.env\.COGNITO_USER_POOL_ID/);
   });
 

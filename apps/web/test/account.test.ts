@@ -3,7 +3,8 @@ import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import { locales } from 'tropical-nomads-shared';
 import { reviewConfirmationCode, reviewEmail, reviewPasswordSignIn, reviewProfileNames, reviewProvider, reviewRegistration } from '../src/account/review.ts';
-import { createSessionToken, readSessionSub } from '../src/account/session.ts';
+import { configuredSessionSecret, createSessionToken, readSessionSub, sessionSecretConfigured } from '../src/account/session.ts';
+import { noticeForSignInFailure } from '../src/account/sign-in-failure.ts';
 import { shellCopy, type AccountNotice } from '../src/i18n/copy.ts';
 
 const notices: AccountNotice[] = [
@@ -34,6 +35,7 @@ const notices: AccountNotice[] = [
   'avatar-saved',
   'profile-invalid',
   'profile-saved',
+  'sign-in-failed',
 ];
 
 describe('accounts', () => {
@@ -113,6 +115,23 @@ describe('accounts', () => {
     assert.equal(header.includes('signOutAction'), true);
     assert.equal(header.includes('role="menu"'), true);
     assert.equal(header.includes("accountText(language, 'signOut')"), true);
+    assert.equal(actions.includes('noticeForSignInFailure'), true);
+    assert.equal(actions.includes('finishSignIn'), true);
+    const signInForm = form.slice(form.indexOf('export function SignInForm'), form.indexOf('function ConfirmEmailForm'));
+    assert.equal(signInForm.includes('noteActionFailure(setNotice)'), true);
+    const built = 'b'.repeat(40);
+    const fromEnv = 'e'.repeat(40);
+    assert.equal(configuredSessionSecret(fromEnv, built), fromEnv);
+    assert.equal(configuredSessionSecret('short', built), built);
+    assert.equal(configuredSessionSecret(undefined, ''), undefined);
+    assert.equal(sessionSecretConfigured({ ACCOUNT_SESSION_SECRET: fromEnv }, ''), true);
+    assert.equal(sessionSecretConfigured({}, ''), false);
+    assert.equal(sessionSecretConfigured({}, built), true);
+    assert.equal(noticeForSignInFailure(new Error('request was not accepted')), 'sign-in-failed');
+    assert.equal(noticeForSignInFailure(new Error('request failed')), 'sign-in-failed');
+    assert.equal(noticeForSignInFailure('sign-in failed'), 'sign-in-failed');
+    assert.equal(shellCopy.en.account.notices['sign-in-failed'], 'Sign-in could not be completed. Try again.');
+    assert.equal(shellCopy.pt.account.notices['sign-in-failed'], 'Não foi possível entrar. Tente de novo.');
     const onePager = readFileSync(new URL('../../one-pager/src/app/App.tsx', import.meta.url), 'utf8');
     assert.equal(onePager.includes('/account'), false);
     assert.deepEqual(Object.keys(shellCopy.en.account).sort(), Object.keys(shellCopy.pt.account).sort());

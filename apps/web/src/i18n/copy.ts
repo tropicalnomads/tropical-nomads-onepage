@@ -277,7 +277,8 @@ export type AccountNotice =
   | 'avatar-rejected'
   | 'avatar-saved'
   | 'profile-invalid'
-  | 'profile-saved';
+  | 'profile-saved'
+  | 'sign-in-failed';
 
 const accountNotices: readonly AccountNotice[] = [
   'username-required',
@@ -307,6 +308,7 @@ const accountNotices: readonly AccountNotice[] = [
   'avatar-saved',
   'profile-invalid',
   'profile-saved',
+  'sign-in-failed',
 ];
 
 export function knownAccountNotice(value: string | undefined): AccountNotice | null {
@@ -621,6 +623,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
         'avatar-saved': 'Profile photo saved.',
         'profile-invalid': 'Check the profile details and try again.',
         'profile-saved': 'Profile saved.',
+        'sign-in-failed': 'Sign-in could not be completed. Try again.',
       },
     },
     admin: {
@@ -961,6 +964,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
         'avatar-saved': 'Foto do perfil salva.',
         'profile-invalid': 'Confira os dados do perfil e tente novamente.',
         'profile-saved': 'Perfil salvo.',
+        'sign-in-failed': 'Não foi possível entrar. Tente de novo.',
       },
     },
     admin: {

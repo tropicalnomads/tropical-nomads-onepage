@@ -16,6 +16,7 @@ describe('web health', () => {
       service: 'tropical-nomads-web',
       uptimeSeconds: 3,
       api: 'not-configured',
+      sessionConfigured: false,
     });
     assert.equal((await webHealth({ API_BASE_URL: 'not a url' })).api, 'not-configured');
   });
@@ -38,6 +39,13 @@ describe('web health', () => {
     });
     assert.equal(failed.api, 'unreachable');
     assert.equal(JSON.stringify(failed).includes('10.0.0.5'), false);
+
+    const secret = 's'.repeat(40);
+    const configured = await webHealth({ ACCOUNT_SESSION_SECRET: secret });
+    assert.equal(configured.sessionConfigured, true);
+    assert.equal(JSON.stringify(configured).includes(secret), false);
+    const shortSecret = await webHealth({ ACCOUNT_SESSION_SECRET: 'short' });
+    assert.equal(shortSecret.sessionConfigured, false);
   });
 
   it('serves GET /health', async () => {
@@ -48,10 +56,14 @@ describe('web health', () => {
       assert.equal(response.status, 200);
       assert.equal(response.headers.get('cache-control'), 'no-store');
       assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
-      const body = (await response.json()) as { status: string; service: string; api: string };
+      const body = (await response.json()) as { status: string; service: string; api: string; sessionConfigured: boolean };
       assert.equal(body.status, 'ok');
       assert.equal(body.service, 'tropical-nomads-web');
       assert.equal(body.api, 'not-configured');
+      assert.equal(body.sessionConfigured, (process.env.ACCOUNT_SESSION_SECRET?.length ?? 0) >= 32);
+      if (process.env.ACCOUNT_SESSION_SECRET) {
+        assert.equal(JSON.stringify(body).includes(process.env.ACCOUNT_SESSION_SECRET), false);
+      }
     } finally {
       if (previous === undefined) {
         delete process.env.API_BASE_URL;

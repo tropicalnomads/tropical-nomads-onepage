@@ -21,6 +21,7 @@ import { establishVerifiedAccount } from './establish';
 import { readProfileAvatar, readProfileDetails } from './profile';
 import { accountEmail, pendingEmailCookie, reviewConfirmationCode, reviewEmail, reviewPasswordSignIn, reviewProvider, reviewRegistration } from './review';
 import { createSessionToken, readSessionSub, sessionCookieName } from './session';
+import { noticeForSignInFailure } from './sign-in-failure';
 import { apiOrigin } from '../api-origin.ts';
 import { callPrivate, loadSnapshot } from '../remote-store.ts';
 
@@ -210,30 +211,40 @@ export async function signInAction(formData: FormData): Promise<AccountActionRes
   if (!target) {
     return { notice: 'cognito-not-configured' };
   }
-  const signedIn = await signInWithCognito(email, password, target);
-  if (!signedIn.claims) {
-    if (signedIn.notice === 'email-unconfirmed') {
-      const pending = accountEmail(email);
-      if (pending) {
-        await rememberPendingEmail(pending);
-        return { redirect: '/account/confirm', email: pending, notice: 'email-unconfirmed' };
+  try {
+    const signedIn = await signInWithCognito(email, password, target);
+    if (!signedIn.claims) {
+      if (signedIn.notice === 'email-unconfirmed') {
+        const pending = accountEmail(email);
+        if (pending) {
+          await rememberPendingEmail(pending);
+          return { redirect: '/account/confirm', email: pending, notice: 'email-unconfirmed' };
+        }
       }
+      return { notice: signedIn.notice ?? 'password-rejected' };
     }
-    return { notice: signedIn.notice ?? 'password-rejected' };
+    if (normalizeAccountEmail(signedIn.claims.email) !== normalizeAccountEmail(email)) {
+      return { notice: 'password-rejected' };
+    }
+    return await finishSignIn(signedIn.claims);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '';
+    console.error('sign-in failed', message);
+    return { notice: noticeForSignInFailure(error) };
   }
-  if (normalizeAccountEmail(signedIn.claims.email) !== normalizeAccountEmail(email)) {
-    return { notice: 'password-rejected' };
-  }
+}
+
+async function finishSignIn(claims: IdClaims): Promise<AccountActionResult> {
   const existing = (await loadSnapshot()).accounts.profiles.find(
-    (profile) => profile.sub === signedIn.claims?.sub || normalizeAccountEmail(profile.email) === normalizeAccountEmail(signedIn.claims?.email ?? ''),
+    (profile) => profile.sub === claims.sub || normalizeAccountEmail(profile.email) === normalizeAccountEmail(claims.email),
   );
   const profile = verifiedSignInFromClaims(
-    signedIn.claims,
+    claims,
     undefined,
     existing ? { username: existing.username, givenName: existing.givenName, familyName: existing.familyName } : undefined,
   );
   if (!profile) {
-    return holdForProfile(signedIn.claims);
+    return holdForProfile(claims);
   }
   const admitted = await admit(profile);
   if (typeof admitted !== 'string') {

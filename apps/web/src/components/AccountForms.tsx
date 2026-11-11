@@ -56,6 +56,10 @@ function follow(result: { redirect?: string; notice?: AccountNotice; email?: str
   return false;
 }
 
+function noteActionFailure(setNotice: (notice: AccountNotice) => void): void {
+  setNotice('sign-in-failed');
+}
+
 export function RegisterForm({
   hosted = false,
   google = false,
@@ -83,6 +87,8 @@ export function RegisterForm({
       if (!follow(result)) {
         setNotice(result.notice ?? null);
       }
+    } catch {
+      noteActionFailure(setNotice);
     } finally {
       setPending(false);
     }
@@ -103,6 +109,8 @@ export function RegisterForm({
       }
       const result = await providerAction(data);
       setNotice(result.notice);
+    } catch {
+      noteActionFailure(setNotice);
     } finally {
       setPendingProvider(null);
     }
@@ -171,6 +179,8 @@ export function SignInForm({
       if (!follow(result)) {
         setNotice(result.notice ?? null);
       }
+    } catch {
+      noteActionFailure(setNotice);
     } finally {
       setPending(false);
     }
@@ -191,6 +201,8 @@ export function SignInForm({
       }
       const result = await providerAction(data);
       setNotice(result.notice);
+    } catch {
+      noteActionFailure(setNotice);
     } finally {
       setPendingProvider(null);
     }
@@ -243,6 +255,8 @@ function ConfirmEmailForm({ initialNotice }: { initialNotice: AccountNotice | nu
       if (!follow(result)) {
         setNotice(result.notice ?? null);
       }
+    } catch {
+      noteActionFailure(setNotice);
     } finally {
       setPending(false);
     }
@@ -283,6 +297,8 @@ function ConfirmCodeForm({ email, initialNotice }: { email: string; initialNotic
       if (!follow(result)) {
         setNotice(result.notice ?? null);
       }
+    } catch {
+      noteActionFailure(setNotice);
     } finally {
       setPending(false);
     }
@@ -296,6 +312,8 @@ function ConfirmCodeForm({ email, initialNotice }: { email: string; initialNotic
       data.set('email', email);
       const result = await resendConfirmationAction(data);
       setNotice(result.notice ?? null);
+    } catch {
+      noteActionFailure(setNotice);
     } finally {
       setResending(false);
     }
@@ -475,6 +493,8 @@ export function ForgotPasswordScreen({ initialNotice = null }: { initialNotice?:
       if (!follow(result)) {
         setNotice(result.notice ?? null);
       }
+    } catch {
+      noteActionFailure(setNotice);
     } finally {
       setPending(false);
     }
@@ -571,6 +591,8 @@ export function ProfileSetupScreen({ initialNotice = null }: { initialNotice?: A
       if (!follow(result)) {
         setNotice(result.notice ?? null);
       }
+    } catch {
+      noteActionFailure(setNotice);
     } finally {
       setPending(false);
     }
