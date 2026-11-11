@@ -25,6 +25,7 @@ interface SelectFieldProps {
   searchable?: boolean;
   searchPlaceholder?: string;
   emptyLabel?: string;
+  density?: 'default' | 'compact';
 }
 
 interface MenuBox {
@@ -108,6 +109,7 @@ export function SelectField({
   searchable = false,
   searchPlaceholder,
   emptyLabel,
+  density = 'default',
 }: SelectFieldProps) {
   const uid = useId();
   const buttonId = id ?? `${uid}-button`;
@@ -431,13 +433,17 @@ export function SelectField({
           openAt(preferredIndex());
         }}
         onKeyDown={onKeyDown}
-        className={`flex h-12 w-full items-center justify-between gap-3 rounded-xl border bg-black/25 px-4 text-left text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] outline-none transition hover:border-white/30 focus-visible:ring-2 focus-visible:ring-ozora-yellow/30 disabled:cursor-not-allowed disabled:opacity-50 ${
+        className={`flex w-full items-center justify-between rounded-xl border bg-black/25 text-left text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] outline-none transition hover:border-white/30 focus-visible:ring-2 focus-visible:ring-ozora-yellow/30 disabled:cursor-not-allowed disabled:opacity-50 ${
+          density === 'compact' ? 'h-10 gap-2 px-3' : 'h-12 gap-3 px-4'
+        } ${
           open ? 'border-ozora-yellow/80 ring-2 ring-ozora-yellow/20' : 'border-white/15'
         }`}
       >
         <span className={`min-w-0 flex-1 truncate font-medium ${selectedOption ? 'text-ozora-cream' : 'text-ozora-cream/40'}`}>{shown}</span>
         <span
-          className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition ${
+          className={`inline-flex shrink-0 items-center justify-center rounded-full border transition ${
+            density === 'compact' ? 'h-6 w-6' : 'h-7 w-7'
+          } ${
             open ? 'border-ozora-yellow/40 bg-ozora-yellow text-ozora-ink' : 'border-white/10 bg-white/5 text-ozora-cream/75'
           }`}
         >

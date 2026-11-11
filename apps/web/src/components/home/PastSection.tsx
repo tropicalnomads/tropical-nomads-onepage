@@ -76,7 +76,7 @@ function CardContent({ event }: { event: HomeEvent }) {
   );
 }
 
-export function PastSection({ events, onOpenPreview }: { events: readonly HomeEvent[]; onOpenPreview: (event: HomeEvent) => void }) {
+export function PastSection({ events }: { events: readonly HomeEvent[] }) {
   const { language } = useLanguage();
   const searchId = useId();
   const [query, setQuery] = useState('');
@@ -149,30 +149,16 @@ export function PastSection({ events, onOpenPreview }: { events: readonly HomeEv
             ) : (
               <>
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {shownEvents.map((event) =>
-                    event.instagramPost ? (
-                      <a
-                        key={event.id}
-                        href={event.instagramPost}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        className={cardClassName}
-                        aria-label={fillHome(homeText(language, 'openEventInstagramAria'), { title: event.title })}
-                      >
-                        <CardContent event={event} />
-                      </a>
-                    ) : (
-                      <button
-                        key={event.id}
-                        type="button"
-                        onClick={() => onOpenPreview(event)}
-                        className={cardClassName}
-                        aria-label={fillHome(homeText(language, 'viewDetailsAria'), { title: event.title })}
-                      >
-                        <CardContent event={event} />
-                      </button>
-                    ),
-                  )}
+                  {shownEvents.map((event) => (
+                    <a
+                      key={event.id}
+                      href={`/events/${encodeURIComponent(event.id)}`}
+                      className={cardClassName}
+                      aria-label={fillHome(homeText(language, 'viewDetailsAria'), { title: event.title })}
+                    >
+                      <CardContent event={event} />
+                    </a>
+                  ))}
                 </div>
                 {remainingCount > 0 || isExpanded ? (
                   <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">

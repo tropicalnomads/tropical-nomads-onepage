@@ -31,5 +31,7 @@ export interface UpcomingEventCard {
   ticketsOnSale: boolean;
   timetableUrl?: string;
   bannerSrc?: string;
+  instagramPost?: string;
   partners: UpcomingPartner[];
+  when?: 'upcoming' | 'past';
 }

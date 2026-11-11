@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
-import { UpcomingEvents } from '../../src/components/UpcomingEvents';
-import { loadUpcomingEvents } from '../../src/events/load';
+import { EventCalendar } from '../../src/components/EventCalendar';
+import { loadArtistProfiles } from '../../src/artists/load';
+import { loadCalendarEvents } from '../../src/events/load';
 import { publicMetadata } from '../../src/seo/metadata';
 
 export const dynamic = 'force-dynamic';
@@ -11,11 +12,12 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
   return publicMetadata('/upcoming-events', params.lang);
 }
 
-export default async function UpcomingEventsPage() {
-  const events = await loadUpcomingEvents();
+export default async function CalendarPage() {
+  const [events, artists] = await Promise.all([loadCalendarEvents(), loadArtistProfiles()]);
+  const artistIds = Object.fromEntries(artists.map((artist) => [artist.name.trim().toLowerCase(), artist.id]));
   return (
     <main>
-      <UpcomingEvents events={events} />
+      <EventCalendar events={events} artistIds={artistIds} />
     </main>
   );
 }

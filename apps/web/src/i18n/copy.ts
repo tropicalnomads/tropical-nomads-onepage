@@ -348,6 +348,26 @@ export interface EventCopy {
   subtitle: string;
   emptyTitle: string;
   emptyBody: string;
+  searchLabel: string;
+  searchPlaceholder: string;
+  clearSearch: string;
+  whenUpcoming: string;
+  whenPast: string;
+  whenAll: string;
+  countryLabel: string;
+  countryAll: string;
+  artistLabel: string;
+  artistAll: string;
+  artistSearch: string;
+  noResultsTitle: string;
+  noResultsBody: string;
+  pastBadge: string;
+  resultCount: string;
+  clearFilters: string;
+  previousMonth: string;
+  nextMonth: string;
+  calendarLabel: string;
+  memories: string;
   nextUp: string;
   buyTickets: string;
   buyTicketsAria: string;
@@ -442,9 +462,29 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       shop: 'Embroidered T-shirts. Buy saves the order and sends it on WhatsApp. Nothing is charged here.',
     },
     events: {
-      subtitle: 'All future dates, sorted from the next one.',
+      subtitle: 'The full calendar. Search a night, a country, or an artist, and look back at the parties that already happened.',
       emptyTitle: 'No upcoming events',
       emptyBody: 'Check back soon for newly announced dates.',
+      searchLabel: 'Search events',
+      searchPlaceholder: 'Search by event, city, country, or artist',
+      clearSearch: 'Clear search',
+      whenUpcoming: 'Upcoming',
+      whenPast: 'Past',
+      whenAll: 'All',
+      countryLabel: 'Country',
+      countryAll: 'All countries',
+      artistLabel: 'Artist',
+      artistAll: 'All artists',
+      artistSearch: 'Search artists',
+      noResultsTitle: 'Nothing matches',
+      noResultsBody: 'Try another artist, country, or date.',
+      pastBadge: 'Past',
+      resultCount: '{shown} of {total}',
+      clearFilters: 'Clear filters',
+      previousMonth: 'Previous month',
+      nextMonth: 'Next month',
+      calendarLabel: 'Event calendar',
+      memories: 'See the night',
       nextUp: 'Next up',
       buyTickets: 'Buy tickets',
       buyTicketsAria: 'Buy tickets for {title} on the seller site',
@@ -802,9 +842,29 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       shop: 'Camisetas bordadas. Comprar grava o pedido e envia no WhatsApp. Nada é cobrado aqui.',
     },
     events: {
-      subtitle: 'Todas as datas futuras, a partir da próxima.',
+      subtitle: 'O calendário completo. Procure uma noite, um país ou um artista, e reveja as festas que já aconteceram.',
       emptyTitle: 'Nenhum evento futuro',
       emptyBody: 'Volte em breve para novas datas anunciadas.',
+      searchLabel: 'Procurar eventos',
+      searchPlaceholder: 'Procurar por evento, cidade, país ou artista',
+      clearSearch: 'Limpar busca',
+      whenUpcoming: 'Próximos',
+      whenPast: 'Passados',
+      whenAll: 'Todos',
+      countryLabel: 'País',
+      countryAll: 'Todos os países',
+      artistLabel: 'Artista',
+      artistAll: 'Todos os artistas',
+      artistSearch: 'Procurar artistas',
+      noResultsTitle: 'Nada encontrado',
+      noResultsBody: 'Tente outro artista, país ou data.',
+      pastBadge: 'Passado',
+      resultCount: '{shown} de {total}',
+      clearFilters: 'Limpar filtros',
+      previousMonth: 'Mês anterior',
+      nextMonth: 'Próximo mês',
+      calendarLabel: 'Calendário de eventos',
+      memories: 'Ver a noite',
       nextUp: 'A seguir',
       buyTickets: 'Comprar ingressos',
       buyTicketsAria: 'Comprar ingressos para {title} no site do vendedor',

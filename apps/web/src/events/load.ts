@@ -2,6 +2,8 @@ import { api } from 'tropical-nomads-api';
 import { decideAccess, eventSaleChoice, getEventTimetableUrl, publicHttpsUrl } from 'tropical-nomads-shared';
 import { uploadedEventFlyer } from '../admin/event-image.ts';
 import { apiOrigin } from '../api-origin.ts';
+import { readHomeEvent } from '../home/catalog.ts';
+import type { HomeEvent } from '../home/types.ts';
 import { bannerSrc, partnerLogoSrc } from './assets.ts';
 import type { UpcomingEventCard, UpcomingPartner } from './types.ts';
 
@@ -96,6 +98,7 @@ function readEvent(value: unknown, partners: Map<string, UpcomingPartner>, sold:
   const fullImage = readString(images.full);
   const flyer = uploadedEventFlyer(fullImage) ?? bannerSrc(readString(images.bannerLocal)) ?? publicHttpsUrl(fullImage);
   const mapUrl = publicHttpsUrl(readString(venue.mapUrl));
+  const instagramPost = publicHttpsUrl(readString(links.instagramPost));
   const durationHours = typeof value.durationHours === 'number' && Number.isFinite(value.durationHours) ? value.durationHours : undefined;
   return {
     id,
@@ -115,6 +118,7 @@ function readEvent(value: unknown, partners: Map<string, UpcomingPartner>, sold:
     ticketsOnSale: sale.ticketsOnSale,
     ...(timetableUrl ? { timetableUrl } : {}),
     ...(flyer ? { bannerSrc: flyer } : {}),
+    ...(instagramPost ? { instagramPost } : {}),
     partners: matched,
   };
 }
@@ -168,18 +172,54 @@ function soldForParty(sales: readonly TicketSaleCount[], partyId: string): Recor
   return sold;
 }
 
+function readEventList(body: unknown, partners: Map<string, UpcomingPartner>, sales: readonly TicketSaleCount[]): UpcomingEventCard[] {
+  if (!isRecord(body) || !Array.isArray(body.events)) {
+    throw new Error('upcoming events are unavailable');
+  }
+  return body.events.flatMap((event) => {
+    const id = isRecord(event) && typeof event.id === 'string' ? event.id : '';
+    const card = readEvent(event, partners, soldForParty(sales, id));
+    return card === undefined ? [] : [card];
+  });
+}
+
 export async function loadUpcomingEvents(): Promise<UpcomingEventCard[]> {
   if (decideAccess({ action: 'read-published' }).effect !== 'allow') {
     return [];
   }
   const [eventsBody, partnersBody, sales] = await Promise.all([readCatalogJson('/events/upcoming'), readCatalogJson('/partners'), loadTicketSales()]);
-  if (!isRecord(eventsBody) || !Array.isArray(eventsBody.events)) {
-    throw new Error('upcoming events are unavailable');
-  }
   const partners = readPartners(partnersBody);
-  return eventsBody.events.flatMap((event) => {
-    const id = isRecord(event) && typeof event.id === 'string' ? event.id : '';
-    const card = readEvent(event, partners, soldForParty(sales, id));
-    return card === undefined ? [] : [card];
-  });
+  return readEventList(eventsBody, partners, sales).map((event) => ({ ...event, when: 'upcoming' as const }));
+}
+
+export async function loadCalendarEvents(): Promise<UpcomingEventCard[]> {
+  if (decideAccess({ action: 'read-published' }).effect !== 'allow') {
+    return [];
+  }
+  const [upcomingBody, pastBody, partnersBody, sales] = await Promise.all([
+    readCatalogJson('/events/upcoming'),
+    readCatalogJson('/events/past'),
+    readCatalogJson('/partners'),
+    loadTicketSales(),
+  ]);
+  const partners = readPartners(partnersBody);
+  const upcoming = readEventList(upcomingBody, partners, sales).map((event) => ({ ...event, when: 'upcoming' as const }));
+  const seen = new Set(upcoming.map((event) => event.id));
+  const past = readEventList(pastBody, partners, sales)
+    .filter((event) => !seen.has(event.id))
+    .sort((left, right) => new Date(right.dateStart).getTime() - new Date(left.dateStart).getTime())
+    .map((event) => ({ ...event, when: 'past' as const }));
+  return [...upcoming, ...past];
+}
+
+export async function loadPublicEvent(id: string): Promise<HomeEvent | undefined> {
+  if (decideAccess({ action: 'read-published' }).effect !== 'allow') {
+    return undefined;
+  }
+  const body = await readCatalogJson('/events');
+  if (!isRecord(body) || !Array.isArray(body.events)) {
+    throw new Error('events are unavailable');
+  }
+  const event = body.events.find((item) => isRecord(item) && item.id === id);
+  return readHomeEvent(event);
 }

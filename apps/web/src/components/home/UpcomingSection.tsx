@@ -62,7 +62,14 @@ export function UpcomingSection({ events, partners }: { events: readonly HomeEve
                         {homeText(language, 'nextUp')}
                       </span>
                     ) : null}
-                    <h3 className="text-lg font-semibold text-ozora-cream">{event.title}</h3>
+                    <h3 className="text-lg font-semibold text-ozora-cream">
+                      <a
+                        href={`/events/${encodeURIComponent(event.id)}`}
+                        className="rounded-sm underline-offset-4 transition hover:text-ozora-yellow hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+                      >
+                        {event.title}
+                      </a>
+                    </h3>
                     <p className="mt-1 flex items-center gap-2 text-sm text-ozora-cream/75">
                       <Calendar size={16} aria-hidden="true" />
                       {formatEventDate(event, homeText(language, 'dateLocale'))}

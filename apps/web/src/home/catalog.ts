@@ -108,7 +108,7 @@ function readPlatform(value: unknown): HomeSocial['platform'] | undefined {
   }
 }
 
-function readEvent(value: unknown): HomeEvent | undefined {
+export function readHomeEvent(value: unknown): HomeEvent | undefined {
   if (!isRecord(value)) {
     return undefined;
   }
@@ -243,7 +243,7 @@ export function loadHomeCatalog(): HomeCatalog {
     throw new Error('social links are unavailable');
   }
   const events = eventsFile.events.flatMap((event) => {
-    const card = readEvent(event);
+    const card = readHomeEvent(event);
     return card === undefined ? [] : [card];
   });
   const partners = partnersFile.partners.flatMap((partner) => {
