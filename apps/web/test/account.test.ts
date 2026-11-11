@@ -65,7 +65,8 @@ describe('accounts', () => {
     const token = createSessionToken('sub-ada', Date.parse('2026-11-08T18:00:00.000Z'));
     assert.equal(readSessionSub(token, Date.parse('2026-11-08T18:00:00.000Z')), 'sub-ada');
     assert.equal(readSessionSub(`${token}x`, Date.parse('2026-11-08T18:00:00.000Z')), undefined);
-    assert.equal(readSessionSub(token, Date.parse('2026-11-09T18:00:00.000Z')), undefined);
+    assert.equal(readSessionSub(token, Date.parse('2026-11-09T18:00:00.000Z')), 'sub-ada');
+    assert.equal(readSessionSub(token, Date.parse('2026-12-09T18:00:00.000Z')), undefined);
     const register = readFileSync(new URL('../app/account/register/page.tsx', import.meta.url), 'utf8');
     const confirm = readFileSync(new URL('../app/account/confirm/page.tsx', import.meta.url), 'utf8');
     const forgot = readFileSync(new URL('../app/account/forgot-password/page.tsx', import.meta.url), 'utf8');
@@ -110,6 +111,7 @@ describe('accounts', () => {
     assert.equal(actions.includes('registerVerifiedAccount'), false);
     assert.equal(actions.includes('takeReturnPath'), true);
     assert.equal(actions.includes('rememberReturnPath'), true);
+    assert.equal(actions.includes('sessionCookie(sessionCookieMaxAge)'), true);
     assert.equal(actions.includes("redirect: '/account'"), false);
     assert.equal(actions.includes('confirmSignUpWithCognito'), true);
     assert.equal(actions.includes('confirmForgotPasswordWithCognito'), true);
@@ -217,6 +219,7 @@ describe('accounts', () => {
     const callback = readFileSync(new URL('../app/account/callback/route.ts', import.meta.url), 'utf8');
     assert.equal(actions.includes('takeReturnPath'), true);
     assert.equal(actions.includes('rememberReturnPath'), true);
+    assert.equal(actions.includes('sessionCookie(sessionCookieMaxAge)'), true);
     assert.equal(actions.includes("redirect: '/account'"), false);
     assert.equal(actions.includes("'/account/profile'"), true);
     assert.equal(header.includes("signedIn ? '/account' : signInHref(here)"), true);

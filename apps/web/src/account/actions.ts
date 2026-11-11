@@ -20,7 +20,7 @@ import { clearVerifiedClaims, readVerifiedClaims, rememberVerifiedClaims } from 
 import { establishVerifiedAccount } from './establish';
 import { readProfileAvatar, readProfileDetails } from './profile';
 import { accountEmail, pendingEmailCookie, reviewConfirmationCode, reviewEmail, reviewPasswordSignIn, reviewProvider, reviewRegistration } from './review';
-import { createSessionToken, readSessionSub, sessionCookieName } from './session';
+import { createSessionToken, readSessionSub, sessionCookieMaxAge, sessionCookieName } from './session';
 import { noticeForProfileFailure } from './profile-failure';
 import { rememberReturnPath, takeReturnPath } from './return-cookie';
 import { noticeForSignInFailure } from './sign-in-failure';
@@ -308,14 +308,19 @@ async function clearPendingEmail(): Promise<void> {
   });
 }
 
-async function remember(sub: string): Promise<void> {
-  const jar = await cookies();
-  jar.set(sessionCookieName, createSessionToken(sub), {
-    httpOnly: true,
-    sameSite: 'lax',
+function sessionCookie(maxAge: number) {
+  return {
+    httpOnly: true as const,
+    sameSite: 'lax' as const,
     secure: process.env.NODE_ENV === 'production',
     path: '/',
-  });
+    maxAge,
+  };
+}
+
+async function remember(sub: string): Promise<void> {
+  const jar = await cookies();
+  jar.set(sessionCookieName, createSessionToken(sub), sessionCookie(sessionCookieMaxAge));
 }
 
 export async function providerAction(formData: FormData): Promise<AccountActionResult> {
@@ -324,7 +329,7 @@ export async function providerAction(formData: FormData): Promise<AccountActionR
 
 export async function signOutAction(): Promise<void> {
   const jar = await cookies();
-  jar.delete(sessionCookieName);
+  jar.set(sessionCookieName, '', sessionCookie(0));
   await clearVerifiedClaims();
 }
 

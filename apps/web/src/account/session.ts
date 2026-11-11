@@ -3,7 +3,7 @@ import { builtSessionSecret } from './session-secret.ts';
 
 export const sessionCookieName = 'tn:account:v1';
 
-const lifetimeSeconds = 60 * 60 * 12;
+const lifetimeSeconds = 60 * 60 * 24 * 30;
 
 let processSecret: string | undefined;
 

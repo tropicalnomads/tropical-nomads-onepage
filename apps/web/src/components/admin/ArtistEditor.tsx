@@ -10,7 +10,7 @@ import { useLanguage } from '../../i18n/provider';
 import { CroppedImageField } from './CroppedImageField';
 import { adminFieldClass } from './form';
 import { MarkdownField } from './MarkdownField';
-import { Button, IconButton, TextLink } from '../ui/Button';
+import { Button, TextLink } from '../ui/Button';
 
 export function ArtistEditor({
   artist,
