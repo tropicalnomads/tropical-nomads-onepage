@@ -3,8 +3,8 @@ import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from '
 import { dirname, join } from 'node:path';
 import { decideAccess, euroTicketOffers, isPayableAmount, readTicketOffers, type Role } from 'tropical-nomads-shared';
 import type { AccountFile } from './accounts.ts';
-import { deleteCatalogImage, putCatalogImage } from './catalog-images.ts';
 import { usingDatabase } from './database.ts';
+import { loadCatalogImages } from './s3-load.ts';
 import { operationalDirectory } from './operational.ts';
 import { readEvents, type PublishedEvent, type PublishedEventImages } from './published.ts';
 import { queueDatabase, readStoredPartyRows, upsertStoredParty } from './sql-store.ts';
@@ -502,9 +502,11 @@ export async function loadAdminParties(root?: string): Promise<ManagedParty[]> {
 
 async function storeFlyer(id: string, input: PartySaveInput): Promise<void> {
   const action = input.imageAction ?? 'keep';
+  if (action === 'keep') {
+    return;
+  }
+  const { deleteCatalogImage, putCatalogImage } = await loadCatalogImages();
   switch (action) {
-    case 'keep':
-      return;
     case 'remove':
       await deleteCatalogImage('event', id);
       return;

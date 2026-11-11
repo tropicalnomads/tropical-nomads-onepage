@@ -27,8 +27,7 @@ import { openSealed, sessionFromCookie } from './session-token.ts';
 import { commitPartySave, loadAdminParties, type PartyOfferInput, type PartySaveInput } from './parties.ts';
 import { placeShopOrder, readShopPurchase } from './shop-orders.ts';
 import { saveArtistProfile } from './artists.ts';
-import { decodeCatalogImage } from './catalog-images.ts';
-import { deleteShopProduct, listAdminShopProducts, listShopOrders, readAdminShopProduct, readShopProductDraft, requireShopAdmin, saveShopProduct } from './shop-products.ts';
+import { loadCatalogImages, loadShopProducts } from './s3-load.ts';
 import { commitTicket, loadIssuedTickets, loadOrders, loadPartyTitles, loadPublishedParties } from './tickets.ts';
 
 export interface PrivateResponse {
@@ -80,7 +79,7 @@ function offerField(value: unknown): string {
   return '';
 }
 
-function partyInput(value: unknown): PartySaveInput {
+async function partyInput(value: unknown): Promise<PartySaveInput> {
   if (!isRecord(value) || !Array.isArray(value.offers)) {
     throw new Error('event was not saved');
   }
@@ -109,7 +108,7 @@ function partyInput(value: unknown): PartySaveInput {
     description: typeof value.description === 'string' ? value.description : '',
     imageUrl: typeof value.imageUrl === 'string' ? value.imageUrl : '',
     imageAction: imageBase64 !== '' ? 'replace' : imageAction,
-    ...(imageBase64 === '' ? {} : { imageBytes: decodeCatalogImage(imageBase64) }),
+    ...(imageBase64 === '' ? {} : { imageBytes: (await loadCatalogImages()).decodeCatalogImage(imageBase64) }),
     artists: typeof value.artists === 'string' ? value.artists : '',
     offers,
     publish: value.publish === true,
@@ -271,30 +270,35 @@ async function runAction(action: string, input: unknown, sessionSub: string | un
       return placeShopOrder(readShopPurchase(input), sessionSub);
     }
     case 'save-shop-product': {
-      const actorId = await requireShopAdmin(sessionSub);
-      return saveShopProduct(readShopProductDraft(input), actorId);
+      const shop = await loadShopProducts();
+      const actorId = await shop.requireShopAdmin(sessionSub);
+      return shop.saveShopProduct(shop.readShopProductDraft(input), actorId);
     }
     case 'admin-shop-orders': {
-      await requireShopAdmin(sessionSub);
-      return listShopOrders();
+      const shop = await loadShopProducts();
+      await shop.requireShopAdmin(sessionSub);
+      return shop.listShopOrders();
     }
     case 'admin-shop-products': {
-      await requireShopAdmin(sessionSub);
-      return listAdminShopProducts();
+      const shop = await loadShopProducts();
+      await shop.requireShopAdmin(sessionSub);
+      return shop.listAdminShopProducts();
     }
     case 'admin-shop-product': {
-      await requireShopAdmin(sessionSub);
+      const shop = await loadShopProducts();
+      await shop.requireShopAdmin(sessionSub);
       if (!isRecord(input) || typeof input.id !== 'string') {
         throw new Error('products are unavailable');
       }
-      return (await readAdminShopProduct(input.id)) ?? null;
+      return (await shop.readAdminShopProduct(input.id)) ?? null;
     }
     case 'delete-shop-product': {
-      await requireShopAdmin(sessionSub);
+      const shop = await loadShopProducts();
+      await shop.requireShopAdmin(sessionSub);
       if (!isRecord(input) || typeof input.id !== 'string') {
         throw new Error('product was not deleted');
       }
-      return deleteShopProduct(input.id);
+      return shop.deleteShopProduct(input.id);
     }
     case 'issue-ticket': {
       const sub = requireSignedIn(sessionSub);
@@ -376,7 +380,7 @@ async function runAction(action: string, input: unknown, sessionSub: string | un
         throw new Error('event was not saved');
       }
       const caller = adminCaller(input.caller, sub);
-      return commitPartySave(partyInput(input.party), await loadAccounts(), caller);
+      return commitPartySave(await partyInput(input.party), await loadAccounts(), caller);
     }
     case 'save-artist': {
       const sub = requireSignedIn(sessionSub);

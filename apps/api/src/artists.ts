@@ -1,6 +1,6 @@
 import { artistIdFromName, httpsProfileUrl, soundCloudPlayerUrl } from 'tropical-nomads-shared';
-import { decodeCatalogImage, deleteCatalogImage, putCatalogImage } from './catalog-images.ts';
 import { usingDatabase } from './database.ts';
+import { loadCatalogImages } from './s3-load.ts';
 import { queueDatabase, readStoredArtist, upsertStoredArtist } from './sql-store.ts';
 
 export interface ArtistSaveInput {
@@ -141,9 +141,11 @@ function withProfile(existing: Record<string, unknown>, input: ArtistSaveInput):
 }
 
 async function storePhoto(input: ArtistSaveInput, bytes?: Uint8Array): Promise<void> {
+  if (input.imageAction === 'keep') {
+    return;
+  }
+  const { deleteCatalogImage, putCatalogImage } = await loadCatalogImages();
   switch (input.imageAction) {
-    case 'keep':
-      return;
     case 'remove':
       if (input.id) {
         await deleteCatalogImage('artist', input.id);
@@ -168,7 +170,7 @@ export async function saveArtistProfile(value: unknown): Promise<{ id: string }>
     throw new Error('artist was not saved');
   }
   const imageBase64 = isRecord(value) && typeof value.imageBase64 === 'string' ? value.imageBase64 : '';
-  const bytes = imageBase64 === '' ? undefined : decodeCatalogImage(imageBase64);
+  const bytes = imageBase64 === '' ? undefined : (await loadCatalogImages()).decodeCatalogImage(imageBase64);
   await queueDatabase(async () => {
     const existing = await readStoredArtist(input.id ?? '');
     const document = withProfile(existing ?? {}, input);
