@@ -3,6 +3,7 @@
 import { Instagram } from 'lucide-react';
 import { homeText, shellText } from '../../i18n/copy';
 import { useLanguage } from '../../i18n/provider';
+import { Button } from '../ui/Button';
 
 export function HeroCard({ followHref }: { followHref: string }) {
   const { language } = useLanguage();
@@ -27,13 +28,9 @@ export function HeroCard({ followHref }: { followHref: string }) {
             {homeText(language, 'description')}
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <a
-              href="#upcoming-events"
-              className="inline-flex w-full items-center justify-center rounded-xl bg-ozora-green px-5 py-3 text-sm font-bold text-ozora-ink transition hover:bg-ozora-yellow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow focus-visible:ring-offset-2 focus-visible:ring-offset-ozora-navy sm:w-auto"
-              aria-label={homeText(language, 'exploreUpcomingAria')}
-            >
+            <Button href="#upcoming-events" className="w-full sm:w-auto" aria-label={homeText(language, 'exploreUpcomingAria')}>
               {homeText(language, 'exploreUpcoming')}
-            </a>
+            </Button>
             <a
               href={followHref}
               target="_blank"

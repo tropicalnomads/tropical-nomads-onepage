@@ -13,6 +13,7 @@ import { useShopProducts } from '../shop/product-context';
 import { useShopCart } from '../shop/useShopCart';
 import type { ShopImageSources } from '../shop/images';
 import { ShopSteps } from './ShopSteps';
+import { Button, TextLink } from './ui/Button';
 
 function orderFailure(reason: Extract<PlaceShopOrderResult, { ok: false }>['reason'], language: 'en' | 'pt'): string {
   switch (reason) {
@@ -79,12 +80,9 @@ export function ShopReview({ imageSources }: { imageSources: ShopImageSources })
         {cart.lines.length === 0 ? (
           <div className="mt-8 rounded-3xl border border-white/10 bg-ozora-navy/55 p-8 text-center">
             <p className="text-sm text-ozora-cream/75">{shopText(language, 'empty')}</p>
-            <a
-              href={publicHref('/shop', language)}
-              className="mt-6 inline-flex h-11 items-center justify-center rounded-full bg-ozora-yellow px-5 text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral"
-            >
+            <Button href={publicHref('/shop', language)} className="mt-6">
               {shopText(language, 'continue')}
-            </a>
+            </Button>
           </div>
         ) : (
           <div className="mt-8 space-y-4">
@@ -134,32 +132,16 @@ export function ShopReview({ imageSources }: { imageSources: ShopImageSources })
                 <p className="text-sm font-semibold uppercase tracking-[0.14em] text-ozora-cream/60">{shopText(language, 'total')}</p>
                 <p className="text-2xl font-bold text-ozora-yellow">{shopTotalLabel(cart.lines, products)}</p>
               </div>
-              <button
-                type="button"
-                disabled={!canBuy}
-                onClick={() => {
-                  void buy();
-                }}
-                className={
-                  canBuy
-                    ? 'mt-4 inline-flex h-12 w-full items-center justify-center rounded-full bg-emerald-400 text-sm font-bold text-ozora-ink transition hover:bg-emerald-300'
-                    : 'mt-4 inline-flex h-12 w-full items-center justify-center rounded-full bg-white/10 text-sm font-bold text-ozora-cream/40'
-                }
-              >
+              <Button type="button" disabled={!canBuy} className="mt-4 w-full" onClick={() => void buy()}>
                 {shopText(language, 'buy')}
-              </button>
+              </Button>
               {failure ? <p className="mt-3 text-sm text-ozora-coral">{orderFailure(failure, language)}</p> : null}
               <p className="mt-3 text-xs leading-relaxed text-ozora-cream/55">{shopText(language, 'note')}</p>
               <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <a
-                  href={publicHref('/shop', language)}
-                  className="inline-flex h-12 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-bold text-ozora-cream transition hover:bg-white/10"
-                >
+                <Button href={publicHref('/shop', language)} tone="ghost">
                   {shopText(language, 'continue')}
-                </a>
-                <a href="/shop/checkout" className="text-center text-sm font-semibold text-ozora-turquoise hover:text-ozora-cream">
-                  {shopText(language, 'backAddress')}
-                </a>
+                </Button>
+                <TextLink href="/shop/checkout">{shopText(language, 'backAddress')}</TextLink>
               </div>
             </div>
           </div>

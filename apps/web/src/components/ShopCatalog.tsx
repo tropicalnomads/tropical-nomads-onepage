@@ -8,13 +8,14 @@ import { ShopMarkdown } from '../shop/markdown';
 import type { ShopImageSources } from '../shop/images';
 import { useShopProducts } from '../shop/product-context';
 import { ShopImagePlaceholder } from './ShopImagePlaceholder';
+import { Button } from './ui/Button';
 
 export type { ShopImageSources };
 
 const cardClass =
   'group relative overflow-hidden rounded-3xl border border-white/10 bg-ozora-navy/55 shadow-[0_18px_50px_rgba(0,0,0,0.22)] transition hover:-translate-y-0.5 hover:border-ozora-yellow/40';
 
-export function ShopCatalog({ imageSources, admin = false }: { imageSources: ShopImageSources; admin?: boolean }) {
+export function ShopCatalog({ imageSources }: { imageSources: ShopImageSources }) {
   const { language } = useLanguage();
   const products = useShopProducts();
 
@@ -22,17 +23,7 @@ export function ShopCatalog({ imageSources, admin = false }: { imageSources: Sho
     <section className="px-5 py-10 md:px-8 md:py-14">
       <div className="mx-auto max-w-5xl">
         <p className="text-xs font-bold uppercase tracking-[0.22em] text-ozora-yellow">{shopText(language, 'title')}</p>
-        <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
-          <h1 className="font-display text-4xl font-bold tracking-tight text-ozora-cream md:text-5xl">{shopText(language, 'title')}</h1>
-          {admin ? (
-            <a
-              href="/admin/shop"
-              className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-bold text-ozora-cream transition hover:bg-white/10"
-            >
-              {shopText(language, 'admin')}
-            </a>
-          ) : null}
-        </div>
+        <h1 className="mt-2 font-display text-4xl font-bold tracking-tight text-ozora-cream md:text-5xl">{shopText(language, 'title')}</h1>
         <p className="mt-3 max-w-2xl text-base leading-relaxed text-ozora-cream/75">{shopText(language, 'subtitle')}</p>
         <div className="mt-8 grid gap-5 sm:grid-cols-2">
           {products.map((product) => {
@@ -77,12 +68,9 @@ export function ShopMissing() {
       <div className="mx-auto max-w-xl rounded-3xl border border-white/10 bg-ozora-navy/55 p-8 text-center">
         <h1 className="font-display text-3xl font-bold text-ozora-cream">{shopText(language, 'missingTitle')}</h1>
         <p className="mt-3 text-sm leading-relaxed text-ozora-cream/70">{shopText(language, 'missingBody')}</p>
-        <a
-          href={publicHref('/shop', language)}
-          className="mt-6 inline-flex h-11 items-center justify-center rounded-full bg-ozora-yellow px-5 text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral"
-        >
+        <Button href={publicHref('/shop', language)} className="mt-6">
           {shopText(language, 'back')}
-        </a>
+        </Button>
       </div>
     </section>
   );

@@ -4,11 +4,13 @@ import { Calendar, CalendarClock, Clock, ExternalLink, MapPin, Ticket } from 'lu
 import { useState, type FormEvent } from 'react';
 import { formatEventDate, getStageSummary } from 'tropical-nomads-shared';
 import type { UpcomingEventCard } from '../events/types';
+import { useSignInHref } from '../account/use-return-path';
 import { accountText, areaText, eventText, paymentNotice, paymentText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { issueTicketAction, type TicketActionResult } from '../tickets/actions';
 import { EmptyState } from '../../../one-pager/src/components/EmptyState';
 import { SelectField } from './SelectField';
+import { Button, TextLink } from './ui/Button';
 
 function fill(template: string, values: Record<string, string>): string {
   return Object.entries(values).reduce((text, [key, value]) => text.replaceAll(`{${key}}`, value), template);
@@ -101,31 +103,29 @@ export function UpcomingEvents({ events }: { events: readonly UpcomingEventCard[
                       {event.inAppOffers.length > 0 ? (
                         <TicketPurchase event={event} />
                       ) : event.ticketUrl ? (
-                        <a
-                          href={event.ticketUrl}
-                          target="_blank"
-                          rel="noreferrer noopener"
-                          className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 ${
-                            event.ticketsOnSale
-                              ? 'bg-ozora-coral text-ozora-ink hover:bg-ozora-yellow focus-visible:ring-ozora-yellow'
-                              : 'border border-ozora-turquoise/70 bg-ozora-turquoise/10 text-ozora-cream hover:bg-ozora-turquoise/20 focus-visible:ring-ozora-turquoise'
-                          }`}
-                          aria-label={fill(eventText(language, event.ticketsOnSale ? 'buyTicketsAria' : 'eventDetailsAria'), {
-                            title: event.title,
-                          })}
-                        >
-                          {event.ticketsOnSale ? (
-                            <>
-                              <Ticket size={16} aria-hidden="true" />
-                              {eventText(language, 'buyTickets')}
-                            </>
-                          ) : (
-                            <>
-                              {eventText(language, 'eventDetails')}
-                              <ExternalLink size={16} aria-hidden="true" />
-                            </>
-                          )}
-                        </a>
+                        event.ticketsOnSale ? (
+                          <Button
+                            href={event.ticketUrl}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            size="sm"
+                            aria-label={fill(eventText(language, 'buyTicketsAria'), { title: event.title })}
+                            icon={<Ticket size={16} aria-hidden="true" />}
+                          >
+                            {eventText(language, 'buyTickets')}
+                          </Button>
+                        ) : (
+                          <a
+                            href={event.ticketUrl}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            className="inline-flex items-center gap-2 rounded-xl border border-ozora-turquoise/70 bg-ozora-turquoise/10 px-4 py-2 text-sm font-semibold text-ozora-cream transition hover:bg-ozora-turquoise/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+                            aria-label={fill(eventText(language, 'eventDetailsAria'), { title: event.title })}
+                          >
+                            {eventText(language, 'eventDetails')}
+                            <ExternalLink size={16} aria-hidden="true" />
+                          </a>
+                        )
                       ) : (
                         <span className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-ozora-cream/60">
                           <Clock size={16} aria-hidden="true" />
@@ -186,6 +186,7 @@ function euroAmount(amount: number, language: string): string {
 
 function TicketPurchase({ event }: { event: UpcomingEventCard }) {
   const { language } = useLanguage();
+  const signInHref = useSignInHref();
   const [result, setResult] = useState<TicketActionResult | null>(null);
   const single = event.inAppOffers.length === 1 ? event.inAppOffers[0] : undefined;
 
@@ -211,14 +212,9 @@ function TicketPurchase({ event }: { event: UpcomingEventCard }) {
           }))}
         />
       )}
-      <button
-        type="submit"
-        className="inline-flex items-center justify-center gap-2 rounded-lg bg-ozora-coral px-4 py-2 text-sm font-semibold text-ozora-ink hover:bg-ozora-yellow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow"
-        aria-label={fill(eventText(language, 'buyInAppAria'), { title: event.title })}
-      >
-        <Ticket size={16} aria-hidden="true" />
+      <Button type="submit" size="sm" aria-label={fill(eventText(language, 'buyInAppAria'), { title: event.title })} icon={<Ticket size={16} aria-hidden="true" />}>
         {single ? `${eventText(language, 'buyInApp')} · ${euroAmount(single.amount, language)}` : eventText(language, 'buyInApp')}
-      </button>
+      </Button>
       <p className="text-xs text-ozora-cream/70">{eventText(language, 'inAppNote')}</p>
       {result ? (
         <p role="status" className="text-sm text-ozora-yellow">
@@ -226,19 +222,19 @@ function TicketPurchase({ event }: { event: UpcomingEventCard }) {
         </p>
       ) : null}
       {result?.notice === 'ticket-ready' && result.ticketId ? (
-        <a href={`/my-tickets?ticket=${result.ticketId}`} className="text-sm font-semibold text-ozora-turquoise underline-offset-2 hover:underline">
+        <TextLink href={`/my-tickets?ticket=${result.ticketId}`} className="text-sm">
           {eventText(language, 'viewTickets')}
-        </a>
+        </TextLink>
       ) : null}
       {result?.notice === 'not-signed-in' ? (
-        <a href="/account/sign-in" className="text-sm font-semibold text-ozora-turquoise underline-offset-2 hover:underline">
+        <TextLink href={signInHref} className="text-sm">
           {accountText(language, 'signIn')}
-        </a>
+        </TextLink>
       ) : null}
       {result?.notice === 'billing-required' ? (
-        <a href="/account" className="text-sm font-semibold text-ozora-turquoise underline-offset-2 hover:underline">
+        <TextLink href="/account" className="text-sm">
           {paymentText(language, 'billingTitle')}
-        </a>
+        </TextLink>
       ) : null}
     </form>
   );

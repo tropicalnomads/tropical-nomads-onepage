@@ -5,10 +5,13 @@ import { useState, type FormEvent } from 'react';
 import { noticeForProfileFailure } from '../account/profile-failure';
 import { accountIdentity, firstProfileField, profileFieldIssues, profileInputFromFormData, type ProfileFieldIssues, type ProfileFieldName } from '../account/profile-form';
 import { saveAccountProfileAction } from '../account/profile';
+import { authPath, signInHref } from '../account/return-path';
+import { useCurrentPath } from '../account/use-return-path';
 import { accountText, type AccountNotice } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { AuthFrame, AuthNotice, AuthSubmitButton } from './AuthUi';
 import { ProfileFields, type ProfileValues } from './ProfileFields';
+import { Button, TextLink } from './ui/Button';
 
 export interface AccountSummary extends ProfileValues {
   email: string;
@@ -23,6 +26,7 @@ export function AccountHome({
   initialNotice?: AccountNotice | null;
 }) {
   const { language } = useLanguage();
+  const here = useCurrentPath();
   if (!profile) {
     return (
       <AuthFrame
@@ -30,27 +34,18 @@ export function AccountHome({
         title={accountText(language, 'accountTitle')}
         subtitle={accountText(language, 'intro')}
         footer={
-          <a
-            href="/account/forgot-password"
-            className="text-sm font-bold text-ozora-turquoise underline-offset-4 transition hover:text-ozora-yellow hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
-          >
+          <TextLink href={authPath('/account/forgot-password', here)} className="text-sm">
             {accountText(language, 'forgotPassword')}
-          </a>
+          </TextLink>
         }
       >
         <div className="grid gap-3 sm:grid-cols-2">
-          <a
-            href="/account/sign-in"
-            className="rounded-xl bg-ozora-green px-5 py-3 text-center text-sm font-bold text-ozora-ink transition hover:-translate-y-0.5 hover:bg-ozora-yellow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow"
-          >
+          <Button href={signInHref(here)} className="w-full">
             {accountText(language, 'signIn')}
-          </a>
-          <a
-            href="/account/register"
-            className="rounded-xl border border-white/15 bg-white/[0.05] px-5 py-3 text-center text-sm font-bold text-ozora-cream transition hover:border-ozora-turquoise/50 hover:bg-ozora-turquoise/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
-          >
+          </Button>
+          <Button href={authPath('/account/register', here)} tone="ghost" className="w-full">
             {accountText(language, 'register')}
-          </a>
+          </Button>
         </div>
       </AuthFrame>
     );

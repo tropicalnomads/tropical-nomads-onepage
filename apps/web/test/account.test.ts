@@ -73,6 +73,7 @@ describe('accounts', () => {
     const authUi = readFileSync(new URL('../src/components/AuthUi.tsx', import.meta.url), 'utf8');
     const actions = readFileSync(new URL('../src/account/actions.ts', import.meta.url), 'utf8');
     const header = readFileSync(new URL('../src/components/ShellHeader.tsx', import.meta.url), 'utf8');
+    const menu = readFileSync(new URL('../src/components/ui/Menu.tsx', import.meta.url), 'utf8');
     assert.equal(register.includes('/shop'), false);
     assert.equal(register.includes('/check-in'), false);
     assert.equal(forgot.includes('/shop'), false);
@@ -100,14 +101,16 @@ describe('accounts', () => {
     assert.equal(authUi.includes('function GoogleIcon'), true);
     assert.equal(authUi.includes('function AppleIcon'), true);
     assert.equal(authUi.includes('<svg aria-hidden="true"'), true);
-    assert.equal(authUi.includes('aria-label={toggleLabel}'), true);
+    assert.equal(authUi.includes('label={toggleLabel}'), true);
     assert.equal(authUi.includes('rounded-3xl'), true);
     assert.equal(authUi.includes('backdrop-blur-xl'), true);
     assert.equal(authUi.includes('bg-white'), true);
     assert.equal(authUi.includes('bg-black'), true);
     assert.equal(actions.includes('writeAccounts'), false);
     assert.equal(actions.includes('registerVerifiedAccount'), false);
-    assert.equal(actions.includes("redirect: '/account'"), true);
+    assert.equal(actions.includes('takeReturnPath'), true);
+    assert.equal(actions.includes('rememberReturnPath'), true);
+    assert.equal(actions.includes("redirect: '/account'"), false);
     assert.equal(actions.includes('confirmSignUpWithCognito'), true);
     assert.equal(actions.includes('confirmForgotPasswordWithCognito'), true);
     assert.equal(header.includes('left-1/2'), true);
@@ -115,9 +118,9 @@ describe('accounts', () => {
     assert.equal(header.includes('bg-ozora-yellow'), true);
     assert.equal(header.includes('LogIn'), true);
     assert.equal(header.includes('UserRound'), true);
-    assert.equal(header.includes("signedIn ? '/account' : '/account/sign-in'"), true);
+    assert.equal(header.includes("signedIn ? '/account' : signInHref(here)"), true);
     assert.equal(header.includes('signOutAction'), true);
-    assert.equal(header.includes('role="menu"'), true);
+    assert.equal(menu.includes('role="menu"'), true);
     assert.equal(header.includes("accountText(language, 'signOut')"), true);
     assert.equal(header.includes('href="/my-tickets"'), true);
     assert.equal(header.includes("areaText(language, 'my-tickets')"), true);
@@ -174,7 +177,7 @@ describe('accounts', () => {
     assert.equal(shellCopy.en.account.notices['profile-save-failed'], 'The profile could not be saved. Try again.');
     assert.equal(shellCopy.pt.account.notices['profile-save-failed'], 'Não foi possível salvar o perfil. Tente de novo.');
     const accountPage = readFileSync(new URL('../app/account/page.tsx', import.meta.url), 'utf8');
-    assert.equal(accountPage.includes("redirect('/account/profile')"), true);
+    assert.equal(accountPage.includes("profileSetupHref('/account')"), true);
     const signInForm = form.slice(form.indexOf('export function SignInForm'), form.indexOf('function ConfirmEmailForm'));
     assert.equal(signInForm.includes('noteActionFailure(setNotice)'), true);
     const built = 'b'.repeat(40);
@@ -204,5 +207,23 @@ describe('accounts', () => {
         assert.notEqual(shellCopy[language].account.notices[notice].trim(), '');
       }
     }
+  });
+
+  it('returns a completed sign-in to the page that started it', () => {
+    const actions = readFileSync(new URL('../src/account/actions.ts', import.meta.url), 'utf8');
+    const header = readFileSync(new URL('../src/components/ShellHeader.tsx', import.meta.url), 'utf8');
+    const accountPage = readFileSync(new URL('../app/account/page.tsx', import.meta.url), 'utf8');
+    const form = readFileSync(new URL('../src/components/AccountForms.tsx', import.meta.url), 'utf8');
+    const callback = readFileSync(new URL('../app/account/callback/route.ts', import.meta.url), 'utf8');
+    assert.equal(actions.includes('takeReturnPath'), true);
+    assert.equal(actions.includes('rememberReturnPath'), true);
+    assert.equal(actions.includes("redirect: '/account'"), false);
+    assert.equal(actions.includes("'/account/profile'"), true);
+    assert.equal(header.includes("signedIn ? '/account' : signInHref(here)"), true);
+    assert.equal(accountPage.includes("profileSetupHref('/account')"), true);
+    assert.equal(form.includes('safeReturnPath'), true);
+    assert.equal(form.includes('name="next"'), true);
+    assert.equal(callback.includes('clearReturnPath'), true);
+    assert.equal(callback.includes("new URL(next ?? '/', here.origin)"), true);
   });
 });

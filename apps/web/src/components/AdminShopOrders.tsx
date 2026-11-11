@@ -8,6 +8,7 @@ import { useLanguage } from '../i18n/provider';
 import { publicHref } from '../seo/urls';
 import { shopAmountLabel, type ShopCatalogProduct } from '../shop/catalog';
 import { ShopImagePlaceholder } from './ShopImagePlaceholder';
+import { Button, TextLink } from './ui/Button';
 
 function adminProductImageSrc(product: ShopCatalogProduct): string | undefined {
   if (!product.image.startsWith('/shop/media/')) {
@@ -54,16 +55,10 @@ function when(value: string, language: 'en' | 'pt'): string {
 export function AdminShopOrders({ orders, products }: { orders: readonly ShopOrderRow[]; products: readonly ShopCatalogProduct[] }) {
   const { language } = useLanguage();
   return (
-    <div className="mx-auto max-w-5xl">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-ozora-cream md:text-3xl">{shopText(language, 'admin')}</h1>
-        <a href="/admin/shop/new" className="rounded-full bg-ozora-yellow px-4 py-2 text-sm font-bold text-ozora-ink">
-          {shopText(language, 'addProduct')}
-        </a>
-      </div>
-      <a href={publicHref('/shop', language)} className="mt-3 inline-block text-sm font-semibold text-ozora-turquoise">
+    <>
+      <TextLink href={publicHref('/shop', language)} className="mt-8 inline-block text-sm">
         {shopText(language, 'backShop')}
-      </a>
+      </TextLink>
 
       <section className="mt-8">
         <div className="flex items-center justify-between gap-3">
@@ -94,13 +89,9 @@ export function AdminShopOrders({ orders, products }: { orders: readonly ShopOrd
                       {shopText(language, product.hidden ? 'hiddenProduct' : 'visibleProduct')}
                     </span>
                   </div>
-                  <a
-                    href={`/admin/shop/${product.id}`}
-                    className="mt-auto inline-flex h-9 w-fit items-center gap-2 rounded-full border border-white/15 px-3 text-xs font-bold text-ozora-cream transition hover:bg-white/10"
-                  >
-                    <Pencil size={13} aria-hidden="true" />
+                  <Button href={`/admin/shop/${product.id}`} tone="ghost" size="sm" className="mt-auto h-9 w-fit px-3 text-xs" icon={<Pencil size={13} aria-hidden="true" />}>
                     {shopText(language, 'editProduct')}
-                  </a>
+                  </Button>
                 </div>
               </article>
             );
@@ -135,6 +126,6 @@ export function AdminShopOrders({ orders, products }: { orders: readonly ShopOrd
           </li>
         ))}
       </ul>
-    </div>
+    </>
   );
 }

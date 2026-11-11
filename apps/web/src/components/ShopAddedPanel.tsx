@@ -8,6 +8,7 @@ import { useLanguage } from '../i18n/provider';
 import { shopAmountLabel } from '../shop/catalog';
 import { linePrice, type ShopLine } from '../shop/order';
 import { useShopProducts } from '../shop/product-context';
+import { Button, IconButton } from './ui/Button';
 
 export function ShopAddedPanel({ line, image, subtotal, onClose }: { line: ShopLine; image?: string; subtotal: string; onClose: () => void }) {
   const { language } = useLanguage();
@@ -52,15 +53,9 @@ export function ShopAddedPanel({ line, image, subtotal, onClose }: { line: ShopL
           <h2 id="added-title" className="font-display text-2xl font-bold text-ozora-cream">
             {shopText(language, 'added')}
           </h2>
-          <button
-            type="button"
-            autoFocus
-            aria-label={shopText(language, 'close')}
-            onClick={onClose}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-ozora-cream transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
-          >
+          <IconButton label={shopText(language, 'close')} autoFocus onClick={onClose}>
             <X size={18} aria-hidden="true" />
-          </button>
+          </IconButton>
         </div>
         <div className="flex flex-1 flex-col gap-5 overflow-y-auto px-5 py-5">
           <div className="flex gap-4">
@@ -84,19 +79,12 @@ export function ShopAddedPanel({ line, image, subtotal, onClose }: { line: ShopL
             <p className="text-sm font-semibold uppercase tracking-[0.14em] text-ozora-cream/60">{shopText(language, 'subtotal')}</p>
             <p className="text-2xl font-bold text-ozora-yellow">{subtotal}</p>
           </div>
-          <a
-            href="/shop/cart"
-            className="inline-flex h-12 items-center justify-center rounded-full bg-ozora-yellow text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral"
-          >
+          <Button href="/shop/cart" className="w-full">
             {shopText(language, 'viewCart')}
-          </a>
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex h-12 items-center justify-center rounded-full border border-white/15 text-sm font-bold text-ozora-cream transition hover:bg-white/10"
-          >
+          </Button>
+          <Button type="button" tone="ghost" className="w-full" onClick={onClose}>
             {shopText(language, 'continue')}
-          </button>
+          </Button>
         </div>
       </aside>
     </div>

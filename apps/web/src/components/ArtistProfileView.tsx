@@ -5,6 +5,7 @@ import { artistWhen, type ArtistEventCard, type ArtistProfile } from '../artists
 import { artistText } from '../i18n/artist-copy';
 import { useLanguage } from '../i18n/provider';
 import { ShopMarkdown } from '../shop/markdown';
+import { Button } from './ui/Button';
 
 export function ArtistProfileView({
   artist,
@@ -51,15 +52,9 @@ export function ArtistProfileView({
           {links.length > 0 ? (
             <div className="mt-6 flex flex-wrap gap-2">
               {links.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="rounded-full border border-white/15 px-4 py-2 text-sm font-bold text-ozora-cream hover:border-ozora-turquoise"
-                >
+                <Button key={link.href} href={link.href} tone="ghost" size="sm" target="_blank" rel="noreferrer noopener">
                   {link.label}
-                </a>
+                </Button>
               ))}
             </div>
           ) : null}

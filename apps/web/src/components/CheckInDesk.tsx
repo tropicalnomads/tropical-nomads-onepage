@@ -12,6 +12,8 @@ import {
 import { QrCamera } from '../check-in/camera';
 import { areaText, checkInText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
+import { Button } from './ui/Button';
+import { fieldControlClass } from './ui/field';
 
 export interface CheckInEventOption {
   id: string;
@@ -120,12 +122,12 @@ export function CheckInDesk({
               <input
                 name="q"
                 defaultValue={query}
-                className="mt-1 w-full rounded-lg border border-white/15 bg-black/30 px-3 py-2 text-sm text-ozora-cream"
+                className={`${fieldControlClass} mt-1 text-sm`}
               />
             </label>
-            <button type="submit" className="self-end rounded-lg bg-ozora-coral px-4 py-2 text-sm font-semibold text-ozora-ink">
+            <Button type="submit" size="sm" className="self-end">
               {checkInText(language, 'searchButton')}
-            </button>
+            </Button>
           </form>
           {query && sold.length === 0 && guests.length === 0 ? <p className="text-sm text-ozora-cream/70">{checkInText(language, 'noPeople')}</p> : null}
           <section>
@@ -159,19 +161,19 @@ export function CheckInDesk({
               <div className="mt-4 space-y-3">
                 <form onSubmit={onSubmit(createGuestListAction)} className="flex flex-col gap-2 sm:flex-row">
                   <input type="hidden" name="partyId" value={selected.id} />
-                  <input name="listName" placeholder={checkInText(language, 'listName')} className="rounded-lg border border-white/15 bg-black/30 px-3 py-2 text-sm text-ozora-cream" />
-                  <button type="submit" className="rounded-lg border border-ozora-turquoise/70 px-4 py-2 text-sm font-semibold text-ozora-cream">
+                  <input name="listName" placeholder={checkInText(language, 'listName')} className={`${fieldControlClass} text-sm`} />
+                  <Button type="submit" tone="ghost" size="sm">
                     {checkInText(language, 'createList')}
-                  </button>
+                  </Button>
                 </form>
                 {lists.map((list) => (
                   <form key={list.id} onSubmit={onSubmit(addGuestAction)} className="flex flex-col gap-2 sm:flex-row">
                     <input type="hidden" name="partyId" value={selected.id} />
                     <input type="hidden" name="listId" value={list.id} />
-                    <input name="guestName" placeholder={checkInText(language, 'guestName')} className="rounded-lg border border-white/15 bg-black/30 px-3 py-2 text-sm text-ozora-cream" />
-                    <button type="submit" className="rounded-lg border border-ozora-turquoise/70 px-4 py-2 text-sm font-semibold text-ozora-cream">
+                    <input name="guestName" placeholder={checkInText(language, 'guestName')} className={`${fieldControlClass} text-sm`} />
+                    <Button type="submit" tone="ghost" size="sm">
                       {checkInText(language, 'addGuest')}
-                    </button>
+                    </Button>
                   </form>
                 ))}
               </div>
@@ -213,9 +215,9 @@ function RowAction({
     <form onSubmit={onSubmit(action)}>
       <input type="hidden" name="partyId" value={partyId} />
       <input type="hidden" name={idName} value={id} />
-      <button type="submit" className="rounded-lg bg-ozora-coral px-3 py-2 text-sm font-semibold text-ozora-ink">
+      <Button type="submit" size="sm">
         {checkInText(language, 'checkIn')}
-      </button>
+      </Button>
     </form>
   );
 }

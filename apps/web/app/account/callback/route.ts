@@ -10,6 +10,8 @@ import {
   type PendingNames,
 } from '../../../src/account/cognito';
 import { establishVerifiedAccount } from '../../../src/account/establish';
+import { clearReturnPath, readReturnPath } from '../../../src/account/return-cookie';
+import { signInHref } from '../../../src/account/return-path';
 import { createSessionToken, openPayload, sealPayload, sessionCookieMaxAge, sessionCookieName } from '../../../src/account/session';
 import { withNoindex } from '../../../src/seo/headers.ts';
 
@@ -71,6 +73,7 @@ export async function GET(request: Request): Promise<Response> {
   if (!claims) {
     return redirect(signIn);
   }
+  const next = await readReturnPath();
   const email = normalizeAccountEmail(claims.email);
   const existing = (await currentAccounts()).profiles.find((profile) => profile.sub === claims.sub || normalizeAccountEmail(profile.email) === email);
   const verified = verifiedSignInFromClaims(
@@ -86,7 +89,11 @@ export async function GET(request: Request): Promise<Response> {
       path: '/account',
       maxAge: 600,
     });
-    return redirect(new URL('/account/register', here.origin));
+    const register = new URL('/account/register', here.origin);
+    if (next) {
+      register.searchParams.set('next', next);
+    }
+    return redirect(register);
   }
   try {
     const sub = await establishVerifiedAccount(verified);
@@ -99,7 +106,8 @@ export async function GET(request: Request): Promise<Response> {
     });
     jar.delete({ name: verifiedCookie, ...oauthClear() });
   } catch {
-    return redirect(signIn);
+    return redirect(new URL(signInHref(next), here.origin));
   }
-  return redirect(new URL('/account', here.origin));
+  await clearReturnPath();
+  return redirect(new URL(next ?? '/', here.origin));
 }

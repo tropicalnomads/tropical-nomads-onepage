@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import type { ManagedParty, PartyPublication } from 'tropical-nomads-api/parties';
 import { formatEventDate } from 'tropical-nomads-shared';
@@ -127,5 +128,38 @@ describe('admin event board', () => {
     assert.equal(shellCopy.pt.admin.ticketFrom.includes('{price}'), true);
     assert.equal(shellCopy.en.admin.ticketCapacity.includes('{count}'), true);
     assert.equal(shellCopy.pt.admin.ticketCapacity.includes('{count}'), true);
+  });
+
+  it('opens events and shop from one admin item', () => {
+    const header = readFileSync(new URL('../src/components/ShellHeader.tsx', import.meta.url), 'utf8');
+    const page = readFileSync(new URL('../app/admin/page.tsx', import.meta.url), 'utf8');
+    const frame = readFileSync(new URL('../src/components/AdminFrame.tsx', import.meta.url), 'utf8');
+    const hub = readFileSync(new URL('../src/components/AdminHub.tsx', import.meta.url), 'utf8');
+    const events = readFileSync(new URL('../app/admin/events/page.tsx', import.meta.url), 'utf8');
+    const shop = readFileSync(new URL('../app/admin/shop/page.tsx', import.meta.url), 'utf8');
+    const shops = readFileSync(new URL('../app/admin/shops/page.tsx', import.meta.url), 'utf8');
+    const button = readFileSync(new URL('../src/components/ui/Button.tsx', import.meta.url), 'utf8');
+    assert.equal(shellCopy.en.navAdmin, 'Admin');
+    assert.equal(shellCopy.pt.navAdmin, 'Admin');
+    assert.equal(header.includes('href="/admin/events"'), true);
+    assert.equal(header.includes("shellText(language, 'navAdmin')"), true);
+    assert.equal(page.includes("params.tab === 'shop'"), true);
+    assert.equal(page.includes("redirect(params.tab === 'shop' ? '/admin/shops' : '/admin/events')"), true);
+    assert.equal(events.includes('<AdminHubPage'), true);
+    assert.equal(shops.includes('<AdminHubPage'), true);
+    assert.equal(hub.includes('<AdminEventList'), true);
+    assert.equal(hub.includes('<AdminShopOrders'), true);
+    assert.equal(hub.includes("events: '/admin/events'"), true);
+    assert.equal(hub.includes("shop: '/admin/shops'"), true);
+    assert.equal(hub.includes('window.history.pushState'), true);
+    assert.equal(hub.includes('popstate'), true);
+    assert.equal(frame.includes('href="/admin'), false);
+    assert.equal(frame.includes('<Button'), true);
+    assert.equal(button.includes('bg-ozora-yellow'), true);
+    assert.equal(button.includes('bg-ozora-coral'), true);
+    assert.equal(button.includes('bg-ozora-green'), false);
+    assert.equal(hub.includes('<Plus'), true);
+    assert.equal(events.includes("redirect('/admin')"), false);
+    assert.equal(shop.includes("redirect('/admin/shops')"), true);
   });
 });

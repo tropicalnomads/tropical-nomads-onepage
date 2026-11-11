@@ -6,6 +6,7 @@ import { useLanguage } from '../i18n/provider';
 import { navigation } from '../navigation';
 import { publicHref } from '../seo/urls';
 import { LanguageSwitch } from './LanguageSwitch';
+import { TextLink } from './ui/Button';
 
 export function ShellFooter() {
   const { language } = useLanguage();
@@ -28,12 +29,9 @@ export function ShellFooter() {
       </div>
       <p>{shellText(language, 'footerTagline')}</p>
       <p className="mt-3">
-        <a
-          href={`${origins.publicSite}/privacy/`}
-          className="font-semibold text-ozora-turquoise transition hover:text-ozora-yellow"
-        >
+        <TextLink href={`${origins.publicSite}/privacy/`}>
           {shellText(language, 'privacy')}
-        </a>
+        </TextLink>
       </p>
       <p className="mt-1 text-ozora-cream/50">&copy; {new Date().getFullYear()} Tropical Nomads</p>
     </footer>

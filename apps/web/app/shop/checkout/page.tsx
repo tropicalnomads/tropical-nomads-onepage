@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { profileSetupHref, signInHref } from '../../../src/account/return-path';
 import { readSessionSub, sessionCookieName } from '../../../src/account/session';
 import { currentAccounts } from '../../../src/remote-store';
 import { ShopCheckout, type ShopAddressPreset } from '../../../src/components/ShopCheckout';
@@ -17,11 +18,11 @@ export default async function ShopCheckoutPage() {
   const jar = await cookies();
   const sub = readSessionSub(jar.get(sessionCookieName)?.value);
   if (!sub) {
-    redirect('/account/sign-in');
+    redirect(signInHref('/shop/checkout'));
   }
   const accounts = await currentAccounts();
   if (!accounts.profiles.some((item) => item.sub === sub)) {
-    redirect('/account/profile');
+    redirect(profileSetupHref('/shop/checkout'));
   }
   const profile = accounts.profiles.find((item) => item.sub === sub && item.status === 'active');
   const saved = profile?.billingAddressId

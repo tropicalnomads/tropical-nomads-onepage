@@ -13,6 +13,7 @@ import { useShopProducts } from '../shop/product-context';
 import { useShopCart } from '../shop/useShopCart';
 import { ShopAddedPanel } from './ShopAddedPanel';
 import { ShopMissing } from './ShopCatalog';
+import { Button } from './ui/Button';
 import { ShopImagePlaceholder } from './ShopImagePlaceholder';
 import { QuantityStepper } from './ShopQuantity';
 
@@ -114,14 +115,9 @@ export function ShopProduct({ productId, image }: { productId: string; image?: s
               />
             </div>
 
-            <button
-              type="button"
-              onClick={add}
-              disabled={stock < 1}
-              className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-ozora-yellow px-6 text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-ozora-cream/40"
-            >
+            <Button type="button" onClick={add} disabled={stock < 1} className="mt-8">
               {shopText(language, 'add')}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

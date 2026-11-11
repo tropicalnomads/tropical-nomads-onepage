@@ -22,13 +22,14 @@ import { readProfileAvatar, readProfileDetails } from './profile';
 import { accountEmail, pendingEmailCookie, reviewConfirmationCode, reviewEmail, reviewPasswordSignIn, reviewProvider, reviewRegistration } from './review';
 import { createSessionToken, readSessionSub, sessionCookieName } from './session';
 import { noticeForProfileFailure } from './profile-failure';
+import { rememberReturnPath, takeReturnPath } from './return-cookie';
 import { noticeForSignInFailure } from './sign-in-failure';
 import { apiOrigin } from '../api-origin.ts';
 import { callPrivate, loadSnapshot } from '../remote-store.ts';
 
 export interface AccountActionResult {
   notice?: AccountNotice;
-  redirect?: '/account' | '/account/sign-in' | '/account/profile' | '/account/confirm';
+  redirect?: string;
   email?: string;
 }
 
@@ -40,10 +41,12 @@ function field(formData: FormData, name: string): string {
 export async function registerAction(formData: FormData): Promise<AccountActionResult> {
   const password = field(formData, 'password');
   const email = field(formData, 'email');
+  const next = field(formData, 'next');
   const notice = reviewRegistration({ email, password, confirmPassword: field(formData, 'confirmPassword') });
   if (notice) {
     return { notice };
   }
+  await rememberReturnPath(next);
   const target = cognitoTarget();
   if (!target) {
     return { notice: 'cognito-not-configured' };
@@ -164,7 +167,7 @@ export async function completeProfileAction(formData: FormData): Promise<Account
   }
   await remember(admitted);
   await clearVerifiedClaims();
-  return { redirect: '/account' };
+  return { redirect: await takeReturnPath(field(formData, 'next')) };
 }
 
 export async function requestPasswordResetAction(formData: FormData): Promise<AccountActionResult> {
@@ -204,6 +207,7 @@ export async function confirmPasswordResetAction(formData: FormData): Promise<Ac
 export async function signInAction(formData: FormData): Promise<AccountActionResult> {
   const email = field(formData, 'email');
   const password = field(formData, 'password');
+  const next = field(formData, 'next');
   const notice = reviewPasswordSignIn(email, password);
   if (notice) {
     return { notice };
@@ -219,6 +223,7 @@ export async function signInAction(formData: FormData): Promise<AccountActionRes
         const pending = accountEmail(email);
         if (pending) {
           await rememberPendingEmail(pending);
+          await rememberReturnPath(next);
           return { redirect: '/account/confirm', email: pending, notice: 'email-unconfirmed' };
         }
       }
@@ -227,7 +232,7 @@ export async function signInAction(formData: FormData): Promise<AccountActionRes
     if (normalizeAccountEmail(signedIn.claims.email) !== normalizeAccountEmail(email)) {
       return { notice: 'password-rejected' };
     }
-    return await finishSignIn(signedIn.claims);
+    return await finishSignIn(signedIn.claims, next);
   } catch (error) {
     const message = error instanceof Error ? error.message : '';
     console.error('sign-in failed', message);
@@ -235,7 +240,7 @@ export async function signInAction(formData: FormData): Promise<AccountActionRes
   }
 }
 
-async function finishSignIn(claims: IdClaims): Promise<AccountActionResult> {
+async function finishSignIn(claims: IdClaims, next: string): Promise<AccountActionResult> {
   const existing = (await loadSnapshot()).accounts.profiles.find(
     (profile) => profile.sub === claims.sub || normalizeAccountEmail(profile.email) === normalizeAccountEmail(claims.email),
   );
@@ -245,6 +250,7 @@ async function finishSignIn(claims: IdClaims): Promise<AccountActionResult> {
     existing ? { username: existing.username, givenName: existing.givenName, familyName: existing.familyName } : undefined,
   );
   if (!profile) {
+    await rememberReturnPath(next);
     return holdForProfile(claims);
   }
   const admitted = await admit(profile);
@@ -252,7 +258,7 @@ async function finishSignIn(claims: IdClaims): Promise<AccountActionResult> {
     return { notice: admitted };
   }
   await remember(admitted);
-  return { redirect: '/account' };
+  return { redirect: await takeReturnPath(next) };
 }
 
 async function holdForProfile(claims: IdClaims): Promise<AccountActionResult> {

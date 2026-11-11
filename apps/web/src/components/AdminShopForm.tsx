@@ -13,6 +13,7 @@ import { ShopMarkdown } from '../shop/markdown';
 import { CroppedImageField } from './admin/CroppedImageField';
 import { adminFieldClass as fieldClass } from './admin/form';
 import { ShopImagePlaceholder } from './ShopImagePlaceholder';
+import { Button, TextLink } from './ui/Button';
 
 interface ProductReview {
   name: string;
@@ -142,7 +143,7 @@ export function AdminShopForm({ values }: { values: ShopProductValues }) {
     const deleted = await deleteShopProductAction(values.id);
     setDeleteResult(deleted);
     if (deleted.notice === 'deleted') {
-      window.location.assign('/admin/shop');
+      window.location.assign('/admin/shops');
       return;
     }
     setDeleting(false);
@@ -150,13 +151,9 @@ export function AdminShopForm({ values }: { values: ShopProductValues }) {
 
   return (
     <div className="mx-auto max-w-6xl px-1">
-      <a
-        href={publicHref('/shop', language)}
-        className="inline-flex h-10 items-center gap-2 rounded-full border border-white/10 px-4 text-sm font-bold text-ozora-cream transition hover:border-ozora-turquoise/60 hover:bg-white/5"
-      >
-        <ArrowLeft size={16} aria-hidden="true" />
+      <Button href={publicHref('/shop', language)} tone="ghost" size="sm" icon={<ArrowLeft size={16} aria-hidden="true" />}>
         {shopText(language, 'backShop')}
-      </a>
+      </Button>
       <div className="mt-5">
         <p className="text-xs font-bold uppercase tracking-[0.22em] text-ozora-yellow">{shopText(language, 'productDetails')}</p>
         <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-ozora-cream md:text-4xl">
@@ -335,25 +332,21 @@ export function AdminShopForm({ values }: { values: ShopProductValues }) {
           </section>
 
           <div className="flex flex-wrap items-center gap-4 rounded-[2rem] border border-white/10 bg-black/15 p-4">
-            <button
-              type="submit"
-              disabled={pending}
-              className="inline-flex h-12 min-w-40 items-center justify-center rounded-full bg-ozora-yellow px-6 text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-ozora-cream/40"
-            >
+            <Button type="submit" disabled={pending} className="min-w-40">
               {pending ? shopText(language, 'savingProduct') : shopText(language, 'saveProduct')}
-            </button>
+            </Button>
             {creating ? null : (
-              <button
+              <Button
                 type="button"
+                tone="secondary"
                 onClick={() => {
                   setDeleteResult(null);
                   setDeleteOpen(true);
                 }}
-                className="inline-flex h-12 items-center gap-2 rounded-full border border-ozora-coral/35 px-5 text-sm font-bold text-ozora-coral transition hover:bg-ozora-coral/10"
+                icon={<Trash2 size={17} aria-hidden="true" />}
               >
-                <Trash2 size={17} aria-hidden="true" />
                 {shopText(language, 'deleteProduct')}
-              </button>
+              </Button>
             )}
             {result?.notice === 'saved' ? <p className="text-sm font-semibold text-emerald-300">{shopText(language, 'productSaved')}</p> : null}
             {result?.notice === 'invalid' || result?.notice === 'denied' ? (
@@ -379,9 +372,7 @@ export function AdminShopForm({ values }: { values: ShopProductValues }) {
                 <h2 className="mt-2 font-display text-3xl font-bold">{shopText(language, 'checkProduct')}</h2>
                 <p className="mt-1 text-sm text-ozora-cream/55">{shopText(language, 'reviewHelp')}</p>
               </div>
-              <button type="button" onClick={() => setReview(undefined)} className="rounded-full px-3 py-2 text-sm font-bold text-ozora-cream/60 hover:bg-white/10">
-                {shopText(language, 'editChanges')}
-              </button>
+              <TextLink onClick={() => setReview(undefined)}>{shopText(language, 'editChanges')}</TextLink>
             </div>
 
             <div className="mt-6 grid gap-5 sm:grid-cols-[9rem_1fr]">
@@ -410,17 +401,12 @@ export function AdminShopForm({ values }: { values: ShopProductValues }) {
             </div>
 
             <div className="mt-7 flex flex-wrap justify-end gap-3">
-              <button type="button" onClick={() => setReview(undefined)} className="h-11 rounded-full border border-white/15 px-5 text-sm font-bold hover:bg-white/10">
+              <Button type="button" tone="ghost" onClick={() => setReview(undefined)}>
                 {shopText(language, 'editChanges')}
-              </button>
-              <button
-                type="button"
-                onClick={commitSave}
-                disabled={pending}
-                className="h-11 rounded-full bg-ozora-yellow px-6 text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral disabled:opacity-40"
-              >
+              </Button>
+              <Button type="button" onClick={commitSave} disabled={pending}>
                 {pending ? shopText(language, 'savingProduct') : shopText(language, 'saveChanges')}
-              </button>
+              </Button>
             </div>
           </div>
         ) : null}
@@ -444,29 +430,24 @@ export function AdminShopForm({ values }: { values: ShopProductValues }) {
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
               {savedProduct.created ? (
-                <a
-                  href="/admin/shop/new"
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-white/15 px-5 text-sm font-bold hover:bg-white/10"
-                >
-                  <Plus size={17} aria-hidden="true" />
+                <Button href="/admin/shop/new" tone="ghost" icon={<Plus size={17} aria-hidden="true" />}>
                   {shopText(language, 'addAnotherProduct')}
-                </a>
+                </Button>
               ) : (
-                <button
+                <Button
                   type="button"
+                  tone="ghost"
                   onClick={() => {
                     successDialogRef.current?.close();
                     setSavedProduct(undefined);
                   }}
-                  className="h-11 rounded-full border border-white/15 px-5 text-sm font-bold hover:bg-white/10"
                 >
                   {shopText(language, 'continueEditing')}
-                </button>
+                </Button>
               )}
-              <a href={publicHref('/shop', language)} className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-ozora-yellow px-5 text-sm font-bold text-ozora-ink hover:bg-ozora-coral">
-                <Store size={17} aria-hidden="true" />
+              <Button href={publicHref('/shop', language)} icon={<Store size={17} aria-hidden="true" />}>
                 {shopText(language, 'goToShop')}
-              </a>
+              </Button>
             </div>
           </div>
         ) : null}
@@ -494,22 +475,12 @@ export function AdminShopForm({ values }: { values: ShopProductValues }) {
             <p className="mt-4 text-sm font-semibold text-ozora-coral">{shopText(language, 'deleteFailed')}</p>
           ) : null}
           <div className="mt-7 flex justify-end gap-3">
-            <button
-              type="button"
-              disabled={deleting}
-              onClick={() => setDeleteOpen(false)}
-              className="h-11 rounded-full border border-white/15 px-5 text-sm font-bold hover:bg-white/10 disabled:opacity-40"
-            >
+            <Button type="button" tone="ghost" disabled={deleting} onClick={() => setDeleteOpen(false)}>
               {shopText(language, 'cancel')}
-            </button>
-            <button
-              type="button"
-              disabled={deleting}
-              onClick={deleteProduct}
-              className="h-11 rounded-full bg-ozora-coral px-5 text-sm font-bold text-ozora-ink transition hover:bg-ozora-yellow disabled:opacity-40"
-            >
+            </Button>
+            <Button type="button" tone="secondary" disabled={deleting} onClick={deleteProduct}>
               {deleting ? shopText(language, 'deletingProduct') : shopText(language, 'confirmDelete')}
-            </button>
+            </Button>
           </div>
         </div>
       </dialog>

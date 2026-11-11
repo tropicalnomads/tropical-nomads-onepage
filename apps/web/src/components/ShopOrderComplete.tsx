@@ -5,6 +5,7 @@ import { shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
 import { publicHref } from '../seo/urls';
 import { readShopConfirmation, shopConfirmationKey, shopWhatsappUrl } from '../shop/order';
+import { Button } from './ui/Button';
 
 export function ShopOrderComplete() {
   const { language } = useLanguage();
@@ -37,12 +38,9 @@ export function ShopOrderComplete() {
         ) : (
           <h1 className="font-display text-3xl font-bold text-ozora-cream">{shopText(language, 'missingOrder')}</h1>
         )}
-        <a
-          href={publicHref('/shop', language)}
-          className="mt-4 inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-bold text-ozora-cream transition hover:bg-white/10"
-        >
+        <Button href={publicHref('/shop', language)} tone="ghost" className="mt-4">
           {shopText(language, 'backShop')}
-        </a>
+        </Button>
       </div>
     </section>
   );

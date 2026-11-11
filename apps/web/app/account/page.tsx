@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { profileSetupHref } from '../../src/account/return-path';
 import { readSessionSub, sessionCookieName } from '../../src/account/session';
 import { currentAccounts } from '../../src/remote-store';
 import { AccountHome, type AccountSummary } from '../../src/components/AccountHome';
@@ -15,7 +16,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
   const stored = await currentAccounts();
   const profile = stored.profiles.find((item) => item.sub === sub);
   if (sub && !profile) {
-    redirect('/account/profile');
+    redirect(profileSetupHref('/account'));
   }
   const summary: AccountSummary | null = profile
     ? {

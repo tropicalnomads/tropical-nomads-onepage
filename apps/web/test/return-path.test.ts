@@ -1,0 +1,39 @@
+import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
+import { chooseReturnPath, profileSetupHref, safeReturnPath, signInHref } from '../src/account/return-path.ts';
+
+describe('return path', () => {
+  it('keeps an in-app page and drops auth screens and external urls', () => {
+    assert.equal(safeReturnPath('/events/example'), '/events/example');
+    assert.equal(safeReturnPath('/shop/checkout'), '/shop/checkout');
+    assert.equal(safeReturnPath('/shop/checkout?step=1'), '/shop/checkout?step=1');
+    assert.equal(safeReturnPath('/account'), '/account');
+    assert.equal(safeReturnPath('  /events/example  '), '/events/example');
+    assert.equal(safeReturnPath('/events/../account/profile'), undefined);
+    assert.equal(safeReturnPath('/account/sign-in'), undefined);
+    assert.equal(safeReturnPath('/account/register'), undefined);
+    assert.equal(safeReturnPath('/account/confirm'), undefined);
+    assert.equal(safeReturnPath('/account/forgot-password'), undefined);
+    assert.equal(safeReturnPath('/account/profile'), undefined);
+    assert.equal(safeReturnPath('/account/callback'), undefined);
+    assert.equal(safeReturnPath('https://evil.example/events'), undefined);
+    assert.equal(safeReturnPath('//evil.example'), undefined);
+    assert.equal(safeReturnPath('/\\evil.example'), undefined);
+    assert.equal(safeReturnPath('/%2f%2fevil.example'), undefined);
+    assert.equal(safeReturnPath('/%5c%5cevil.example'), undefined);
+    assert.equal(safeReturnPath(''), undefined);
+    assert.equal(safeReturnPath('   '), undefined);
+    assert.equal(safeReturnPath(undefined), undefined);
+    assert.equal(safeReturnPath(null), undefined);
+    assert.equal(chooseReturnPath('/shop/checkout', '/events/example'), '/shop/checkout');
+    assert.equal(chooseReturnPath('//evil.example', '/events/example'), '/events/example');
+    assert.equal(chooseReturnPath(undefined, undefined), '/');
+    assert.equal(signInHref('/events/example'), '/account/sign-in?next=%2Fevents%2Fexample');
+    assert.equal(signInHref('/shop/checkout'), '/account/sign-in?next=%2Fshop%2Fcheckout');
+    assert.equal(signInHref('/account/sign-in?next=/events/example'), '/account/sign-in?next=%2Fevents%2Fexample');
+    assert.equal(signInHref('https://evil.example'), '/account/sign-in');
+    assert.equal(signInHref('/account/profile'), '/account/sign-in');
+    assert.equal(profileSetupHref('/shop/checkout'), '/account/profile?next=%2Fshop%2Fcheckout');
+    assert.equal(profileSetupHref('/account/sign-in'), '/account/profile');
+  });
+});

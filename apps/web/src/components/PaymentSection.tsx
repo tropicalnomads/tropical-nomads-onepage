@@ -6,9 +6,10 @@ import { saveBillingAction, saveMethodAction, type PaymentActionResult } from '.
 import { accountText, paymentNotice, paymentPurposeLabel, paymentText, paymentTypeLabel } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { SelectField } from './SelectField';
+import { Button } from './ui/Button';
+import { fieldControlClass } from './ui/field';
 
-const fieldClass =
-  'mt-1 w-full rounded-lg border border-white/15 bg-black/30 px-3 py-2 text-sm text-ozora-cream outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise';
+const fieldClass = `${fieldControlClass} mt-1 text-sm`;
 
 const methodTypes = ['card', 'apple_pay', 'google_pay', 'other'] as const;
 
@@ -111,12 +112,9 @@ export function PaymentSection({
           <AddressField name="region" label={paymentText(language, 'region')} autoComplete="address-level1" />
           <AddressField name="postalCode" label={paymentText(language, 'postalCode')} autoComplete="postal-code" />
           <AddressField name="country" label={paymentText(language, 'country')} autoComplete="country-name" />
-          <button
-            type="submit"
-            className="rounded-lg bg-ozora-coral px-4 py-2 text-sm font-semibold text-ozora-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow"
-          >
+          <Button type="submit">
             {paymentText(language, 'saveBilling')}
-          </button>
+          </Button>
         </form>
       ) : null}
       {billing ? (
@@ -141,12 +139,9 @@ export function PaymentSection({
           <AddressField name="last4" label={paymentText(language, 'last4')} autoComplete="off" maxLength={4} />
           <AddressField name="expiryMonth" label={paymentText(language, 'expiryMonth')} autoComplete="off" maxLength={2} />
           <AddressField name="expiryYear" label={paymentText(language, 'expiryYear')} autoComplete="off" maxLength={4} />
-          <button
-            type="submit"
-            className="rounded-lg bg-ozora-coral px-4 py-2 text-sm font-semibold text-ozora-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow"
-          >
+          <Button type="submit">
             {paymentText(language, 'saveMethod')}
-          </button>
+          </Button>
         </form>
       ) : null}
       <Notice notice={notice} />

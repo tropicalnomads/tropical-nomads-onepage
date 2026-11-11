@@ -21,6 +21,7 @@ export interface ShellCopy {
   events: EventCopy;
   tickets: TicketCopy;
   eventsAdmin: string;
+  navAdmin: string;
   checkIn: CheckInCopy;
   account: AccountCopy;
   payments: PaymentCopy;
@@ -417,6 +418,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
     navBookings: 'Bookings',
     calendar: 'Calendar',
     eventsAdmin: 'Events',
+    navAdmin: 'Admin',
     openMenu: 'Open navigation menu',
     closeMenu: 'Close navigation menu',
     primary: 'Primary',
@@ -776,6 +778,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
     navBookings: 'Bookings',
     calendar: 'Calendário',
     eventsAdmin: 'Eventos',
+    navAdmin: 'Admin',
     openMenu: 'Abrir menu de navegação',
     closeMenu: 'Fechar menu de navegação',
     primary: 'Principal',

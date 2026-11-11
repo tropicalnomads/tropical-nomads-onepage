@@ -5,6 +5,7 @@ import { cookies } from 'next/headers';
 import type { AccountNotice } from '../i18n/copy';
 import { authorizeUrl, pendingNames, readCognitoConfig, verifiedSignInFromClaims, type HostedProvider, type IdClaims } from './cognito';
 import { establishVerifiedAccount } from './establish';
+import { rememberReturnPath, takeReturnPath } from './return-cookie';
 import { createSessionToken, openPayload, sealPayload, sessionCookieMaxAge, sessionCookieName } from './session';
 
 export interface HostedResult {
@@ -66,6 +67,7 @@ export async function startHostedSignIn(formData: FormData): Promise<HostedResul
   if (!redirect) {
     return { notice: 'provider-not-allowed' };
   }
+  await rememberReturnPath(field(formData, 'next'));
   const names = pendingNames({
     username: field(formData, 'username'),
     givenName: field(formData, 'givenName'),
@@ -108,7 +110,7 @@ export async function finishVerifiedSignIn(formData: FormData): Promise<HostedRe
     const sub = await establishVerifiedAccount(signIn);
     jar.set(sessionCookieName, createSessionToken(sub), sessionCookie());
     jar.delete({ name: verifiedCookie, path: '/account' });
-    return { notice: 'not-signed-in', redirect: '/account' };
+    return { notice: 'not-signed-in', redirect: await takeReturnPath(field(formData, 'next')) };
   } catch (error) {
     const message = error instanceof Error ? error.message : '';
     if (message === 'username is taken') {

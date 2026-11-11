@@ -15,6 +15,7 @@ import { ArtistEditor } from './admin/ArtistEditor';
 import { CroppedImageField } from './admin/CroppedImageField';
 import { AdminSection, adminFieldClass } from './admin/form';
 import { MarkdownField } from './admin/MarkdownField';
+import { Button, TextLink } from './ui/Button';
 
 interface LoteDraft {
   name: string;
@@ -237,10 +238,9 @@ export function AdminEventForm({
   return (
     <main className="px-5 py-10 md:px-8 md:py-14">
       <form onSubmit={onSubmit} className="mx-auto max-w-6xl">
-        <a href="/admin/events" className="inline-flex h-10 items-center gap-2 rounded-full border border-white/10 px-4 text-sm font-bold text-ozora-cream transition hover:border-ozora-turquoise/60 hover:bg-white/5">
-          <ArrowLeft size={16} aria-hidden="true" />
+        <Button href="/admin/events" tone="ghost" size="sm" icon={<ArrowLeft size={16} aria-hidden="true" />}>
           {text('back')}
-        </a>
+        </Button>
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <h1 className="font-display text-3xl font-bold tracking-tight text-ozora-cream md:text-4xl">
             {title.trim() || text(values.id ? 'editEvent' : 'newEvent')}
@@ -251,24 +251,12 @@ export function AdminEventForm({
         </div>
 
         <div className="mt-6 flex gap-2" role="tablist">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === 'details'}
-            onClick={() => setTab('details')}
-            className={`h-10 rounded-full px-5 text-sm font-bold ${tab === 'details' ? 'bg-ozora-yellow text-ozora-ink' : 'border border-white/10 text-ozora-cream'}`}
-          >
+          <Button type="button" role="tab" aria-selected={tab === 'details'} tone={tab === 'details' ? 'primary' : 'ghost'} size="sm" onClick={() => setTab('details')}>
             {text('detailsTab')}
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === 'tickets'}
-            onClick={() => setTab('tickets')}
-            className={`h-10 rounded-full px-5 text-sm font-bold ${tab === 'tickets' ? 'bg-ozora-yellow text-ozora-ink' : 'border border-white/10 text-ozora-cream'}`}
-          >
+          </Button>
+          <Button type="button" role="tab" aria-selected={tab === 'tickets'} tone={tab === 'tickets' ? 'primary' : 'ghost'} size="sm" onClick={() => setTab('tickets')}>
             {text('ticketsTab')}
-          </button>
+          </Button>
         </div>
 
         {tab === 'details' ? (
@@ -420,9 +408,9 @@ export function AdminEventForm({
                 </div>
                 <div className="flex gap-2">
                   <input value={draftName} onChange={(event) => setDraftName(event.target.value)} placeholder={text('addName')} className={adminFieldClass} />
-                  <button type="button" onClick={addName} className="h-12 shrink-0 rounded-full border border-white/15 px-4 text-sm font-bold">
+                  <Button type="button" tone="ghost" className="shrink-0" onClick={addName}>
                     {text('addName')}
-                  </button>
+                  </Button>
                 </div>
               </AdminSection>
             </div>
@@ -494,27 +482,27 @@ export function AdminEventForm({
                       </div>
                     );
                   })}
-                  <button type="button" onClick={() => updateType(typeIndex, { ...type, lotes: [...type.lotes, blankLote()] })} className="inline-flex items-center gap-2 text-sm font-bold text-ozora-turquoise">
+                  <TextLink onClick={() => updateType(typeIndex, { ...type, lotes: [...type.lotes, blankLote()] })} className="inline-flex items-center gap-2 text-sm">
                     <Plus size={16} aria-hidden="true" />
                     {text('addLote')}
-                  </button>
+                  </TextLink>
                 </fieldset>
               ))}
-              <button type="button" onClick={() => setTypes((current) => [...current, { name: '', lotes: [blankLote()] }])} className="inline-flex items-center gap-2 text-sm font-bold text-ozora-yellow">
+              <TextLink onClick={() => setTypes((current) => [...current, { name: '', lotes: [blankLote()] }])} className="inline-flex items-center gap-2 text-sm">
                 <Plus size={16} aria-hidden="true" />
                 {text('addType')}
-              </button>
+              </TextLink>
             </AdminSection>
           </div>
         )}
 
         <div className="mt-8 flex flex-wrap items-center gap-4 rounded-[2rem] border border-white/10 bg-black/15 p-4">
-          <button type="submit" name="intent" value="save" disabled={pending} className="inline-flex h-12 min-w-40 items-center justify-center rounded-full border border-white/15 px-6 text-sm font-bold text-ozora-cream disabled:opacity-40">
+          <Button type="submit" name="intent" value="save" tone="ghost" disabled={pending} className="min-w-40">
             {pending ? text('saving') : text('save')}
-          </button>
-          <button type="submit" name="intent" value="publish" disabled={pending} className="inline-flex h-12 min-w-40 items-center justify-center rounded-full bg-ozora-yellow px-6 text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral disabled:opacity-40">
+          </Button>
+          <Button type="submit" name="intent" value="publish" disabled={pending} className="min-w-40">
             {text('publish')}
-          </button>
+          </Button>
           {result?.notice === 'saved' ? <p className="text-sm font-semibold text-emerald-300">{text('saved')}</p> : null}
           {result?.notice === 'invalid' || result?.notice === 'denied' ? <p className="text-sm font-semibold text-ozora-coral">{text('invalid')}</p> : null}
         </div>

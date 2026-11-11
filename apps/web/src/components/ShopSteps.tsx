@@ -3,6 +3,7 @@
 import type { Locale } from 'tropical-nomads-shared';
 import { shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
+import { TextLink } from './ui/Button';
 
 const stepIds = ['cart', 'address', 'review'] as const;
 
@@ -52,9 +53,7 @@ export function ShopSteps({ current }: { current: ShopStepId }) {
           <li key={id} className="flex items-center gap-2">
             {index > 0 ? <span className="text-ozora-cream/30">/</span> : null}
             {reached ? (
-              <a href={stepHref(id)} className="font-semibold text-ozora-turquoise hover:text-ozora-cream">
-                {label}
-              </a>
+              <TextLink href={stepHref(id)}>{label}</TextLink>
             ) : (
               <span aria-current={active ? 'step' : undefined} className={active ? 'font-bold text-ozora-yellow' : 'text-ozora-cream/40'}>
                 {label}

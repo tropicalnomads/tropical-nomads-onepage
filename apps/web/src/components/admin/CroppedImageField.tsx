@@ -7,6 +7,7 @@ import Cropper, { type Area, type Point } from 'react-easy-crop';
 import { avatarByteLimit } from 'tropical-nomads-shared';
 import 'react-easy-crop/react-easy-crop.css';
 import { croppedImage } from '../../shop/crop-image';
+import { Button, IconButton, TextLink } from '../ui/Button';
 
 const imageTypes = ['image/jpeg', 'image/png', 'image/webp'];
 
@@ -203,9 +204,7 @@ export function CroppedImageField({
             <h2 className="font-display text-2xl font-bold">{labels.cropTitle}</h2>
             <p className="mt-1 text-sm text-ozora-cream/55">{labels.cropHelp}</p>
           </div>
-          <button type="button" onClick={closeCrop} className="rounded-full px-3 py-2 text-sm font-bold text-ozora-cream/60 hover:bg-white/10">
-            {labels.cancel}
-          </button>
+          <TextLink onClick={closeCrop}>{labels.cancel}</TextLink>
         </div>
         <div className={cropStageClassName}>
           {cropSource ? (
@@ -239,17 +238,12 @@ export function CroppedImageField({
         </label>
         {imageError ? <p className="mt-3 text-sm font-semibold text-ozora-coral">{imageError}</p> : null}
         <div className="mt-6 flex justify-end gap-3">
-          <button type="button" onClick={closeCrop} className="h-11 rounded-full border border-white/15 px-5 text-sm font-bold hover:bg-white/10">
+          <Button type="button" tone="ghost" onClick={closeCrop}>
             {labels.cancel}
-          </button>
-          <button
-            type="button"
-            onClick={useCrop}
-            disabled={cropping || !cropPixels}
-            className="h-11 rounded-full bg-ozora-yellow px-5 text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral disabled:opacity-40"
-          >
+          </Button>
+          <Button type="button" onClick={useCrop} disabled={cropping || !cropPixels}>
             {cropping ? labels.cropping : labels.use}
-          </button>
+          </Button>
         </div>
       </div>
     </dialog>
@@ -271,15 +265,9 @@ export function CroppedImageField({
                 <p className="mt-0.5 text-xs text-ozora-cream/45">{labels.ratio}</p>
               </div>
               {preview ? (
-                <button
-                  type="button"
-                  onClick={removeImage}
-                  disabled={disabled}
-                  className="inline-flex h-9 items-center gap-2 rounded-full border border-ozora-coral/35 px-3 text-xs font-bold text-ozora-coral transition hover:bg-ozora-coral/10 disabled:opacity-40"
-                >
-                  <Trash2 size={14} aria-hidden="true" />
+                <Button type="button" tone="secondary" size="sm" className="h-9 px-3 text-xs" onClick={removeImage} disabled={disabled} icon={<Trash2 size={14} aria-hidden="true" />}>
                   {labels.remove}
-                </button>
+                </Button>
               ) : null}
             </div>
             <div className={`relative flex overflow-hidden rounded-[1.5rem] border border-white/10 bg-black/20 ${aspectClass}`}>
@@ -325,27 +313,25 @@ export function CroppedImageField({
               )}
             </div>
             {fileInput}
-            <button
-              type="button"
-              onClick={() => fileRef.current?.click()}
-              disabled={disabled}
-              aria-label={preview ? labels.replace : labels.upload}
+            <IconButton
+              label={preview ? labels.replace : labels.upload}
               title={labels.placeholder}
-              className="absolute bottom-1 right-1 inline-flex h-8 w-8 items-center justify-center rounded-full border-2 border-ozora-navy bg-ozora-yellow text-ozora-ink shadow-lg transition hover:bg-ozora-coral focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow disabled:opacity-40"
+              disabled={disabled}
+              onClick={() => fileRef.current?.click()}
+              className="absolute bottom-1 right-1 h-8 w-8 border-2 border-ozora-navy bg-ozora-yellow text-ozora-ink shadow-lg hover:bg-ozora-coral hover:text-ozora-ink"
             >
               <Camera size={15} aria-hidden="true" />
-            </button>
+            </IconButton>
             {preview ? (
-              <button
-                type="button"
-                onClick={removeImage}
-                disabled={disabled}
-                aria-label={labels.remove}
+              <IconButton
+                label={labels.remove}
                 title={labels.remove}
-                className="absolute -right-1 -top-1 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/15 bg-ozora-navy text-ozora-coral shadow-lg transition hover:bg-ozora-coral/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-coral disabled:opacity-40"
+                disabled={disabled}
+                onClick={removeImage}
+                className="absolute -right-1 -top-1 h-7 w-7 border border-white/15 bg-ozora-navy text-ozora-coral shadow-lg hover:bg-ozora-coral/15 hover:text-ozora-coral"
               >
                 <Trash2 size={13} aria-hidden="true" />
-              </button>
+              </IconButton>
             ) : null}
           </div>
           <button

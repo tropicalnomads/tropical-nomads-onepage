@@ -1,12 +1,7 @@
-import { adminActor, loadAdminEventList } from '../../../src/admin/actions';
-import { AdminDenied, AdminEventList } from '../../../src/components/AdminEventList';
+import { AdminHubPage } from '../../../src/components/AdminHubPage';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminEventsPage() {
-  const actor = await adminActor();
-  if (!actor) {
-    return <AdminDenied />;
-  }
-  return <AdminEventList parties={await loadAdminEventList()} />;
+export default function AdminEventsPage() {
+  return <AdminHubPage tab="events" />;
 }

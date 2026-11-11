@@ -1,8 +1,10 @@
 'use client';
 
+import { useSignInHref } from '../account/use-return-path';
 import { accountText, areaText, ticketText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { EmptyState } from '../../../one-pager/src/components/EmptyState';
+import { Button, TextLink } from './ui/Button';
 
 export interface TicketRow {
   id: string;
@@ -15,6 +17,7 @@ export interface TicketRow {
 
 export function MyTickets({ signedIn, tickets }: { signedIn: boolean; tickets: readonly TicketRow[] }) {
   const { language } = useLanguage();
+  const signInHref = useSignInHref();
   const label = areaText(language, 'my-tickets');
   const open = tickets.find((ticket) => ticket.qrSvg);
 
@@ -25,12 +28,9 @@ export function MyTickets({ signedIn, tickets }: { signedIn: boolean; tickets: r
         {!signedIn ? (
           <div className="mt-6">
             <EmptyState title={ticketText(language, 'signInTitle')} description={ticketText(language, 'signInBody')} />
-            <a
-              href="/account/sign-in"
-              className="mt-4 inline-flex rounded-lg bg-ozora-coral px-4 py-2 text-sm font-semibold text-ozora-ink hover:bg-ozora-yellow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow"
-            >
+            <Button href={signInHref} className="mt-4">
               {accountText(language, 'signIn')}
-            </a>
+            </Button>
           </div>
         ) : tickets.length === 0 ? (
           <div className="mt-6">
@@ -76,9 +76,9 @@ export function MyTickets({ signedIn, tickets }: { signedIn: boolean; tickets: r
                   aria-label={ticketText(language, 'qrLabel').replaceAll('{title}', open.title)}
                   dangerouslySetInnerHTML={{ __html: open.qrSvg }}
                 />
-                <a href="/my-tickets" className="mt-4 inline-flex text-sm font-semibold text-ozora-turquoise underline-offset-2 hover:underline">
+                <TextLink href="/my-tickets" className="mt-4 inline-flex text-sm">
                   {ticketText(language, 'back')}
-                </a>
+                </TextLink>
               </article>
             ) : null}
           </div>

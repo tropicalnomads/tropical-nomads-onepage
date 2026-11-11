@@ -1,9 +1,11 @@
 'use client';
 
 import { ChevronDown, LogIn, LogOut, Menu, ShoppingBag, Ticket, UserRound, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { origins, type Locale, type WebAreaId } from 'tropical-nomads-shared';
 import { signOutAction } from '../account/actions';
+import { signInHref } from '../account/return-path';
+import { useCurrentPath } from '../account/use-return-path';
 import { accountText, areaText, shellText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { shopText } from '../i18n/shop-copy';
@@ -11,15 +13,11 @@ import { navigation } from '../navigation';
 import { publicHref } from '../seo/urls';
 import { useShopCart } from '../shop/useShopCart';
 import { LanguageSwitch } from './LanguageSwitch';
+import { Button, IconButton } from './ui/Button';
+import { Menu as AccountMenu, MenuItem, MenuSeparator } from './ui/Menu';
 
 const navLinkClass =
   'shrink-0 rounded-full px-3 py-1.5 text-sm font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise';
-
-const accountButtonClass =
-  'group inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full border border-ozora-yellow/80 bg-ozora-yellow px-2.5 text-sm font-bold text-ozora-ink shadow-[0_8px_22px_rgba(250,208,46,0.2)] transition hover:-translate-y-0.5 hover:border-ozora-coral hover:bg-ozora-coral hover:shadow-[0_12px_26px_rgba(255,127,80,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow focus-visible:ring-offset-2 focus-visible:ring-offset-ozora-navy sm:px-4';
-
-const accountMenuItemClass =
-  'flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-ozora-cream/90 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise';
 
 function headerLabel(language: Locale, id: WebAreaId): string {
   if (id === 'upcoming-events') {
@@ -61,67 +59,29 @@ function CartLink({ menu, onClick }: { menu?: boolean; onClick?: () => void }) {
     );
   }
   return (
-    <a
-      href="/shop/cart"
-      aria-label={shopText(language, 'cartAria')}
-      className="relative hidden h-9 w-9 items-center justify-center rounded-full border border-white/15 text-ozora-cream transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise lg:inline-flex"
-    >
+    <Button href="/shop/cart" tone="ghost" size="sm" aria-label={shopText(language, 'cartAria')} className="relative hidden h-9 w-9 px-0 lg:inline-flex">
       <ShoppingBag size={18} aria-hidden="true" />
       {count > 0 ? (
         <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-ozora-yellow px-1 text-[11px] font-bold text-ozora-ink">{count}</span>
       ) : null}
-    </a>
+    </Button>
   );
 }
 
 function AccountControl({ signedIn, onOpen }: { signedIn: boolean; onOpen?: () => void }) {
   const { language } = useLanguage();
-  const accountHref = signedIn ? '/account' : '/account/sign-in';
+  const here = useCurrentPath();
+  const accountHref = signedIn ? '/account' : signInHref(here);
   const accountLabel = signedIn ? accountText(language, 'accountTitle') : accountText(language, 'signIn');
-  const [open, setOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-    const onPointer = (event: MouseEvent): void => {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-    const onKey = (event: KeyboardEvent): void => {
-      if (event.key === 'Escape') {
-        setOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', onPointer);
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('mousedown', onPointer);
-      document.removeEventListener('keydown', onKey);
-    };
-  }, [open]);
 
   if (!signedIn) {
     return (
-      <a href={accountHref} className={accountButtonClass}>
-        <LogIn size={16} aria-hidden="true" className="transition-transform group-hover:scale-110" />
+      <Button href={accountHref} size="sm" className="h-9 px-2.5 sm:px-4" icon={<LogIn size={16} aria-hidden="true" />}>
         {accountLabel}
-      </a>
+      </Button>
     );
   }
-
-  const toggle = (): void => {
-    setOpen((current) => {
-      const next = !current;
-      if (next) {
-        onOpen?.();
-      }
-      return next;
-    });
-  };
 
   const signOut = async (): Promise<void> => {
     if (signingOut) {
@@ -137,42 +97,36 @@ function AccountControl({ signedIn, onOpen }: { signedIn: boolean; onOpen?: () =
   };
 
   return (
-    <div ref={rootRef} className="relative">
-      <button
-        type="button"
-        className={accountButtonClass}
-        aria-expanded={open}
-        aria-haspopup="menu"
-        aria-controls="account-menu"
-        onClick={toggle}
-      >
-        <UserRound size={16} aria-hidden="true" className="transition-transform group-hover:scale-110" />
-        {accountLabel}
-        <ChevronDown size={14} aria-hidden="true" className={`transition-transform ${open ? 'rotate-180' : ''}`} />
-      </button>
-      {open ? (
-        <div
-          id="account-menu"
-          role="menu"
-          aria-label={accountLabel}
-          className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-52 rounded-2xl border border-white/10 bg-ozora-navy/95 p-1.5 shadow-[0_18px_50px_rgba(0,0,0,0.35)] backdrop-blur-md"
+    <AccountMenu
+      label={accountLabel}
+      onOpen={onOpen}
+      trigger={({ open, toggle, menuId }) => (
+        <Button
+          type="button"
+          size="sm"
+          className="h-9 px-2.5 sm:px-4"
+          aria-expanded={open}
+          aria-haspopup="menu"
+          aria-controls={menuId}
+          onClick={toggle}
         >
-          <a role="menuitem" href={accountHref} className={accountMenuItemClass} onClick={() => setOpen(false)}>
-            <UserRound size={16} aria-hidden="true" />
-            {accountText(language, 'accountTitle')}
-          </a>
-          <a role="menuitem" href="/my-tickets" className={accountMenuItemClass} onClick={() => setOpen(false)}>
-            <Ticket size={16} aria-hidden="true" />
-            {areaText(language, 'my-tickets')}
-          </a>
-          <div className="my-1 border-t border-white/10" />
-          <button type="button" role="menuitem" className={accountMenuItemClass} disabled={signingOut} onClick={() => void signOut()}>
-            <LogOut size={16} aria-hidden="true" />
-            {accountText(language, 'signOut')}
-          </button>
-        </div>
-      ) : null}
-    </div>
+          <UserRound size={16} aria-hidden="true" />
+          {accountLabel}
+          <ChevronDown size={14} aria-hidden="true" className={`transition-transform ${open ? 'rotate-180' : ''}`} />
+        </Button>
+      )}
+    >
+      <MenuItem href={accountHref} icon={<UserRound size={16} aria-hidden="true" />}>
+        {accountText(language, 'accountTitle')}
+      </MenuItem>
+      <MenuItem href="/my-tickets" icon={<Ticket size={16} aria-hidden="true" />}>
+        {areaText(language, 'my-tickets')}
+      </MenuItem>
+      <MenuSeparator />
+      <MenuItem disabled={signingOut} onSelect={() => void signOut()} icon={<LogOut size={16} aria-hidden="true" />}>
+        {accountText(language, 'signOut')}
+      </MenuItem>
+    </AccountMenu>
   );
 }
 
@@ -200,16 +154,15 @@ export function ShellHeader({ signedIn, admin = false }: { signedIn: boolean; ad
           />
         </a>
 
-        <button
-          type="button"
+        <IconButton
+          label={menuOpen ? shellText(language, 'closeMenu') : shellText(language, 'openMenu')}
           onClick={() => setMenuOpen((open) => !open)}
-          className="relative z-20 inline-flex items-center justify-center rounded-lg p-2 text-ozora-cream transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise lg:hidden"
-          aria-label={menuOpen ? shellText(language, 'closeMenu') : shellText(language, 'openMenu')}
+          className="relative z-20 h-10 w-10 lg:hidden"
           aria-expanded={menuOpen}
           aria-controls="mobile-nav"
         >
           {menuOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
-        </button>
+        </IconButton>
 
         <a
           href={publicHref('/', language)}
@@ -238,7 +191,7 @@ export function ShellHeader({ signedIn, admin = false }: { signedIn: boolean; ad
           <BookingsLink />
           {admin ? (
             <a href="/admin/events" className={navLinkClass}>
-              {shellText(language, 'eventsAdmin')}
+              {shellText(language, 'navAdmin')}
             </a>
           ) : null}
         </nav>
@@ -279,7 +232,7 @@ export function ShellHeader({ signedIn, admin = false }: { signedIn: boolean; ad
               onClick={closeMenu}
               className="rounded-lg px-3 py-2.5 text-left text-base font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
             >
-              {shellText(language, 'eventsAdmin')}
+              {shellText(language, 'navAdmin')}
             </a>
           ) : null}
           <CartLink menu onClick={closeMenu} />

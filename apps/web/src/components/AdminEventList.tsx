@@ -8,7 +8,6 @@ import {
   FilePenLine,
   MapPin,
   Music2,
-  Plus,
   Ticket,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
@@ -18,6 +17,7 @@ import { eventBoardDetails, eventPhase, eventPhaseCounts, groupEventBoard, type 
 import { uploadedEventFlyer } from '../admin/event-image';
 import { adminText, eventText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
+import { TextLink } from './ui/Button';
 
 const phaseOrder = ['draft', 'published', 'ended'] as const satisfies readonly EventPhase[];
 const phaseCountStyles: Record<EventPhase, string> = {
@@ -110,25 +110,7 @@ export function AdminEventList({ parties, now = new Date() }: { parties: readonl
   const board = groupEventBoard(parties, now);
   const counts = eventPhaseCounts(parties, now);
   return (
-    <main className="relative overflow-hidden px-5 py-10 md:px-8 md:py-14">
-      <div className="pointer-events-none absolute left-1/2 top-0 h-80 w-[52rem] -translate-x-1/2 rounded-full bg-ozora-turquoise/[0.06] blur-3xl" />
-      <div className="relative mx-auto max-w-6xl">
-        <div className="flex flex-col gap-6 border-b border-white/10 pb-8 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-ozora-turquoise">
-              <CalendarDays size={15} aria-hidden="true" />
-              {adminText(language, 'title')}
-            </div>
-            <h1 className="font-display text-4xl font-bold tracking-tight text-ozora-cream md:text-5xl">{adminText(language, 'title')}</h1>
-          </div>
-          <a
-            href="/admin/events/new"
-            className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-ozora-coral px-6 text-sm font-bold text-ozora-ink shadow-[0_12px_30px_rgba(255,127,80,0.18)] transition hover:-translate-y-0.5 hover:bg-ozora-yellow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow"
-          >
-            <Plus size={18} aria-hidden="true" />
-            {adminText(language, 'newEvent')}
-          </a>
-        </div>
+    <>
         {parties.length === 0 ? (
           <div className="mt-10 rounded-3xl border border-dashed border-white/15 bg-white/[0.025] px-6 py-16 text-center">
             <CalendarDays className="mx-auto text-ozora-cream/25" size={34} aria-hidden="true" />
@@ -150,8 +132,7 @@ export function AdminEventList({ parties, now = new Date() }: { parties: readonl
         ) : null}
         <EventSection title={adminText(language, 'comingUp')} section="coming-up" parties={board.comingUp} now={now} />
         <EventSection title={adminText(language, 'endedSection')} section="ended" parties={board.ended} now={now} />
-      </div>
-    </main>
+    </>
   );
 }
 
@@ -286,10 +267,10 @@ export function AdminEventEditor({
   return (
     <main className="px-5 py-10 md:px-8 md:py-14">
       <div className="mx-auto max-w-4xl">
-        <a href="/admin/events" className="inline-flex items-center gap-2 text-sm font-semibold text-ozora-turquoise transition hover:text-ozora-yellow">
+        <TextLink href="/admin/events" className="inline-flex items-center gap-2 text-sm">
           <ArrowRight className="rotate-180" size={16} aria-hidden="true" />
           {adminText(language, 'back')}
-        </a>
+        </TextLink>
         <div className="mt-5 flex flex-wrap items-center gap-3 border-b border-white/10 pb-6">
           <h1 className="font-display text-3xl font-bold text-ozora-cream md:text-4xl">{adminText(language, heading)}</h1>
           {phase ? (

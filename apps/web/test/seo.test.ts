@@ -29,7 +29,7 @@ import { robotAgents, robotDisallows, robotsTxt } from '../src/seo/robots.ts';
 import { sitemapEntries, sitemapXml } from '../src/seo/sitemap.ts';
 import { canonicalUrl, isPublicPath, localeFromHeader, localeFromLangParam, publicHref, searchLinks, siteOrigin } from '../src/seo/urls.ts';
 
-const privatePaths = ['/account', '/account/sign-in', '/account/register', '/my-tickets', '/check-in', '/health', '/admin/events', '/shop/cart'];
+const privatePaths = ['/account', '/account/sign-in', '/account/register', '/my-tickets', '/check-in', '/health', '/admin', '/shop/cart'];
 
 const expectedLlms = `# Tropical Nomads
 

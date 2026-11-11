@@ -3,6 +3,7 @@
 import { Bold, Italic } from 'lucide-react';
 import { useRef, type ReactNode } from 'react';
 import { ShopMarkdown } from '../../shop/markdown';
+import { IconButton } from '../ui/Button';
 
 export function MarkdownField({
   id,
@@ -59,24 +60,12 @@ export function MarkdownField({
       </div>
       <div className="mt-2 overflow-hidden rounded-2xl border border-white/15 bg-black/25 focus-within:border-ozora-turquoise focus-within:ring-2 focus-within:ring-ozora-turquoise/15">
         <div className="flex items-center gap-1 border-b border-white/10 px-2 py-2">
-          <button
-            type="button"
-            onClick={() => formatDescription('**')}
-            aria-label={boldLabel}
-            title={boldLabel}
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-ozora-cream/70 transition hover:bg-white/10 hover:text-ozora-cream"
-          >
+          <IconButton label={boldLabel} title={boldLabel} onClick={() => formatDescription('**')}>
             <Bold size={17} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            onClick={() => formatDescription('*')}
-            aria-label={italicLabel}
-            title={italicLabel}
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-ozora-cream/70 transition hover:bg-white/10 hover:text-ozora-cream"
-          >
+          </IconButton>
+          <IconButton label={italicLabel} title={italicLabel} onClick={() => formatDescription('*')}>
             <Italic size={17} aria-hidden="true" />
-          </button>
+          </IconButton>
           <span className="ml-2 text-xs text-ozora-cream/35">{help}</span>
         </div>
         <textarea

@@ -11,9 +11,10 @@ import { canonicalCountryName, countryChoices, postalCompact, postalLookupKey } 
 import { useShopCart } from '../shop/useShopCart';
 import { SelectField } from './SelectField';
 import { ShopSteps } from './ShopSteps';
+import { Button, TextLink } from './ui/Button';
+import { fieldControlClass } from './ui/field';
 
-const fieldClass =
-  'h-12 w-full rounded-xl border border-white/15 bg-black/25 px-4 text-sm text-ozora-cream outline-none transition placeholder:text-ozora-cream/35 focus:border-ozora-yellow focus:ring-2 focus:ring-ozora-yellow/15';
+const fieldClass = `${fieldControlClass} h-12 text-sm`;
 
 type LookupStatus = 'idle' | 'loading' | 'found' | 'missing';
 
@@ -240,12 +241,9 @@ export function ShopCheckout({ presets, signedIn }: { presets: ShopAddressPreset
         {cart.lines.length === 0 ? (
           <div className="mt-8 rounded-3xl border border-white/10 bg-ozora-navy/55 p-8 text-center">
             <p className="text-sm text-ozora-cream/75">{shopText(language, 'empty')}</p>
-            <a
-              href={publicHref('/shop', language)}
-              className="mt-6 inline-flex h-11 items-center justify-center rounded-full bg-ozora-yellow px-5 text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral"
-            >
+            <Button href={publicHref('/shop', language)} className="mt-6">
               {shopText(language, 'continue')}
-            </a>
+            </Button>
           </div>
         ) : (
           <div className="mt-8 grid items-start gap-6 lg:grid-cols-[17rem_minmax(0,1fr)]">
@@ -259,13 +257,9 @@ export function ShopCheckout({ presets, signedIn }: { presets: ShopAddressPreset
                     </h2>
                   </div>
                   <p className="mt-3 text-sm leading-relaxed text-ozora-cream/65">{addressSummary(preset.address)}</p>
-                  <button
-                    type="button"
-                    onClick={() => usePreset(preset)}
-                    className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-full border border-white/15 text-xs font-bold text-ozora-cream transition hover:border-ozora-turquoise hover:bg-white/5"
-                  >
+                  <Button type="button" tone="ghost" size="sm" className="mt-4 w-full" onClick={() => usePreset(preset)}>
                     {shopText(language, 'useAddress')}
-                  </button>
+                  </Button>
                 </div>
               ))}
               {presets.length === 0 ? (
@@ -354,24 +348,14 @@ export function ShopCheckout({ presets, signedIn }: { presets: ShopAddressPreset
 
               <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <a
-                    href={publicHref('/shop', language)}
-                    className="inline-flex h-12 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-bold text-ozora-cream transition hover:bg-white/10"
-                  >
+                  <Button href={publicHref('/shop', language)} tone="ghost">
                     {shopText(language, 'continue')}
-                  </a>
-                  <a href="/shop/cart" className="text-center text-sm font-semibold text-ozora-turquoise hover:text-ozora-cream">
-                    {shopText(language, 'backCart')}
-                  </a>
+                  </Button>
+                  <TextLink href="/shop/cart">{shopText(language, 'backCart')}</TextLink>
                 </div>
-                <button
-                  type="button"
-                  disabled={!complete || submitting}
-                  onClick={() => void continueCheckout()}
-                  className="inline-flex h-12 items-center justify-center rounded-full bg-ozora-yellow px-7 text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-ozora-cream/40"
-                >
+                <Button type="button" disabled={!complete || submitting} onClick={() => void continueCheckout()}>
                   {shopText(language, 'next')}
-                </button>
+                </Button>
               </div>
             </form>
           </div>

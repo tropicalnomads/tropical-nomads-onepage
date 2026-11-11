@@ -12,6 +12,7 @@ import { useShopCart } from '../shop/useShopCart';
 import type { ShopImageSources } from '../shop/images';
 import { QuantityStepper } from './ShopQuantity';
 import { ShopSteps } from './ShopSteps';
+import { Button } from './ui/Button';
 
 export function ShopCart({ imageSources }: { imageSources: ShopImageSources }) {
   const { language } = useLanguage();
@@ -29,12 +30,9 @@ export function ShopCart({ imageSources }: { imageSources: ShopImageSources }) {
         {cart.lines.length === 0 ? (
           <div className="mt-8 rounded-3xl border border-white/10 bg-ozora-navy/55 p-8 text-center">
             <p className="text-sm text-ozora-cream/75">{shopText(language, 'empty')}</p>
-            <a
-              href={publicHref('/shop', language)}
-              className="mt-6 inline-flex h-11 items-center justify-center rounded-full bg-ozora-yellow px-5 text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral"
-            >
+            <Button href={publicHref('/shop', language)} className="mt-6">
               {shopText(language, 'continue')}
-            </a>
+            </Button>
           </div>
         ) : (
           <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
@@ -70,14 +68,9 @@ export function ShopCart({ imageSources }: { imageSources: ShopImageSources }) {
                           increaseLabel={shopText(language, 'increase')}
                           onChange={(quantity) => cart.setQuantity(line.productId, line.size, quantity)}
                         />
-                        <button
-                          type="button"
-                          onClick={() => cart.remove(line.productId, line.size)}
-                          className="inline-flex items-center gap-1.5 text-sm font-semibold text-ozora-cream/70 hover:text-ozora-coral"
-                        >
-                          <Trash2 size={15} aria-hidden="true" />
+                        <Button type="button" tone="ghost" size="sm" className="h-9 px-3" onClick={() => cart.remove(line.productId, line.size)} icon={<Trash2 size={15} aria-hidden="true" />}>
                           {shopText(language, 'remove')}
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   </article>
@@ -89,18 +82,12 @@ export function ShopCart({ imageSources }: { imageSources: ShopImageSources }) {
                 <p className="text-sm font-semibold uppercase tracking-[0.14em] text-ozora-cream/60">{shopText(language, 'subtotal')}</p>
                 <p className="text-2xl font-bold text-ozora-yellow">{shopTotalLabel(cart.lines, products)}</p>
               </div>
-              <a
-                href="/shop/checkout"
-                className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-full bg-ozora-yellow text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral"
-              >
+              <Button href="/shop/checkout" className="mt-5 w-full">
                 {shopText(language, 'checkout')}
-              </a>
-              <a
-                href={publicHref('/shop', language)}
-                className="mt-3 inline-flex h-12 w-full items-center justify-center rounded-full border border-white/15 text-sm font-bold text-ozora-cream transition hover:bg-white/10"
-              >
+              </Button>
+              <Button href={publicHref('/shop', language)} tone="ghost" className="mt-3 w-full">
                 {shopText(language, 'continue')}
-              </a>
+              </Button>
             </aside>
           </div>
         )}

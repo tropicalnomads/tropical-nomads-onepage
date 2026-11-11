@@ -9,6 +9,7 @@ import { fillHome } from '../../i18n/home';
 import { useLanguage } from '../../i18n/provider';
 import { EmptyState } from '../../../../one-pager/src/components/EmptyState';
 import { PartnerAvatar } from './PartnerAvatar';
+import { Button } from '../ui/Button';
 
 export function UpcomingSection({ events, partners }: { events: readonly HomeEvent[]; partners: readonly HomePartner[] }) {
   const { language } = useLanguage();
@@ -85,31 +86,29 @@ export function UpcomingSection({ events, partners }: { events: readonly HomeEve
                     {summary ? <p className="mt-2 text-sm text-ozora-cream/70">{summary}</p> : null}
                     <div className="mt-4 flex flex-col items-center gap-3 md:items-start">
                       {event.ticketUrl ? (
-                        <a
-                          href={event.ticketUrl}
-                          target="_blank"
-                          rel="noreferrer noopener"
-                          className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 ${
-                            event.ticketsOnSale
-                              ? 'bg-ozora-coral text-ozora-ink hover:bg-ozora-yellow focus-visible:ring-ozora-yellow'
-                              : 'border border-ozora-turquoise/70 bg-ozora-turquoise/10 text-ozora-cream hover:bg-ozora-turquoise/20 focus-visible:ring-ozora-turquoise'
-                          }`}
-                          aria-label={fillHome(homeText(language, event.ticketsOnSale ? 'buyTicketsAria' : 'goabaseAria'), {
-                            title: event.title,
-                          })}
-                        >
-                          {event.ticketsOnSale ? (
-                            <>
-                              <Ticket size={16} aria-hidden="true" />
-                              {homeText(language, 'buyTickets')}
-                            </>
-                          ) : (
-                            <>
-                              {homeText(language, 'eventDetails')}
-                              <ExternalLink size={16} aria-hidden="true" />
-                            </>
-                          )}
-                        </a>
+                        event.ticketsOnSale ? (
+                          <Button
+                            href={event.ticketUrl}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            size="sm"
+                            aria-label={fillHome(homeText(language, 'buyTicketsAria'), { title: event.title })}
+                            icon={<Ticket size={16} aria-hidden="true" />}
+                          >
+                            {homeText(language, 'buyTickets')}
+                          </Button>
+                        ) : (
+                          <a
+                            href={event.ticketUrl}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            className="inline-flex items-center gap-2 rounded-xl border border-ozora-turquoise/70 bg-ozora-turquoise/10 px-4 py-2 text-sm font-semibold text-ozora-cream transition hover:bg-ozora-turquoise/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
+                            aria-label={fillHome(homeText(language, 'goabaseAria'), { title: event.title })}
+                          >
+                            {homeText(language, 'eventDetails')}
+                            <ExternalLink size={16} aria-hidden="true" />
+                          </a>
+                        )
                       ) : (
                         <span className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-ozora-cream/60">
                           <Clock size={16} aria-hidden="true" />

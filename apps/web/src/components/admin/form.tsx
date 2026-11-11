@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
+import { fieldControlClass } from '../ui/field';
 
-export const adminFieldClass =
-  'w-full rounded-2xl border border-white/15 bg-black/25 px-4 py-3 text-base text-ozora-cream outline-none transition placeholder:text-ozora-cream/30 focus:border-ozora-turquoise focus:ring-2 focus:ring-ozora-turquoise/15';
+export const adminFieldClass = fieldControlClass;
 
 export function AdminSection({ icon, title, help, children }: { icon?: ReactNode; title: string; help?: string; children: ReactNode }) {
   return (

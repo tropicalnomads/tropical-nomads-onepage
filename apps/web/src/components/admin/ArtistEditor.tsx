@@ -10,6 +10,7 @@ import { useLanguage } from '../../i18n/provider';
 import { CroppedImageField } from './CroppedImageField';
 import { adminFieldClass } from './form';
 import { MarkdownField } from './MarkdownField';
+import { Button, IconButton, TextLink } from '../ui/Button';
 
 export function ArtistEditor({
   artist,
@@ -154,9 +155,7 @@ export function ArtistEditor({
         <div className="space-y-4">
           <div className="flex items-start justify-between gap-3">
             <h2 className="font-display text-2xl font-bold">{adminText(language, 'artistProfile')}</h2>
-            <button type="button" onClick={onClose} className="rounded-full px-3 py-2 text-sm font-bold text-ozora-cream/60 hover:bg-white/10">
-              {adminText(language, 'cancel')}
-            </button>
+            <TextLink onClick={onClose}>{adminText(language, 'cancel')}</TextLink>
           </div>
           <label className="block text-sm font-bold">
             {adminText(language, 'artistName')}
@@ -196,13 +195,9 @@ export function ArtistEditor({
             <input value={website} onChange={(event) => setWebsite(event.target.value)} placeholder="https://" className={`${adminFieldClass} mt-2`} />
           </label>
           {error ? <p className="text-sm font-semibold text-ozora-coral">{error}</p> : null}
-          <button
-            type="submit"
-            disabled={pending}
-            className="inline-flex h-11 items-center justify-center rounded-full bg-ozora-yellow px-6 text-sm font-bold text-ozora-ink transition hover:bg-ozora-coral disabled:opacity-40"
-          >
+          <Button type="submit" disabled={pending}>
             {pending ? adminText(language, 'saving') : adminText(language, 'saveArtist')}
-          </button>
+          </Button>
         </div>
       </form>
     </dialog>,

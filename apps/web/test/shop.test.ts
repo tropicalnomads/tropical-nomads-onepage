@@ -183,9 +183,8 @@ describe('shop', () => {
     assert.equal(catalog.includes('soldOutLabel'), true);
     assert.equal(catalog.includes('/admin/shop/new'), false);
     assert.equal(catalog.includes('editProduct'), false);
-    assert.equal(catalog.includes('/admin/shop/${'), false);
-    assert.equal((catalog.match(/href="\/admin\/shop"/g) ?? []).length, 1);
-    assert.equal(catalog.includes("shopText(language, 'admin')"), true);
+    assert.equal(catalog.includes('/admin/shop'), false);
+    assert.equal(catalog.includes("shopText(language, 'admin')"), false);
     assert.equal(product.includes('location.assign'), false);
     assert.equal(product.includes('ShopAddedPanel'), true);
     assert.equal(added.includes('/shop/cart'), true);
@@ -216,8 +215,8 @@ describe('shop', () => {
     assert.equal(nameAt < postalAt && postalAt < lineAt && lineAt < countryAt, true);
     assert.equal(checkoutPage.includes('ShopCheckout'), true);
     assert.equal(checkoutPage.includes('billingAddresses'), true);
-    assert.equal(checkoutPage.includes("redirect('/account/sign-in')"), true);
-    assert.equal(reviewPage.includes("redirect('/account/sign-in')"), true);
+    assert.equal(checkoutPage.includes("signInHref('/shop/checkout')"), true);
+    assert.equal(reviewPage.includes("signInHref('/shop/checkout/review')"), true);
     assert.equal(postalLookup.includes('nominatim.openstreetmap.org'), true);
     assert.equal(deliveryActions.includes('saveDefaultBillingAddress'), true);
     const complete = readFileSync(new URL('../src/components/ShopOrderComplete.tsx', import.meta.url), 'utf8');
@@ -230,7 +229,7 @@ describe('shop', () => {
     assert.equal(complete.includes('searchParams'), false);
     assert.equal(completePage.includes('ShopOrderComplete'), true);
     assert.equal(reviewPage.includes('ShopReview'), true);
-    assert.equal(catalogPage.includes('adminActor'), true);
+    assert.equal(catalogPage.includes('adminActor'), false);
     assert.equal(header.includes('/shop/cart'), true);
   });
 

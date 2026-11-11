@@ -19,9 +19,10 @@ import { passwordChecks } from 'tropical-nomads-shared';
 import { accountNotice, accountText, type AccountNotice } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { publicHref } from '../seo/urls';
+import { Button, IconButton } from './ui/Button';
+import { fieldClass } from './ui/field';
 
-const controlClass =
-  'h-12 w-full rounded-xl border border-white/15 bg-black/30 pl-11 pr-4 text-base text-ozora-cream shadow-inner outline-none transition placeholder:text-ozora-cream/30 hover:border-white/25 focus:border-ozora-turquoise/70 focus:bg-black/40 focus-visible:ring-2 focus-visible:ring-ozora-turquoise/40 disabled:cursor-not-allowed disabled:opacity-60 md:h-11 md:text-sm';
+const controlClass = `${fieldClass} h-12 bg-black/30 pl-11 pr-4 text-base shadow-inner hover:border-white/25 focus:border-ozora-turquoise/70 focus:bg-black/40 focus-visible:ring-2 focus-visible:ring-ozora-turquoise/40 md:h-11 md:text-sm`;
 
 interface AuthFrameProps {
   eyebrow?: string;
@@ -205,16 +206,15 @@ export function PasswordField({
           onChange={onValueChange ? (event) => onValueChange(event.target.value) : undefined}
           className={`${controlClass} pr-12`}
         />
-        <button
-          type="button"
-          onClick={() => setVisible((current) => !current)}
-          disabled={disabled}
-          aria-label={toggleLabel}
+        <IconButton
+          label={toggleLabel}
           title={toggleLabel}
-          className="absolute right-2.5 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-ozora-cream/55 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise disabled:opacity-40"
+          disabled={disabled}
+          onClick={() => setVisible((current) => !current)}
+          className="absolute right-2.5 top-1/2 h-8 w-8 -translate-y-1/2 text-ozora-cream/55"
         >
           {visible ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
-        </button>
+        </IconButton>
       </span>
     </label>
   );
@@ -261,18 +261,14 @@ export function AuthSubmitButton({ pending, children }: { pending: boolean; chil
   const { language } = useLanguage();
 
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-ozora-green px-5 text-sm font-bold text-ozora-ink shadow-[0_12px_28px_rgba(0,155,119,0.22)] transition hover:-translate-y-0.5 hover:bg-ozora-yellow hover:shadow-[0_16px_32px_rgba(250,208,46,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-yellow focus-visible:ring-offset-2 focus-visible:ring-offset-ozora-navy disabled:cursor-wait disabled:translate-y-0 disabled:opacity-65"
-    >
+    <Button type="submit" disabled={pending} className="group w-full">
       <span>{pending ? accountText(language, 'working') : children}</span>
       <ArrowRight
         size={17}
         aria-hidden="true"
         className={`transition-transform ${pending ? 'animate-pulse' : 'group-hover:translate-x-0.5'}`}
       />
-    </button>
+    </Button>
   );
 }
 

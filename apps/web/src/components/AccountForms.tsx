@@ -7,8 +7,11 @@ import { startHostedSignIn } from '../account/cognito-actions';
 import { noticeForProfileFailure } from '../account/profile-failure';
 import { firstProfileField, profileFieldIssues, profileInputFromFormData, type ProfileFieldIssues, type ProfileFieldName } from '../account/profile-form';
 import { accountEmail } from '../account/review';
+import { safeReturnPath } from '../account/return-path';
+import { useAuthHref, useReturnPath } from '../account/use-return-path';
 import { accountText, type AccountNotice } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
+import { TextLink } from './ui/Button';
 import {
   AuthDivider,
   AuthField,
@@ -21,41 +24,62 @@ import {
 } from './AuthUi';
 import { ProfileFields } from './ProfileFields';
 
-const textLinkClass =
-  'font-bold text-ozora-turquoise underline-offset-4 transition hover:text-ozora-yellow hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise';
+function isCognitoAuthorize(target: string): boolean {
+  try {
+    const url = new URL(target);
+    return (
+      url.protocol === 'https:' &&
+      /^[a-z0-9-]+\.auth\.eu-central-1\.amazoncognito\.com$/.test(url.hostname) &&
+      url.pathname === '/oauth2/authorize'
+    );
+  } catch {
+    return false;
+  }
+}
+
+function accountFlowPath(target: string): '/account' | '/account/sign-in' | '/account/profile' | '/account/confirm' | undefined {
+  if (!target.startsWith('/') || target.startsWith('//') || target.includes('\\') || target.includes('://')) {
+    return undefined;
+  }
+  const path = target.split('?')[0];
+  if (path === '/account' || path === '/account/sign-in' || path === '/account/profile' || path === '/account/confirm') {
+    return path;
+  }
+  return undefined;
+}
 
 function follow(result: { redirect?: string; notice?: AccountNotice; email?: string }): boolean {
   if (!result.redirect) {
     return false;
   }
+  if (isCognitoAuthorize(result.redirect)) {
+    window.location.assign(result.redirect);
+    return true;
+  }
+  const flow = accountFlowPath(result.redirect);
+  const returned = safeReturnPath(result.redirect);
+  const base = flow ?? returned;
+  if (!base) {
+    return false;
+  }
   const params = new URLSearchParams();
-  if ((result.redirect === '/account/sign-in' || result.redirect === '/account/confirm') && result.notice) {
+  if ((flow === '/account/sign-in' || flow === '/account/confirm') && result.notice) {
     params.set('notice', result.notice);
   }
   const email = accountEmail(result.email);
-  if ((result.redirect === '/account/sign-in' || result.redirect === '/account/confirm') && email) {
+  if ((flow === '/account/sign-in' || flow === '/account/confirm') && email) {
     params.set('email', email);
   }
-  const query = params.toString();
-  const target = query ? `${result.redirect}?${query}` : result.redirect;
-  if (target.startsWith('/account') && !target.startsWith('//') && !target.includes('\\')) {
-    window.location.assign(target);
-    return true;
-  }
-  try {
-    const url = new URL(target);
-    if (
-      url.protocol === 'https:' &&
-      /^[a-z0-9-]+\.auth\.eu-central-1\.amazoncognito\.com$/.test(url.hostname) &&
-      url.pathname === '/oauth2/authorize'
-    ) {
-      window.location.assign(url.toString());
-      return true;
+  if (flow === '/account/sign-in' || flow === '/account/confirm' || flow === '/account/profile') {
+    const next = safeReturnPath(new URLSearchParams(window.location.search).get('next'));
+    if (next) {
+      params.set('next', next);
     }
-  } catch {
-    return false;
   }
-  return false;
+  const query = params.toString();
+  const target = query ? `${base}?${query}` : base;
+  window.location.assign(target);
+  return true;
 }
 
 function noteActionFailure(setNotice: (notice: AccountNotice) => void): void {
@@ -74,6 +98,7 @@ export function RegisterForm({
   initialNotice?: AccountNotice | null;
 }) {
   const { language } = useLanguage();
+  const next = useReturnPath();
   const [notice, setNotice] = useState<AccountActionResult['notice'] | null>(initialNotice);
   const [pending, setPending] = useState(false);
   const [pendingProvider, setPendingProvider] = useState<'google' | 'apple' | null>(null);
@@ -102,6 +127,9 @@ export function RegisterForm({
     try {
       const data = new FormData();
       data.set('provider', provider);
+      if (next) {
+        data.set('next', next);
+      }
       if (hosted && ((provider === 'google' && google) || (provider === 'apple' && apple))) {
         const result = await startHostedSignIn(data);
         if (!follow(result)) {
@@ -120,6 +148,7 @@ export function RegisterForm({
 
   return (
     <form onSubmit={onSubmit} className="space-y-5" noValidate aria-busy={pending || pendingProvider !== null}>
+      <input type="hidden" name="next" value={next} />
       <ProviderButtons onProvider={(provider) => void useProvider(provider)} pendingProvider={pendingProvider} />
       <AuthDivider />
       <AuthField
@@ -168,6 +197,8 @@ export function SignInForm({
   initialEmail?: string;
 }) {
   const { language } = useLanguage();
+  const next = useReturnPath();
+  const forgotHref = useAuthHref('/account/forgot-password');
   const [notice, setNotice] = useState<AccountActionResult['notice'] | null>(initialNotice);
   const [pending, setPending] = useState(false);
   const [pendingProvider, setPendingProvider] = useState<'google' | 'apple' | null>(null);
@@ -194,6 +225,9 @@ export function SignInForm({
     try {
       const data = new FormData();
       data.set('provider', provider);
+      if (next) {
+        data.set('next', next);
+      }
       if (hosted && ((provider === 'google' && google) || (provider === 'apple' && apple))) {
         const result = await startHostedSignIn(data);
         if (!follow(result)) {
@@ -212,6 +246,7 @@ export function SignInForm({
 
   return (
     <form onSubmit={onSubmit} className="space-y-5" noValidate aria-busy={pending || pendingProvider !== null}>
+      <input type="hidden" name="next" value={next} />
       <ProviderButtons onProvider={(provider) => void useProvider(provider)} pendingProvider={pendingProvider} />
       <AuthDivider />
       <AuthField
@@ -229,12 +264,9 @@ export function SignInForm({
       <div>
         <PasswordField label={accountText(language, 'password')} autoComplete="current-password" disabled={pending} />
         <div className="mt-2 text-right">
-          <a
-            href="/account/forgot-password"
-            className="text-sm font-semibold text-ozora-turquoise underline-offset-4 transition hover:text-ozora-yellow hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
-          >
+          <TextLink href={forgotHref} className="text-sm">
             {accountText(language, 'forgotPassword')}
-          </a>
+          </TextLink>
         </div>
       </div>
       <AuthSubmitButton pending={pending}>{accountText(language, 'submitSignIn')}</AuthSubmitButton>
@@ -285,6 +317,7 @@ function ConfirmEmailForm({ initialNotice }: { initialNotice: AccountNotice | nu
 
 function ConfirmCodeForm({ email, initialNotice }: { email: string; initialNotice: AccountNotice | null }) {
   const { language } = useLanguage();
+  const changeHref = useAuthHref('/account/confirm', { change: '1' });
   const [notice, setNotice] = useState<AccountActionResult['notice'] | null>(initialNotice);
   const [pending, setPending] = useState(false);
   const [resending, setResending] = useState(false);
@@ -337,17 +370,12 @@ function ConfirmCodeForm({ email, initialNotice }: { email: string; initialNotic
       <p className="text-sm leading-relaxed text-ozora-cream/65">{accountText(language, 'confirmHelp')}</p>
       <AuthSubmitButton pending={pending}>{accountText(language, 'confirmAccount')}</AuthSubmitButton>
       <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
-        <button
-          type="button"
-          onClick={() => void resend()}
-          disabled={busy}
-          className={`${textLinkClass} disabled:cursor-wait disabled:opacity-60`}
-        >
+        <TextLink onClick={() => void resend()} disabled={busy}>
           {resending ? accountText(language, 'working') : accountText(language, 'resendCode')}
-        </button>
-        <a href="/account/confirm?change=1" className={textLinkClass}>
+        </TextLink>
+        <TextLink href={changeHref}>
           {accountText(language, 'differentEmail')}
-        </a>
+        </TextLink>
       </div>
       <AuthNotice notice={notice} />
     </form>
@@ -356,6 +384,8 @@ function ConfirmCodeForm({ email, initialNotice }: { email: string; initialNotic
 
 export function ConfirmEmailScreen({ email, initialNotice }: { email: string; initialNotice: AccountNotice | null }) {
   const { language } = useLanguage();
+  const signInHref = useAuthHref('/account/sign-in');
+  const registerHref = useAuthHref('/account/register');
   const ready = accountEmail(email);
 
   return (
@@ -369,13 +399,13 @@ export function ConfirmEmailScreen({ email, initialNotice }: { email: string; in
       }
       footer={
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm">
-          <a href="/account/sign-in" className={textLinkClass}>
+          <TextLink href={signInHref}>
             {accountText(language, 'signIn')}
-          </a>
+          </TextLink>
           <span aria-hidden="true" className="h-1 w-1 rounded-full bg-ozora-cream/25" />
-          <a href="/account/register" className={textLinkClass}>
+          <TextLink href={registerHref}>
             {accountText(language, 'register')}
-          </a>
+          </TextLink>
         </div>
       }
     >
@@ -400,6 +430,8 @@ export function RegisterScreen({
   initialNotice: AccountNotice | null;
 }) {
   const { language } = useLanguage();
+  const signInHref = useAuthHref('/account/sign-in');
+  const confirmHref = useAuthHref('/account/confirm');
   return (
     <AuthFrame
       showLogo={false}
@@ -409,15 +441,15 @@ export function RegisterScreen({
         <div className="space-y-3 text-sm text-ozora-cream/60">
           <p>
             {accountText(language, 'alreadyHaveAccount')}{' '}
-            <a href="/account/sign-in" className={textLinkClass}>
+            <TextLink href={signInHref}>
               {accountText(language, 'signIn')}
-            </a>
+            </TextLink>
           </p>
           <p>
             {accountText(language, 'haveCode')}{' '}
-            <a href="/account/confirm" className={textLinkClass}>
+            <TextLink href={confirmHref}>
               {accountText(language, 'enterCode')}
-            </a>
+            </TextLink>
           </p>
         </div>
       }
@@ -441,6 +473,8 @@ export function SignInScreen({
   initialEmail?: string;
 }) {
   const { language } = useLanguage();
+  const registerHref = useAuthHref('/account/register');
+  const confirmHref = useAuthHref('/account/confirm');
   return (
     <AuthFrame
       showLogo={false}
@@ -450,15 +484,15 @@ export function SignInScreen({
         <div className="space-y-3 text-sm text-ozora-cream/60">
           <p>
             {accountText(language, 'newToTropical')}{' '}
-            <a href="/account/register" className={textLinkClass}>
+            <TextLink href={registerHref}>
               {accountText(language, 'register')}
-            </a>
+            </TextLink>
           </p>
           <p>
             {accountText(language, 'haveCode')}{' '}
-            <a href="/account/confirm" className={textLinkClass}>
+            <TextLink href={confirmHref}>
               {accountText(language, 'enterCode')}
-            </a>
+            </TextLink>
           </p>
         </div>
       }
@@ -476,6 +510,8 @@ export function SignInScreen({
 
 export function ForgotPasswordScreen({ initialNotice = null }: { initialNotice?: AccountNotice | null }) {
   const { language } = useLanguage();
+  const signInHref = useAuthHref('/account/sign-in');
+  const registerHref = useAuthHref('/account/register');
   const [notice, setNotice] = useState<AccountActionResult['notice'] | null>(initialNotice);
   const [sent, setSent] = useState(false);
   const [pending, setPending] = useState(false);
@@ -510,14 +546,14 @@ export function ForgotPasswordScreen({ initialNotice = null }: { initialNotice?:
       footer={
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm">
           <a
-            href="/account/sign-in"
+            href={signInHref}
             className="font-bold text-ozora-turquoise underline-offset-4 transition hover:text-ozora-yellow hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
           >
             {accountText(language, 'signIn')}
           </a>
           <span aria-hidden="true" className="h-1 w-1 rounded-full bg-ozora-cream/25" />
           <a
-            href="/account/register"
+            href={registerHref}
             className="font-bold text-ozora-turquoise underline-offset-4 transition hover:text-ozora-yellow hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
           >
             {accountText(language, 'register')}
@@ -581,6 +617,7 @@ export function ForgotPasswordScreen({ initialNotice = null }: { initialNotice?:
 
 export function ProfileSetupScreen({ initialNotice = null }: { initialNotice?: AccountNotice | null }) {
   const { language } = useLanguage();
+  const next = useReturnPath();
   const [notice, setNotice] = useState<AccountActionResult['notice'] | null>(initialNotice);
   const [pending, setPending] = useState(false);
   const [issues, setIssues] = useState<ProfileFieldIssues>({});
@@ -627,6 +664,7 @@ export function ProfileSetupScreen({ initialNotice = null }: { initialNotice?: A
       subtitle={accountText(language, 'profileHelp')}
     >
       <form onSubmit={onSubmit} className="space-y-7" encType="multipart/form-data" noValidate aria-busy={pending}>
+        <input type="hidden" name="next" value={next} />
         <ProfileFields pending={pending} issues={issues} onNotice={setNotice} onClearIssue={clearIssue} />
         <AuthSubmitButton pending={pending}>{accountText(language, 'saveProfile')}</AuthSubmitButton>
         <AuthNotice notice={notice} />
