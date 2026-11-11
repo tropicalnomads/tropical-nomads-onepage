@@ -1,5 +1,11 @@
 {
   "_comment": "Per-event external media links. Each event id maps to optional photos/videos/sets arrays of { url, label? }. Empty arrays are ignored. Example: \"116039\": { \"photos\": [{ \"url\": \"https://www.instagram.com/p/...\", \"label\": \"Recap reel\" }], \"sets\": [{ \"url\": \"https://soundcloud.com/...\", \"label\": \"After June live\" }] }",
+  "118352": {
+    "videos": [{ "url": "https://www.instagram.com/p/DfF4y5zA1Na/", "label": "Aftermovie" }]
+  },
+  "118148": {
+    "videos": [{ "url": "https://www.instagram.com/p/DeJ1eg2g6Ui/", "label": "Aftermovie" }]
+  },
   "117914": {
     "videos": [{ "url": "https://www.instagram.com/p/DcO8aCRNM8O/", "label": "Aftermovie" }]
   },

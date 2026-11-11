@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import { eventArtists, eventDayKeys, eventHeadliners, filterCalendarEvents, monthMatrix, type CalendarEventFields } from '../src/events/calendar.ts';
 
@@ -80,15 +81,32 @@ describe('event calendar', () => {
     );
   });
 
-  it('identifies Technology and ARAM as title headliners for both event brands', () => {
+  it('sorts persisted headliners and does not keep a hardcoded event map', () => {
+    const source = readFileSync(new URL('../src/events/calendar.ts', import.meta.url), 'utf8');
+    assert.equal(source.includes('headlinersByEventId'), false);
     const cardArtists = ['Psymmetrix', 'Technology', 'Deutsch', 'Jungle Rumble', 'Dirty Saffi', 'ARAM'];
     assert.deepEqual(
-      eventHeadliners({ ...events[0]!, id: '118006', title: 'Tropical Nomads presents: Technology & ARAM', cardArtists }),
+      eventHeadliners({
+        ...events[0]!,
+        id: '118006',
+        title: 'Tropical Nomads presents: Technology & ARAM',
+        cardArtists,
+        headliners: ['Technology', 'Jungle Rumble', 'Deutsch', 'ARAM'],
+      }),
       ['ARAM', 'Deutsch', 'Jungle Rumble', 'Technology'],
     );
     assert.deepEqual(
-      eventHeadliners({ ...events[0]!, title: 'Tropical Groove presents: Technology & ARAM', cardArtists }),
+      eventHeadliners({ ...events[0]!, id: '118006', title: 'Tropical Nomads presents: Technology & ARAM', cardArtists }),
       ['ARAM', 'Technology'],
+    );
+    assert.deepEqual(
+      eventHeadliners({
+        ...events[0]!,
+        title: 'Tropical Groove presents: Technology & ARAM',
+        cardArtists,
+        headliners: [],
+      }),
+      [],
     );
   });
 
@@ -99,6 +117,7 @@ describe('event calendar', () => {
         id: '116643',
         title: 'Bom Shanka Label Night',
         cardArtists: ['Psymmetrix', 'Bocara', 'Dirty Saffi', 'Illegal Machines'],
+        headliners: ['Bocara', 'Dirty Saffi', 'Psymmetrix'],
       }),
       ['Bocara', 'Dirty Saffi', 'Psymmetrix'],
     );
@@ -121,6 +140,19 @@ describe('event calendar', () => {
           'Psychological',
           'Total Illusion',
           'Sartor',
+        ],
+        headliners: [
+          'Alien Coffee',
+          'Bocara',
+          'Cyk',
+          'Dezzert',
+          'Elowinz',
+          'FNX',
+          'Inside Mind',
+          'Psychological',
+          'Sabedoria',
+          'Sartor',
+          'Total Illusion',
         ],
       }),
       [
@@ -146,6 +178,7 @@ describe('event calendar', () => {
         id: '116906',
         title: 'Tropical Groove: Pre-St Patrick` s Day',
         cardArtists: ['Shivaion in Dub', 'Adrenaline Rush', 'Dolce Vita'],
+        headliners: ['Adrenaline Rush'],
       }),
       ['Adrenaline Rush'],
     );
@@ -158,6 +191,7 @@ describe('event calendar', () => {
         id: '115995',
         title: 'Tropical Groove: Pre-Halloween Party',
         cardArtists: ['Shivaion', 'After June', "Blazin'G", 'Romanetto'],
+        headliners: ['After June', "Blazin'G", 'Shivaion'],
       }),
       ['After June', "Blazin'G", 'Shivaion'],
     );
@@ -170,6 +204,7 @@ describe('event calendar', () => {
         id: '115553',
         title: 'Psychedelic Warmup',
         cardArtists: ['After June', 'Alien Noise', 'Atohmic'],
+        headliners: ['Alien Noise', 'Atohmic'],
       }),
       ['Alien Noise', 'Atohmic'],
     );
@@ -182,6 +217,7 @@ describe('event calendar', () => {
         id: '117257',
         title: 'Tropical Groove: Spring Awakening',
         cardArtists: ['Texo', 'Candelas', 'Cosmic Brothers Project', 'Shivaion'],
+        headliners: ['Candelas', 'Cosmic Brothers Project', 'Texo'],
       }),
       ['Candelas', 'Cosmic Brothers Project', 'Texo'],
     );
@@ -194,6 +230,7 @@ describe('event calendar', () => {
         id: '117152',
         title: 'Tropical Nomads: Burn in Noise',
         cardArtists: ['Burn in Noise', 'After June', "Blazin'G"],
+        headliners: ['Burn in Noise'],
       }),
       ['Burn in Noise'],
     );
@@ -203,6 +240,7 @@ describe('event calendar', () => {
         id: '117120',
         title: 'Tropical Groove: Burn in Noise',
         cardArtists: ['Burn in Noise', 'Altered State', 'After June'],
+        headliners: ['Altered State', 'Burn in Noise'],
       }),
       ['Altered State', 'Burn in Noise'],
     );
@@ -215,6 +253,7 @@ describe('event calendar', () => {
         id: '117712',
         title: 'Tropical Nomads: Avan7',
         cardArtists: ['Avan7', 'Back to Mars', 'Brain Damage', 'Psychological', 'Yesca'],
+        headliners: ['Avan7', 'Back to Mars', 'Brain Damage', 'Psychological', 'Yesca'],
       }),
       ['Avan7', 'Back to Mars', 'Brain Damage', 'Psychological', 'Yesca'],
     );
@@ -224,6 +263,7 @@ describe('event calendar', () => {
         id: '117713',
         title: 'Tropical Groove: Avan7',
         cardArtists: ['Avan7', 'Brain Damage', 'Frostbite', 'Psychological'],
+        headliners: ['Avan7', 'Brain Damage', 'Frostbite', 'Psychological'],
       }),
       ['Avan7', 'Brain Damage', 'Frostbite', 'Psychological'],
     );
@@ -236,6 +276,7 @@ describe('event calendar', () => {
         id: '118352',
         title: 'Tropical Groove: Pre-Halloween 2nd Edition with FNX',
         cardArtists: ['FNX', 'Valkyrie', '3rd Vision', 'After June'],
+        headliners: ['3rd Vision', 'FNX', 'Valkyrie'],
       }),
       ['3rd Vision', 'FNX', 'Valkyrie'],
     );

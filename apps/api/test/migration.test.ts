@@ -56,5 +56,9 @@ describe('database migration', () => {
     assert.match(ticketing, /revisions jsonb not null default '\[\]'::jsonb/);
     assert.match(ticketing, /secret_box text/);
     assert.equal(/index[\s\S]*secret_box/i.test(ticketing), false);
+    const headliners = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../../../database/migrations/005_party_headliners.sql'), 'utf8');
+    assert.match(headliners, /alter table party add column headliners jsonb/);
+    const seed = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../../../database/seed.mjs'), 'utf8');
+    assert.match(seed, /headliners/);
   });
 });

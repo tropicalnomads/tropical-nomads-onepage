@@ -139,6 +139,26 @@ describe('schemas', () => {
     assert.equal(parseParty({ ...party, secret: 'ticket-secret' }).ok, false);
   });
 
+  it('keeps a headliner list, including an empty one, and drops null', () => {
+    const named = parseParty({ ...party, headliners: ['Burn in Noise', 'Atohmic'] });
+    assert.equal(named.ok, true);
+    if (named.ok) {
+      assert.deepEqual(named.value.headliners, ['Burn in Noise', 'Atohmic']);
+    }
+    const empty = parseParty({ ...party, headliners: [] });
+    assert.equal(empty.ok, true);
+    if (empty.ok) {
+      assert.deepEqual(empty.value.headliners, []);
+    }
+    const absent = parseParty({ ...party, headliners: null });
+    assert.equal(absent.ok, true);
+    if (absent.ok) {
+      assert.equal(absent.value.headliners, undefined);
+    }
+    assert.equal(parseParty({ ...party, headliners: [''] }).ok, false);
+    assert.equal((schemas.party as readonly string[]).includes('headliners'), true);
+  });
+
   it('rejects a profile without a username or a name, and a role outside the three', () => {
     const parsed = parseProfile(profile('ada'));
     assert.equal(parsed.ok, true);

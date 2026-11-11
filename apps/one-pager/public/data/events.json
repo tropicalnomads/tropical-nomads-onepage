@@ -9,10 +9,16 @@
   "events": [
     {
       "id": "118352",
+      "headliners": [
+        "3rd Vision",
+        "FNX",
+        "Valkyrie"
+      ],
       "title": "Tropical Groove: Pre-Halloween 2nd Edition with FNX",
       "partnerIds": [
         "psy-groove"
       ],
+      "timetableFestivalId": "tropical_groove_dublin_pre_halloween_2026",
       "type": "Club",
       "dateStart": "2026-10-24T19:00:00+02:00",
       "dateEnd": "2026-10-25T03:00:00+01:00",
@@ -133,6 +139,15 @@
         "instagram": [
           "https://www.instagram.com/tropicalnomads.events/",
           "https://www.instagram.com/psy.groove/"
+        ],
+        "instagramPost": "https://www.instagram.com/p/DfF4y5zA1Na/"
+      },
+      "media": {
+        "videos": [
+          {
+            "url": "https://www.instagram.com/p/DfF4y5zA1Na/",
+            "label": "Aftermovie"
+          }
         ]
       },
       "source": {
@@ -313,6 +328,19 @@
     },
     {
       "id": "forest-shankara-sacred-pulse-2026",
+      "headliners": [
+        "Alien Coffee",
+        "Bocara",
+        "Cyk",
+        "Dezzert",
+        "Elowinz",
+        "FNX",
+        "Inside Mind",
+        "Psychological",
+        "Sabedoria",
+        "Sartor",
+        "Total Illusion"
+      ],
       "title": "Forest Shankara #3 — Sacred Pulse",
       "partnerIds": [
         "forest-shankara"
@@ -324,9 +352,11 @@
       "durationHours": 24,
       "venue": {
         "id": "florianopolis-brazil",
+        "name": "Alcateia Park",
         "city": "Florianópolis",
         "country": "Brazil",
         "isoCountry": "BR",
+        "address": "Rod. Aparício Ramos Cordeiro, 2719 - Morro do Peralta, Florianópolis - SC, 88065-500, Brasil",
         "mapUrl": "https://maps.app.goo.gl/PzrRkHoWQ1LyM9T3A"
       },
       "lineupRaw": "Elowinz 🇧🇷 (Forest / Psytrance)\nCyk 🇧🇷 (Forest)\nInside Mind 🇧🇷 (Full-On / Psytrance)\nFNX 🇧🇷 (Psytrance / Full-On)\nBlazin'G 🇧🇷 (Full-On / Night / Forest)\nAraucarian 🇧🇷 (Full-On / Psytrance)\nSabedoria 🇧🇷 (Progressive / Full-On)\nMárcio TPS 🇧🇷 (Psytrance / Full-On)\nKarell 🇧🇷 (Full-On / Night)\nDani Gehlen 🇧🇷 (Forest / Night)\nAlien Coffee 🇧🇷 (Forest / Dark Psy)\nOverleads 🇧🇷 (Dark Forest / Psytrance)\nPiettra 🇧🇷 (Dark Psy / Psytrance)\nImaiá 🇧🇷 (Hitech / Psytrance)\nTotal Illusion (High BPM / Hitech)\nDezzert 🇦🇷 (Full-On Night / Twilight)\nSektorlogic 🇧🇷 (Full-On / Night)\nAfter June 🇧🇷 (Full-On)\nSartor 🇧🇷 (Psytrance / Full-On)\nPsychological 🇧🇷\nBocara 🇧🇷 (Full-On Night / Psytrance)\nNakka 🇧🇷 (Full-On Night / Psytrance)",
@@ -735,6 +765,15 @@
         "instagram": [
           "https://www.instagram.com/tropicalnomads.events/",
           "https://www.instagram.com/psy.groove/"
+        ],
+        "instagramPost": "https://www.instagram.com/p/DeJ1eg2g6Ui/"
+      },
+      "media": {
+        "videos": [
+          {
+            "url": "https://www.instagram.com/p/DeJ1eg2g6Ui/",
+            "label": "Aftermovie"
+          }
         ]
       },
       "source": {
@@ -748,6 +787,12 @@
     },
     {
       "id": "118006",
+      "headliners": [
+        "ARAM",
+        "Deutsch",
+        "Jungle Rumble",
+        "Technology"
+      ],
       "title": "Tropical Nomads presents: Technology & ARAM",
       "partnerIds": [
         "forest-shankara"
@@ -894,6 +939,7 @@
     {
       "id": "118153",
       "title": "Tropical Nomads Showcase — Athens",
+      "timetableFestivalId": "tropical_nomads_athens_2026",
       "type": "Club",
       "dateStart": "2026-10-03T23:30:00+02:00",
       "dateEnd": "2026-10-04T06:00:00+02:00",
@@ -971,6 +1017,13 @@
     },
     {
       "id": "117712",
+      "headliners": [
+        "Avan7",
+        "Back to Mars",
+        "Brain Damage",
+        "Psychological",
+        "Yesca"
+      ],
       "title": "Tropical Nomads: Avan7",
       "partnerIds": [
         "pgp"
@@ -1122,6 +1175,12 @@
     },
     {
       "id": "117713",
+      "headliners": [
+        "Avan7",
+        "Brain Damage",
+        "Frostbite",
+        "Psychological"
+      ],
       "title": "Tropical Groove: Avan7",
       "partnerIds": [
         "psy-groove"
@@ -1394,6 +1453,11 @@
     },
     {
       "id": "116643",
+      "headliners": [
+        "Bocara",
+        "Dirty Saffi",
+        "Psymmetrix"
+      ],
       "title": "Bom Shanka Label Night",
       "partnerIds": [
         "universe"
@@ -1512,6 +1576,10 @@
     },
     {
       "id": "117120",
+      "headliners": [
+        "Altered State",
+        "Burn in Noise"
+      ],
       "title": "Tropical Groove: Burn in Noise",
       "type": "Club",
       "dateStart": "2026-06-05T19:00:00+02:00",
@@ -1646,6 +1714,9 @@
     },
     {
       "id": "117152",
+      "headliners": [
+        "Burn in Noise"
+      ],
       "title": "Tropical Nomads: Burn in Noise",
       "type": "Club",
       "dateStart": "2026-05-29T18:00:00+02:00",
@@ -1733,6 +1804,11 @@
     },
     {
       "id": "117257",
+      "headliners": [
+        "Candelas",
+        "Cosmic Brothers Project",
+        "Texo"
+      ],
       "title": "Tropical Groove: Spring Awakening",
       "type": "In- & Outdoor",
       "dateStart": "2026-04-25T14:00:00+02:00",
@@ -1855,6 +1931,9 @@
     },
     {
       "id": "116906",
+      "headliners": [
+        "Adrenaline Rush"
+      ],
       "title": "Tropical Groove: Pre-St Patrick` s Day",
       "type": "Club",
       "dateStart": "2026-03-13T19:00:00+01:00",
@@ -2149,6 +2228,11 @@
     },
     {
       "id": "115995",
+      "headliners": [
+        "After June",
+        "Blazin'G",
+        "Shivaion"
+      ],
       "title": "Tropical Groove: Pre-Halloween Party",
       "type": "Club",
       "dateStart": "2025-10-25T14:00:00+02:00",
@@ -2331,6 +2415,10 @@
     },
     {
       "id": "115553",
+      "headliners": [
+        "Alien Noise",
+        "Atohmic"
+      ],
       "title": "Psychedelic Warmup",
       "type": "Club",
       "dateStart": "2025-07-15T18:00:00+02:00",

@@ -25,6 +25,7 @@ export const partyFields = [
   'lineupRaw',
   'stages',
   'cardArtists',
+  'headliners',
   'partnerIds',
   'timetableFestivalId',
   'media',
@@ -93,6 +94,7 @@ export interface Party {
   lineupRaw?: string;
   stages?: readonly Stage[];
   cardArtists?: readonly string[];
+  headliners?: readonly string[];
   partnerIds?: readonly string[];
   timetableFestivalId?: string;
   media?: { photos?: readonly { url: string; label?: string }[]; videos?: readonly { url: string; label?: string }[]; sets?: readonly { url: string; label?: string }[] };
@@ -315,6 +317,10 @@ export function parseParty(input: unknown): ParseResult<Party> {
   if ('cardArtists' in record && record.cardArtists !== undefined) {
     const cardArtists = stringList(record.cardArtists, 'cardArtists', errors);
     if (cardArtists) party.cardArtists = cardArtists;
+  }
+  if ('headliners' in record && record.headliners !== undefined && record.headliners !== null) {
+    const headliners = stringList(record.headliners, 'headliners', errors);
+    if (headliners !== undefined) party.headliners = headliners;
   }
   if ('partnerIds' in record && record.partnerIds !== undefined) {
     const partnerIds = stringList(record.partnerIds, 'partnerIds', errors);

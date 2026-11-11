@@ -96,6 +96,7 @@ export interface PublishedEvent {
   venue?: unknown;
   stages?: unknown;
   cardArtists?: string[];
+  headliners?: string[];
   partnerIds?: string[];
   media?: unknown;
   offers?: unknown;

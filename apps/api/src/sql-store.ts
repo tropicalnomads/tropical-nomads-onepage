@@ -69,6 +69,24 @@ function documents(rows: Record<string, unknown>[]): unknown[] {
   return rows.map((row) => row.document);
 }
 
+/** Column wins when it is a string array, including an empty list. Null leaves the stored document unchanged. */
+export function publishedPartyDocument(document: unknown, headliners: unknown): unknown {
+  if (!Array.isArray(headliners) || headliners.some((item) => typeof item !== 'string')) {
+    return document;
+  }
+  if (typeof document !== 'object' || document === null || Array.isArray(document)) {
+    return document;
+  }
+  return { ...document, headliners };
+}
+
+export function storedHeadlinersJson(value: unknown): string | null {
+  if (!Array.isArray(value) || value.some((item) => typeof item !== 'string')) {
+    return null;
+  }
+  return JSON.stringify(value);
+}
+
 function asRecord(value: unknown, label: string): Record<string, unknown> {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     throw new Error(`${label} is not a record`);
@@ -114,10 +132,11 @@ export async function readStoredCatalog(name: StoredCatalog): Promise<unknown> {
   const table = catalogTables[name];
   const rows = await db().query(
     name === 'events'
-      ? `select document from party where publication = 'published' order by source_order, id`
+      ? `select document, headliners from party where publication = 'published' order by source_order, id`
       : `select document from ${table} order by source_order, id`,
   );
-  const records = documents(rows.rows);
+  const records =
+    name === 'events' ? rows.rows.map((row) => publishedPartyDocument(row.document, row.headliners)) : documents(rows.rows);
   if (name === 'socials') {
     return records;
   }
@@ -485,14 +504,14 @@ export interface StoredPartyWrite {
 
 export async function readStoredPartyRows(): Promise<StoredPartyRow[]> {
   const rows = await db().query(
-    'select origin, publication, revisions, offers_managed, document from party order by source_order, id',
+    'select origin, publication, revisions, offers_managed, document, headliners from party order by source_order, id',
   );
   return rows.rows.map((row) => ({
     origin: String(row.origin),
     publication: String(row.publication),
     revisions: row.revisions,
     offersManaged: row.offers_managed === true,
-    document: row.document,
+    document: publishedPartyDocument(row.document, row.headliners),
   }));
 }
 
@@ -517,12 +536,12 @@ export async function upsertStoredParty(party: StoredPartyWrite): Promise<void> 
     await client.query(
       `insert into party (
         id, title, type, date_start, date_end, timezone, duration_hours, venue_id, venue, lineup_raw,
-        stages, card_artists, partner_ids, timetable_festival_id, media, description, organizer, images,
+        stages, card_artists, headliners, partner_ids, timetable_festival_id, media, description, organizer, images,
         links, source, offers, document, source_order, origin, publication, revisions, offers_managed
       ) values (
         $1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10,
-        $11::jsonb, $12::jsonb, $13, $14, $15::jsonb, $16, $17, $18::jsonb,
-        $19::jsonb, $20::jsonb, $21::jsonb, $22::jsonb, $23, $24, $25, $26::jsonb, $27
+        $11::jsonb, $12::jsonb, $13::jsonb, $14, $15, $16::jsonb, $17, $18, $19::jsonb,
+        $20::jsonb, $21::jsonb, $22::jsonb, $23::jsonb, $24, $25, $26, $27::jsonb, $28
       )
       on conflict (id) do update set
         title = excluded.title,
@@ -536,6 +555,7 @@ export async function upsertStoredParty(party: StoredPartyWrite): Promise<void> 
         lineup_raw = excluded.lineup_raw,
         stages = excluded.stages,
         card_artists = excluded.card_artists,
+        headliners = excluded.headliners,
         partner_ids = excluded.partner_ids,
         timetable_festival_id = excluded.timetable_festival_id,
         media = excluded.media,
@@ -563,6 +583,7 @@ export async function upsertStoredParty(party: StoredPartyWrite): Promise<void> 
         partyText(event, 'lineupRaw'),
         partyJson(event.stages),
         partyJson(event.cardArtists),
+        storedHeadlinersJson(event.headliners),
         Array.isArray(event.partnerIds) ? event.partnerIds : [],
         partyText(event, 'timetableFestivalId'),
         partyJson(event.media),

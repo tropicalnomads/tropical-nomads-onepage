@@ -80,9 +80,11 @@
     },
     {
       "id": "florianopolis-brazil",
+      "name": "Alcateia Park",
       "city": "Florianópolis",
       "country": "Brazil",
       "isoCountry": "BR",
+      "address": "Rod. Aparício Ramos Cordeiro, 2719 - Morro do Peralta, Florianópolis - SC, 88065-500, Brasil",
       "mapUrl": "https://maps.app.goo.gl/PzrRkHoWQ1LyM9T3A"
     },
     {

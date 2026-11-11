@@ -14,6 +14,7 @@
 // Run: pnpm events
 
 import { Buffer } from 'node:buffer';
+import { readFileSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -32,8 +33,10 @@ const curatedDir = resolve(projectRoot, 'scripts/data');
 const EVENT_SOURCES = [
   {
     id: 118352,
+    timetableFestivalId: 'tropical_groove_dublin_pre_halloween_2026',
     partnerIds: ['psy-groove'],
     eventbrite: 'https://prehalloween-tropical-groove.eventbrite.ie',
+    instagramPost: 'https://www.instagram.com/p/DfF4y5zA1Na/',
     instagram: [
       'https://www.instagram.com/tropicalnomads.events/',
       'https://www.instagram.com/psy.groove/',
@@ -44,6 +47,7 @@ const EVENT_SOURCES = [
     timetableFestivalId: 'tropical_groove_dublin_technology_2026',
     partnerIds: ['psy-groove'],
     eventbrite: 'https://technology-aram.eventbrite.ie/',
+    instagramPost: 'https://www.instagram.com/p/DeJ1eg2g6Ui/',
     instagram: [
       'https://www.instagram.com/tropicalnomads.events/',
       'https://www.instagram.com/psy.groove/',
@@ -61,6 +65,7 @@ const EVENT_SOURCES = [
   },
   {
     id: 118153,
+    timetableFestivalId: 'tropical_nomads_athens_2026',
     eventbrite: 'https://tropical-nomads-athens-showcase.eventbrite.ie/',
     instagram: ['https://www.instagram.com/tropicalnomads.events/'],
   },
@@ -595,6 +600,7 @@ function normalizeEvent(party, override, venueOverride, lineupOverride, mediaOve
     ...(textLineUp ? { lineupRaw: textLineUp } : {}),
     stages,
     ...(lineupOverride?.cardArtists?.length ? { cardArtists: lineupOverride.cardArtists } : {}),
+    ...(Array.isArray(lineupOverride?.headliners) ? { headliners: lineupOverride.headliners } : {}),
     ...(pickMedia(mediaOverride) ? { media: pickMedia(mediaOverride) } : {}),
     ...(description ? { description } : {}),
     ...(party.nameOrganizer ? { organizer: party.nameOrganizer } : {}),
@@ -624,6 +630,12 @@ function normalizeEvent(party, override, venueOverride, lineupOverride, mediaOve
       ...(party.dateModified ? { dateModified: party.dateModified } : {}),
     },
   };
+}
+
+function keepStoredHeadliners(event, previous) {
+  if (!Object.prototype.hasOwnProperty.call(event, 'headliners') && Array.isArray(previous?.headliners)) {
+    event.headliners = previous.headliners;
+  }
 }
 
 function isAllCaps(value) {
@@ -675,7 +687,43 @@ async function loadAffiliations() {
   return { agencies, labels, byArtist };
 }
 
+function storedArtistProfiles() {
+  try {
+    const file = JSON.parse(readFileSync(resolve(dataDir, 'artists.json'), 'utf8'));
+    return new Map(
+      (file.artists ?? [])
+        .filter((artist) => artist && typeof artist.name === 'string')
+        .map((artist) => [artistKey(artist.name), artist]),
+    );
+  } catch {
+    return new Map();
+  }
+}
+
+function withStoredProfile(artist, previous) {
+  if (!previous || typeof previous.photo !== 'string' || !previous.photo.startsWith('/artist-portraits/')) {
+    return artist;
+  }
+  const next = { ...artist };
+  if (Array.isArray(previous.genres) && previous.genres.length > 0) {
+    next.genres = previous.genres;
+  }
+  for (const field of ['bio', 'bioPt', 'photo', 'soundcloud', 'instagram', 'website', 'isoCountry', 'countryFlag']) {
+    if (typeof previous[field] === 'string' && previous[field].trim() !== '') {
+      next[field] = previous[field];
+    }
+  }
+  if (Array.isArray(previous.agencies) && !next.agencies) {
+    next.agencies = previous.agencies;
+  }
+  if (Array.isArray(previous.labels) && !next.labels) {
+    next.labels = previous.labels;
+  }
+  return next;
+}
+
 function buildArtistCatalog(events, affiliations = { byArtist: new Map() }) {
+  const stored = storedArtistProfiles();
   const byKey = new Map();
   for (const event of events) {
     for (const stage of event.stages) {
@@ -702,19 +750,30 @@ function buildArtistCatalog(events, affiliations = { byArtist: new Map() }) {
       }
     }
   }
-  return [...byKey.entries()]
+  const catalog = [...byKey.entries()]
     .sort(([, a], [, b]) => a.name.localeCompare(b.name))
     .map(([key, artist]) => {
       const affiliation = affiliations.byArtist.get(key);
-      return {
-        name: artist.name,
-        ...(artist.isoCountry ? { isoCountry: artist.isoCountry } : {}),
-        ...(artist.countryFlag ? { countryFlag: artist.countryFlag } : {}),
-        ...(artist.genres.size ? { genres: [...artist.genres].sort() } : {}),
-        ...(affiliation?.agencies.length ? { agencies: affiliation.agencies } : {}),
-        ...(affiliation?.labels.length ? { labels: affiliation.labels } : {}),
-      };
+      return withStoredProfile(
+        {
+          name: artist.name,
+          ...(artist.isoCountry ? { isoCountry: artist.isoCountry } : {}),
+          ...(artist.countryFlag ? { countryFlag: artist.countryFlag } : {}),
+          ...(artist.genres.size ? { genres: [...artist.genres].sort() } : {}),
+          ...(affiliation?.agencies.length ? { agencies: affiliation.agencies } : {}),
+          ...(affiliation?.labels.length ? { labels: affiliation.labels } : {}),
+        },
+        stored.get(key),
+      );
     });
+  const present = new Set(catalog.map((artist) => artistKey(artist.name)));
+  for (const [key, previous] of stored) {
+    if (!present.has(key) && typeof previous.photo === 'string' && previous.photo.startsWith('/artist-portraits/')) {
+      catalog.push(withStoredProfile({ name: previous.name }, previous));
+    }
+  }
+  catalog.sort((left, right) => left.name.localeCompare(right.name));
+  return catalog;
 }
 
 function buildVenueCatalog(events) {
@@ -865,6 +924,7 @@ async function main() {
         if (previous.links?.instagram && !event.links.instagram) {
           event.links.instagram = previous.links.instagram;
         }
+        keepStoredHeadliners(event, previous);
       }
       byId.set(event.id, event);
     }
@@ -878,6 +938,10 @@ async function main() {
     console.log('Refreshing events from goabase (one-time fetch)...');
     const existing = await loadExistingEvents();
     const fetched = await fetchEventsFromGoabase();
+    const previousById = new Map(existing.map((event) => [String(event.id), event]));
+    for (const event of fetched) {
+      keepStoredHeadliners(event, previousById.get(event.id));
+    }
     const fetchedIds = new Set(fetched.map((event) => event.id));
     const kept = existing.filter(
       (event) => !fetchedIds.has(event.id) && !String(event.id).startsWith('tn-placeholder-'),

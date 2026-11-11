@@ -88,6 +88,9 @@ function readEvent(value: unknown, partners: Map<string, UpcomingPartner>, sold:
   const cardArtists = Array.isArray(value.cardArtists)
     ? value.cardArtists.filter((name): name is string => typeof name === 'string' && name.trim() !== '')
     : [];
+  const headliners = Array.isArray(value.headliners)
+    ? value.headliners.flatMap((name) => (typeof name === 'string' && name.trim() !== '' ? [name.trim()] : []))
+    : undefined;
   const dateEnd = readString(value.dateEnd);
   const timezone = readString(value.timezone);
   const venueName = readString(venue.name);
@@ -112,6 +115,7 @@ function readEvent(value: unknown, partners: Map<string, UpcomingPartner>, sold:
     ...(country ? { country } : {}),
     ...(mapUrl ? { mapUrl } : {}),
     cardArtists,
+    ...(headliners !== undefined ? { headliners } : {}),
     stages,
     inAppOffers: [...sale.inAppOffers],
     ...(sale.ticketUrl ? { ticketUrl: sale.ticketUrl } : {}),

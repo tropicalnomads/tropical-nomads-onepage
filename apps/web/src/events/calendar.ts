@@ -11,6 +11,7 @@ export interface CalendarEventFields {
   city?: string;
   country?: string;
   cardArtists: readonly string[];
+  headliners?: readonly string[];
   stages: readonly { artists: readonly string[] }[];
   when?: 'upcoming' | 'past';
 }
@@ -28,33 +29,6 @@ export interface CalendarDay {
   date: number;
   inMonth: boolean;
 }
-
-const headlinersByEventId: Readonly<Record<string, readonly string[]>> = {
-  '115995': ['After June', "Blazin'G", 'Shivaion'],
-  '115553': ['Alien Noise', 'Atohmic'],
-  '116643': ['Bocara', 'Dirty Saffi', 'Psymmetrix'],
-  '116906': ['Adrenaline Rush'],
-  '117120': ['Altered State', 'Burn in Noise'],
-  '117152': ['Burn in Noise'],
-  '117257': ['Candelas', 'Cosmic Brothers Project', 'Texo'],
-  '117712': ['Avan7', 'Back to Mars', 'Brain Damage', 'Psychological', 'Yesca'],
-  '117713': ['Avan7', 'Brain Damage', 'Frostbite', 'Psychological'],
-  '118006': ['ARAM', 'Deutsch', 'Jungle Rumble', 'Technology'],
-  '118352': ['3rd Vision', 'FNX', 'Valkyrie'],
-  'forest-shankara-sacred-pulse-2026': [
-    'Alien Coffee',
-    'Bocara',
-    'Cyk',
-    'Dezzert',
-    'Elowinz',
-    'FNX',
-    'Inside Mind',
-    'Psychological',
-    'Sabedoria',
-    'Sartor',
-    'Total Illusion',
-  ],
-};
 
 export function normalizeSearch(value: string): string {
   return value
@@ -81,9 +55,8 @@ export function eventArtists(event: CalendarEventFields): string[] {
 }
 
 export function eventHeadliners(event: CalendarEventFields): string[] {
-  const override = headlinersByEventId[event.id];
-  if (override) {
-    return [...override];
+  if (event.headliners !== undefined) {
+    return uniqueLabels(event.headliners);
   }
   const title = normalizeSearch(event.title);
   const namedInTitle = eventArtists(event).filter((artist) => title.includes(normalizeSearch(artist)));

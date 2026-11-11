@@ -21,6 +21,13 @@ function json(value) {
   return value === undefined ? null : JSON.stringify(value);
 }
 
+function headlinersJson(value) {
+  if (!Array.isArray(value) || value.some((item) => typeof item !== 'string')) {
+    return null;
+  }
+  return JSON.stringify(value);
+}
+
 function slug(name, used) {
   const base = name
     .normalize('NFKD')
@@ -84,12 +91,12 @@ async function seedCatalog(client) {
     await client.query(
       `insert into party (
         id, title, type, date_start, date_end, timezone, duration_hours, venue_id, venue, lineup_raw,
-        stages, card_artists, partner_ids, timetable_festival_id, media, description, organizer, images,
+        stages, card_artists, headliners, partner_ids, timetable_festival_id, media, description, organizer, images,
         links, source, offers, document, source_order, origin, publication, revisions, offers_managed
       ) values (
         $1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10,
-        $11::jsonb, $12::jsonb, $13, $14, $15::jsonb, $16, $17, $18::jsonb,
-        $19::jsonb, $20::jsonb, $21::jsonb, $22::jsonb, $23, 'catalog', 'published', '[]'::jsonb, false
+        $11::jsonb, $12::jsonb, $13::jsonb, $14, $15, $16::jsonb, $17, $18, $19::jsonb,
+        $20::jsonb, $21::jsonb, $22::jsonb, $23::jsonb, $24, 'catalog', 'published', '[]'::jsonb, false
       )
       on conflict (id) do update set
         title = excluded.title,
@@ -103,6 +110,7 @@ async function seedCatalog(client) {
         lineup_raw = excluded.lineup_raw,
         stages = excluded.stages,
         card_artists = excluded.card_artists,
+        headliners = excluded.headliners,
         partner_ids = excluded.partner_ids,
         timetable_festival_id = excluded.timetable_festival_id,
         media = excluded.media,
@@ -130,6 +138,7 @@ async function seedCatalog(client) {
         text(event.lineupRaw),
         json(event.stages),
         json(event.cardArtists),
+        headlinersJson(event.headliners),
         Array.isArray(event.partnerIds) ? event.partnerIds : [],
         text(event.timetableFestivalId),
         json(event.media),

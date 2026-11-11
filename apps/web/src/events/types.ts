@@ -13,6 +13,7 @@ export interface ArtistPreview {
   flag?: string;
   genres: string[];
   bio: string;
+  bioPt?: string;
   photo?: string;
 }
 
@@ -35,6 +36,7 @@ export interface UpcomingEventCard {
   country?: string;
   mapUrl?: string;
   cardArtists: string[];
+  headliners?: string[];
   stages: { artists: string[] }[];
   inAppOffers: InAppOffer[];
   ticketUrl?: string;

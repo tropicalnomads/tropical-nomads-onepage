@@ -2,6 +2,7 @@
   "118352": {
     "lineupRaw": "TERRACE STAGE\nOcto 🇧🇷\nPsyloverse 🇧🇷\nUnderbeat 🇧🇷\nVinius 🇧🇷\nAraujah 🇧🇷\nBlazin'G 🇧🇷\n\nTHE SOUNDHOUSE STAGE\nFNX 🇧🇷\nValkyrie 🇧🇷\n3rd Vision 🇧🇷\nAfter June 🇧🇷\nShivaion 🇧🇷",
     "cardArtists": ["FNX", "Valkyrie", "3rd Vision", "After June"],
+    "headliners": ["3rd Vision", "FNX", "Valkyrie"],
     "description": "Tropical Groove returns to The Sound House, Dublin, on Saturday, 24 October 2026 for the second edition of our Pre-Halloween party.\n\nThis time, we're taking you on a carefully curated journey through Progressive Psy, Full-On and Night Psytrance, moving from deep progressive grooves into powerful psychedelic energy and darker late-night sounds.\n\n🗓️ Saturday, 24 October 2026\n📍 The Sound House, Dublin\n⏱️ 19:00 — 02:45\n👽 2 Areas\n🌀 Progressive Psy • Full-On • Night Psytrance\n🎨 Body Painting\n🌌 Psychedelic Decoration"
   },
   "118148": {
@@ -14,6 +15,7 @@
     "title": "Tropical Nomads presents: Technology & ARAM",
     "lineupRaw": "TROPICAL NOMADS STAGE (Progressive / Full-On / Psytrance)\n23:00 - Octo 🇧🇷\n00:30 - Deutsch 🇧🇷\n02:00 - Texo 🇩🇪\n03:30 - Technology 🇧🇷\n05:00 - Blazin'G 🇧🇷\n06:30 - Critical Communication 🇧🇷\n08:00 - Vinius 🇧🇷\n09:30 - FIM\n\nFOREST SHANKARA STAGE (Night / Twilight / Forest)\n00:00 - Azura 🇧🇷\n01:30 - Jungle Rumble 🇧🇷\n03:00 - After June 🇧🇷\n04:30 - ARAM 🇧🇷\n06:00 - FIM",
     "cardArtists": ["Technology", "ARAM", "Deutsch", "After June"],
+    "headliners": ["ARAM", "Deutsch", "Jungle Rumble", "Technology"],
     "bannerKeepLocal": true
   },
   "118153": {
@@ -26,10 +28,12 @@
     "rename": {
       "AVAN7": "Avan7",
       "Blazin'G": "Back to Mars"
-    }
+    },
+    "headliners": ["Avan7", "Back to Mars", "Brain Damage", "Psychological", "Yesca"]
   },
   "117713": {
-    "cardArtists": ["Avan7", "Brain Damage", "Frostbite", "Solar Plexus"]
+    "cardArtists": ["Avan7", "Brain Damage", "Frostbite", "Solar Plexus"],
+    "headliners": ["Avan7", "Brain Damage", "Frostbite", "Psychological"]
   },
   "117914": {
     "cardArtists": ["Bocara", "Sabedoria", "Shivaion", "Blazin'G"]
@@ -45,6 +49,25 @@
       "Psymmetrix",
       "Dirty Saffi",
       "3rd Vision"
-    ]
+    ],
+    "headliners": ["Bocara", "Dirty Saffi", "Psymmetrix"]
+  },
+  "117120": {
+    "headliners": ["Altered State", "Burn in Noise"]
+  },
+  "117152": {
+    "headliners": ["Burn in Noise"]
+  },
+  "117257": {
+    "headliners": ["Candelas", "Cosmic Brothers Project", "Texo"]
+  },
+  "116906": {
+    "headliners": ["Adrenaline Rush"]
+  },
+  "115995": {
+    "headliners": ["After June", "Blazin'G", "Shivaion"]
+  },
+  "115553": {
+    "headliners": ["Alien Noise", "Atohmic"]
   }
 }

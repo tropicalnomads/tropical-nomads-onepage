@@ -3,6 +3,7 @@
 import { Calendar, CalendarClock, Clock, ExternalLink, MapPin, Star, Ticket } from 'lucide-react';
 import { useId, useState, type FormEvent } from 'react';
 import { formatEventDate } from 'tropical-nomads-shared';
+import { localizedArtistBio } from '../artists/profile';
 import { eventArtists, eventHeadliners, normalizeSearch } from '../events/calendar';
 import type { ArtistPreview, UpcomingEventCard } from '../events/types';
 import { useSignInHref } from '../account/use-return-path';
@@ -24,6 +25,7 @@ function venueLabel(event: UpcomingEventCard): string {
 
 function ArtistChip({ artist, preview, headliner }: { artist: string; preview: ArtistPreview | undefined; headliner: boolean }) {
   const tooltipId = useId();
+  const { language } = useLanguage();
   if (!preview) {
     return (
       <li>
@@ -39,6 +41,7 @@ function ArtistChip({ artist, preview, headliner }: { artist: string; preview: A
     );
   }
   const context = [preview.flag, preview.country, preview.genres.slice(0, 3).join(' · ')].filter(Boolean).join(' ');
+  const bio = localizedArtistBio(preview, language);
   return (
     <li className="group/artist relative">
       <a
@@ -71,7 +74,7 @@ function ArtistChip({ artist, preview, headliner }: { artist: string; preview: A
             {context ? <span className="mt-0.5 block text-xs leading-relaxed text-ozora-turquoise">{context}</span> : null}
           </span>
         </div>
-        {preview.bio ? <p className="mt-3 line-clamp-3 text-xs leading-relaxed text-ozora-cream/70">{preview.bio}</p> : null}
+        {bio ? <p className="mt-3 line-clamp-3 text-xs leading-relaxed text-ozora-cream/70">{bio}</p> : null}
       </div>
     </li>
   );

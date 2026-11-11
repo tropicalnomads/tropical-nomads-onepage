@@ -59,13 +59,14 @@ describe('admin parties', () => {
     assert.throws(() => saveManagedParty([], [], input(), door, { role: 'door', actorId: 'sub-ada' }, now), /not allowed/);
     assert.throws(() => saveManagedParty([], [], input(), file, { role: 'user', actorId: 'sub-ada' }, now), /not allowed/);
 
-    const catalog = [{ id: 'imported', title: 'Imported', dateStart: '2026-12-03T20:00:00Z', links: { tickets: 'https://www.example.com/tickets' } }];
+    const catalog = [{ id: 'imported', title: 'Imported', dateStart: '2026-12-03T20:00:00Z', headliners: ['Burn in Noise'], links: { tickets: 'https://www.example.com/tickets' } }];
     const edited = saveManagedParty([], catalog, input({ id: 'imported', title: 'Imported Night' }), file, { role: 'admin', actorId: 'sub-admin' }, now);
     assert.equal(edited.saved.origin, 'catalog');
     assert.equal(edited.saved.offersManaged, true);
     const imported = publishedEventList(catalog, edited.managed).find((event) => event.id === 'imported');
     assert.equal(imported?.title, 'Imported Night');
     assert.equal(imported?.links?.tickets, 'https://www.example.com/tickets');
+    assert.deepEqual(imported?.headliners, ['Burn in Noise']);
 
     const created = saveManagedParty(edited.managed, catalog, input(), file, { role: 'admin', actorId: 'sub-admin' }, now);
     assert.equal(created.saved.publication, 'draft');
