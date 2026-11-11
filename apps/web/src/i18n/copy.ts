@@ -5,6 +5,7 @@ export interface ShellCopy {
   homeAria: string;
   navHome: string;
   navBookings: string;
+  navTimetables: string;
   calendar: string;
   openMenu: string;
   closeMenu: string;
@@ -436,6 +437,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
     homeAria: 'Tropical Nomads home',
     navHome: 'Home',
     navBookings: 'Bookings',
+    navTimetables: 'Timetables',
     calendar: 'Calendar',
     eventsAdmin: 'Events',
     navAdmin: 'Admin',
@@ -816,6 +818,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
     homeAria: 'Início da Tropical Nomads',
     navHome: 'Início',
     navBookings: 'Bookings',
+    navTimetables: 'Programações',
     calendar: 'Calendário',
     eventsAdmin: 'Eventos',
     navAdmin: 'Admin',

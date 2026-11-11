@@ -43,6 +43,23 @@ function BookingsLink({ menu, onClick }: { menu?: boolean; onClick?: () => void 
   );
 }
 
+function TimetablesLink({ menu, onClick }: { menu?: boolean; onClick?: () => void }) {
+  const { language } = useLanguage();
+  return (
+    <a
+      href={origins.timetable}
+      onClick={onClick}
+      className={
+        menu
+          ? 'rounded-lg px-3 py-2.5 text-left text-base font-medium text-ozora-cream/80 transition hover:bg-white/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise'
+          : navLinkClass
+      }
+    >
+      {shellText(language, 'navTimetables')}
+    </a>
+  );
+}
+
 function CartLink({ menu, onClick, cartCount }: { menu?: boolean; onClick?: () => void; cartCount: number }) {
   const { language } = useLanguage();
   const { count, ready } = useShopCart();
@@ -190,6 +207,7 @@ export function ShellHeader({ signedIn, admin = false, cartCount = 0 }: { signed
             </a>
           ))}
           <BookingsLink />
+          <TimetablesLink />
           {admin ? (
             <a href="/admin/events" className={navLinkClass}>
               {shellText(language, 'navAdmin')}
@@ -227,6 +245,7 @@ export function ShellHeader({ signedIn, admin = false, cartCount = 0 }: { signed
             </a>
           ))}
           <BookingsLink menu onClick={closeMenu} />
+          <TimetablesLink menu onClick={closeMenu} />
           {admin ? (
             <a
               href="/admin/events"

@@ -1664,7 +1664,7 @@
         },
         "mapUrl": "https://maps.app.goo.gl/Zp3PKsaYoqTaRQpH7"
       },
-      "lineupRaw": "🔥 Burn in Noise (Nano Records) 🔥\n🌀 After June (Tropical Nomads / Forest Shankara) 🌀\n🔥 Shivaion (Tropical Nomads / Psy Groove )🔥\n🌀BLAZIN'G (Tropical Nomads / Psy Groove)🌀\n🔥 CIB & CIMI (Psychedelic Grateful Punks)🔥\n🌀 PSYKADELICA (Dutch Acid Family)🌀\n🔥 POLZITIV (Psychedelic Grateful Punks) 🔥\n🌀 VALKYRIE (M-United) 🌀",
+      "lineupRaw": "🔥 Burn in Noise (Nano Records) 🔥\n🌀 After June (Tropical Nomads / Forest Shankara) 🌀\n🔥 Shivaion (Tropical Nomads / Psy Groove )🔥\n🌀 Blazin'G (Tropical Nomads / Psy Groove) 🌀\n🔥 CIB & CIMI (Psychedelic Grateful Punks) 🔥\n🌀 Psykadelica (Dutch Acid Family) 🌀\n🔥 Polzitiv (Psychedelic Grateful Punks) 🔥\n🌀 Valkyrie (M-United) 🌀",
       "stages": [
         {
           "name": "Line-up",
@@ -1683,7 +1683,7 @@
               "stage": "Line-up"
             },
             {
-              "name": "BLAZIN'G",
+              "name": "Blazin'G",
               "stage": "Line-up"
             },
             {
@@ -1691,15 +1691,15 @@
               "stage": "Line-up"
             },
             {
-              "name": "PSYKADELICA",
+              "name": "Psykadelica",
               "stage": "Line-up"
             },
             {
-              "name": "POLZITIV",
+              "name": "Polzitiv",
               "stage": "Line-up"
             },
             {
-              "name": "VALKYRIE",
+              "name": "Valkyrie",
               "stage": "Line-up"
             }
           ]

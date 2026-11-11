@@ -14,7 +14,7 @@ import {
   type CalendarQuery,
   type CalendarWhen,
 } from '../events/calendar';
-import type { UpcomingEventCard } from '../events/types';
+import type { ArtistPreview, UpcomingEventCard } from '../events/types';
 import { eventText, shellText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { EmptyState } from '../../../one-pager/src/components/EmptyState';
@@ -52,7 +52,7 @@ function whenLabel(when: CalendarWhen, language: Locale): string {
   }
 }
 
-export function EventCalendar({ events, artistIds }: { events: readonly UpcomingEventCard[]; artistIds: Readonly<Record<string, string>> }) {
+export function EventCalendar({ events, artistPreviews }: { events: readonly UpcomingEventCard[]; artistPreviews: Readonly<Record<string, ArtistPreview>> }) {
   const { language } = useLanguage();
   const locale = eventText(language, 'dateLocale');
   const initial = events.find((event) => event.when !== 'past') ?? events[0];
@@ -258,7 +258,7 @@ export function EventCalendar({ events, artistIds }: { events: readonly Upcoming
               </div>
             ) : (
               <div className="mt-6">
-                <CalendarEventList events={filtered} embedded artistIds={artistIds} />
+                <CalendarEventList events={filtered} embedded artistPreviews={artistPreviews} />
               </div>
             )}
           </div>

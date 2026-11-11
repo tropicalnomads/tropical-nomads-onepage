@@ -169,6 +169,8 @@ describe('homepage shell', () => {
     const upcoming = readFileSync(new URL('../src/components/home/UpcomingSection.tsx', import.meta.url), 'utf8');
     assert.equal(header.includes("publicHref('/', language)"), true);
     assert.equal(header.includes('origins.bookings'), true);
+    assert.equal(header.includes('origins.timetable'), true);
+    assert.equal(header.includes("shellText(language, 'navTimetables')"), true);
     assert.equal(header.includes('#upcoming-events'), false);
     assert.equal(header.includes('#gallery'), false);
     const heroAt = page.indexOf('<HeroCard');

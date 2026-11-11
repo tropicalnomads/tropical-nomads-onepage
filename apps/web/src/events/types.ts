@@ -6,6 +6,16 @@ export interface UpcomingPartner {
   logoFit?: 'cover' | 'contain';
 }
 
+export interface ArtistPreview {
+  id: string;
+  name: string;
+  country: string;
+  flag?: string;
+  genres: string[];
+  bio: string;
+  photo?: string;
+}
+
 export interface InAppOffer {
   name: string;
   amount: number;

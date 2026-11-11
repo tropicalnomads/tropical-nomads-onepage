@@ -14,10 +14,10 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 
 export default async function CalendarPage() {
   const [events, artists] = await Promise.all([loadCalendarEvents(), loadArtistProfiles()]);
-  const artistIds = Object.fromEntries(artists.map((artist) => [artist.name.trim().toLowerCase(), artist.id]));
+  const artistPreviews = Object.fromEntries(artists.map((artist) => [artist.name.trim().toLowerCase(), artist]));
   return (
     <main>
-      <EventCalendar events={events} artistIds={artistIds} />
+      <EventCalendar events={events} artistPreviews={artistPreviews} />
     </main>
   );
 }

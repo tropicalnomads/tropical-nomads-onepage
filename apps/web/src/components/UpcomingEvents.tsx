@@ -1,10 +1,10 @@
 'use client';
 
-import { Calendar, CalendarClock, Clock, ExternalLink, MapPin, Ticket } from 'lucide-react';
-import { useState, type FormEvent } from 'react';
+import { Calendar, CalendarClock, Clock, ExternalLink, MapPin, Star, Ticket } from 'lucide-react';
+import { useId, useState, type FormEvent } from 'react';
 import { formatEventDate } from 'tropical-nomads-shared';
-import { eventArtists } from '../events/calendar';
-import type { UpcomingEventCard } from '../events/types';
+import { eventArtists, eventHeadliners, normalizeSearch } from '../events/calendar';
+import type { ArtistPreview, UpcomingEventCard } from '../events/types';
 import { useSignInHref } from '../account/use-return-path';
 import { accountText, areaText, eventText, paymentNotice, paymentText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
@@ -22,14 +22,69 @@ function venueLabel(event: UpcomingEventCard): string {
   return place.join(' - ');
 }
 
+function ArtistChip({ artist, preview, headliner }: { artist: string; preview: ArtistPreview | undefined; headliner: boolean }) {
+  const tooltipId = useId();
+  if (!preview) {
+    return (
+      <li>
+        <span
+          className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold ${
+            headliner ? 'border-ozora-yellow/55 bg-ozora-yellow/15 text-ozora-yellow' : 'border-white/15 bg-black/10 text-ozora-cream/80'
+          }`}
+        >
+          {headliner ? <Star size={12} fill="currentColor" aria-hidden="true" /> : null}
+          {artist}
+        </span>
+      </li>
+    );
+  }
+  const context = [preview.flag, preview.country, preview.genres.slice(0, 3).join(' · ')].filter(Boolean).join(' ');
+  return (
+    <li className="group/artist relative">
+      <a
+        href={`/artists/${encodeURIComponent(preview.id)}`}
+        aria-describedby={tooltipId}
+        className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise ${
+          headliner
+            ? 'border-ozora-yellow/55 bg-ozora-yellow/15 text-ozora-yellow hover:border-ozora-yellow hover:bg-ozora-yellow/25'
+            : 'border-white/15 bg-black/10 text-ozora-cream/80 hover:border-ozora-coral/60 hover:bg-ozora-coral/10 hover:text-ozora-cream'
+        }`}
+      >
+        {headliner ? <Star size={12} fill="currentColor" aria-hidden="true" /> : null}
+        {artist}
+      </a>
+      <div
+        id={tooltipId}
+        role="tooltip"
+        className="pointer-events-none invisible absolute bottom-full left-1/2 z-50 mb-3 w-72 -translate-x-1/2 rounded-2xl border border-white/15 bg-ozora-navy/95 p-3 opacity-0 shadow-2xl shadow-black/50 backdrop-blur transition duration-150 group-hover/artist:visible group-hover/artist:opacity-100 group-focus-within/artist:visible group-focus-within/artist:opacity-100"
+      >
+        <div className="flex items-center gap-3">
+          {preview.photo ? (
+            <img src={preview.photo} alt="" className="h-14 w-14 shrink-0 rounded-xl object-cover" />
+          ) : (
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/10 font-display text-2xl font-bold text-ozora-cream/60">
+              {preview.name.slice(0, 1)}
+            </span>
+          )}
+          <span className="min-w-0">
+            <span className="block truncate font-display text-base font-bold text-ozora-cream">{preview.name}</span>
+            {context ? <span className="mt-0.5 block text-xs leading-relaxed text-ozora-turquoise">{context}</span> : null}
+          </span>
+        </div>
+        {preview.bio ? <p className="mt-3 line-clamp-3 text-xs leading-relaxed text-ozora-cream/70">{preview.bio}</p> : null}
+      </div>
+    </li>
+  );
+}
+
 export function CalendarEventList({
   events,
   embedded = false,
-  artistIds = {},
+  artistPreviews = {},
 }: {
   events: readonly UpcomingEventCard[];
   embedded?: boolean;
-  artistIds?: Readonly<Record<string, string>>;
+  artistPreviews?: Readonly<Record<string, ArtistPreview>>;
 }) {
   const { language } = useLanguage();
   const label = areaText(language, 'upcoming-events');
@@ -50,12 +105,13 @@ export function CalendarEventList({
               const past = event.when === 'past';
               const highlighted = event.id === firstUpcomingId;
               const artists = eventArtists(event);
+              const headliners = new Set(eventHeadliners(event).map(normalizeSearch));
               const place = venueLabel(event);
               const date = formatEventDate(event, eventText(language, 'dateLocale'));
               return (
                 <article
                   key={event.id}
-                  className={`relative isolate flex min-w-0 flex-col gap-5 overflow-hidden rounded-[2rem] border p-4 transition duration-300 sm:flex-row sm:items-stretch ${
+                  className={`relative isolate flex min-w-0 flex-col gap-5 overflow-visible rounded-[2rem] border p-4 transition duration-300 hover:z-20 focus-within:z-20 sm:flex-row sm:items-stretch ${
                     highlighted
                       ? 'border-ozora-yellow bg-ozora-yellow/10 shadow-glow sm:p-5 md:min-h-[19rem] md:p-6'
                       : past
@@ -127,19 +183,13 @@ export function CalendarEventList({
                     ) : null}
                     {artists.length > 0 ? (
                       <ul className={`${past ? 'mt-3' : 'mt-4'} flex flex-wrap gap-2`}>
-                        {artists.slice(0, 8).map((artist) => (
-                          <li key={artist}>
-                            {artistIds[artist.trim().toLowerCase()] ? (
-                              <a
-                                href={`/artists/${encodeURIComponent(artistIds[artist.trim().toLowerCase()] ?? '')}`}
-                                className="inline-flex min-h-10 items-center rounded-full border border-white/15 bg-black/10 px-3 py-1.5 text-xs font-semibold text-ozora-cream/80 transition hover:border-ozora-coral/60 hover:bg-ozora-coral/10 hover:text-ozora-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
-                              >
-                                {artist}
-                              </a>
-                            ) : (
-                              <span className="inline-flex min-h-10 items-center rounded-full border border-white/15 bg-black/10 px-3 py-1.5 text-xs font-semibold text-ozora-cream/80">{artist}</span>
-                            )}
-                          </li>
+                        {artists.map((artist) => (
+                          <ArtistChip
+                            key={artist}
+                            artist={artist}
+                            preview={artistPreviews[artist.trim().toLowerCase()]}
+                            headliner={headliners.has(normalizeSearch(artist))}
+                          />
                         ))}
                       </ul>
                     ) : null}
