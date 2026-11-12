@@ -5,7 +5,7 @@ export interface NavigationItem {
   href: string;
 }
 
-const omittedFromBar = new Set<WebAreaId>(['my-tickets', 'check-in']);
+const omittedFromBar = new Set<WebAreaId>(['my-tickets', 'my-orders', 'check-in']);
 
 export const navigation: readonly NavigationItem[] = webAreas
   .filter((area) => !omittedFromBar.has(area.id))

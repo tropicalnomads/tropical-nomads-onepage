@@ -12,6 +12,7 @@
     "./tickets": "./src/tickets.ts",
     "./check-in": "./src/check-in.ts",
     "./parties": "./src/parties.ts",
+    "./orders": "./src/order-views.ts",
     "./artists": "./src/artists.ts"
   },
   "scripts": {

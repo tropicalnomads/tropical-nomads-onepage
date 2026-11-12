@@ -26,7 +26,9 @@ import {
 import { commitPayment, commitPaymentMethod, loadTraces, type PaymentCaller, type PaymentDraft } from './payments.ts';
 import { openSealed, sessionFromCookie } from './session-token.ts';
 import { commitPartySave, loadAdminParties, type PartyOfferInput, type PartySaveInput } from './parties.ts';
+import { listAdminOrders, listOwnOrders } from './order-views.ts';
 import { placeShopOrder, readShopPurchase } from './shop-orders.ts';
+import { markOrderPaid } from './shop-stock.ts';
 import { saveArtistProfile } from './artists.ts';
 import { loadCatalogImages, loadShopProducts } from './s3-load.ts';
 import { commitTicket, loadIssuedTickets, loadOrders, loadPartyTitles, loadPublishedParties } from './tickets.ts';
@@ -279,6 +281,14 @@ async function runAction(action: string, input: unknown, sessionSub: string | un
     }
     case 'place-shop-order': {
       return placeShopOrder(readShopPurchase(input), sessionSub);
+    }
+    case 'own-orders':
+      return listOwnOrders(sessionSub);
+    case 'admin-orders':
+      return listAdminOrders(sessionSub);
+    case 'mark-order-paid': {
+      const orderId = isRecord(input) && typeof input.orderId === 'string' ? input.orderId : '';
+      return markOrderPaid(sessionSub, orderId);
     }
     case 'save-shop-product': {
       const shop = await loadShopProducts();

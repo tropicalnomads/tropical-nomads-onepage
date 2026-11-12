@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { areaText } from '../i18n/copy';
 import { shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
 import { publicHref } from '../seo/urls';
@@ -38,9 +39,14 @@ export function ShopOrderComplete() {
         ) : (
           <h1 className="font-display text-3xl font-bold text-ozora-cream">{shopText(language, 'missingOrder')}</h1>
         )}
-        <Button href={publicHref('/shop', language)} tone="back" size="sm" className="mt-4">
-          {shopText(language, 'backShop')}
-        </Button>
+        <div className="mt-4 flex flex-col items-center gap-3">
+          <Button href="/my-orders" size="sm">
+            {areaText(language, 'my-orders')}
+          </Button>
+          <Button href={publicHref('/shop', language)} tone="back" size="sm">
+            {shopText(language, 'backShop')}
+          </Button>
+        </div>
       </div>
     </section>
   );

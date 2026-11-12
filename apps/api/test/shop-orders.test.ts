@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { randomBytes } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -44,7 +45,7 @@ function request(lines: ShopPurchaseRequest['lines'], delivery: ShopPurchaseRequ
 }
 
 describe('shop orders', () => {
-  it('prices the order from the catalog, keeps the address, and spends the last unit once', () => {
+  it('prices the order from the catalog and keeps the address without taking stock', () => {
     const stock = shelf();
     const bought = readShopPurchase({
       lines: [
@@ -72,24 +73,13 @@ describe('shop orders', () => {
         { productId: 'pg', size: 'G', quantity: 2 },
       ],
     );
-    assert.deepEqual(
-      planned.changes.map((change) => [change.productId, change.size, change.oldCount, change.nextCount]),
-      [
-        ['hw', 'M', 1, 0],
-        ['pg', 'G', 2, 0],
-      ],
-    );
+    assert.deepEqual(planned.changes, []);
+    assert.deepEqual(planned.corrections, []);
     assert.equal(stock.counts[0]?.count, 1);
     assert.equal(parseOrder(planned.order).ok, true);
-    const spent = {
-      products: stock.products,
-      counts: stock.counts.map((row) => {
-        const change = planned.changes.find((item) => item.productId === row.productId && item.size === row.size);
-        return change ? { ...row, count: change.nextCount } : row;
-      }),
-    };
-    assert.throws(() => planShopPurchase(spent, request([{ productId: 'hw', size: 'M', quantity: 1 }]), 'guest-2', now), /sold out/);
-    assert.equal(spent.counts[0]?.count, 0);
+    const again = planShopPurchase(stock, request([{ productId: 'hw', size: 'M', quantity: 1 }]), 'guest-2', now);
+    assert.equal(again.trace.status, 'pending_provider');
+    assert.equal(stock.counts[0]?.count, 1);
   });
 
   it('refuses a quantity above stock without changing the counts', () => {
@@ -122,7 +112,7 @@ describe('shop orders', () => {
 
   const settings = databaseSettings();
   if (settings) {
-    it('saves one order, reduces that size, and leaves the database unchanged when the next buy does not fit', async () => {
+    it('saves one pending order without reducing stock, and leaves the database unchanged when the next buy does not fit', async () => {
       const client = new pg.Client({
         host: settings.host,
         port: settings.port,
@@ -133,28 +123,33 @@ describe('shop orders', () => {
       });
       await client.connect();
       const created: string[] = [];
-      let productId = '';
-      let size = '';
+      const productId = `order-check-${randomBytes(6).toString('hex')}`;
+      const size = 'M';
+      const original = 3;
+      const amount = 40;
       try {
-        const stock = await client.query<{ product_id: string; size: string; count: number }>(
-          'select product_id, size, count from stock_count where count > 0 order by product_id, size limit 1',
+        await client.query(
+          `insert into product (id, name, image, alt, amount, currency, pickup, stock_note, document)
+           values ($1, 'Order check', '/shop/media/order-check', 'Order check', $2, 'EUR', 'Lisbon', 'In stock', $3::jsonb)`,
+          [productId, amount, JSON.stringify({ id: productId, name: 'Order check', image: '/shop/media/order-check', alt: 'Order check', amount, currency: 'EUR', pickup: 'Lisbon', stockNote: 'In stock' })],
         );
-        const row = stock.rows[0];
-        assert.ok(row);
-        productId = row.product_id;
-        size = row.size;
-        const original = Number(row.count);
-        const product = await client.query<{ amount: string; currency: string | null }>('select amount, currency from product where id = $1', [productId]);
-        const amount = Number(product.rows[0]?.amount);
-        const before = await client.query<{ count: number }>('select count(*)::int as count from customer_order');
-        const beforeCount = Number(before.rows[0]?.count);
+        await client.query('insert into stock_count (product_id, size, count) values ($1, $2, $3)', [productId, size, original]);
+        const ordersForProduct = async () => {
+          const rows = await client.query<{ count: number }>(
+            `select count(*)::int as count from customer_order
+             where exists (select 1 from jsonb_array_elements(lines) line where line->>'productId' = $1)`,
+            [productId],
+          );
+          return Number(rows.rows[0]?.count);
+        };
+        const beforeCount = await ordersForProduct();
         await assert.rejects(
           () => placeShopOrder(request([{ productId, size, quantity: original + 1 }]), undefined),
           /sold out/,
         );
-        const midway = await client.query<{ count: number }>('select count(*)::int as count from customer_order');
+        const midwayCount = await ordersForProduct();
         const held = await client.query<{ count: number }>('select count from stock_count where product_id = $1 and size = $2', [productId, size]);
-        assert.equal(Number(midway.rows[0]?.count), beforeCount);
+        assert.equal(midwayCount, beforeCount);
         assert.equal(Number(held.rows[0]?.count), original);
 
         const placed = await placeShopOrder(
@@ -163,7 +158,7 @@ describe('shop orders', () => {
         );
         created.push(placed.orderId);
         const after = await client.query<{ count: number }>('select count from stock_count where product_id = $1 and size = $2', [productId, size]);
-        assert.equal(Number(after.rows[0]?.count), original - 1);
+        assert.equal(Number(after.rows[0]?.count), original);
         const saved = await client.query<{ document: { purpose?: string; traceId?: string; userId?: string; delivery?: { name?: string }; lines?: { quantity?: number }[] } }>(
           'select document from customer_order where id = $1',
           [placed.orderId],
@@ -178,21 +173,20 @@ describe('shop orders', () => {
         assert.equal(Number(trace.rows[0]?.amount), amount);
         assert.equal(trace.rows[0]?.status, 'pending_provider');
         assert.equal(trace.rows[0]?.purpose, 'shop');
-        const correction = await client.query<{ old_count: number; new_count: number }>(
-          'select old_count, new_count from stock_correction where actor_id = $1 and product_id = $2 and size = $3',
+        const correction = await client.query<{ count: number }>(
+          'select count(*)::int as count from stock_correction where actor_id = $1 and product_id = $2 and size = $3',
           [document?.userId, productId, size],
         );
-        assert.equal(Number(correction.rows[0]?.old_count), original);
-        assert.equal(Number(correction.rows[0]?.new_count), original - 1);
+        assert.equal(Number(correction.rows[0]?.count), 0);
 
         await assert.rejects(
-          () => placeShopOrder(request([{ productId, size, quantity: original }]), undefined),
+          () => placeShopOrder(request([{ productId, size, quantity: original + 1 }]), undefined),
           /sold out/,
         );
-        const orders = await client.query<{ count: number }>('select count(*)::int as count from customer_order');
+        const finalOrders = await ordersForProduct();
         const finalCount = await client.query<{ count: number }>('select count from stock_count where product_id = $1 and size = $2', [productId, size]);
-        assert.equal(Number(orders.rows[0]?.count), beforeCount + 1);
-        assert.equal(Number(finalCount.rows[0]?.count), original - 1);
+        assert.equal(finalOrders, beforeCount + 1);
+        assert.equal(Number(finalCount.rows[0]?.count), original);
       } finally {
         for (const orderId of created) {
           const order = await client.query<{ user_id: string; trace_id: string }>('select user_id, trace_id from customer_order where id = $1', [orderId]);
@@ -206,9 +200,8 @@ describe('shop orders', () => {
             await client.query('delete from payment_trace where id = $1', [traceId]);
           }
         }
-        if (created.length > 0 && productId !== '' && size !== '') {
-          await client.query('update stock_count set count = count + $3 where product_id = $1 and size = $2', [productId, size, created.length]);
-        }
+        await client.query('delete from stock_count where product_id = $1', [productId]);
+        await client.query('delete from product where id = $1', [productId]);
         await client.end();
         await closeStoredDatabase();
       }

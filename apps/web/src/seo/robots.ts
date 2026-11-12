@@ -18,7 +18,7 @@ export const robotAgents = [
   'Perplexity-User',
 ] as const;
 
-export const robotDisallows = ['/account', '/my-tickets', '/check-in', '/health'] as const;
+export const robotDisallows = ['/account', '/my-tickets', '/my-orders', '/check-in', '/health'] as const;
 
 export function robotsTxt(): string {
   const groups = robotAgents.map((agent) =>

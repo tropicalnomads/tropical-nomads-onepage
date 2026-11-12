@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, LogIn, LogOut, Menu, ShoppingBag, Ticket, UserRound, X } from 'lucide-react';
+import { ChevronDown, LogIn, LogOut, Menu, ReceiptText, ShoppingBag, Ticket, UserRound, X } from 'lucide-react';
 import { useState } from 'react';
 import { origins, type Locale, type WebAreaId } from 'tropical-nomads-shared';
 import { signOutAction } from '../account/actions';
@@ -139,6 +139,9 @@ function AccountControl({ signedIn, onOpen }: { signedIn: boolean; onOpen?: () =
       </MenuItem>
       <MenuItem href="/my-tickets" icon={<Ticket size={16} aria-hidden="true" />}>
         {areaText(language, 'my-tickets')}
+      </MenuItem>
+      <MenuItem href="/my-orders" icon={<ReceiptText size={16} aria-hidden="true" />}>
+        {areaText(language, 'my-orders')}
       </MenuItem>
       <MenuSeparator />
       <MenuItem disabled={signingOut} onSelect={() => void signOut()} icon={<LogOut size={16} aria-hidden="true" />}>

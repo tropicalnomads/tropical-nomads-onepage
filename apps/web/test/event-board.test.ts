@@ -151,6 +151,7 @@ describe('admin event board', () => {
     assert.equal(hub.includes('<AdminShopOrders'), true);
     assert.equal(hub.includes("events: '/admin/events'"), true);
     assert.equal(hub.includes("shop: '/admin/shops'"), true);
+    assert.equal(hub.includes("orders: '/admin/orders'"), true);
     assert.equal(hub.includes('window.history.pushState'), true);
     assert.equal(hub.includes('popstate'), true);
     assert.equal(frame.includes('href="/admin'), false);

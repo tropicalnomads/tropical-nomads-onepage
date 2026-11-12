@@ -8,6 +8,7 @@ describe('shell languages', () => {
     assert.deepEqual(Object.keys(shellCopy.en).sort(), Object.keys(shellCopy.pt).sort());
     assert.deepEqual(Object.keys(shellCopy.en.areas).sort(), Object.keys(shellCopy.pt.areas).sort());
     assert.deepEqual(Object.keys(shellCopy.en.areaDescriptions).sort(), Object.keys(shellCopy.pt.areaDescriptions).sort());
+    assert.deepEqual(Object.keys(shellCopy.en.orders).sort(), Object.keys(shellCopy.pt.orders).sort());
     for (const language of locales) {
       for (const [key, value] of Object.entries(shellCopy[language] as ShellCopy)) {
         if (typeof value === 'string') {

@@ -3,7 +3,6 @@
 import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { ManagedParty } from 'tropical-nomads-api/parties';
-import type { ShopOrderRow } from '../admin/shop-values';
 import { adminText } from '../i18n/copy';
 import { shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
@@ -16,10 +15,18 @@ import { Button } from './ui/Button';
 const tabPath = {
   events: '/admin/events',
   shop: '/admin/shops',
+  orders: '/admin/orders',
 } as const satisfies Record<AdminTab, string>;
 
 function tabFromPath(pathname: string): AdminTab {
-  return pathname === tabPath.shop ? 'shop' : 'events';
+  switch (pathname) {
+    case tabPath.shop:
+      return 'shop';
+    case tabPath.orders:
+      return 'orders';
+    default:
+      return 'events';
+  }
 }
 
 function addLabel(language: Parameters<typeof adminText>[0], tab: AdminTab): string {
@@ -28,6 +35,8 @@ function addLabel(language: Parameters<typeof adminText>[0], tab: AdminTab): str
       return adminText(language, 'newEvent');
     case 'shop':
       return shopText(language, 'addProduct');
+    case 'orders':
+      return adminText(language, 'ordersTab');
     default: {
       const unexpected: never = tab;
       return unexpected;
@@ -35,12 +44,14 @@ function addLabel(language: Parameters<typeof adminText>[0], tab: AdminTab): str
   }
 }
 
-function addHref(tab: AdminTab): string {
+function addHref(tab: AdminTab): string | undefined {
   switch (tab) {
     case 'events':
       return '/admin/events/new';
     case 'shop':
       return '/admin/shop/new';
+    case 'orders':
+      return undefined;
     default: {
       const unexpected: never = tab;
       return unexpected;
@@ -51,12 +62,10 @@ function addHref(tab: AdminTab): string {
 export function AdminHub({
   initialTab,
   parties,
-  orders,
   products,
 }: {
   initialTab: AdminTab;
   parties: readonly ManagedParty[];
-  orders: readonly ShopOrderRow[];
   products: readonly ShopCatalogProduct[];
 }) {
   const { language } = useLanguage();
@@ -71,6 +80,10 @@ export function AdminHub({
   }, []);
 
   function select(next: AdminTab): void {
+    if (next === 'orders') {
+      window.location.assign(tabPath.orders);
+      return;
+    }
     setTab(next);
     const url = tabPath[next];
     if (window.location.pathname !== url) {
@@ -78,21 +91,25 @@ export function AdminHub({
     }
   }
 
+  const href = addHref(tab);
+
   return (
     <AdminFrame
       tab={tab}
       onTab={select}
       action={
-        <Button href={addHref(tab)} icon={<Plus size={18} aria-hidden="true" />}>
-          {addLabel(language, tab)}
-        </Button>
+        href ? (
+          <Button href={href} icon={<Plus size={18} aria-hidden="true" />}>
+            {addLabel(language, tab)}
+          </Button>
+        ) : undefined
       }
     >
       <div hidden={tab !== 'events'}>
         <AdminEventList parties={parties} />
       </div>
       <div hidden={tab !== 'shop'}>
-        <AdminShopOrders orders={orders} products={products} />
+        <AdminShopOrders products={products} />
       </div>
     </AdminFrame>
   );

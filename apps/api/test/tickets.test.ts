@@ -155,7 +155,8 @@ describe('tickets', () => {
     assert.equal(other, missing);
     assert.equal(listOwnTickets(caller(), [ticket]).length, 1);
     assert.deepEqual(listOwnTickets(caller('sub-grace'), [ticket]), []);
-    assert.throws(() => listOwnTickets(caller('sub-grace', 'door'), [ticket]), /ticket was not found/);
+    assert.deepEqual(listOwnTickets(caller('sub-grace', 'door'), [ticket]), []);
+    assert.throws(() => readOwnTicket(caller('sub-grace', 'door'), [ticket], ticket.id), /ticket was not found/);
 
     const committed = readFileSync(new URL('../../../data/operational/issued-tickets.json', import.meta.url), 'utf8');
     assert.equal(JSON.parse(committed).records.length, 0);

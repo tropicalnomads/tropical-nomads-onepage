@@ -3,7 +3,6 @@ import {
   containsCardNumber,
   parseOrder,
   parsePaymentTrace,
-  parseStockCorrection,
   type Order,
   type OrderDelivery,
   type PaymentTrace,
@@ -11,6 +10,7 @@ import {
 } from 'tropical-nomads-shared';
 import { loadAccounts } from './accounts.ts';
 import { databaseSettings } from './database.ts';
+import { reconcileShopStock } from './shop-stock.ts';
 import { insertStoredRecord, queueDatabase, runInTransaction, type StoredQuery } from './sql-store.ts';
 
 const stockSizes = ['P', 'M', 'G', 'GG', '2XL'] as const;
@@ -168,8 +168,8 @@ function deliveryOf(address: ShopPurchaseAddress): OrderDelivery {
 }
 
 /**
- * Prices and stock come from the shelf. The trace stays pending because the site does not charge the card.
- * The stock change is the commitment: the shirts are no longer available to the next buyer.
+ * Prices come from the shelf. The trace stays pending because the site does not charge the card.
+ * A pending order checks that the size is listed, and it does not take stock.
  */
 export function planShopPurchase(shelf: ShopShelf, request: ShopPurchaseRequest, userId: string, now: string): PlannedShopPurchase {
   const buyer = userId.trim();
@@ -193,7 +193,6 @@ export function planShopPurchase(shelf: ShopShelf, request: ShopPurchaseRequest,
     throw new Error('order was not accepted');
   }
   const lines = [...merged.values()].sort(byShelf);
-  const changes: ShopStockChange[] = [];
   let currency = '';
   let total = 0;
   for (const line of lines) {
@@ -212,7 +211,6 @@ export function planShopPurchase(shelf: ShopShelf, request: ShopPurchaseRequest,
       throw new Error('sold out');
     }
     total = addMoney(total, product.amount, line.quantity);
-    changes.push({ productId: line.productId, size: line.size, quantity: line.quantity, oldCount: row.count, nextCount: row.count - line.quantity });
   }
   if (total <= 0 || total > 100000 || !/^\d+(\.\d{1,2})?$/.test(total.toString())) {
     throw new Error('order was not accepted');
@@ -237,26 +235,10 @@ export function planShopPurchase(shelf: ShopShelf, request: ShopPurchaseRequest,
     createdAt: now,
     delivery,
   });
-  const corrections: StockCorrection[] = [];
-  for (const change of changes) {
-    const correction = parseStockCorrection({
-      id: newId('stock'),
-      productId: change.productId,
-      size: change.size,
-      actorId: buyer,
-      at: now,
-      oldCount: change.oldCount,
-      newCount: change.nextCount,
-    });
-    if (!correction.ok) {
-      throw new Error('order was not accepted');
-    }
-    corrections.push(correction.value);
-  }
   if (!trace.ok || !order.ok) {
     throw new Error('order was not accepted');
   }
-  return { order: order.value, trace: trace.value, corrections, changes };
+  return { order: order.value, trace: trace.value, corrections: [], changes: [] };
 }
 
 async function readShelf(client: StoredQuery): Promise<ShopShelf> {
@@ -328,6 +310,7 @@ export async function placeShopOrder(request: ShopPurchaseRequest, sessionUserId
     const userId = await buyerId(sessionUserId);
     return await queueDatabase(() =>
       runInTransaction(async (client) => {
+        await reconcileShopStock(client);
         const planned = planShopPurchase(await readShelf(client), request, userId, new Date().toISOString());
         await writePurchase(client, planned);
         return { orderId: planned.order.id };

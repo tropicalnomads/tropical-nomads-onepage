@@ -29,7 +29,7 @@ import { robotAgents, robotDisallows, robotsTxt } from '../src/seo/robots.ts';
 import { sitemapEntries, sitemapXml } from '../src/seo/sitemap.ts';
 import { canonicalUrl, isPublicPath, localeFromHeader, localeFromLangParam, publicHref, searchLinks, siteOrigin } from '../src/seo/urls.ts';
 
-const privatePaths = ['/account', '/account/sign-in', '/account/register', '/my-tickets', '/check-in', '/health', '/admin', '/shop/cart'];
+const privatePaths = ['/account', '/account/sign-in', '/account/register', '/my-tickets', '/my-orders', '/check-in', '/health', '/admin', '/shop/cart'];
 
 const expectedLlms = `# Tropical Nomads
 
@@ -192,7 +192,7 @@ describe('search files', () => {
     const xml = sitemapXml();
     assert.equal(xml.includes('xmlns:xhtml="http://www.w3.org/1999/xhtml"'), true);
     assert.equal(xml.includes('hreflang="x-default"'), true);
-    for (const path of ['/account', '/my-tickets', '/check-in', '/health', '/privacy', '/merch']) {
+    for (const path of ['/account', '/my-tickets', '/my-orders', '/check-in', '/health', '/privacy', '/merch']) {
       assert.equal(xml.includes(path), false, path);
     }
   });

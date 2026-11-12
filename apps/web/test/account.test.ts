@@ -140,6 +140,9 @@ describe('accounts', () => {
     assert.equal(header.includes("accountText(language, 'signOut')"), true);
     assert.equal(header.includes('href="/my-tickets"'), true);
     assert.equal(header.includes("areaText(language, 'my-tickets')"), true);
+    assert.equal(header.includes('href="/my-orders"'), true);
+    assert.equal(header.includes("areaText(language, 'my-orders')"), true);
+    assert.equal(header.includes('ReceiptText'), true);
     assert.equal(header.includes('/check-in'), false);
     assert.equal(actions.includes('noticeForSignInFailure'), true);
     assert.equal(actions.includes('finishSignIn'), true);

@@ -29,7 +29,7 @@ const matrix = {
     'configure-event-tickets': 'allow',
     'set-shop': 'allow',
     'scan-ticket': 'allow',
-    'read-own-purchases': 'deny',
+    'read-own-purchases': 'allow',
     'read-other-purchases': 'deny',
     'read-traces': 'allow',
     'use-payment': 'deny',
@@ -39,7 +39,7 @@ const matrix = {
     'configure-event-tickets': 'deny',
     'set-shop': 'deny',
     'scan-ticket': 'allow',
-    'read-own-purchases': 'deny',
+    'read-own-purchases': 'allow',
     'read-other-purchases': 'deny',
     'read-traces': 'deny',
     'use-payment': 'deny',
@@ -121,14 +121,23 @@ describe('access matrix', () => {
     });
   });
 
-  it('lets a user read only their own purchases', () => {
+  it('lets a signed-in role read only that subject’s purchases', () => {
     assert.deepEqual(decideAccess({ action: 'read-own-purchases', role: 'user', actorId: 'user-1', subjectId: 'user-1' }), {
       effect: 'allow',
       actorId: 'user-1',
     });
     assert.equal(decideAccess({ action: 'read-own-purchases', role: 'user', actorId: 'user-1', subjectId: 'user-2' }).effect, 'deny');
     assert.equal(decideAccess({ action: 'read-other-purchases', role: 'user', actorId: 'user-1', subjectId: 'user-1' }).effect, 'deny');
-    assert.equal(decideAccess({ action: 'read-own-purchases', role: 'door', actorId: 'door-1', subjectId: 'door-1' }).effect, 'deny');
+    assert.deepEqual(decideAccess({ action: 'read-own-purchases', role: 'door', actorId: 'door-1', subjectId: 'door-1' }), {
+      effect: 'allow',
+      actorId: 'door-1',
+    });
+    assert.equal(decideAccess({ action: 'read-own-purchases', role: 'door', actorId: 'door-1', subjectId: 'user-1' }).effect, 'deny');
+    assert.deepEqual(decideAccess({ action: 'read-own-purchases', role: 'admin', actorId: 'admin-1', subjectId: 'admin-1' }), {
+      effect: 'allow',
+      actorId: 'admin-1',
+    });
+    assert.equal(decideAccess({ action: 'read-own-purchases', role: 'admin', actorId: 'admin-1', subjectId: 'user-1' }).effect, 'deny');
     assert.equal(decideAccess({ action: 'read-other-purchases', role: 'admin', actorId: 'admin-1', subjectId: 'user-1' }).effect, 'deny');
     assert.deepEqual(decideAccess({ action: 'read-traces', role: 'admin', actorId: 'admin-1', subjectId: 'user-1' }), {
       effect: 'allow',

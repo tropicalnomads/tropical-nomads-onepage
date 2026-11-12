@@ -103,6 +103,7 @@ export function roleAllows(role: Role, action: AccessAction): boolean {
     case 'read-event-roster':
       return known === 'door' || known === 'admin';
     case 'read-own-purchases':
+      return known === 'admin' || known === 'door' || known === 'user';
     case 'use-payment':
       return known === 'user';
     case 'read-traces':

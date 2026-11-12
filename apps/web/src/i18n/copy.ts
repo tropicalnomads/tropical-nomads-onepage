@@ -21,6 +21,7 @@ export interface ShellCopy {
   areaDescriptions: Record<WebAreaId, string>;
   events: EventCopy;
   tickets: TicketCopy;
+  orders: OrdersCopy;
   eventsAdmin: string;
   navAdmin: string;
   checkIn: CheckInCopy;
@@ -272,6 +273,7 @@ export interface AdminCopy {
   saving: string;
   country: string;
   genres: string;
+  ordersTab: string;
 }
 
 export type AccountNotice =
@@ -416,6 +418,23 @@ export interface EventCopy {
   dateLocale: string;
 }
 
+export interface OrdersCopy {
+  intro: string;
+  signInTitle: string;
+  signInBody: string;
+  emptyTitle: string;
+  emptyBody: string;
+  payNow: string;
+  payNowNote: string;
+  viewTicket: string;
+  markPaid: string;
+  markingPaid: string;
+  soldOut: string;
+  openOrders: string;
+  emptyAdmin: string;
+  markFailed: string;
+}
+
 export interface TicketCopy {
   signInTitle: string;
   signInBody: string;
@@ -482,12 +501,14 @@ export const shellCopy: Record<Locale, ShellCopy> = {
     areas: {
       'upcoming-events': 'Upcoming events',
       'my-tickets': 'My tickets',
+      'my-orders': 'My orders',
       'check-in': 'Check-in',
       shop: 'Shop',
     },
     areaDescriptions: {
       'upcoming-events': 'Published parties, with the date, the place, and who is playing.',
       'my-tickets': 'Your tickets and the QR code for the door.',
+      'my-orders': 'Shirts you ordered, and whether each one is paid.',
       'check-in': 'Door staff and admins check in a published event. A checked person cannot enter again.',
       shop: 'Embroidered T-shirts. Buy saves the order and sends it on WhatsApp. Nothing is charged here.',
     },
@@ -545,6 +566,22 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       open: 'Open ticket',
       back: 'All tickets',
       qrLabel: 'QR code for {title}',
+    },
+    orders: {
+      intro: 'Shirts you ordered, and whether each one is paid.',
+      signInTitle: 'Sign in to see your orders',
+      signInBody: 'Shop orders stay on your account. They are not on this page until you sign in.',
+      emptyTitle: 'No orders yet',
+      emptyBody: 'A shirt you order will show up here.',
+      payNow: 'Pay now',
+      payNowNote: 'The team confirms the payment. This order stays unpaid until then.',
+      viewTicket: 'View ticket',
+      markPaid: 'Mark as paid',
+      markingPaid: 'Marking as paid…',
+      soldOut: 'Those sizes are no longer in stock. The order stays unpaid.',
+      openOrders: 'All orders',
+      emptyAdmin: 'No orders yet.',
+      markFailed: 'The order could not be marked paid. Try again.',
     },
     checkIn: {
       signInTitle: 'Sign in to check in',
@@ -858,6 +895,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       saving: 'Saving…',
       country: 'Country',
       genres: 'Genres',
+      ordersTab: 'Orders',
     },
   },
   pt: {
@@ -881,12 +919,14 @@ export const shellCopy: Record<Locale, ShellCopy> = {
     areas: {
       'upcoming-events': 'Próximos eventos',
       'my-tickets': 'Meus ingressos',
+      'my-orders': 'Meus pedidos',
       'check-in': 'Check-in',
       shop: 'Loja',
     },
     areaDescriptions: {
       'upcoming-events': 'Festas publicadas, com a data, o lugar e quem toca.',
       'my-tickets': 'Os seus ingressos e o QR da porta.',
+      'my-orders': 'As camisetas que você pediu, e se cada uma está paga.',
       'check-in': 'A porta e os admins fazem o check-in de uma festa publicada. Quem já entrou não entra de novo.',
       shop: 'Camisetas bordadas. Comprar grava o pedido e envia no WhatsApp. Nada é cobrado aqui.',
     },
@@ -944,6 +984,22 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       open: 'Abrir ingresso',
       back: 'Todos os ingressos',
       qrLabel: 'QR de {title}',
+    },
+    orders: {
+      intro: 'As camisetas que você pediu, e se cada uma está paga.',
+      signInTitle: 'Entre para ver os seus pedidos',
+      signInBody: 'Os pedidos da loja ficam na sua conta. Eles não aparecem nesta página antes de entrar.',
+      emptyTitle: 'Nenhum pedido ainda',
+      emptyBody: 'Uma camiseta pedida aparece aqui.',
+      payNow: 'Pagar agora',
+      payNowNote: 'A equipe confirma o pagamento. Este pedido continua não pago até lá.',
+      viewTicket: 'Ver ingresso',
+      markPaid: 'Marcar como pago',
+      markingPaid: 'Marcando como pago…',
+      soldOut: 'Esses tamanhos não estão mais em estoque. O pedido continua não pago.',
+      openOrders: 'Todos os pedidos',
+      emptyAdmin: 'Ainda não há pedidos.',
+      markFailed: 'Não foi possível marcar o pedido como pago. Tente de novo.',
     },
     checkIn: {
       signInTitle: 'Entre para fazer o check-in',
@@ -1257,6 +1313,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       saving: 'Salvando…',
       country: 'País',
       genres: 'Géneros',
+      ordersTab: 'Pedidos',
     },
   },
 };
@@ -1272,7 +1329,7 @@ export function adminText<K extends keyof AdminCopy>(language: Locale, key: K): 
   return presentText(language, `admin.${key}`, shellCopy[language].admin[key]);
 }
 
-export function shellText<K extends keyof Omit<ShellCopy, 'areas' | 'areaDescriptions' | 'events' | 'tickets' | 'checkIn' | 'account' | 'payments' | 'home' | 'admin'>>(
+export function shellText<K extends keyof Omit<ShellCopy, 'areas' | 'areaDescriptions' | 'events' | 'tickets' | 'orders' | 'checkIn' | 'account' | 'payments' | 'home' | 'admin'>>(
   language: Locale,
   key: K,
 ): string {
@@ -1297,6 +1354,10 @@ export function eventText<K extends keyof EventCopy>(language: Locale, key: K): 
 
 export function ticketText<K extends keyof TicketCopy>(language: Locale, key: K): string {
   return presentText(language, `tickets.${key}`, shellCopy[language].tickets[key]);
+}
+
+export function orderText<K extends keyof OrdersCopy>(language: Locale, key: K): string {
+  return presentText(language, `orders.${key}`, shellCopy[language].orders[key]);
 }
 
 export function checkInText<K extends keyof CheckInCopy>(language: Locale, key: K): string {

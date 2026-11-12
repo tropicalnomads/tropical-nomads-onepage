@@ -15,6 +15,7 @@ describe('web shell navigation', () => {
     );
     const areaIds = new Set(webAreas.map((area) => area.id));
     assert.equal(areaIds.has('my-tickets'), true);
+    assert.equal(areaIds.has('my-orders'), true);
     assert.equal(areaIds.has('check-in'), true);
   });
 });

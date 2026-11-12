@@ -2,15 +2,16 @@
 
 import type { ReactNode } from 'react';
 import type { Locale } from 'tropical-nomads-shared';
-import { areaText, shellText } from '../i18n/copy';
+import { adminText, areaText, shellText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { Button } from './ui/Button';
 
-export type AdminTab = 'events' | 'shop';
+export type AdminTab = 'events' | 'shop' | 'orders';
 
 const tabs = [
   { id: 'events' },
   { id: 'shop' },
+  { id: 'orders' },
 ] as const satisfies readonly { id: AdminTab }[];
 
 function tabLabel(language: Locale, id: AdminTab): string {
@@ -19,6 +20,8 @@ function tabLabel(language: Locale, id: AdminTab): string {
       return shellText(language, 'eventsAdmin');
     case 'shop':
       return areaText(language, 'shop');
+    case 'orders':
+      return adminText(language, 'ordersTab');
     default: {
       const unexpected: never = id;
       return unexpected;
