@@ -22,6 +22,7 @@ export interface InAppOffer {
   amount: number;
   currency: 'EUR';
   capacity: number;
+  remaining: number;
 }
 
 export interface UpcomingEventCard {

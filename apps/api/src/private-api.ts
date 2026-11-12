@@ -30,6 +30,7 @@ import { listAdminOrders, listOwnOrders } from './order-views.ts';
 import { placeShopOrder, readShopPurchase } from './shop-orders.ts';
 import { markOrderPaid } from './shop-stock.ts';
 import { saveArtistProfile } from './artists.ts';
+import { saveVenue } from './venues.ts';
 import { loadCatalogImages, loadShopProducts } from './s3-load.ts';
 import { commitTicket, loadIssuedTickets, loadOrders, loadPartyTitles, loadPublishedParties } from './tickets.ts';
 
@@ -106,13 +107,13 @@ async function partyInput(value: unknown): Promise<PartySaveInput> {
     dateStart: text(value.dateStart, 'event'),
     dateEnd: typeof value.dateEnd === 'string' ? value.dateEnd : '',
     timezone: typeof value.timezone === 'string' ? value.timezone : '',
-    venueName: text(value.venueName, 'event'),
-    venueCity: typeof value.venueCity === 'string' ? value.venueCity : '',
+    venueId: text(value.venueId, 'event'),
     description: typeof value.description === 'string' ? value.description : '',
     imageUrl: typeof value.imageUrl === 'string' ? value.imageUrl : '',
     imageAction: imageBase64 !== '' ? 'replace' : imageAction,
     ...(imageBase64 === '' ? {} : { imageBytes: (await loadCatalogImages()).decodeCatalogImage(imageBase64) }),
     artists: typeof value.artists === 'string' ? value.artists : '',
+    ...(typeof value.headliners === 'string' ? { headliners: value.headliners } : {}),
     offers,
     publish: value.publish === true,
   };
@@ -410,6 +411,14 @@ async function runAction(action: string, input: unknown, sessionSub: string | un
       }
       adminCaller(input.caller, sub);
       return saveArtistProfile(input.artist);
+    }
+    case 'save-venue': {
+      const sub = requireSignedIn(sessionSub);
+      if (!isRecord(input)) {
+        throw new Error('venue was not saved');
+      }
+      adminCaller(input.caller, sub);
+      return saveVenue(input.venue);
     }
     case 'avatar': {
       const sub = requireSignedIn(sessionSub);

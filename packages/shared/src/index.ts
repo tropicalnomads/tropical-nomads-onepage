@@ -42,6 +42,8 @@ export {
 } from './events/public-list.ts';
 export type { PublicEventLinks, PublicEventLineup, PublicEventWhen } from './events/public-list.ts';
 export { artistIdFromName, httpsProfileUrl, soundCloudPlayerUrl } from './events/artist-profile.ts';
+export { knownTimeZone } from './events/time-zone.ts';
+export type { Venue } from './schema/catalog.ts';
 export { loteOffers, loteStatusFor, loteStatuses, openLoteOffers } from './events/ticket-lotes.ts';
 export type { LoteOffer, LoteStatus } from './events/ticket-lotes.ts';
 export { euroTicketOffers, eventSaleChoice, isPayableAmount, readTicketOffers } from './events/ticket-offer.ts';

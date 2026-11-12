@@ -1,18 +1,17 @@
 'use client';
 
 import { Calendar, CalendarClock, Clock, ExternalLink, MapPin, Star, Ticket } from 'lucide-react';
-import { useId, useState, type FormEvent } from 'react';
+import { useId } from 'react';
 import { formatEventDate } from 'tropical-nomads-shared';
 import { localizedArtistBio } from '../artists/profile';
 import { eventArtists, eventHeadliners, normalizeSearch } from '../events/calendar';
+import { cheapestOffer } from '../events/offers';
 import type { ArtistPreview, UpcomingEventCard } from '../events/types';
-import { useSignInHref } from '../account/use-return-path';
-import { accountText, areaText, eventText, paymentNotice, paymentText } from '../i18n/copy';
+import { areaText, eventText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
-import { issueTicketAction, type TicketActionResult } from '../tickets/actions';
 import { EmptyState } from '../../../one-pager/src/components/EmptyState';
-import { SelectField } from './SelectField';
-import { Button, TextLink } from './ui/Button';
+import { CountryMark } from './CountryMark';
+import { Button } from './ui/Button';
 
 function fill(template: string, values: Record<string, string>): string {
   return Object.entries(values).reduce((text, [key, value]) => text.replaceAll(`{${key}}`, value), template);
@@ -40,7 +39,7 @@ function ArtistChip({ artist, preview, headliner }: { artist: string; preview: A
       </li>
     );
   }
-  const context = [preview.flag, preview.country, preview.genres.slice(0, 3).join(' · ')].filter(Boolean).join(' ');
+  const genres = preview.genres.slice(0, 3).join(' · ');
   const bio = localizedArtistBio(preview, language);
   return (
     <li className="group/artist relative">
@@ -71,7 +70,12 @@ function ArtistChip({ artist, preview, headliner }: { artist: string; preview: A
           )}
           <span className="min-w-0">
             <span className="block truncate font-display text-base font-bold text-ozora-cream">{preview.name}</span>
-            {context ? <span className="mt-0.5 block text-xs leading-relaxed text-ozora-turquoise">{context}</span> : null}
+            {preview.flag || preview.country || genres ? (
+              <span className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs leading-relaxed text-ozora-turquoise">
+                <CountryMark flag={preview.flag} country={preview.country} />
+                {genres ? <span>{genres}</span> : null}
+              </span>
+            ) : null}
           </span>
         </div>
         {bio ? <p className="mt-3 line-clamp-3 text-xs leading-relaxed text-ozora-cream/70">{bio}</p> : null}
@@ -111,6 +115,7 @@ export function CalendarEventList({
               const headliners = new Set(eventHeadliners(event).map(normalizeSearch));
               const place = venueLabel(event);
               const date = formatEventDate(event, eventText(language, 'dateLocale'));
+              const cheapest = cheapestOffer(event.inAppOffers);
               return (
                 <article
                   key={event.id}
@@ -210,8 +215,10 @@ export function CalendarEventList({
                             {eventText(language, 'memories')}
                           </Button>
                         ) : null
-                      ) : event.inAppOffers.length > 0 ? (
-                        <TicketPurchase event={event} />
+                      ) : cheapest ? (
+                        <Button href={`/events/${encodeURIComponent(event.id)}`} size="sm" icon={<Ticket size={16} aria-hidden="true" />}>
+                          {`${eventText(language, 'buyTickets')} · ${euroAmount(cheapest.amount, language)}`}
+                        </Button>
                       ) : event.ticketUrl ? (
                         event.ticketsOnSale ? (
                           <Button
@@ -323,62 +330,6 @@ function eventGroups(events: readonly UpcomingEventCard[], locale: string): { ke
 
 function euroAmount(amount: number, language: string): string {
   return new Intl.NumberFormat(language === 'pt' ? 'pt-PT' : 'en-IE', { style: 'currency', currency: 'EUR' }).format(amount);
-}
-
-function TicketPurchase({ event }: { event: UpcomingEventCard }) {
-  const { language } = useLanguage();
-  const signInHref = useSignInHref();
-  const [result, setResult] = useState<TicketActionResult | null>(null);
-  const single = event.inAppOffers.length === 1 ? event.inAppOffers[0] : undefined;
-
-  async function onSubmit(formEvent: FormEvent<HTMLFormElement>): Promise<void> {
-    formEvent.preventDefault();
-    setResult(await issueTicketAction(new FormData(formEvent.currentTarget)));
-  }
-
-  return (
-    <form onSubmit={onSubmit} className="flex w-full max-w-sm flex-col gap-2.5 rounded-2xl border border-white/10 bg-black/15 p-3">
-      <input type="hidden" name="partyId" value={event.id} />
-      {single ? (
-        <input type="hidden" name="offerName" value={single.name} />
-      ) : (
-        <SelectField
-          name="offerName"
-          ariaLabel={eventText(language, 'buyInApp')}
-          defaultValue={event.inAppOffers[0]?.name ?? ''}
-          options={event.inAppOffers.map((offer) => ({
-            value: offer.name,
-            label: offer.name,
-            description: `${euroAmount(offer.amount, language)} · ${fill(eventText(language, 'capacityLabel'), { count: String(offer.capacity) })}`,
-          }))}
-        />
-      )}
-      <Button type="submit" size="sm" aria-label={fill(eventText(language, 'buyInAppAria'), { title: event.title })} icon={<Ticket size={16} aria-hidden="true" />}>
-        {single ? `${eventText(language, 'buyInApp')} · ${euroAmount(single.amount, language)}` : eventText(language, 'buyInApp')}
-      </Button>
-      <p className="text-xs text-ozora-cream/70">{eventText(language, 'inAppNote')}</p>
-      {result ? (
-        <p role="status" className="text-sm text-ozora-yellow">
-          {paymentNotice(language, result.notice)}
-        </p>
-      ) : null}
-      {result?.notice === 'ticket-ready' && result.ticketId ? (
-        <TextLink href={`/my-tickets?ticket=${result.ticketId}`} className="text-sm">
-          {eventText(language, 'viewTickets')}
-        </TextLink>
-      ) : null}
-      {result?.notice === 'not-signed-in' ? (
-        <TextLink href={signInHref} className="text-sm">
-          {accountText(language, 'signIn')}
-        </TextLink>
-      ) : null}
-      {result?.notice === 'billing-required' ? (
-        <TextLink href="/account" className="text-sm">
-          {paymentText(language, 'billingTitle')}
-        </TextLink>
-      ) : null}
-    </form>
-  );
 }
 
 function PartnerMark({ partner }: { partner: UpcomingEventCard['partners'][number] }) {

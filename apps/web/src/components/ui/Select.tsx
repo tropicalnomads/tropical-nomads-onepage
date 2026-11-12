@@ -1,7 +1,7 @@
 'use client';
 
 import { Check, ChevronDown } from 'lucide-react';
-import { useEffect, useId, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react';
 import { createPortal } from 'react-dom';
 
 export interface SelectOption {
@@ -211,6 +211,30 @@ export function SelectField({
 
   const menuReady = menuBox !== null;
 
+  useLayoutEffect(() => {
+    const menu = menuRef.current;
+    if (!open || !menuReady || !menu || typeof menu.showPopover !== 'function') {
+      return;
+    }
+    try {
+      if (!menu.matches(':popover-open')) {
+        menu.showPopover();
+      }
+    } catch {
+      return;
+    }
+    return () => {
+      if (!menu.isConnected || !menu.matches(':popover-open')) {
+        return;
+      }
+      try {
+        menu.hidePopover();
+      } catch {
+        // The menu can already be leaving the document.
+      }
+    };
+  }, [menuReady, open]);
+
   useEffect(() => {
     if (!open || !menuReady || activeIndex < 0) {
       return;
@@ -327,6 +351,7 @@ export function SelectField({
       ? createPortal(
           <div
             ref={menuRef}
+            popover="manual"
             onMouseDown={(event: MouseEvent<HTMLDivElement>) => {
               if (event.target instanceof HTMLInputElement) {
                 return;
@@ -338,10 +363,12 @@ export function SelectField({
               left: menuBox.left,
               width: menuBox.width,
               maxHeight: menuBox.maxHeight,
+              margin: 0,
+              right: 'auto',
               zIndex: 80,
-              ...(menuBox.opensUp ? { bottom: menuBox.bottom } : { top: menuBox.top }),
+              ...(menuBox.opensUp ? { top: 'auto', bottom: menuBox.bottom } : { top: menuBox.top, bottom: 'auto' }),
             }}
-            className="flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#053b38] shadow-[0_22px_60px_rgba(0,0,0,0.48)]"
+            className="flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#053b38] p-0 text-ozora-cream shadow-[0_22px_60px_rgba(0,0,0,0.48)]"
           >
             {searchable ? (
               <div className="border-b border-white/10 p-1.5">

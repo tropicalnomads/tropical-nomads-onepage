@@ -1,13 +1,14 @@
 import { randomBytes } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { decideAccess, euroTicketOffers, isPayableAmount, readTicketOffers, type Role } from 'tropical-nomads-shared';
+import { decideAccess, euroTicketOffers, isPayableAmount, knownTimeZone, readTicketOffers, type Role, type Venue } from 'tropical-nomads-shared';
 import type { AccountFile } from './accounts.ts';
 import { usingDatabase } from './database.ts';
 import { loadCatalogImages } from './s3-load.ts';
 import { operationalDirectory } from './operational.ts';
 import { readEvents, type PublishedEvent, type PublishedEventImages } from './published.ts';
 import { queueDatabase, readStoredPartyRows, upsertStoredParty } from './sql-store.ts';
+import { loadVenueCatalog } from './venues.ts';
 
 export interface PartyRevision {
   actorId: string;
@@ -47,13 +48,13 @@ export interface PartySaveInput {
   dateStart: string;
   dateEnd: string;
   timezone: string;
-  venueName: string;
-  venueCity: string;
+  venueId: string;
   description: string;
   imageUrl: string;
   imageAction?: PartyImageAction;
   imageBytes?: Uint8Array;
   artists: string;
+  headliners?: string;
   offers: PartyOfferInput[];
   publish: boolean;
 }
@@ -64,12 +65,12 @@ interface CleanParty {
   dateStart: string;
   dateEnd: string;
   timezone: string;
-  venueName: string;
-  venueCity: string;
+  venueId: string;
   description: string;
   imageUrl: string;
   imageAction: PartyImageAction;
   artists: string[];
+  headliners?: string[];
   offers: { name: string; amount: number; currency: 'EUR'; capacity: number; ticket?: string; endsAt?: string }[];
   publish: boolean;
 }
@@ -152,6 +153,28 @@ function cleanArtists(value: string): string[] {
   return names;
 }
 
+function cleanHeadliners(value: string, artists: readonly string[]): string[] {
+  const names = value
+    .split(/[\n,]/)
+    .map((name) => name.trim())
+    .filter((name) => name !== '');
+  if (names.length > 40 || names.some((name) => name.length > 80 || /[\u0000-\u001f]/.test(name))) {
+    throw new Error('event was not saved');
+  }
+  const seen = new Set<string>();
+  const selected: string[] = [];
+  for (const name of names) {
+    const match = artists.find((artist) => artist.toLowerCase() === name.toLowerCase());
+    const key = match?.toLowerCase();
+    if (!match || !key || seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    selected.push(match);
+  }
+  return selected;
+}
+
 function cleanOffers(offers: readonly PartyOfferInput[]): CleanParty['offers'] {
   const selected: CleanParty['offers'] = [];
   const names = new Set<string>();
@@ -200,39 +223,41 @@ function cleanInput(input: PartySaveInput): CleanParty {
     throw new Error('event was not saved');
   }
   const timezone = input.timezone.trim();
-  if (timezone !== '' && !/^[A-Za-z0-9_+/-]{1,80}$/.test(timezone)) {
+  if (knownTimeZone(timezone) !== timezone) {
+    throw new Error('event was not saved');
+  }
+  const venueId = input.venueId.trim();
+  if (!/^[A-Za-z0-9_-]{1,80}$/.test(venueId)) {
     throw new Error('event was not saved');
   }
   const description = input.description.trim();
   if (description.length > 4000 || /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(description)) {
     throw new Error('event was not saved');
   }
+  const artists = cleanArtists(input.artists);
   return {
     ...(id === '' ? {} : { id }),
     title: cleanLine(input.title, 140, true),
     dateStart: dateText(input.dateStart, true),
     dateEnd: dateText(input.dateEnd, false),
     timezone,
-    venueName: cleanLine(input.venueName, 120, true),
-    venueCity: cleanLine(input.venueCity, 80, false),
+    venueId,
     description,
     imageUrl: httpsUrl(input.imageUrl),
     imageAction: input.imageAction ?? 'keep',
-    artists: cleanArtists(input.artists),
+    artists,
+    ...(typeof input.headliners === 'string' ? { headliners: cleanHeadliners(input.headliners, artists) } : {}),
     offers: cleanOffers(input.offers),
     publish: input.publish,
   };
 }
 
-function venueOf(event: PublishedEvent, name: string, city: string): Record<string, unknown> {
-  const current = isRecord(event.venue) ? { ...event.venue } : {};
-  current.name = name;
-  if (city === '') {
-    delete current.city;
-  } else {
-    current.city = city;
+function venueFor(venues: readonly Venue[], id: string): Venue {
+  const venue = venues.find((item) => item.id === id);
+  if (!venue?.name || !venue.city) {
+    throw new Error('event was not saved');
   }
-  return current;
+  return { ...venue };
 }
 
 function imagesAfter(current: PublishedEventImages | undefined, cleaned: CleanParty, id: string): PublishedEventImages | undefined {
@@ -257,26 +282,23 @@ function imagesAfter(current: PublishedEventImages | undefined, cleaned: CleanPa
   }
 }
 
-function applyInput(event: PublishedEvent, cleaned: CleanParty, id: string): PublishedEvent {
+function applyInput(event: PublishedEvent, cleaned: CleanParty, id: string, venues: readonly Venue[]): PublishedEvent {
   const next: PublishedEvent = {
     ...event,
     id,
     title: cleaned.title,
     dateStart: cleaned.dateStart,
     cardArtists: cleaned.artists,
+    ...(cleaned.headliners !== undefined ? { headliners: cleaned.headliners } : {}),
     offers: cleaned.offers,
-    venue: venueOf(event, cleaned.venueName, cleaned.venueCity),
+    venue: venueFor(venues, cleaned.venueId),
   };
   if (cleaned.dateEnd === '') {
     delete next.dateEnd;
   } else {
     next.dateEnd = cleaned.dateEnd;
   }
-  if (cleaned.timezone === '') {
-    delete next.timezone;
-  } else {
-    next.timezone = cleaned.timezone;
-  }
+  next.timezone = cleaned.timezone;
   if (cleaned.description === '') {
     delete next.description;
   } else {
@@ -327,6 +349,7 @@ export function saveManagedParty(
   file: AccountFile,
   caller: PartyCaller,
   now: string,
+  venues: readonly Venue[] = [],
 ): { managed: ManagedParty[]; saved: ManagedParty } {
   requireAdmin(file, caller);
   const cleaned = cleanInput(input);
@@ -343,7 +366,7 @@ export function saveManagedParty(
       publication: cleaned.publish ? 'published' : 'draft',
       revisions: [{ actorId: caller.actorId, at: now }],
       offersManaged: cleaned.offers.length > 0,
-      event: applyInput({ id, title: cleaned.title, dateStart: cleaned.dateStart }, cleaned, id),
+      event: applyInput({ id, title: cleaned.title, dateStart: cleaned.dateStart }, cleaned, id, venues),
     };
     return { managed: [...managed, saved], saved };
   }
@@ -359,7 +382,7 @@ export function saveManagedParty(
     base,
     caller.actorId,
     now,
-    applyInput(base.event, cleaned, base.id),
+    applyInput(base.event, cleaned, base.id, venues),
     publicationAfter(base.publication, cleaned.publish),
     base.origin === 'catalog' ? true : cleaned.offers.length > 0 || base.offersManaged,
   );
@@ -527,7 +550,8 @@ export async function commitPartySave(input: PartySaveInput, file: AccountFile, 
   if (usingDatabase(root)) {
     return queueDatabase(async () => {
       const current = await readDatabaseParties();
-      const result = saveManagedParty(current, [], input, file, caller, now);
+      const venues = await loadVenueCatalog(root);
+      const result = saveManagedParty(current, [], input, file, caller, now, venues);
       await upsertStoredParty({
         origin: result.saved.origin,
         publication: result.saved.publication,
@@ -540,7 +564,8 @@ export async function commitPartySave(input: PartySaveInput, file: AccountFile, 
     });
   }
   const directory = root ?? operationalDirectory();
-  const result = saveManagedParty(readManagedPartyFile(directory), readEvents().events, input, file, caller, now);
+  const venues = await loadVenueCatalog(root);
+  const result = saveManagedParty(readManagedPartyFile(directory), readEvents().events, input, file, caller, now, venues);
   writeManagedPartyFile(result.managed, directory);
   await storeFlyer(result.saved.id, input);
   return result.saved;

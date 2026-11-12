@@ -608,6 +608,44 @@ export async function upsertStoredParty(party: StoredPartyWrite): Promise<void> 
   });
 }
 
+export async function readStoredVenueDocuments(): Promise<unknown[]> {
+  const rows = await db().query('select document from venue order by source_order, id');
+  return documents(rows.rows);
+}
+
+export async function upsertStoredVenue(document: Record<string, unknown>): Promise<void> {
+  const id = requiredText(document, 'id', 'venue');
+  await withTransaction(async (client) => {
+    const order = await client.query('select coalesce(max(source_order), 0) + 1 as next from venue');
+    const sourceOrder = Number(order.rows[0]?.next ?? 1);
+    await client.query(
+      `insert into venue (id, name, city, country, iso_country, address, geo, map_url, document, source_order)
+       values ($1, $2, $3, $4, $5, $6, $7::jsonb, $8, $9::jsonb, $10)
+       on conflict (id) do update set
+         name = excluded.name,
+         city = excluded.city,
+         country = excluded.country,
+         iso_country = excluded.iso_country,
+         address = excluded.address,
+         geo = excluded.geo,
+         map_url = excluded.map_url,
+         document = excluded.document`,
+      [
+        id,
+        text(document, 'name'),
+        text(document, 'city'),
+        text(document, 'country'),
+        text(document, 'isoCountry'),
+        text(document, 'address'),
+        document.geo === undefined ? null : JSON.stringify(document.geo),
+        text(document, 'mapUrl'),
+        JSON.stringify(document),
+        sourceOrder,
+      ],
+    );
+  });
+}
+
 export async function readStoredArtist(id: string): Promise<Record<string, unknown> | undefined> {
   const rows = await db().query('select document from artist where id = $1', [id]);
   const document = rows.rows[0]?.document;

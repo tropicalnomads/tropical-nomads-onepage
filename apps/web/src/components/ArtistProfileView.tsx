@@ -8,6 +8,7 @@ import { artistText, fillArtist } from '../i18n/artist-copy';
 import { eventText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { ShopMarkdown } from '../shop/markdown';
+import { CountryMark } from './CountryMark';
 import { Button } from './ui/Button';
 
 export function ArtistProfileView({
@@ -53,11 +54,7 @@ export function ArtistProfileView({
               <p className="text-[11px] font-black uppercase tracking-[0.22em] text-ozora-yellow">{artistText(language, 'profileEyebrow')}</p>
               <div className="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-1">
                 <h1 className="font-display text-4xl font-bold tracking-tight text-ozora-cream sm:text-5xl lg:text-6xl">{artist.name}</h1>
-                {artist.country || artist.flag ? (
-                  <p className="text-sm font-bold uppercase tracking-[0.12em] text-ozora-cream/65">
-                    {[artist.flag, artist.country].filter((part) => part).join(' ')}
-                  </p>
-                ) : null}
+                <CountryMark flag={artist.flag} country={artist.country} className="text-sm font-bold uppercase tracking-[0.12em] text-ozora-cream/65" />
               </div>
               {artist.genres.length > 0 ? <p className="mt-3 text-sm font-semibold uppercase tracking-[0.12em] text-ozora-turquoise">{artist.genres.join(' · ')}</p> : null}
 

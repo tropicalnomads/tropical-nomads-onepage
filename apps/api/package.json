@@ -14,7 +14,8 @@
     "./parties": "./src/parties.ts",
     "./orders": "./src/order-views.ts",
     "./shop-pay-url": "./src/shop-pay-url.ts",
-    "./artists": "./src/artists.ts"
+    "./artists": "./src/artists.ts",
+    "./venues": "./src/venues.ts"
   },
   "scripts": {
     "dev": "node --watch src/main.ts",

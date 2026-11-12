@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { getEventTimetableUrl } from 'tropical-nomads-shared';
+import { eventSaleChoice, getEventTimetableUrl } from 'tropical-nomads-shared';
 import { bannerSrc, onePagerPublicDir, partnerLogoSrc } from '../events/assets.ts';
+import { offersWithRemaining } from '../events/offers.ts';
 import type { HomeCatalog, HomeEvent, HomeMediaLink, HomePartner, HomeSocial, HomeStage } from './types.ts';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -108,7 +109,7 @@ function readPlatform(value: unknown): HomeSocial['platform'] | undefined {
   }
 }
 
-export function readHomeEvent(value: unknown): HomeEvent | undefined {
+export function readHomeEvent(value: unknown, sold: Readonly<Record<string, number>> = {}): HomeEvent | undefined {
   if (!isRecord(value)) {
     return undefined;
   }
@@ -142,6 +143,16 @@ export function readHomeEvent(value: unknown): HomeEvent | undefined {
   const fullImage = uploaded ?? (fullRaw?.startsWith('/') ? bannerSrc(fullRaw) : httpsLink(fullRaw));
   const schemaImage = flyer ?? fullImage;
   const durationHours = typeof value.durationHours === 'number' && Number.isFinite(value.durationHours) ? value.durationHours : undefined;
+  const sale = eventSaleChoice(
+    {
+      eventbrite: readString(links.eventbrite),
+      tickets: readString(links.tickets),
+      goabase: readString(links.goabase),
+    },
+    value.offers,
+    new Date(),
+    sold,
+  );
   return {
     id,
     title,
@@ -161,6 +172,7 @@ export function readHomeEvent(value: unknown): HomeEvent | undefined {
     ...(schemaImage ? { schemaImage } : {}),
     ...(ticketUrl ? { ticketUrl } : {}),
     ticketsOnSale: eventbrite !== undefined || tickets !== undefined,
+    inAppOffers: offersWithRemaining(sale.inAppOffers, sold),
     ...(timetableUrl ? { timetableUrl } : {}),
     ...(instagramPost ? { instagramPost } : {}),
     ...(goabase ? { goabaseUrl: goabase } : {}),

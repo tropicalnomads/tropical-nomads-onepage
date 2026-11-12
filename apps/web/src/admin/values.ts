@@ -17,11 +17,13 @@ export interface AdminEventValues {
   dateStart: string;
   dateEnd: string;
   timezone: string;
+  venueId: string;
   venueName: string;
   venueCity: string;
   description: string;
   imageUrl: string;
   artists: string;
+  headliners?: string[];
   offers: AdminOfferField[];
 }
 
@@ -39,6 +41,7 @@ export function emptyEventValues(): AdminEventValues {
     dateStart: '',
     dateEnd: '',
     timezone: '',
+    venueId: '',
     venueName: '',
     venueCity: '',
     description: '',
@@ -73,11 +76,13 @@ export function eventValues(party: ManagedParty): AdminEventValues {
     dateStart: party.event.dateStart,
     dateEnd: text(party.event.dateEnd),
     timezone: text(party.event.timezone),
+    venueId: text(venue.id),
     venueName: text(venue.name),
     venueCity: text(venue.city),
     description: text(party.event.description),
     imageUrl: uploadedEventFlyer(text(images?.full)) ?? bannerSrc(text(images?.bannerLocal)) ?? publicHttpsUrl(text(images?.full)) ?? '',
     artists: (party.event.cardArtists ?? []).join('\n'),
+    ...(party.event.headliners ? { headliners: [...party.event.headliners] } : {}),
     offers,
   };
 }

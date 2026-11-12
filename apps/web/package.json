@@ -13,6 +13,7 @@
   "dependencies": {
     "@fontsource-variable/outfit": "5.2.8",
     "@zxing/browser": "0.1.5",
+    "country-flag-icons": "^1.6.20",
     "lucide-react": "0.453.0",
     "next": "^16.4.5",
     "qrcode": "1.5.4",

@@ -3,6 +3,7 @@ import { ExternalLink, Images, MapPin, Music, Video, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { formatEventDate, type EventRecord, type MediaLink } from '@/lib/data';
 import { useI18n } from '@/i18n/I18nProvider';
+import { CountryFlag } from '@/components/CountryFlag';
 
 interface LightboxModalProps {
   event: EventRecord | null;
@@ -159,10 +160,14 @@ export function LightboxModal({ event, onClose }: LightboxModalProps): JSX.Eleme
                     </span>
                   ) : null}
                 </h4>
-                <p className="mt-1 text-sm text-ozora-cream/80">
-                  {stage.artists
-                    .map((artist) => `${artist.countryFlag ? `${artist.countryFlag} ` : ''}${artist.name}`)
-                    .join(' \u00b7 ')}
+                <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ozora-cream/80">
+                  {stage.artists.map((artist, index) => (
+                    <span key={`${stage.name}-${artist.name}`} className="inline-flex items-center gap-1.5">
+                      {index > 0 ? <span aria-hidden="true">{'\u00b7'}</span> : null}
+                      <CountryFlag flag={artist.countryFlag} />
+                      <span>{artist.name}</span>
+                    </span>
+                  ))}
                 </p>
               </div>
             ))}

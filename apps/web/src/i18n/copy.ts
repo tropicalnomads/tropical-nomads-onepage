@@ -176,6 +176,7 @@ export interface AdminCopy {
   newEvent: string;
   editEvent: string;
   save: string;
+  saveChanges: string;
   publish: string;
   draft: string;
   published: string;
@@ -232,6 +233,8 @@ export interface AdminCopy {
   lineupHelp: string;
   lineupSearch: string;
   lineupEmpty: string;
+  markHeadliner: string;
+  clearHeadliner: string;
   addName: string;
   editArtist: string;
   artistProfile: string;
@@ -274,6 +277,20 @@ export interface AdminCopy {
   country: string;
   genres: string;
   ordersTab: string;
+  searchTimezone: string;
+  noTimezone: string;
+  chooseTimezone: string;
+  searchCountry: string;
+  noCountry: string;
+  searchVenue: string;
+  noVenue: string;
+  chooseVenue: string;
+  addVenue: string;
+  venueProfile: string;
+  venueAddress: string;
+  venueMap: string;
+  saveVenue: string;
+  venueInvalid: string;
 }
 
 export type AccountNotice =
@@ -404,6 +421,7 @@ export interface EventCopy {
   buyTicketsAria: string;
   buyInApp: string;
   buyInAppAria: string;
+  ticketsTitle: string;
   inAppNote: string;
   capacityLabel: string;
   viewTickets: string;
@@ -545,6 +563,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       buyTicketsAria: 'Buy tickets for {title} on the seller site',
       buyInApp: 'Buy ticket',
       buyInAppAria: 'Buy a euro ticket for {title}.',
+      ticketsTitle: 'Tickets',
       inAppNote: 'The amount is in euro. No card is charged yet. The ticket is ready for entry.',
       capacityLabel: '{count} available',
       viewTickets: 'View my tickets',
@@ -806,6 +825,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       newEvent: 'New event',
       editEvent: 'Edit event',
       save: 'Save draft',
+      saveChanges: 'Save changes',
       publish: 'Publish',
       draft: 'Draft',
       published: 'Published',
@@ -862,6 +882,8 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       lineupHelp: 'Search the artist database or add a name.',
       lineupSearch: 'Search artists',
       lineupEmpty: 'No artists on the lineup yet.',
+      markHeadliner: 'Mark {name} as a headliner',
+      clearHeadliner: 'Remove {name} as a headliner',
       addName: 'Add name',
       editArtist: 'Edit profile',
       artistProfile: 'Artist profile',
@@ -904,6 +926,20 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       country: 'Country',
       genres: 'Genres',
       ordersTab: 'Orders',
+      searchTimezone: 'Search timezones',
+      noTimezone: 'No timezones match',
+      chooseTimezone: 'Choose a timezone',
+      searchCountry: 'Search countries',
+      noCountry: 'No countries match',
+      searchVenue: 'Search venues',
+      noVenue: 'No venues match',
+      chooseVenue: 'Choose a venue',
+      addVenue: 'Add venue',
+      venueProfile: 'New venue',
+      venueAddress: 'Address',
+      venueMap: 'Google Maps link',
+      saveVenue: 'Save venue',
+      venueInvalid: 'Check the venue and try again.',
     },
   },
   pt: {
@@ -967,6 +1003,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       buyTicketsAria: 'Comprar ingressos para {title} no site do vendedor',
       buyInApp: 'Comprar ingresso',
       buyInAppAria: 'Comprar um ingresso em euro para {title}.',
+      ticketsTitle: 'Ingressos',
       inAppNote: 'O valor é em euro. Nenhum cartão é cobrado ainda. O ingresso vale para entrar.',
       capacityLabel: '{count} disponíveis',
       viewTickets: 'Ver meus ingressos',
@@ -1228,6 +1265,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       newEvent: 'Novo evento',
       editEvent: 'Editar evento',
       save: 'Salvar rascunho',
+      saveChanges: 'Salvar alterações',
       publish: 'Publicar',
       draft: 'Rascunho',
       published: 'Publicado',
@@ -1284,6 +1322,8 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       lineupHelp: 'Procure na base de artistas ou adicione um nome.',
       lineupSearch: 'Procurar artistas',
       lineupEmpty: 'Ainda não há artistas no lineup.',
+      markHeadliner: 'Marcar {name} como headliner',
+      clearHeadliner: 'Tirar {name} de headliner',
       addName: 'Adicionar nome',
       editArtist: 'Editar perfil',
       artistProfile: 'Perfil do artista',
@@ -1326,6 +1366,20 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       country: 'País',
       genres: 'Géneros',
       ordersTab: 'Pedidos',
+      searchTimezone: 'Procurar fusos',
+      noTimezone: 'Nenhum fuso encontrado',
+      chooseTimezone: 'Escolha um fuso horário',
+      searchCountry: 'Procurar países',
+      noCountry: 'Nenhum país encontrado',
+      searchVenue: 'Procurar locais',
+      noVenue: 'Nenhum local encontrado',
+      chooseVenue: 'Escolha um local',
+      addVenue: 'Adicionar local',
+      venueProfile: 'Novo local',
+      venueAddress: 'Endereço',
+      venueMap: 'Link do Google Maps',
+      saveVenue: 'Salvar local',
+      venueInvalid: 'Confira o local e tente de novo.',
     },
   },
 };

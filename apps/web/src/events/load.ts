@@ -5,6 +5,7 @@ import { apiOrigin } from '../api-origin.ts';
 import { readHomeEvent } from '../home/catalog.ts';
 import type { HomeEvent } from '../home/types.ts';
 import { bannerSrc, partnerLogoSrc } from './assets.ts';
+import { offersWithRemaining } from './offers.ts';
 import type { UpcomingEventCard, UpcomingPartner } from './types.ts';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -117,7 +118,7 @@ function readEvent(value: unknown, partners: Map<string, UpcomingPartner>, sold:
     cardArtists,
     ...(headliners !== undefined ? { headliners } : {}),
     stages,
-    inAppOffers: [...sale.inAppOffers],
+    inAppOffers: offersWithRemaining(sale.inAppOffers, sold),
     ...(sale.ticketUrl ? { ticketUrl: sale.ticketUrl } : {}),
     ticketsOnSale: sale.ticketsOnSale,
     ...(timetableUrl ? { timetableUrl } : {}),
@@ -220,10 +221,11 @@ export async function loadPublicEvent(id: string): Promise<HomeEvent | undefined
   if (decideAccess({ action: 'read-published' }).effect !== 'allow') {
     return undefined;
   }
-  const body = await readCatalogJson('/events');
+  const [body, sales] = await Promise.all([readCatalogJson('/events'), loadTicketSales()]);
   if (!isRecord(body) || !Array.isArray(body.events)) {
     throw new Error('events are unavailable');
   }
   const event = body.events.find((item) => isRecord(item) && item.id === id);
-  return readHomeEvent(event);
+  const partyId = isRecord(event) && typeof event.id === 'string' ? event.id : '';
+  return readHomeEvent(event, soldForParty(sales, partyId));
 }

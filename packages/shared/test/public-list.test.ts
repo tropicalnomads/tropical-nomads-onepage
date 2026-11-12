@@ -1,12 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import {
-  getEventTimetableUrl,
-  getPrimaryTicketUrl,
-  getStageSummary,
-  hasTicketSales,
-  sortByDateAsc,
-} from '../src/events/public-list.ts';
+import { formatEventDate, getEventTimetableUrl, getPrimaryTicketUrl, getStageSummary, hasTicketSales, sortByDateAsc, spansMultipleEventDays } from '../src/events/public-list.ts';
+import { knownTimeZone } from '../src/events/time-zone.ts';
 
 const fixture = {
   id: 'tropical-groove-2026-11-20',
@@ -54,5 +49,13 @@ describe('public upcoming list', () => {
     assert.equal(getEventTimetableUrl('forest-2026'), 'https://timetable.tropical-nomads.com/?festival=forest-2026');
     assert.equal(getEventTimetableUrl('https://evil.example'), undefined);
     assert.equal(getStageSummary(fixture), 'Kobot · Middle-D');
+  });
+
+  it('formats a date when the timezone is a city name', () => {
+    const when = { dateStart: '2026-11-20T19:00:00Z', dateEnd: '2026-11-21T02:00:00Z' };
+    assert.equal(knownTimeZone('Europe/Dublin'), 'Europe/Dublin');
+    assert.equal(knownTimeZone('Dublin'), undefined);
+    assert.equal(formatEventDate({ ...when, timezone: 'Dublin' }, 'en'), formatEventDate(when, 'en'));
+    assert.equal(spansMultipleEventDays({ ...when, timezone: 'Dublin' }), spansMultipleEventDays(when));
   });
 });

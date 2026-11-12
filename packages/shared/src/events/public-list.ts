@@ -22,6 +22,8 @@ export interface PublicEventLineup {
   stages?: readonly { artists?: readonly { name?: string }[] }[];
 }
 
+import { knownTimeZone } from './time-zone.ts';
+
 const timetableOrigin = 'https://timetable.tropical-nomads.com';
 
 export function publicHttpsUrl(value: string | undefined): string | undefined {
@@ -84,7 +86,7 @@ export function spansMultipleEventDays(event: PublicEventWhen): boolean {
   if (!event.dateEnd) {
     return false;
   }
-  const timeZone = event.timezone || 'UTC';
+  const timeZone = knownTimeZone(event.timezone) ?? 'UTC';
   const start = zonedCalendar(new Date(event.dateStart), timeZone);
   const end = zonedCalendar(new Date(event.dateEnd), timeZone);
   if (start.key === end.key) {
@@ -111,9 +113,10 @@ function formatSameMonthRange(start: Date, end: Date, formatter: Intl.DateTimeFo
 }
 
 export function formatEventDate(event: PublicEventWhen, locale: string, dateStyle: 'full' | 'long' | 'medium' | 'short' = 'long'): string {
+  const zone = knownTimeZone(event.timezone);
   const options: Intl.DateTimeFormatOptions = {
     dateStyle,
-    ...(event.timezone ? { timeZone: event.timezone } : {}),
+    ...(zone ? { timeZone: zone } : {}),
   };
   const formatter = new Intl.DateTimeFormat(locale, options);
   const start = new Date(event.dateStart);

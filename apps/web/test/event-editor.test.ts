@@ -1,8 +1,12 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import { flyerAfter, uploadedEventFlyer } from '../src/admin/event-image.ts';
 import { eventPhase } from '../src/admin/event-board.ts';
 import { instantFromWall, wallClock } from '../src/admin/event-time.ts';
+import { followingMorning, timezoneForCity, venueIdFor } from '../src/admin/place-time.ts';
+import { timeZoneChoices } from '../src/admin/time-zones.ts';
+import { countryCaption, isoCountryCode } from '../src/artists/flag.ts';
 import { lineupArtists } from '../src/artists/profile.ts';
 import { emphasisParts } from '../src/shop/emphasis.ts';
 import { eventCropSize, shopCropSize } from '../src/shop/crop-image.ts';
@@ -34,6 +38,33 @@ describe('event editor', () => {
     assert.equal(eventPhase({ publication: 'published', event: { dateStart: '2026-12-01T00:00:00.000Z' } }, clock), 'published');
   });
 
+  it('offers real timezones and picks a saved venue on the event form', () => {
+    const zones = timeZoneChoices();
+    assert.equal(zones.includes('Europe/Dublin'), true);
+    assert.equal(zones.includes('Dublin'), false);
+    const form = readFileSync(new URL('../src/components/AdminEventForm.tsx', import.meta.url), 'utf8');
+    const editor = readFileSync(new URL('../src/components/admin/VenueEditor.tsx', import.meta.url), 'utf8');
+    const select = readFileSync(new URL('../src/components/ui/Select.tsx', import.meta.url), 'utf8');
+    assert.equal(form.includes('searchable'), true);
+    assert.equal(form.includes('timeZoneChoices'), true);
+    assert.equal(form.includes('venueId'), true);
+    assert.equal(form.includes("text('saveChanges')"), true);
+    assert.ok(form.indexOf("title={text('place')}") < form.indexOf("title={text('when')}"));
+    assert.equal(timezoneForCity('Dublin'), 'Europe/Dublin');
+    assert.equal(timezoneForCity('Florianópolis'), 'America/Sao_Paulo');
+    assert.equal(
+      venueIdFor([{ id: 'the-sound-house-dublin', name: 'The Sound House', city: 'Dublin' }], { id: '', name: 'The Soundhouse', city: 'Dublin' }),
+      'the-sound-house-dublin',
+    );
+    assert.deepEqual(followingMorning('2027-03-13'), { date: '2027-03-14', time: '03:00' });
+    assert.deepEqual(followingMorning('2027-12-31'), { date: '2028-01-01', time: '03:00' });
+    assert.equal(form.includes('<VenueEditor'), true);
+    assert.equal(editor.includes('saveVenueAction'), true);
+    assert.equal(editor.includes("text('venueMap')"), true);
+    assert.equal(select.includes('popover="manual"'), true);
+    assert.equal(select.includes('showPopover()'), true);
+  });
+
   it('converts a wall-clock start in the event timezone', () => {
     assert.equal(instantFromWall('2026-11-20', '19:00', 'Europe/Dublin'), '2026-11-20T19:00:00.000Z');
     assert.deepEqual(wallClock('2026-11-20T19:00:00.000Z', 'Europe/Dublin'), { date: '2026-11-20', time: '19:00' });
@@ -49,5 +80,18 @@ describe('event editor', () => {
       { name: 'Mina', artistId: 'mina' },
       { name: 'Guest' },
     ]);
+  });
+
+  it('shows one flag for a country code and keeps a real country name', () => {
+    assert.equal(isoCountryCode('br'), 'BR');
+    assert.equal(isoCountryCode('🇧🇷'), 'BR');
+    assert.equal(isoCountryCode('Brazil'), undefined);
+    assert.equal(countryCaption('BR', 'BR'), undefined);
+    assert.equal(countryCaption('Brazil', 'BR'), 'Brazil');
+    const form = readFileSync(new URL('../src/components/AdminEventForm.tsx', import.meta.url), 'utf8');
+    assert.equal(form.includes('aria-pressed={entry.headliner === true}'), true);
+    assert.equal(form.includes("data.set('headliners'"), true);
+    assert.equal(form.includes('<CountryMark'), true);
+    assert.equal(form.includes('[artist.flag, artist.country]'), false);
   });
 });

@@ -1,3 +1,5 @@
+import type { InAppOffer } from '../events/types.ts';
+
 export interface HomeMediaLink {
   url: string;
   label?: string;
@@ -33,6 +35,7 @@ export interface HomeEvent {
   schemaImage?: string;
   ticketUrl?: string;
   ticketsOnSale: boolean;
+  inAppOffers: InAppOffer[];
   timetableUrl?: string;
   instagramPost?: string;
   goabaseUrl?: string;

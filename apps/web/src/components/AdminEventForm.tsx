@@ -1,21 +1,28 @@
 'use client';
 
-import { CalendarDays, MapPin, Music2, Plus, Ticket } from 'lucide-react';
+import { CalendarDays, MapPin, Music2, Plus, Star, Ticket } from 'lucide-react';
 import { useMemo, useState, type FormEvent } from 'react';
 import { loteOffers, loteStatuses, type LoteOffer, type LoteStatus } from 'tropical-nomads-shared';
 import { savePartyAction, type PartyFormResult } from '../admin/actions';
 import type { EventPhase } from '../admin/event-board';
 import { instantFromWall, wallClock } from '../admin/event-time';
+import { followingMorning, timezoneForCity, venueIdFor } from '../admin/place-time';
+import { timeZoneChoices } from '../admin/time-zones';
 import type { AdminEventValues } from '../admin/values';
 import { lineupArtists, type ArtistProfile } from '../artists/profile';
+import { normalizeSearch } from '../events/calendar';
 import { adminText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { eventCropSize } from '../shop/crop-image';
+import type { VenueChoice } from '../venues/load';
 import { ArtistEditor } from './admin/ArtistEditor';
 import { CroppedImageField } from './admin/CroppedImageField';
 import { AdminSection, adminFieldClass } from './admin/form';
 import { MarkdownField } from './admin/MarkdownField';
+import { VenueEditor } from './admin/VenueEditor';
+import { CountryMark } from './CountryMark';
 import { Button, TextLink } from './ui/Button';
+import { SelectField } from './ui/Select';
 
 interface LoteDraft {
   name: string;
@@ -32,6 +39,7 @@ interface TypeDraft {
 interface LineupEntry {
   name: string;
   artistId?: string;
+  headliner?: boolean;
 }
 
 function blankLote(): LoteDraft {
@@ -99,6 +107,20 @@ function statusLabel(status: LoteStatus, label: (key: 'onSale' | 'scheduled' | '
   }
 }
 
+function alreadyPublished(phase: EventPhase): boolean {
+  switch (phase) {
+    case 'draft':
+      return false;
+    case 'published':
+    case 'ended':
+      return true;
+    default: {
+      const unexpected: never = phase;
+      return unexpected;
+    }
+  }
+}
+
 const phaseClass: Record<EventPhase, string> = {
   draft: 'border-ozora-yellow/20 bg-ozora-yellow/[0.07] text-ozora-yellow',
   published: 'border-ozora-turquoise/20 bg-ozora-turquoise/[0.07] text-ozora-turquoise',
@@ -108,33 +130,47 @@ const phaseClass: Record<EventPhase, string> = {
 export function AdminEventForm({
   values,
   artists,
+  venues,
   sold,
   phase,
 }: {
   values: AdminEventValues;
   artists: ArtistProfile[];
+  venues: VenueChoice[];
   sold: Record<string, number>;
   phase: EventPhase;
 }) {
   const { language } = useLanguage();
-  const start = wallClock(values.dateStart, values.timezone);
-  const end = wallClock(values.dateEnd, values.timezone);
+  const zones = timeZoneChoices();
+  const knownZone = zones.includes(values.timezone) ? values.timezone : '';
+  const matchedVenueId = venueIdFor(venues, { id: values.venueId, name: values.venueName, city: values.venueCity });
+  const matchedCity = venues.find((place) => place.id === matchedVenueId)?.city || values.venueCity;
+  const start = wallClock(values.dateStart, knownZone);
+  const end = wallClock(values.dateEnd, knownZone);
   const [tab, setTab] = useState<'details' | 'tickets'>('details');
   const [title, setTitle] = useState(values.title);
   const [description, setDescription] = useState(values.description);
-  const [timezone, setTimezone] = useState(values.timezone);
+  const [timezone, setTimezone] = useState(knownZone || timezoneForCity(matchedCity) || '');
   const [startDate, setStartDate] = useState(start.date);
   const [startTime, setStartTime] = useState(start.time);
   const [endDate, setEndDate] = useState(end.date);
   const [endTime, setEndTime] = useState(end.time);
-  const [venueName, setVenueName] = useState(values.venueName);
-  const [venueCity, setVenueCity] = useState(values.venueCity);
-  const [lineup, setLineup] = useState<LineupEntry[]>(() =>
-    lineupArtists(
+  const [places, setPlaces] = useState(venues);
+  const [venueId, setVenueId] = useState(matchedVenueId);
+  const [venueOpen, setVenueOpen] = useState(false);
+  const [lineup, setLineup] = useState<LineupEntry[]>(() => {
+    const entries = lineupArtists(
       values.artists.split('\n').map((name) => name.trim()).filter((name) => name !== ''),
       artists,
-    ),
-  );
+    );
+    const title = normalizeSearch(values.title);
+    const headliners =
+      values.headliners ?? entries.filter((entry) => title.includes(normalizeSearch(entry.name))).map((entry) => entry.name);
+    return entries.map((entry) => ({
+      ...entry,
+      ...(headliners.some((name) => name.toLowerCase() === entry.name.toLowerCase()) ? { headliner: true } : {}),
+    }));
+  });
   const [catalog, setCatalog] = useState(artists);
   const [query, setQuery] = useState('');
   const [draftName, setDraftName] = useState('');
@@ -167,6 +203,25 @@ export function AdminEventForm({
     const known = catalog.find((artist) => artist.name.toLowerCase() === name.toLowerCase());
     setLineup((current) => [...current, known ? { name: known.name, artistId: known.id } : { name }]);
     setDraftName('');
+  }
+
+  function chooseVenue(id: string, city?: string): void {
+    setVenueId(id);
+    const placeCity = city ?? places.find((place) => place.id === id)?.city ?? '';
+    const zone = timezoneForCity(placeCity);
+    if (zone) {
+      setTimezone(zone);
+    }
+  }
+
+  function chooseStartDate(value: string): void {
+    setStartDate(value);
+    const morning = followingMorning(value);
+    if (!morning) {
+      return;
+    }
+    setEndDate(morning.date);
+    setEndTime(morning.time);
   }
 
   function updateType(index: number, next: TypeDraft): void {
@@ -204,12 +259,16 @@ export function AdminEventForm({
     }
     data.set('title', title);
     data.set('description', description);
+    if (timezone === '' || venueId === '') {
+      setResult({ notice: 'invalid' });
+      return;
+    }
     data.set('timezone', timezone);
-    data.set('venueName', venueName);
-    data.set('venueCity', venueCity);
+    data.set('venueId', venueId);
     data.set('dateStart', instantFromWall(startDate, startTime, timezone));
     data.set('dateEnd', endDate === '' ? '' : instantFromWall(endDate, endTime === '' ? '00:00' : endTime, timezone));
     data.set('artists', lineup.map((entry) => entry.name).join('\n'));
+    data.set('headliners', lineup.filter((entry) => entry.headliner).map((entry) => entry.name).join('\n'));
     data.set('intent', intent);
     data.set('imageAction', imageRemoved ? 'remove' : 'keep');
     if (imageFile) {
@@ -234,6 +293,9 @@ export function AdminEventForm({
   }
 
   const priced = catalogFrom(types, timezone);
+  const selectedVenue = places.find((place) => place.id === venueId);
+  const zoneOptions = zones.map((zone) => ({ value: zone, label: zone }));
+  const venueOptions = places.map((place) => ({ value: place.id, label: `${place.name}, ${place.city}` }));
 
   return (
     <main className="px-5 py-10 md:px-8 md:py-14">
@@ -310,11 +372,40 @@ export function AdminEventForm({
                   onChange={setDescription}
                 />
               </AdminSection>
+              <AdminSection icon={<MapPin size={20} aria-hidden="true" />} title={text('place')}>
+                <div className="flex flex-wrap items-end gap-3">
+                  <label className="block min-w-0 flex-1 text-sm font-bold">
+                    {text('venue')}
+                    <div className="mt-2">
+                      <SelectField
+                        ariaLabel={text('venue')}
+                        value={venueId}
+                        placeholder={text('chooseVenue')}
+                        searchable
+                        searchPlaceholder={text('searchVenue')}
+                        emptyLabel={text('noVenue')}
+                        onChange={chooseVenue}
+                        options={venueOptions}
+                      />
+                    </div>
+                  </label>
+                  <Button type="button" tone="ghost" className="shrink-0" onClick={() => setVenueOpen(true)}>
+                    {text('addVenue')}
+                  </Button>
+                </div>
+                {selectedVenue ? (
+                  <p className="text-sm text-ozora-cream/80">
+                    <span className="font-bold text-ozora-cream">{text('city')}</span> {selectedVenue.city}
+                  </p>
+                ) : values.venueName ? (
+                  <p className="text-sm text-ozora-cream/55">{[values.venueName, values.venueCity].filter((part) => part !== '').join(', ')}</p>
+                ) : null}
+              </AdminSection>
               <AdminSection icon={<CalendarDays size={20} aria-hidden="true" />} title={text('when')}>
                 <div className="grid gap-4 md:grid-cols-2">
                   <label className="block text-sm font-bold">
                     {text('date')}
-                    <input required type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} className={`${adminFieldClass} mt-2`} />
+                    <input required type="date" value={startDate} onChange={(event) => chooseStartDate(event.target.value)} className={`${adminFieldClass} mt-2`} />
                   </label>
                   <label className="block text-sm font-bold">
                     {text('time')}
@@ -331,20 +422,19 @@ export function AdminEventForm({
                 </div>
                 <label className="block text-sm font-bold">
                   {text('timezone')}
-                  <input value={timezone} onChange={(event) => setTimezone(event.target.value)} placeholder="Europe/Lisbon" className={`${adminFieldClass} mt-2`} />
+                  <div className="mt-2">
+                    <SelectField
+                      ariaLabel={text('timezone')}
+                      value={timezone}
+                      placeholder={text('chooseTimezone')}
+                      searchable
+                      searchPlaceholder={text('searchTimezone')}
+                      emptyLabel={text('noTimezone')}
+                      onChange={setTimezone}
+                      options={zoneOptions}
+                    />
+                  </div>
                 </label>
-              </AdminSection>
-              <AdminSection icon={<MapPin size={20} aria-hidden="true" />} title={text('place')}>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <label className="block text-sm font-bold">
-                    {text('venue')}
-                    <input required maxLength={120} value={venueName} onChange={(event) => setVenueName(event.target.value)} className={`${adminFieldClass} mt-2`} />
-                  </label>
-                  <label className="block text-sm font-bold">
-                    {text('city')}
-                    <input maxLength={80} value={venueCity} onChange={(event) => setVenueCity(event.target.value)} className={`${adminFieldClass} mt-2`} />
-                  </label>
-                </div>
               </AdminSection>
               <AdminSection icon={<Music2 size={20} aria-hidden="true" />} title={text('lineup')} help={text('lineupHelp')}>
                 <label className="block text-sm font-bold">
@@ -361,9 +451,9 @@ export function AdminEventForm({
                       className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-black/20 px-3 py-2 text-left hover:border-ozora-turquoise/50"
                     >
                       <ArtistFace artist={artist} />
-                      <span>
+                      <span className="min-w-0">
                         <span className="block font-bold">{artist.name}</span>
-                        <span className="block text-xs text-ozora-cream/55">{[artist.flag, artist.country].filter((part) => part).join(' ')}</span>
+                        <CountryMark flag={artist.flag} country={artist.country} className="text-xs text-ozora-cream/55" />
                       </span>
                     </button>
                   ))}
@@ -374,16 +464,30 @@ export function AdminEventForm({
                     const artist = catalog.find((item) => item.id === entry.artistId);
                     return (
                       <article key={`${entry.artistId ?? 'name'}-${entry.name}`} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/20 p-3">
+                        <button
+                          type="button"
+                          aria-pressed={entry.headliner === true}
+                          aria-label={(entry.headliner ? text('clearHeadliner') : text('markHeadliner')).replaceAll('{name}', entry.name)}
+                          onClick={() => setLineup((current) => current.map((item) => (item === entry ? { ...item, headliner: item.headliner !== true } : item)))}
+                          className={`grid h-8 w-8 shrink-0 place-items-center rounded-full ${entry.headliner ? 'bg-ozora-yellow/15 text-ozora-yellow' : 'text-ozora-cream/40 hover:text-ozora-yellow'}`}
+                        >
+                          <Star size={16} fill={entry.headliner ? 'currentColor' : 'none'} aria-hidden="true" />
+                        </button>
                         <ArtistFace artist={artist} />
-                        <div className="min-w-0 flex-1">
+                        <div className="flex min-w-0 flex-1 items-center gap-2">
                           {entry.artistId ? (
-                            <a href={`/artists/${entry.artistId}`} className="font-bold text-ozora-cream hover:text-ozora-yellow">
+                            <a href={`/artists/${entry.artistId}`} className="min-w-0 truncate font-bold text-ozora-cream hover:text-ozora-yellow">
                               {entry.name}
                             </a>
                           ) : (
-                            <p className="font-bold">{entry.name}</p>
+                            <p className="min-w-0 truncate font-bold">{entry.name}</p>
                           )}
-                          <p className="text-xs text-ozora-cream/55">{[artist?.flag, artist?.country].filter((part) => part).join(' ')}</p>
+                          <CountryMark
+                            flag={artist?.flag}
+                            country={artist?.country}
+                            className="shrink-0 text-xs text-ozora-cream/55"
+                            flagClassName="h-2.5 w-3.5 shrink-0 rounded-[2px]"
+                          />
                         </div>
                         <button
                           type="button"
@@ -497,12 +601,20 @@ export function AdminEventForm({
         )}
 
         <div className="mt-8 flex flex-wrap items-center gap-4 rounded-[2rem] border border-white/10 bg-black/15 p-4">
-          <Button type="submit" name="intent" value="save" tone="ghost" disabled={pending} className="min-w-40">
-            {pending ? text('saving') : text('save')}
-          </Button>
-          <Button type="submit" name="intent" value="publish" disabled={pending} className="min-w-40">
-            {text('publish')}
-          </Button>
+          {alreadyPublished(phase) ? (
+            <Button type="submit" name="intent" value="save" disabled={pending} className="min-w-40">
+              {pending ? text('saving') : text('saveChanges')}
+            </Button>
+          ) : (
+            <>
+              <Button type="submit" name="intent" value="save" tone="ghost" disabled={pending} className="min-w-40">
+                {pending ? text('saving') : text('save')}
+              </Button>
+              <Button type="submit" name="intent" value="publish" disabled={pending} className="min-w-40">
+                {text('publish')}
+              </Button>
+            </>
+          )}
           {result?.notice === 'saved' ? <p className="text-sm font-semibold text-emerald-300">{text('saved')}</p> : null}
           {result?.notice === 'invalid' || result?.notice === 'denied' ? <p className="text-sm font-semibold text-ozora-coral">{text('invalid')}</p> : null}
         </div>
@@ -521,8 +633,23 @@ export function AdminEventForm({
             if (!exists) {
               return [...current, { name: artist.name, artistId: artist.id }];
             }
-            return current.map((entry) => (entry.artistId === artist.id || entry.name.toLowerCase() === artist.name.toLowerCase() ? { name: artist.name, artistId: artist.id } : entry));
+            return current.map((entry) =>
+              entry.artistId === artist.id || entry.name.toLowerCase() === artist.name.toLowerCase()
+                ? { ...entry, name: artist.name, artistId: artist.id }
+                : entry,
+            );
           });
+        }}
+      />
+      <VenueEditor
+        open={venueOpen}
+        onClose={() => setVenueOpen(false)}
+        onSaved={(venue) => {
+          setPlaces((current) => {
+            const rest = current.filter((place) => place.id !== venue.id);
+            return [...rest, venue].sort((left, right) => left.name.localeCompare(right.name));
+          });
+          chooseVenue(venue.id, venue.city);
         }}
       />
     </main>

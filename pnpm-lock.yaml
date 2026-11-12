@@ -223,6 +223,9 @@ importers:
       '@fontsource-variable/outfit':
         specifier: ^5.2.8
         version: 5.2.8
+      country-flag-icons:
+        specifier: ^1.6.20
+        version: 1.6.20
       lucide-react:
         specifier: ^0.453.0
         version: 0.453.0(react@18.3.1)
@@ -275,6 +278,9 @@ importers:
       '@zxing/browser':
         specifier: 0.1.5
         version: 0.1.5(@zxing/library@0.21.3)
+      country-flag-icons:
+        specifier: ^1.6.20
+        version: 1.6.20
       lucide-react:
         specifier: 0.453.0
         version: 0.453.0(react@19.3.1)
@@ -1800,6 +1806,9 @@ packages:
 
   core-js-compat@3.49.0:
     resolution: {integrity: sha512-VQXt1jr9cBz03b331DFDCCP90b3fanciLkgiOoy8SBHy06gNf+vQ1A3WFLqG7I8TipYIKeYK9wxd0tUrvHcOZA==}
+
+  country-flag-icons@1.6.20:
+    resolution: {integrity: sha512-py8JiEKzjhYw6HPJ0L7SxLgCYim36UPRTZX43/kqGueUCZLSvnrqAiwW8HtQibur7mdkFQUkjOgdK+o/9FBtaw==}
 
   cross-env@10.1.0:
     resolution: {integrity: sha512-GsYosgnACZTADcmEyJctkJIoqAhHjttw7RsFrVoJNXbsWWqaq6Ym+7kZjq6mS45O0jij6vtiReppKQEtqWy6Dw==}
@@ -4847,6 +4856,8 @@ snapshots:
   core-js-compat@3.49.0:
     dependencies:
       browserslist: 4.29.5
+
+  country-flag-icons@1.6.20: {}
 
   cross-env@10.1.0:
     dependencies:

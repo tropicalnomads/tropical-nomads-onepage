@@ -2,6 +2,7 @@ import { adminActor, loadAdminEventList } from '../../../../src/admin/actions';
 import { eventPhase } from '../../../../src/admin/event-board';
 import { eventValues } from '../../../../src/admin/values';
 import { loadArtistProfiles } from '../../../../src/artists/load';
+import { loadVenues } from '../../../../src/venues/load';
 import { AdminEventForm } from '../../../../src/components/AdminEventForm';
 import { AdminDenied } from '../../../../src/components/AdminEventList';
 import { loadTicketSales } from '../../../../src/events/load';
@@ -29,6 +30,7 @@ export default async function EditAdminEventPage({ params }: { params: Promise<{
     <AdminEventForm
       values={eventValues(party)}
       artists={await loadArtistProfiles()}
+      venues={await loadVenues()}
       sold={sold}
       phase={eventPhase({ publication: party.publication, event: party.event })}
     />
