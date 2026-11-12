@@ -8,7 +8,7 @@ import { artistText, fillArtist } from '../i18n/artist-copy';
 import { eventText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { ShopMarkdown } from '../shop/markdown';
-import { CountryMark } from './CountryMark';
+import { CountryMark } from './ui/CountryMark';
 import { Button } from './ui/Button';
 
 export function ArtistProfileView({

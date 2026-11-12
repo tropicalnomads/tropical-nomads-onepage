@@ -276,6 +276,16 @@ describe('artist profile records', () => {
     assert.equal(profiles.find((artist) => artist.name === 'Wrong Portrait')?.photo, undefined);
   });
 
+  it('uses the selected country when an older flag belongs to another country', () => {
+    const profiles = artistProfilesFrom({
+      artists: [{ name: 'After June', country: 'American Samoa', isoCountry: 'AS', countryFlag: '🇧🇷' }],
+    });
+    const artist = profiles[0];
+    assert.equal(artist?.country, 'American Samoa');
+    assert.equal(artist?.isoCountry, 'AS');
+    assert.equal(artist?.flag, 'AS');
+  });
+
   it('uses bookings portraits, biographies, and genres for roster artists', () => {
     const profiles = withBookingsArtists(
       artistProfilesFrom({

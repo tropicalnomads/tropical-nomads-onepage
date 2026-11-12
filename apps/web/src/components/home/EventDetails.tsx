@@ -9,7 +9,7 @@ import { eventText, homeText, shellText } from '../../i18n/copy';
 import { fillHome } from '../../i18n/home';
 import { useLanguage } from '../../i18n/provider';
 import { Button } from '../ui/Button';
-import { CountryMark } from '../CountryMark';
+import { CountryMark } from '../ui/CountryMark';
 import { EventTickets } from './EventTickets';
 
 function hostFromUrl(url: string): string {

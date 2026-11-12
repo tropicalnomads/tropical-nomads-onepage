@@ -5,10 +5,10 @@ import { createPortal } from 'react-dom';
 import { saveVenueAction } from '../../admin/venue-actions';
 import { adminText } from '../../i18n/copy';
 import { useLanguage } from '../../i18n/provider';
-import { countryChoices, countryCodeFromInput } from '../../shop/postal';
+import { countryCodeFromInput } from '../../shop/postal';
 import type { VenueChoice } from '../../venues/load';
 import { Button, TextLink } from '../ui/Button';
-import { SelectField } from '../ui/Select';
+import { CountrySelect } from '../ui/CountrySelect';
 import { adminFieldClass } from './form';
 
 export function VenueEditor({ open, onClose, onSaved }: { open: boolean; onClose: () => void; onSaved: (venue: VenueChoice) => void }) {
@@ -112,15 +112,13 @@ export function VenueEditor({ open, onClose, onSaved }: { open: boolean; onClose
         <label className="block text-sm font-bold">
           {text('country')}
           <div className="mt-2">
-            <SelectField
+            <CountrySelect
               ariaLabel={text('country')}
               value={country}
               placeholder={text('country')}
-              searchable
               searchPlaceholder={text('searchCountry')}
               emptyLabel={text('noCountry')}
               onChange={setCountry}
-              options={countryChoices(language)}
             />
           </div>
         </label>

@@ -1,6 +1,6 @@
 import * as flagIcons from 'country-flag-icons/react/3x2';
 import type { ComponentType, SVGProps } from 'react';
-import { countryCaption, isoCountryCode } from '../artists/flag';
+import { countryCaption, isoCountryCode } from '../../artists/flag';
 
 type FlagComponent = ComponentType<SVGProps<SVGSVGElement>>;
 

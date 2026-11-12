@@ -10,7 +10,7 @@ import type { ArtistPreview, UpcomingEventCard } from '../events/types';
 import { areaText, eventText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { EmptyState } from '../../../one-pager/src/components/EmptyState';
-import { CountryMark } from './CountryMark';
+import { CountryMark } from './ui/CountryMark';
 import { Button } from './ui/Button';
 
 function fill(template: string, values: Record<string, string>): string {

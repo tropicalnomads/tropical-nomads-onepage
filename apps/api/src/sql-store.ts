@@ -667,6 +667,8 @@ export async function upsertStoredArtist(document: Record<string, unknown>): Pro
        on conflict (id) do update set
          name = excluded.name,
          country = excluded.country,
+         iso_country = excluded.iso_country,
+         country_flag = excluded.country_flag,
          genres = excluded.genres,
          document = excluded.document`,
       [

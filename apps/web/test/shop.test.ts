@@ -215,12 +215,13 @@ describe('shop', () => {
     assert.equal(review.indexOf("publicHref('/shop', language)", reviewNoteAt) > reviewNoteAt, true);
     assert.equal(cartPage.includes('ShopCart'), true);
     assert.equal(checkout.includes('postalCode'), true);
+    const countrySelect = readFileSync(new URL('../src/components/ui/CountrySelect.tsx', import.meta.url), 'utf8');
     assert.equal(checkout.includes('<select'), false);
-    assert.equal(checkout.includes('SelectField'), true);
+    assert.equal(checkout.includes('CountrySelect'), true);
     assert.equal(checkout.includes('savedAddress'), true);
     assert.equal(checkout.includes('lookupPostalCode'), true);
-    assert.equal(checkout.includes('searchable'), true);
-    assert.equal(checkout.includes('countryChoices'), true);
+    assert.equal(countrySelect.includes('searchable'), true);
+    assert.equal(countrySelect.includes('countryChoices'), true);
     assert.equal(checkout.includes('lookupHelp'), false);
     assert.equal(checkout.includes('Find address'), false);
     const nameAt = checkout.indexOf('name="name"');

@@ -1,13 +1,15 @@
 'use client';
 
 import { Check, ChevronDown } from 'lucide-react';
-import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
 export interface SelectOption {
   value: string;
   label: string;
   description?: string;
+  keywords?: string;
+  icon?: ReactNode;
   disabled?: boolean;
 }
 
@@ -67,7 +69,12 @@ function filterOptions(options: readonly SelectOption[], query: string): readonl
   if (needle === '') {
     return options;
   }
-  return options.filter((option) => option.label.toLowerCase().includes(needle) || option.value.toLowerCase().includes(needle));
+  return options.filter(
+    (option) =>
+      option.label.toLowerCase().includes(needle) ||
+      option.value.toLowerCase().includes(needle) ||
+      (option.keywords?.toLowerCase().includes(needle) ?? false),
+  );
 }
 
 function matchOption(options: readonly SelectOption[], query: string, start: number): number {
@@ -89,10 +96,11 @@ function optionClass(selected: boolean, active: boolean, disabled: boolean): str
   if (selected) {
     return 'bg-ozora-yellow font-semibold text-ozora-ink';
   }
+  const hover = 'hover:bg-ozora-turquoise/20 hover:text-ozora-cream';
   if (active) {
-    return 'bg-ozora-turquoise/20 font-medium text-ozora-cream';
+    return `bg-ozora-turquoise/20 font-medium text-ozora-cream ${hover}`;
   }
-  return 'font-medium text-ozora-cream/90 hover:bg-ozora-turquoise/15 hover:text-ozora-cream';
+  return `font-medium text-ozora-cream/90 ${hover}`;
 }
 
 export function SelectField({
@@ -124,6 +132,7 @@ export function SelectField({
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [menuBox, setMenuBox] = useState<MenuBox | null>(null);
+  const [menuHost, setMenuHost] = useState<Element | null>(null);
   const [filter, setFilter] = useState('');
   const current = value ?? uncontrolled;
   const selectedIndex = options.findIndex((option) => option.value === current);
@@ -143,6 +152,7 @@ export function SelectField({
     }
     setFilter('');
     setMenuBox(null);
+    setMenuHost(null);
   }, [open]);
 
   useEffect(() => {
@@ -153,6 +163,7 @@ export function SelectField({
     if (!root) {
       return;
     }
+    setMenuHost(root.closest('dialog') ?? document.body);
 
     const measure = (): void => {
       const rect = root.getBoundingClientRect();
@@ -223,6 +234,9 @@ export function SelectField({
     } catch {
       return;
     }
+    if (searchable) {
+      searchRef.current?.focus({ preventScroll: true });
+    }
     return () => {
       if (!menu.isConnected || !menu.matches(':popover-open')) {
         return;
@@ -233,7 +247,7 @@ export function SelectField({
         // The menu can already be leaving the document.
       }
     };
-  }, [menuReady, open]);
+  }, [menuReady, open, searchable]);
 
   useEffect(() => {
     if (!open || !menuReady || activeIndex < 0) {
@@ -252,13 +266,6 @@ export function SelectField({
       menu.scrollTop = optionBottom - menu.clientHeight;
     }
   }, [activeIndex, menuReady, open, uid]);
-
-  useEffect(() => {
-    if (!open || !searchable || !menuReady) {
-      return;
-    }
-    searchRef.current?.focus();
-  }, [menuReady, open, searchable]);
 
   const choose = (index: number): void => {
     const option = visibleOptions[index];
@@ -347,7 +354,7 @@ export function SelectField({
   };
 
   const menu =
-    open && menuBox && typeof document !== 'undefined'
+    open && menuBox && menuHost
       ? createPortal(
           <div
             ref={menuRef}
@@ -365,7 +372,6 @@ export function SelectField({
               maxHeight: menuBox.maxHeight,
               margin: 0,
               right: 'auto',
-              zIndex: 80,
               ...(menuBox.opensUp ? { top: 'auto', bottom: menuBox.bottom } : { top: menuBox.top, bottom: 'auto' }),
             }}
             className="flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#053b38] p-0 text-ozora-cream shadow-[0_22px_60px_rgba(0,0,0,0.48)]"
@@ -416,7 +422,14 @@ export function SelectField({
                   onClick={() => choose(index)}
                   className={`flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition ${optionClass(selected, active, option.disabled === true)}`}
                 >
-                  <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                  <span className="flex min-w-0 flex-1 items-center gap-2">
+                    {option.icon ? (
+                      <span aria-hidden="true" className="shrink-0">
+                        {option.icon}
+                      </span>
+                    ) : null}
+                    <span className="min-w-0 truncate">{option.label}</span>
+                  </span>
                   {option.description ? (
                     <span
                       className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold ${
@@ -434,7 +447,7 @@ export function SelectField({
             })}
             </div>
           </div>,
-          document.body,
+          menuHost,
         )
       : null;
 
@@ -466,7 +479,14 @@ export function SelectField({
           open ? 'border-ozora-yellow/80 ring-2 ring-ozora-yellow/20' : 'border-white/15'
         }`}
       >
-        <span className={`min-w-0 flex-1 truncate font-medium ${selectedOption ? 'text-ozora-cream' : 'text-ozora-cream/40'}`}>{shown}</span>
+        <span className={`flex min-w-0 flex-1 items-center gap-2 font-medium ${selectedOption ? 'text-ozora-cream' : 'text-ozora-cream/40'}`}>
+          {selectedOption?.icon ? (
+            <span aria-hidden="true" className="shrink-0">
+              {selectedOption.icon}
+            </span>
+          ) : null}
+          <span className="truncate">{shown}</span>
+        </span>
         <span
           className={`inline-flex shrink-0 items-center justify-center rounded-full border transition ${
             density === 'compact' ? 'h-6 w-6' : 'h-7 w-7'

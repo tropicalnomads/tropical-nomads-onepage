@@ -9,6 +9,7 @@ import { instantFromWall, wallClock } from '../admin/event-time';
 import { followingMorning, timezoneForCity, venueIdFor } from '../admin/place-time';
 import { timeZoneChoices } from '../admin/time-zones';
 import type { AdminEventValues } from '../admin/values';
+import { displayedCountryFlag } from '../artists/flag';
 import { lineupArtists, type ArtistProfile } from '../artists/profile';
 import { normalizeSearch } from '../events/calendar';
 import { adminText } from '../i18n/copy';
@@ -20,7 +21,7 @@ import { CroppedImageField } from './admin/CroppedImageField';
 import { AdminSection, adminFieldClass } from './admin/form';
 import { MarkdownField } from './admin/MarkdownField';
 import { VenueEditor } from './admin/VenueEditor';
-import { CountryMark } from './CountryMark';
+import { CountryMark } from './ui/CountryMark';
 import { Button, TextLink } from './ui/Button';
 import { SelectField } from './ui/Select';
 
@@ -453,7 +454,7 @@ export function AdminEventForm({
                       <ArtistFace artist={artist} />
                       <span className="min-w-0">
                         <span className="block font-bold">{artist.name}</span>
-                        <CountryMark flag={artist.flag} country={artist.country} className="text-xs text-ozora-cream/55" />
+                        <CountryMark flag={displayedCountryFlag(artist.isoCountry, artist.flag)} className="text-xs text-ozora-cream/55" />
                       </span>
                     </button>
                   ))}
@@ -483,8 +484,7 @@ export function AdminEventForm({
                             <p className="min-w-0 truncate font-bold">{entry.name}</p>
                           )}
                           <CountryMark
-                            flag={artist?.flag}
-                            country={artist?.country}
+                            flag={displayedCountryFlag(artist?.isoCountry, artist?.flag)}
                             className="shrink-0 text-xs text-ozora-cream/55"
                             flagClassName="h-2.5 w-3.5 shrink-0 rounded-[2px]"
                           />

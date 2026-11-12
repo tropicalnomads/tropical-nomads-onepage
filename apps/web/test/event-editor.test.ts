@@ -6,7 +6,8 @@ import { eventPhase } from '../src/admin/event-board.ts';
 import { instantFromWall, wallClock } from '../src/admin/event-time.ts';
 import { followingMorning, timezoneForCity, venueIdFor } from '../src/admin/place-time.ts';
 import { timeZoneChoices } from '../src/admin/time-zones.ts';
-import { countryCaption, isoCountryCode } from '../src/artists/flag.ts';
+import { countryCaption, displayedCountryFlag, isoCountryCode } from '../src/artists/flag.ts';
+import { artistGenres, artistGenreLimit, genreChoices, toggleArtistGenre } from '../src/artists/genres.ts';
 import { lineupArtists } from '../src/artists/profile.ts';
 import { emphasisParts } from '../src/shop/emphasis.ts';
 import { eventCropSize, shopCropSize } from '../src/shop/crop-image.ts';
@@ -63,6 +64,10 @@ describe('event editor', () => {
     assert.equal(editor.includes("text('venueMap')"), true);
     assert.equal(select.includes('popover="manual"'), true);
     assert.equal(select.includes('showPopover()'), true);
+    assert.equal(select.includes("closest('dialog')"), true);
+    assert.equal(select.includes('focus({ preventScroll: true })'), true);
+    assert.equal(select.includes('hover:bg-ozora-turquoise/20'), true);
+    assert.equal(select.includes('zIndex:'), false);
   });
 
   it('converts a wall-clock start in the event timezone', () => {
@@ -88,10 +93,35 @@ describe('event editor', () => {
     assert.equal(isoCountryCode('Brazil'), undefined);
     assert.equal(countryCaption('BR', 'BR'), undefined);
     assert.equal(countryCaption('Brazil', 'BR'), 'Brazil');
+    assert.equal(displayedCountryFlag('AS', '🇧🇷'), 'AS');
+    assert.equal(displayedCountryFlag('BR', '🇧🇷'), '🇧🇷');
     const form = readFileSync(new URL('../src/components/AdminEventForm.tsx', import.meta.url), 'utf8');
+    assert.equal(form.includes('displayedCountryFlag'), true);
+    assert.equal(form.includes('country={artist'), false);
     assert.equal(form.includes('aria-pressed={entry.headliner === true}'), true);
     assert.equal(form.includes("data.set('headliners'"), true);
     assert.equal(form.includes('<CountryMark'), true);
     assert.equal(form.includes('[artist.flag, artist.country]'), false);
+  });
+
+  it('keeps the artist editor full screen and the genres selectable', () => {
+    const editor = readFileSync(new URL('../src/components/admin/ArtistEditor.tsx', import.meta.url), 'utf8');
+    const dialogClass = editor.match(/<dialog[\s\S]*?className="([^"]*)"/);
+    assert.equal(dialogClass?.[1]?.includes('h-dvh'), true);
+    assert.equal(dialogClass?.[1]?.includes('max-w-[1600px]'), true);
+    assert.equal(dialogClass?.[1]?.includes('m-auto'), true);
+    assert.equal(dialogClass?.[1]?.includes('overflow-y-auto'), false);
+    const scrollAt = editor.indexOf('overflow-y-auto');
+    const submitAt = editor.indexOf('type="submit"');
+    assert.equal(scrollAt !== -1 && submitAt > scrollAt, true);
+    assert.equal(editor.includes('aria-pressed={selected}'), true);
+    assert.equal(editor.includes("data.set('genres', genres.join(', '))"), true);
+    const stored = ['Progressive', 'Hi-Tech'];
+    assert.deepEqual(genreChoices(stored), [...artistGenres, 'Hi-Tech']);
+    const full = [...artistGenres, 'Hi-Tech', 'Darkpsy'];
+    assert.equal(full.length, artistGenreLimit);
+    assert.deepEqual(toggleArtistGenre(full, 'Forest'), full.filter((genre) => genre !== 'Forest'));
+    assert.deepEqual(toggleArtistGenre(full, 'Hitech'), full);
+    assert.deepEqual(toggleArtistGenre(['Full-On'], 'Night'), ['Full-On', 'Night']);
   });
 });

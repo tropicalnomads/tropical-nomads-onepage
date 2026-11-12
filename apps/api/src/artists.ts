@@ -7,6 +7,7 @@ export interface ArtistSaveInput {
   id: string;
   name: string;
   country: string;
+  isoCountry?: string;
   genres: string[];
   bio: string;
   soundcloud: string;
@@ -26,6 +27,20 @@ function cleanLine(value: string, max: number): string {
     throw new Error('artist was not saved');
   }
   return text;
+}
+
+function readIsoCountry(value: Record<string, unknown>): string | undefined {
+  if (!Object.prototype.hasOwnProperty.call(value, 'isoCountry')) {
+    return undefined;
+  }
+  if (typeof value.isoCountry !== 'string') {
+    throw new Error('artist was not saved');
+  }
+  const iso = value.isoCountry.trim().toUpperCase();
+  if (iso !== '' && !/^[A-Z]{2}$/.test(iso)) {
+    throw new Error('artist was not saved');
+  }
+  return iso;
 }
 
 function stringList(value: unknown): string[] {
@@ -61,6 +76,7 @@ export function readArtistSave(value: unknown): ArtistSaveInput {
     throw new Error('artist was not saved');
   }
   const country = typeof value.country === 'string' ? cleanLine(value.country, 80) : '';
+  const isoCountry = readIsoCountry(value);
   const bio = typeof value.bio === 'string' ? value.bio : '';
   if (bio.length > 4000 || /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(bio)) {
     throw new Error('artist was not saved');
@@ -83,6 +99,7 @@ export function readArtistSave(value: unknown): ArtistSaveInput {
     id: requestedId,
     name,
     country,
+    ...(isoCountry === undefined ? {} : { isoCountry }),
     genres: stringList(value.genres),
     bio: bio.trim(),
     soundcloud,
@@ -92,12 +109,19 @@ export function readArtistSave(value: unknown): ArtistSaveInput {
   };
 }
 
-function withProfile(existing: Record<string, unknown>, input: ArtistSaveInput): Record<string, unknown> {
+export function withProfile(existing: Record<string, unknown>, input: ArtistSaveInput): Record<string, unknown> {
   const next: Record<string, unknown> = { ...existing, id: input.id, name: input.name };
   if (input.country === '') {
     delete next.country;
   } else {
     next.country = input.country;
+  }
+  if (input.isoCountry === '') {
+    delete next.isoCountry;
+    delete next.countryFlag;
+  } else if (input.isoCountry) {
+    next.isoCountry = input.isoCountry;
+    next.countryFlag = input.isoCountry;
   }
   next.genres = input.genres;
   if (input.bio === '') {

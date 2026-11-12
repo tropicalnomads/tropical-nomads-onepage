@@ -1,15 +1,15 @@
 'use client';
 
 import { Check, Loader2, MapPin, UserRound } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { shopText } from '../i18n/shop-copy';
 import { useLanguage } from '../i18n/provider';
 import { publicHref } from '../seo/urls';
 import { saveDeliveryAddressAction } from '../shop/actions';
 import { shopAddressComplete, type ShopAddress } from '../shop/order';
-import { canonicalCountryName, countryChoices, postalCompact, postalLookupKey } from '../shop/postal';
+import { canonicalCountryName, postalCompact, postalLookupKey } from '../shop/postal';
 import { useShopCart } from '../shop/useShopCart';
-import { SelectField } from './SelectField';
+import { CountrySelect } from './ui/CountrySelect';
 import { ShopSteps } from './ShopSteps';
 import { Button } from './ui/Button';
 import { fieldControlClass } from './ui/field';
@@ -72,8 +72,6 @@ export function ShopCheckout({ presets, signedIn }: { presets: ShopAddressPreset
   const filledFromLookup = useRef<PostalFill | null>(null);
   const cartRef = useRef(cart);
   cartRef.current = cart;
-  const countries = useMemo(() => countryChoices(language), [language]);
-
   useEffect(() => {
     if (!cart.ready) {
       return;
@@ -322,16 +320,14 @@ export function ShopCheckout({ presets, signedIn }: { presets: ShopAddressPreset
                 </label>
                 <label className="grid gap-1.5 text-sm font-semibold text-ozora-cream/80 sm:col-span-2">
                   {shopText(language, 'country')}
-                  <SelectField
+                  <CountrySelect
                     name="country"
                     ariaLabel={shopText(language, 'country')}
-                    value={canonicalCountryName(cart.address.country)}
+                    value={cart.address.country}
                     placeholder={shopText(language, 'selectCountry')}
-                    searchable
                     searchPlaceholder={shopText(language, 'searchCountry')}
                     emptyLabel={shopText(language, 'noCountryMatches')}
                     onChange={(next) => setField('country', next)}
-                    options={countries}
                   />
                 </label>
               </div>

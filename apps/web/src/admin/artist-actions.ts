@@ -42,6 +42,7 @@ export async function saveArtistAction(formData: FormData): Promise<ArtistFormRe
       ...(field(formData, 'id') === '' ? {} : { id: field(formData, 'id') }),
       name: field(formData, 'name'),
       country: field(formData, 'country'),
+      ...(formData.has('isoCountry') ? { isoCountry: field(formData, 'isoCountry') } : {}),
       genres: genres(field(formData, 'genres')),
       bio: field(formData, 'bio'),
       soundcloud: field(formData, 'soundcloud'),

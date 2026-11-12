@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { saveBillingAction, saveMethodAction, type PaymentActionResult } from '../payments/actions';
 import { accountText, paymentNotice, paymentPurposeLabel, paymentText, paymentTypeLabel } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
-import { SelectField } from './SelectField';
+import { SelectField } from './ui/Select';
 import { Button } from './ui/Button';
 import { fieldControlClass } from './ui/field';
 

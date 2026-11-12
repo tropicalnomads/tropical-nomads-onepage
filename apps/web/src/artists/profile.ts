@@ -1,4 +1,5 @@
 import { artistIdFromName, formatEventDate, type Locale } from 'tropical-nomads-shared';
+import { displayedCountryFlag } from './flag.ts';
 
 export interface ArtistProfile {
   id: string;
@@ -85,8 +86,8 @@ export function artistProfilesFrom(body: unknown): ArtistProfile[] {
     const name = text(item.name);
     const id = text(item.id) || artistIdFromName(name);
     const photo = publishedArtistPhoto(text(item.photo), id);
-    const flag = text(item.countryFlag);
     const isoCountry = text(item.isoCountry);
+    const flag = displayedCountryFlag(isoCountry, text(item.countryFlag));
     const agencies = nameList(item.agencies);
     const bioPt = text(item.bioPt);
     profiles.push({

@@ -25,6 +25,18 @@ export function isoCountryCode(value: string | undefined): string | undefined {
   return String.fromCharCode(first, second);
 }
 
+/** The selected country wins when an older flag still points at a different country. */
+export function displayedCountryFlag(isoCountry: string | undefined, storedFlag: string | undefined): string | undefined {
+  const iso = isoCountry?.trim().toUpperCase();
+  const flag = storedFlag?.trim() ?? '';
+  const selected = iso !== undefined && /^[A-Z]{2}$/.test(iso) ? iso : undefined;
+  const flagCode = isoCountryCode(flag);
+  if (selected && (flag === '' || (flagCode !== undefined && flagCode !== selected))) {
+    return selected;
+  }
+  return flag === '' ? undefined : flag;
+}
+
 export function countryCaption(country: string | undefined, code: string | undefined): string | undefined {
   const name = country?.trim() ?? '';
   if (name === '') {
