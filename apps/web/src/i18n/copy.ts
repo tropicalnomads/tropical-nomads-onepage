@@ -100,7 +100,6 @@ export interface AccountCopy {
   submitReset: string;
   confirmHelp: string;
   continueGoogle: string;
-  continueApple: string;
   noPaymentMethod: string;
   disabled: string;
   avatarTitle: string;
@@ -119,6 +118,13 @@ export interface AccountCopy {
   avatarCropping: string;
   avatarUse: string;
   saveAvatar: string;
+  deleteAccount: string;
+  deleteAccountHelp: string;
+  deleteAccountConfirm: string;
+  deleteAccountButton: string;
+  deleteAccountTypeEmail: string;
+  deleteAccountEmailLabel: string;
+  deleteAccountCancel: string;
   notices: Record<AccountNotice, string>;
 }
 
@@ -298,7 +304,18 @@ export type AccountNotice =
   | 'profile-invalid'
   | 'profile-saved'
   | 'profile-save-failed'
-  | 'sign-in-failed';
+  | 'sign-in-failed'
+  | 'email-taken'
+  | 'google-cancelled'
+  | 'sign-in-expired'
+  | 'google-email-unverified'
+  | 'google-failed'
+  | 'account-disabled'
+  | 'account-conflict'
+  | 'account-deleted'
+  | 'account-delete-failed'
+  | 'account-delete-unconfirmed'
+  | 'account-delete-email';
 
 const accountNotices: readonly AccountNotice[] = [
   'username-required',
@@ -331,6 +348,17 @@ const accountNotices: readonly AccountNotice[] = [
   'profile-saved',
   'profile-save-failed',
   'sign-in-failed',
+  'email-taken',
+  'google-cancelled',
+  'sign-in-expired',
+  'google-email-unverified',
+  'google-failed',
+  'account-disabled',
+  'account-conflict',
+  'account-deleted',
+  'account-delete-failed',
+  'account-delete-unconfirmed',
+  'account-delete-email',
 ];
 
 export function knownAccountNotice(value: string | undefined): AccountNotice | null {
@@ -656,7 +684,6 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       submitReset: 'Save new password',
       confirmHelp: 'Enter the code from your email. After it is accepted, sign in with the password you chose.',
       continueGoogle: 'Continue with Google',
-      continueApple: 'Continue with Apple',
       noPaymentMethod: 'No payment method is saved.',
       disabled: 'This account is disabled. It cannot buy or scan.',
       avatarTitle: 'Profile photo',
@@ -675,6 +702,14 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       avatarCropping: 'Cropping…',
       avatarUse: 'Use photo',
       saveAvatar: 'Save photo',
+      deleteAccount: 'Delete account',
+      deleteAccountHelp:
+        'This removes your sign-in, your Google link, and your profile, photo, phone, and address. Orders and tickets stay on the books, without your name or delivery address. Signing in again creates a new account.',
+      deleteAccountConfirm: 'I understand this cannot be undone.',
+      deleteAccountButton: 'Delete my account',
+      deleteAccountTypeEmail: 'Type your email to confirm.',
+      deleteAccountEmailLabel: 'Email',
+      deleteAccountCancel: 'Cancel',
       notices: {
         'username-required': 'Choose a username.',
         'username-invalid': 'Usernames use letters, digits, and hyphens, and cannot be an event id.',
@@ -706,6 +741,17 @@ export const shellCopy: Record<Locale, ShellCopy> = {
         'profile-invalid': 'Check the profile details and try again.',
         'profile-saved': 'Profile saved.',
         'sign-in-failed': 'Sign-in could not be completed. Try again.',
+        'email-taken': 'This email already has an account. Sign in, or continue with Google.',
+        'google-cancelled': 'Google sign-in was cancelled.',
+        'sign-in-expired': 'That sign-in expired. Continue with Google again.',
+        'google-email-unverified': 'That Google email is not verified, so the account was not created.',
+        'google-failed': 'Google sign-in could not be completed. Try again.',
+        'account-disabled': 'This account is disabled.',
+        'account-conflict': 'That Google account is already linked to a different profile.',
+        'account-deleted': 'Your account was deleted.',
+        'account-delete-failed': 'The account could not be deleted. Try again.',
+        'account-delete-unconfirmed': 'Confirm that you want to delete the account.',
+        'account-delete-email': 'Type the email on this account.',
       },
     },
     admin: {
@@ -818,7 +864,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
     homeAria: 'Início da Tropical Nomads',
     navHome: 'Início',
     navBookings: 'Bookings',
-    navTimetables: 'Programações',
+    navTimetables: 'Timetable',
     calendar: 'Calendário',
     eventsAdmin: 'Eventos',
     navAdmin: 'Admin',
@@ -1037,7 +1083,6 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       submitReset: 'Salvar nova senha',
       confirmHelp: 'Informe o código do e-mail. Depois de aceito, entre com a senha que você escolheu.',
       continueGoogle: 'Continuar com Google',
-      continueApple: 'Continuar com Apple',
       noPaymentMethod: 'Nenhum meio de pagamento foi salvo.',
       disabled: 'Esta conta está desativada. Ela não pode comprar nem fazer a leitura.',
       avatarTitle: 'Foto do perfil',
@@ -1056,6 +1101,14 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       avatarCropping: 'Recortando…',
       avatarUse: 'Usar foto',
       saveAvatar: 'Salvar foto',
+      deleteAccount: 'Apagar conta',
+      deleteAccountHelp:
+        'Isto remove a entrada, a ligação com o Google, o perfil, a foto, o telefone e o endereço. Pedidos e ingressos ficam nos registos, sem o seu nome nem o endereço de entrega. Entrar de novo cria uma conta nova.',
+      deleteAccountConfirm: 'Entendo que isto não pode ser desfeito.',
+      deleteAccountButton: 'Apagar a minha conta',
+      deleteAccountTypeEmail: 'Escreva o seu e-mail para confirmar.',
+      deleteAccountEmailLabel: 'E-mail',
+      deleteAccountCancel: 'Cancelar',
       notices: {
         'username-required': 'Escolha um nome de usuário.',
         'username-invalid': 'Use letras, números e hífens. O nome não pode ser o id de um evento.',
@@ -1087,6 +1140,17 @@ export const shellCopy: Record<Locale, ShellCopy> = {
         'profile-invalid': 'Confira os dados do perfil e tente novamente.',
         'profile-saved': 'Perfil salvo.',
         'sign-in-failed': 'Não foi possível entrar. Tente de novo.',
+        'email-taken': 'Este e-mail já tem uma conta. Entre ou continue com Google.',
+        'google-cancelled': 'A entrada com Google foi cancelada.',
+        'sign-in-expired': 'Essa entrada expirou. Continue com Google de novo.',
+        'google-email-unverified': 'Esse e-mail do Google não está verificado, então a conta não foi criada.',
+        'google-failed': 'Não foi possível entrar com Google. Tente de novo.',
+        'account-disabled': 'Esta conta está desativada.',
+        'account-conflict': 'Essa conta do Google já está ligada a outro perfil.',
+        'account-deleted': 'A conta foi apagada.',
+        'account-delete-failed': 'Não foi possível apagar a conta. Tente de novo.',
+        'account-delete-unconfirmed': 'Confirme que quer apagar a conta.',
+        'account-delete-email': 'Escreva o e-mail desta conta.',
       },
     },
     admin: {

@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Frankfurt VPC for Tropical Nomads. One NAT gateway. The database stays in the private subnets.
+Description: Frankfurt VPC for Tropical Nomads. No NAT gateway. The database stays in the private subnets.
 
 Resources:
   Vpc:
@@ -118,24 +118,6 @@ Resources:
       SubnetId: !Ref PublicSubnetB
       RouteTableId: !Ref PublicRouteTable
 
-  NatElasticIp:
-    Type: AWS::EC2::EIP
-    DependsOn: GatewayAttachment
-    Properties:
-      Domain: vpc
-      Tags:
-        - Key: Name
-          Value: tropical-nomads-nat
-
-  NatGateway:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt NatElasticIp.AllocationId
-      SubnetId: !Ref PublicSubnetA
-      Tags:
-        - Key: Name
-          Value: tropical-nomads
-
   PrivateRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
@@ -143,13 +125,6 @@ Resources:
       Tags:
         - Key: Name
           Value: tropical-nomads-private
-
-  PrivateRoute:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGateway
 
   PrivateSubnetARoute:
     Type: AWS::EC2::SubnetRouteTableAssociation

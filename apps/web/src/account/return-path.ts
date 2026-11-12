@@ -5,6 +5,7 @@ const blockedPaths = new Set([
   '/account/forgot-password',
   '/account/profile',
   '/account/callback',
+  '/account/google',
 ]);
 
 const returnOrigin = 'https://return.invalid';

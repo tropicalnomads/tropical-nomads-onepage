@@ -1,4 +1,5 @@
 import { avatarByteLimit, normalizeAccountEmail, type VerifiedSignIn } from 'tropical-nomads-shared';
+import { commitAccountErasure } from './account-erasure.ts';
 import {
   loadAccounts,
   loadAvatar,
@@ -223,6 +224,11 @@ async function runAction(action: string, input: unknown, sessionSub: string | un
       return snapshot();
     case 'establish':
       return establish(input);
+    case 'delete-account': {
+      const sub = requireSignedIn(sessionSub);
+      await commitAccountErasure(sub, new Date().toISOString());
+      return { deleted: true };
+    }
     case 'save-profile': {
       if (!isRecord(input)) {
         throw new Error('profile was not saved');

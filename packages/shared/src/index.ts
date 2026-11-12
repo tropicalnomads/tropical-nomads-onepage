@@ -6,6 +6,8 @@ export {
   normalizeAccountEmail,
   passwordChecks,
   passwordProblem,
+  splitPersonName,
+  usernameForSignIn,
   usernameFromEmail,
   usernameProblem,
 } from './account/identity.ts';

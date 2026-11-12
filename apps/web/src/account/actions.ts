@@ -2,13 +2,14 @@
 
 import { cookies } from 'next/headers';
 import { saveAvatarFile, saveProfileDetails, updateAccounts } from 'tropical-nomads-api/accounts';
-import { normalizeAccountEmail, usernameFromEmail, type VerifiedSignIn } from 'tropical-nomads-shared';
+import { normalizeAccountEmail, usernameForSignIn, type VerifiedSignIn } from 'tropical-nomads-shared';
 import type { AccountNotice } from '../i18n/copy';
 import {
   cognitoTarget,
   confirmForgotPasswordWithCognito,
   confirmSignUpWithCognito,
   forgotPasswordWithCognito,
+  noticeForAccountError,
   pendingNames,
   registerWithCognito,
   resendConfirmationWithCognito,
@@ -16,6 +17,7 @@ import {
   verifiedSignInFromClaims,
   type IdClaims,
 } from './cognito';
+import { storeGooglePicture } from './google-avatar';
 import { clearVerifiedClaims, readVerifiedClaims, rememberVerifiedClaims } from './cognito-actions';
 import { establishVerifiedAccount } from './establish';
 import { readProfileAvatar, readProfileDetails } from './profile';
@@ -130,7 +132,8 @@ export async function completeProfileAction(formData: FormData): Promise<Account
     return { notice: 'not-signed-in' };
   }
   const snapshot = await loadSnapshot();
-  const username = usernameFromEmail(
+  const username = usernameForSignIn(
+    claims.preferredUsername,
     claims.email,
     snapshot.accounts.profiles.map((profile) => profile.username),
     snapshot.eventIds,
@@ -162,10 +165,13 @@ export async function completeProfileAction(formData: FormData): Promise<Account
         return bytes ? saveAvatarFile(withDetails, admitted, bytes, now) : withDetails;
       });
     }
+    const sessionToken = await remember(admitted);
+    if (!bytes && field(formData, 'skipGooglePicture') !== '1' && claims.pictureUrl) {
+      await storeGooglePicture(admitted, claims.pictureUrl, undefined, sessionToken);
+    }
   } catch (error) {
     return { notice: noticeForProfileFailure(error) };
   }
-  await remember(admitted);
   await clearVerifiedClaims();
   return { redirect: await takeReturnPath(field(formData, 'next')) };
 }
@@ -272,17 +278,7 @@ async function admit(signIn: VerifiedSignIn): Promise<string | AccountNotice> {
     return await establishVerifiedAccount(signIn);
   } catch (error) {
     const message = error instanceof Error ? error.message : '';
-    switch (message) {
-      case 'username is taken':
-        return 'username-taken';
-      case 'username is not valid':
-      case 'username is required':
-        return 'username-invalid';
-      case 'name is required':
-        return 'name-required';
-      default:
-        return 'password-rejected';
-    }
+    return noticeForAccountError(message) ?? 'password-rejected';
   }
 }
 
@@ -318,9 +314,11 @@ function sessionCookie(maxAge: number) {
   };
 }
 
-async function remember(sub: string): Promise<void> {
+async function remember(sub: string): Promise<string> {
+  const token = createSessionToken(sub);
   const jar = await cookies();
-  jar.set(sessionCookieName, createSessionToken(sub), sessionCookie(sessionCookieMaxAge));
+  jar.set(sessionCookieName, token, sessionCookie(sessionCookieMaxAge));
+  return token;
 }
 
 export async function providerAction(formData: FormData): Promise<AccountActionResult> {

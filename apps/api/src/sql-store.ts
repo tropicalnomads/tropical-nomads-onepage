@@ -477,6 +477,10 @@ export async function writeStoredAvatar(key: string, bytes: Uint8Array): Promise
   await db().query('insert into avatar (key, bytes) values ($1, $2) on conflict (key) do update set bytes = excluded.bytes', [key, Buffer.from(bytes)]);
 }
 
+export async function deleteStoredAvatar(key: string): Promise<void> {
+  await db().query('delete from avatar where key = $1', [key]);
+}
+
 export async function readStoredAvatar(key: string): Promise<Uint8Array | undefined> {
   const rows = await db().query('select bytes from avatar where key = $1', [key]);
   const bytes = rows.rows[0]?.bytes;

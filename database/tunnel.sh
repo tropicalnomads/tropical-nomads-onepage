@@ -79,14 +79,16 @@ if [[ -n "$instance" && "$instance" != "None" ]]; then
   exit
 fi
 
-# This account cannot create an instance profile, so the EC2 tunnel host cannot register with SSM.
-# A private Fargate task in the API security group forwards bytes to PostgreSQL. It has no public IP.
+# A one-off Fargate task in the public subnets forwards bytes to PostgreSQL.
+# Its public IP is outbound only. Port 5432 listens on localhost inside the task.
 task_def="$(aws cloudformation describe-stacks --region "$region" --stack-name tn-frankfurt-ecs-task --query "Stacks[0].Outputs[?OutputKey=='TaskDefinitionArn'].OutputValue" --output text | tr -d '\r')"
+subnets="$(aws ec2 describe-subnets --region "$region" --filters Name=tag:Name,Values=tropical-nomads-public-a,tropical-nomads-public-b --query 'Subnets[].SubnetId' --output text | tr '\t' ',' | tr -d '\r')"
+group="$(aws ec2 describe-security-groups --region "$region" --filters Name=group-name,Values=tropical-nomads-api --query 'SecurityGroups[0].GroupId' --output text | tr -d '\r')"
 proxy='import http from "node:http"; import net from "node:net";
 http.createServer((req, res) => { res.writeHead(req.url === "/health" ? 200 : 404); res.end("ok"); }).listen(8787, "127.0.0.1");
 net.createServer((socket) => { const remote = net.connect(Number(process.env.DB_PORT), process.env.DB_HOST); socket.pipe(remote); remote.pipe(socket); socket.on("error", () => remote.destroy()); remote.on("error", () => socket.destroy()); }).listen(5432, "127.0.0.1");'
 task_json="$(aws ecs run-task --region "$region" --cluster tropical-nomads --task-definition "$task_def" --launch-type FARGATE --enable-execute-command \
-  --network-configuration "awsvpcConfiguration={subnets=[subnet-037e74a98a48dd0c2,subnet-0f5bc1df40e14b4e6],securityGroups=[sg-052571ebab1eaea1b],assignPublicIp=DISABLED}" \
+  --network-configuration "awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${group}],assignPublicIp=ENABLED}" \
   --overrides "$(node -e "process.stdout.write(JSON.stringify({containerOverrides:[{name:'api',command:['node','--input-type=module','-e',process.argv[1]]}]}))" "$proxy")" \
   --query "tasks[0].taskArn" --output text | tr -d '\r')"
 task_id="${task_json##*/}"
@@ -105,11 +107,11 @@ for _ in $(seq 1 40); do
   sleep 3
 done
 if [[ -z "$runtime" || "$runtime" == "None" || "$agent" != "RUNNING" ]]; then
-  echo "private tunnel task did not open an SSM channel" >&2
+  echo "database tunnel task did not open an SSM channel" >&2
   exit 1
 fi
 
-echo "private tunnel is ready"
+echo "database tunnel is ready"
 start_session --target "ecs:tropical-nomads_${task_id}_${runtime}" \
   --document-name AWS-StartPortForwardingSession \
   --parameters "portNumber=5432,localPortNumber=5432"

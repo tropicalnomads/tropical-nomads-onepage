@@ -40,6 +40,17 @@ const notices: AccountNotice[] = [
   'profile-saved',
   'profile-save-failed',
   'sign-in-failed',
+  'email-taken',
+  'google-cancelled',
+  'sign-in-expired',
+  'google-email-unverified',
+  'google-failed',
+  'account-disabled',
+  'account-conflict',
+  'account-deleted',
+  'account-delete-failed',
+  'account-delete-unconfirmed',
+  'account-delete-email',
 ];
 
 describe('accounts', () => {
@@ -100,7 +111,10 @@ describe('accounts', () => {
     assert.equal(form.includes("window.location.assign(target)"), true);
     assert.equal(form.includes('aria-busy='), true);
     assert.equal(authUi.includes('function GoogleIcon'), true);
-    assert.equal(authUi.includes('function AppleIcon'), true);
+    assert.equal(authUi.includes('function AppleIcon'), false);
+    assert.equal(authUi.includes('continueApple'), false);
+    assert.equal(form.includes("data.set('provider', 'google')"), true);
+    assert.equal(form.includes("data.set('provider', 'apple')"), false);
     assert.equal(authUi.includes('<svg aria-hidden="true"'), true);
     assert.equal(authUi.includes('label={toggleLabel}'), true);
     assert.equal(authUi.includes('rounded-3xl'), true);
@@ -227,6 +241,29 @@ describe('accounts', () => {
     assert.equal(form.includes('safeReturnPath'), true);
     assert.equal(form.includes('name="next"'), true);
     assert.equal(callback.includes('clearReturnPath'), true);
-    assert.equal(callback.includes("new URL(next ?? '/', here.origin)"), true);
+    assert.equal(callback.includes("new URL(next ?? '/', origin)"), true);
+    assert.equal(callback.includes('!existing?.avatarKey && claims.pictureUrl'), true);
+  });
+
+  it('deletes the signed-in account only after the person confirms', () => {
+    const home = readFileSync(new URL('../src/components/AccountHome.tsx', import.meta.url), 'utf8');
+    const action = readFileSync(new URL('../src/account/delete-account.ts', import.meta.url), 'utf8');
+    const api = readFileSync(new URL('../../api/src/private-api.ts', import.meta.url), 'utf8');
+    const body = action.slice(action.indexOf('export async function deleteAccountAction'));
+    const signedOut = home.slice(home.indexOf('if (!profile)'), home.indexOf('<AccountProfileForm'));
+    assert.equal(signedOut.includes('<dialog'), false);
+    assert.equal(home.includes('<dialog'), true);
+    assert.equal(home.includes('name="confirm"'), true);
+    assert.equal(home.includes('value="delete"'), true);
+    assert.equal(home.includes('name="email"'), true);
+    assert.equal(home.includes('onPaste={blockClipboard}'), true);
+    assert.equal(home.includes("inputType === 'insertFromPaste'"), true);
+    assert.equal(home.includes('deleteAccountAction'), true);
+    assert.equal(action.includes("formData.get('confirm') !== 'delete'"), true);
+    assert.equal(action.includes('normalizeAccountEmail(typed) !== normalizeAccountEmail(profile.email)'), true);
+    assert.equal(body.indexOf('normalizeAccountEmail(profile.email)') < body.indexOf("callPrivate('delete-account'"), true);
+    assert.equal(body.indexOf("callPrivate('delete-account'") < body.indexOf('await clearAccountCookies()'), true);
+    assert.equal(body.indexOf('commitAccountErasure') < body.indexOf('await clearAccountCookies()'), true);
+    assert.equal(api.includes("case 'delete-account'"), true);
   });
 });

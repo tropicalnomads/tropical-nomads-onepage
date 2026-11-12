@@ -87,7 +87,6 @@ private_b=$(stack_output tn-frankfurt-vpc PrivateSubnetB)
 
 deploy_stack tn-frankfurt-security-groups "$root/security-groups.yaml" \
   --parameter-overrides "VpcId=${vpc_id}"
-alb_sg=$(stack_output tn-frankfurt-security-groups AlbSecurityGroupId)
 api_sg=$(stack_output tn-frankfurt-security-groups ApiSecurityGroupId)
 db_sg=$(stack_output tn-frankfurt-security-groups DbSecurityGroupId)
 
@@ -103,13 +102,7 @@ deploy_stack tn-frankfurt-amplify "$root/amplify-web-app.yaml" \
   --parameter-overrides "CognitoUserPoolId=${pool_id}" "CognitoClientId=${client_id}"
 deploy_stack tn-frankfurt-ecs-cluster "$root/ecs-cluster.yaml"
 cert_arn=$(aws_ff acm list-certificates --query "CertificateSummaryList[?DomainName=='api-dev.tropical-nomads.com'].CertificateArn | [0]" --output text)
-deploy_stack tn-frankfurt-alb "$root/load-balancer.yaml" \
-  --parameter-overrides "VpcId=${vpc_id}" "PublicSubnetA=${public_a}" "PublicSubnetB=${public_b}" "AlbSecurityGroupId=${alb_sg}" "CertificateArn=${cert_arn}"
-target_group=$(stack_output tn-frankfurt-alb TargetGroupArn)
-
-tunnel_ami=$(aws_ff ec2 describe-images --owners amazon --filters Name=name,Values='al2023-ami-2023.*-kernel-6.*-arm64' Name=state,Values=available --query 'sort_by(Images,&CreationDate)[-1].ImageId' --output text)
-deploy_stack tn-frankfurt-db-tunnel-host "$root/db-bastion.yaml" \
-  --parameter-overrides "VpcId=${vpc_id}" "PrivateSubnetA=${private_a}" "DbSecurityGroupId=${db_sg}" "ImageId=${tunnel_ami}" "InstanceProfileName=tropical-nomads-db-tunnel"
+api_cert_arn=$(aws_ff acm list-certificates --query "CertificateSummaryList[?DomainName=='api.tropical-nomads.com'].CertificateArn | [0]" --output text)
 
 deploy_stack tn-frankfurt-rds "$root/rds-postgres.yaml" \
   --parameter-overrides "PrivateSubnetA=${private_a}" "PrivateSubnetB=${private_b}" "DbSecurityGroupId=${db_sg}"
@@ -135,12 +128,16 @@ fi
 
 db_host=$(aws_ff rds describe-db-instances --db-instance-identifier tropical-nomads-frankfurt --query 'DBInstances[0].Endpoint.Address' --output text)
 deploy_stack tn-frankfurt-ecs-task "$root/ecs-task.yaml" \
-  --parameter-overrides "ExecutionRoleArn=${execution_role}" "TaskRoleArn=${task_role}" "Image=${image}" "LogGroupName=${log_group}" "DbSecretArn=${secret_arn}" "DbHost=${db_host}" "SessionSecretArn=${session_arn}" "AssetsBucketName=${assets_bucket}"
+  --parameter-overrides "ExecutionRoleArn=${execution_role}" "TaskRoleArn=${task_role}" "Image=${image}" "LogGroupName=${log_group}" "DbSecretArn=${secret_arn}" "DbHost=${db_host}" "SessionSecretArn=${session_arn}" "AssetsBucketName=${assets_bucket}" "UserPoolId=${pool_id}"
 task_arn=$(stack_output tn-frankfurt-ecs-task TaskDefinitionArn)
 cluster=$(stack_output tn-frankfurt-ecs-cluster ClusterName)
+link_sg=$(stack_output tn-frankfurt-security-groups VpcLinkSecurityGroupId)
 
 deploy_stack tn-frankfurt-ecs-service "$root/ecs-service.yaml" \
-  --parameter-overrides "ClusterName=${cluster}" "TaskDefinitionArn=${task_arn}" "PrivateSubnetA=${private_a}" "PrivateSubnetB=${private_b}" "ApiSecurityGroupId=${api_sg}" "TargetGroupArn=${target_group}"
+  --parameter-overrides "ClusterName=${cluster}" "TaskDefinitionArn=${task_arn}" "VpcId=${vpc_id}" "PublicSubnetA=${public_a}" "PublicSubnetB=${public_b}" "ApiSecurityGroupId=${api_sg}"
+discovery_arn=$(stack_output tn-frankfurt-ecs-service DiscoveryServiceArn)
+deploy_stack tn-frankfurt-api-http "$root/api-http.yaml" \
+  --parameter-overrides "CertificateArn=${cert_arn}" "ApiCertificateArn=${api_cert_arn}" "DiscoveryServiceArn=${discovery_arn}" "PublicSubnetA=${public_a}" "PublicSubnetB=${public_b}" "VpcLinkSecurityGroupId=${link_sg}"
 
 deploy_stack tn-frankfurt-github-dev-deploy "$root/github-dev-deploy.yaml"
 

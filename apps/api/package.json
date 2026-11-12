@@ -7,6 +7,7 @@
   "exports": {
     ".": "./src/app.ts",
     "./accounts": "./src/accounts.ts",
+    "./account-erasure": "./src/account-erasure.ts",
     "./payments": "./src/payments.ts",
     "./tickets": "./src/tickets.ts",
     "./check-in": "./src/check-in.ts",
@@ -20,6 +21,7 @@
     "test": "node --test test/*.test.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "3.1164.0",
     "@aws-sdk/client-s3": "3.1164.0",
     "@hono/node-server": "2.1.6",
     "hono": "4.13.17",

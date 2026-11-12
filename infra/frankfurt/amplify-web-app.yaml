@@ -61,7 +61,7 @@ Resources:
         - Name: COGNITO_REDIRECT_URI
           Value: https://dev.tropical-nomads.com/account/callback
         - Name: COGNITO_GOOGLE
-          Value: "false"
+          Value: "true"
         - Name: COGNITO_APPLE
           Value: "false"
       Tags:

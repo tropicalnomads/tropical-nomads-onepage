@@ -1,5 +1,5 @@
 import { configuredAdminId, roleForNewAccount } from '../access/matrix.ts';
-import { acceptLocale } from '../constants/locales.ts';
+import { normalizeLocale } from '../constants/locales.ts';
 import { parseProfile, type Profile } from '../schema/account.ts';
 import { containsCardNumber, fail, ok, type ParseResult } from '../schema/result.ts';
 import type { SignInProvider } from '../schema/values.ts';
@@ -15,6 +15,7 @@ export interface VerifiedSignIn {
   username: string;
   givenName: string;
   familyName: string;
+  displayName?: string;
   locale?: string;
 }
 
@@ -92,6 +93,31 @@ export function passwordProblem(password: string, username: string, email: strin
   return undefined;
 }
 
+export function splitPersonName(input: { givenName: string; familyName: string; fullName: string }): { givenName: string; familyName: string } {
+  const givenName = clean(input.givenName).slice(0, 80);
+  const familyName = clean(input.familyName).slice(0, 80);
+  if (givenName !== '' && familyName !== '') {
+    return { givenName, familyName };
+  }
+  const fullName = clean(input.fullName).slice(0, 160);
+  const space = fullName.lastIndexOf(' ');
+  if (fullName === '' || space <= 0) {
+    return { givenName: givenName || fullName.slice(0, 80), familyName };
+  }
+  return {
+    givenName: (givenName || fullName.slice(0, space)).trim().slice(0, 80),
+    familyName: (familyName || fullName.slice(space + 1)).trim().slice(0, 80),
+  };
+}
+
+export function usernameForSignIn(requested: string, email: string, existing: readonly string[], eventIds: readonly string[] = []): string {
+  const trimmed = clean(requested);
+  if (trimmed !== '' && !usernameProblem(trimmed, existing, eventIds)) {
+    return trimmed;
+  }
+  return usernameFromEmail(email, existing, eventIds);
+}
+
 export function usernameFromEmail(email: string, existing: readonly string[], eventIds: readonly string[] = []): string {
   const local = normalizeAccountEmail(email).split('@')[0] ?? '';
   const letters = local.replace(/[^A-Za-z0-9_-]/g, '');
@@ -131,8 +157,8 @@ export function attachVerifiedSignIn(
   if (!email.includes('@') || email.startsWith('@') || email.endsWith('@')) {
     return fail('email is not an email');
   }
-  const givenName = clean(signIn.givenName);
-  const familyName = clean(signIn.familyName);
+  const givenName = clean(signIn.givenName).slice(0, 80);
+  const familyName = clean(signIn.familyName).slice(0, 80);
   if (givenName === '' || familyName === '') {
     return fail('name is required');
   }
@@ -150,13 +176,24 @@ export function attachVerifiedSignIn(
   }
   const current = byEmail ?? byProvider;
   if (current) {
+    if (current.status === 'disabled') {
+      return fail('account is disabled');
+    }
+    let nextEmail = current.email;
     if (!sameText(current.email, email)) {
-      return fail('provider subject belongs to another profile');
+      if (!byProvider || byProvider.sub !== current.sub) {
+        return fail('provider subject belongs to another profile');
+      }
+      const taken = profiles.some((profile) => profile.sub !== current.sub && sameText(profile.email, email));
+      if (taken) {
+        return fail('provider subject belongs to another profile');
+      }
+      nextEmail = email;
     }
     const providers = current.providers.some((link) => link.provider === signIn.provider && link.subject === providerSubject)
       ? current.providers
       : [...current.providers, { provider: signIn.provider, subject: providerSubject }];
-    const updated: Profile = { ...current, providers, updatedAt: now };
+    const updated: Profile = { ...current, email: nextEmail, emailVerified: true, providers, updatedAt: now };
     const parsed = parseProfile(updated);
     if (!parsed.ok) {
       return parsed;
@@ -175,10 +212,9 @@ export function attachVerifiedSignIn(
     return fail(taken);
   }
   const adminSub = configuredAdminId(env);
-  const locale = signIn.locale === undefined ? undefined : acceptLocale(signIn.locale);
-  if (locale && !locale.ok) {
-    return fail('locale is not allowed');
-  }
+  const locale = normalizeLocale(signIn.locale);
+  const requestedDisplayName = clean(signIn.displayName ?? '');
+  const combinedName = `${givenName} ${familyName}`.trim();
   const draft = {
     sub,
     email,
@@ -186,13 +222,13 @@ export function attachVerifiedSignIn(
     username: clean(signIn.username),
     givenName,
     familyName,
-    displayName: givenName,
+    displayName: (requestedDisplayName || combinedName || givenName).slice(0, 80),
     providers: [{ provider: signIn.provider, subject: providerSubject }],
     createdAt: now,
     updatedAt: now,
     status: 'active',
     role: adminSub !== undefined && adminSub === sub ? 'admin' : roleForNewAccount(),
-    ...(locale?.ok ? { locale: locale.locale } : {}),
+    ...(locale ? { locale } : {}),
   };
   if (containsCardNumber(draft)) {
     return fail('card number is not allowed');

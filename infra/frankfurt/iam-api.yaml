@@ -99,6 +99,11 @@ Resources:
                     s3:prefix:
                       - shop/
                       - shop/*
+              - Effect: Allow
+                Action:
+                  - cognito-idp:ListUsers
+                  - cognito-idp:AdminDeleteUser
+                Resource: !Sub "arn:${AWS::Partition}:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/*"
 
 Outputs:
   ExecutionRoleArn:

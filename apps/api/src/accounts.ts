@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto';
-import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, resolve, sep } from 'node:path';
 import {
   attachVerifiedSignIn,
@@ -19,7 +19,7 @@ import { readPartyCatalog } from './catalog.ts';
 import { usingDatabase } from './database.ts';
 import { operationalDirectory } from './operational.ts';
 import { assertNoPrivateFields } from './published.ts';
-import { queueDatabase, readStoredAccounts, readStoredAvatar, readStoredCatalog, writeStoredAccounts, writeStoredAvatar } from './sql-store.ts';
+import { deleteStoredAvatar, queueDatabase, readStoredAccounts, readStoredAvatar, readStoredCatalog, writeStoredAccounts, writeStoredAvatar } from './sql-store.ts';
 
 export interface AccountFile {
   schemaVersion: 1;
@@ -327,12 +327,38 @@ export function saveAvatarFile(file: AccountFile, sub: string, bytes: Uint8Array
   return saveAvatarKey(file, sub, key, now);
 }
 
+const storedAvatarKey = /^avatars\/[a-z0-9-]{16,}\.(?:jpg|png|webp)$/;
+
+export async function removeAvatar(key: string, root?: string): Promise<void> {
+  if (!storedAvatarKey.test(key)) {
+    return;
+  }
+  if (usingDatabase(root)) {
+    await deleteStoredAvatar(key);
+    return;
+  }
+  const directory = root ?? accountRoot();
+  const folder = avatarDirectory(directory);
+  const filePath = resolve(directory, key);
+  if (!filePath.startsWith(`${folder}${sep}`)) {
+    return;
+  }
+  try {
+    unlinkSync(filePath);
+  } catch (error) {
+    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'ENOENT') {
+      return;
+    }
+    throw new Error('account was not deleted');
+  }
+}
+
 export function saveAvatarKey(file: AccountFile, sub: string, avatarKey: string, now: string): AccountFile {
   const profile = file.profiles.find((item) => item.sub === sub);
   if (!profile || profile.status !== 'active') {
     throw new Error('profile is not active');
   }
-  if (!/^avatars\/[a-z0-9-]{16,}\.(?:jpg|png|webp)$/.test(avatarKey)) {
+  if (!storedAvatarKey.test(avatarKey)) {
     throw new Error('avatar key is not valid');
   }
   const profiles = file.profiles.map((item) => (item.sub === sub ? { ...item, avatarKey, updatedAt: now } : item));

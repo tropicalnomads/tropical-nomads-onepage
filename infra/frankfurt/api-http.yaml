@@ -1,0 +1,124 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: HTTPS for api.tropical-nomads.com. Requests are billed per call. There is no load balancer hour.
+
+Parameters:
+  CertificateArn:
+    Type: String
+    Description: DNS-validated certificate for api-dev.tropical-nomads.com. Removed after the new host is live. Do not commit the value.
+    AllowedPattern: "^arn:aws:acm:eu-central-1:[0-9]{12}:certificate/.+"
+    NoEcho: true
+  ApiCertificateArn:
+    Type: String
+    Description: DNS-validated certificate for api.tropical-nomads.com. Do not commit the value.
+    AllowedPattern: "^arn:aws:acm:eu-central-1:[0-9]{12}:certificate/.+"
+    NoEcho: true
+  DiscoveryServiceArn:
+    Type: String
+    Description: Cloud Map service ARN for the API task. Do not commit the value.
+    AllowedPattern: "^arn:aws:servicediscovery:eu-central-1:[0-9]{12}:service/.+"
+    NoEcho: true
+  PublicSubnetA:
+    Type: AWS::EC2::Subnet::Id
+  PublicSubnetB:
+    Type: AWS::EC2::Subnet::Id
+  VpcLinkSecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
+
+Resources:
+  VpcLink:
+    Type: AWS::ApiGatewayV2::VpcLink
+    Properties:
+      Name: tropical-nomads-api
+      SecurityGroupIds:
+        - !Ref VpcLinkSecurityGroupId
+      SubnetIds:
+        - !Ref PublicSubnetA
+        - !Ref PublicSubnetB
+      Tags:
+        Name: tropical-nomads-api
+
+  Api:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: tropical-nomads-api
+      ProtocolType: HTTP
+      Tags:
+        Name: tropical-nomads-api
+
+  Integration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref Api
+      IntegrationType: HTTP_PROXY
+      IntegrationMethod: ANY
+      IntegrationUri: !Ref DiscoveryServiceArn
+      ConnectionType: VPC_LINK
+      ConnectionId: !Ref VpcLink
+      PayloadFormatVersion: "1.0"
+      TimeoutInMillis: 30000
+
+  Route:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref Api
+      RouteKey: "$default"
+      Target: !Sub integrations/${Integration}
+
+  Stage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref Api
+      StageName: "$default"
+      AutoDeploy: true
+      Tags:
+        Name: tropical-nomads-api
+
+  Domain:
+    Type: AWS::ApiGatewayV2::DomainName
+    Properties:
+      DomainName: api-dev.tropical-nomads.com
+      DomainNameConfigurations:
+        - CertificateArn: !Ref CertificateArn
+          EndpointType: REGIONAL
+          SecurityPolicy: TLS_1_2
+      Tags:
+        Name: tropical-nomads-api
+
+  Mapping:
+    Type: AWS::ApiGatewayV2::ApiMapping
+    DependsOn: Stage
+    Properties:
+      ApiId: !Ref Api
+      DomainName: !Ref Domain
+      Stage: "$default"
+
+  ApiDomain:
+    Type: AWS::ApiGatewayV2::DomainName
+    Properties:
+      DomainName: api.tropical-nomads.com
+      DomainNameConfigurations:
+        - CertificateArn: !Ref ApiCertificateArn
+          EndpointType: REGIONAL
+          SecurityPolicy: TLS_1_2
+      Tags:
+        Name: tropical-nomads-api
+
+  ApiMapping:
+    Type: AWS::ApiGatewayV2::ApiMapping
+    DependsOn: Stage
+    Properties:
+      ApiId: !Ref Api
+      DomainName: !Ref ApiDomain
+      Stage: "$default"
+
+Outputs:
+  ApiEndpoint:
+    Value: !GetAtt Api.ApiEndpoint
+  RegionalDomainName:
+    Value: !GetAtt Domain.RegionalDomainName
+  RegionalHostedZoneId:
+    Value: !GetAtt Domain.RegionalHostedZoneId
+  ApiRegionalDomainName:
+    Value: !GetAtt ApiDomain.RegionalDomainName
+  ApiRegionalHostedZoneId:
+    Value: !GetAtt ApiDomain.RegionalHostedZoneId

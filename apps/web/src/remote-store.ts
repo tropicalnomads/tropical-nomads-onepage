@@ -24,13 +24,13 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-export async function callPrivate<T>(action: string, input: unknown = {}): Promise<T> {
+export async function callPrivate<T>(action: string, input: unknown = {}, sessionToken?: string): Promise<T> {
   const origin = apiOrigin();
   if (!origin) {
     throw new Error('api is not configured');
   }
   const jar = await cookies();
-  const session = jar.get(sessionCookieName)?.value;
+  const session = sessionToken || jar.get(sessionCookieName)?.value;
   const token = sealPayload({ action, input }, 60);
   const response = await fetch(`${origin}/private`, {
     method: 'POST',

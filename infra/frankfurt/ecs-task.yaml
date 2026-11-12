@@ -30,6 +30,11 @@ Parameters:
     Description: Private assets bucket name. Do not commit the value.
     AllowedPattern: "^tropical-nomads-assets-[0-9]{12}$"
     NoEcho: true
+  UserPoolId:
+    Type: String
+    Description: Cognito user pool deleted with an account. Do not commit the value.
+    AllowedPattern: "^eu-central-1_[A-Za-z0-9]+$"
+    NoEcho: true
 
 Resources:
   TaskDefinition:
@@ -69,6 +74,10 @@ Resources:
               Value: "true"
             - Name: ASSETS_BUCKET
               Value: !Ref AssetsBucketName
+            - Name: COGNITO_USER_POOL_ID
+              Value: !Ref UserPoolId
+            - Name: COGNITO_REGION
+              Value: eu-central-1
           Secrets:
             - Name: DB_USER
               ValueFrom: !Sub "${DbSecretArn}:username::"

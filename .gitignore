@@ -16,3 +16,4 @@ __pycache__/
 data/operational/avatars/
 .env
 .env.local
+infra/frankfurt/.google-oauth.local

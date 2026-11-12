@@ -1,32 +1,28 @@
 import { cookies } from 'next/headers';
-import { currentAccounts } from '../../../src/remote-store';
-import { normalizeAccountEmail } from 'tropical-nomads-shared';
+import { normalizeAccountEmail, usernameForSignIn } from 'tropical-nomads-shared';
 import {
   exchangeAuthCode,
   fetchJwks,
+  hostedCallbackDecision,
+  noticeForAccountError,
+  browserAccountOrigin,
   readCognitoConfig,
+  readIdToken,
   verifiedSignInFromClaims,
-  verifyIdToken,
   type PendingNames,
 } from '../../../src/account/cognito';
 import { establishVerifiedAccount } from '../../../src/account/establish';
+import { storeGooglePicture } from '../../../src/account/google-avatar';
+import { beginHostedSignIn, hostedCookieClear, hostedCookies } from '../../../src/account/hosted-flow';
 import { clearReturnPath, readReturnPath } from '../../../src/account/return-cookie';
-import { signInHref } from '../../../src/account/return-path';
+import { profileSetupHref, signInHref } from '../../../src/account/return-path';
 import { createSessionToken, openPayload, sealPayload, sessionCookieMaxAge, sessionCookieName } from '../../../src/account/session';
+import type { AccountNotice } from '../../../src/i18n/copy';
+import { loadSnapshot } from '../../../src/remote-store';
 import { withNoindex } from '../../../src/seo/headers.ts';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-
-const stateCookie = 'tn:cognito:state';
-const verifierCookie = 'tn:cognito:verifier';
-const nonceCookie = 'tn:cognito:nonce';
-const pendingCookie = 'tn:cognito:pending';
-const verifiedCookie = 'tn:cognito:verified';
-
-function oauthClear() {
-  return { path: '/account' };
-}
 
 function redirect(url: URL): Response {
   return withNoindex(Response.redirect(url));
@@ -47,67 +43,125 @@ function namesFrom(value: unknown): PendingNames | undefined {
   return { username: record.username, givenName: record.givenName, familyName: record.familyName };
 }
 
+function noticeLocation(origin: string, next: string | undefined, notice: AccountNotice): URL {
+  const url = new URL(signInHref(next), origin);
+  url.searchParams.set('notice', notice);
+  return url;
+}
+
 export async function GET(request: Request): Promise<Response> {
   const config = readCognitoConfig();
   const here = new URL(request.url);
-  const signIn = new URL('/account/sign-in', here.origin);
+  const origin = browserAccountOrigin(config?.redirectUri, request.headers.get('host'));
   if (!config) {
-    return redirect(signIn);
+    return redirect(new URL('/account/sign-in', origin));
   }
   const jar = await cookies();
-  const state = text(openPayload(jar.get(stateCookie)?.value));
-  const verifier = text(openPayload(jar.get(verifierCookie)?.value));
-  const nonce = text(openPayload(jar.get(nonceCookie)?.value));
-  const pending = namesFrom(openPayload(jar.get(pendingCookie)?.value));
-  jar.delete({ name: stateCookie, ...oauthClear() });
-  jar.delete({ name: verifierCookie, ...oauthClear() });
-  jar.delete({ name: pendingCookie, ...oauthClear() });
-  jar.delete({ name: nonceCookie, ...oauthClear() });
-  if (here.searchParams.get('error') || !state || state !== here.searchParams.get('state') || !verifier || !nonce) {
-    return redirect(signIn);
+  const alreadyRetried = jar.get(hostedCookies.retry)?.value === '1';
+  const state = text(openPayload(jar.get(hostedCookies.state)?.value));
+  const verifier = text(openPayload(jar.get(hostedCookies.verifier)?.value));
+  const nonce = text(openPayload(jar.get(hostedCookies.nonce)?.value));
+  const pending = namesFrom(openPayload(jar.get(hostedCookies.pending)?.value));
+  const clear = hostedCookieClear();
+  jar.delete({ name: hostedCookies.state, ...clear });
+  jar.delete({ name: hostedCookies.verifier, ...clear });
+  jar.delete({ name: hostedCookies.pending, ...clear });
+  jar.delete({ name: hostedCookies.nonce, ...clear });
+  const decision = hostedCallbackDecision({
+    error: here.searchParams.get('error') ?? '',
+    description: here.searchParams.get('error_description') ?? '',
+    stateMatches: Boolean(state && state === here.searchParams.get('state') && verifier && nonce),
+    alreadyRetried,
+  });
+  const next = await readReturnPath();
+  switch (decision.kind) {
+    case 'retry-google': {
+      const url = await beginHostedSignIn({ provider: 'google', retry: true });
+      if (!url) {
+        jar.delete({ name: hostedCookies.retry, ...clear });
+        return redirect(noticeLocation(origin, next, 'google-failed'));
+      }
+      return redirect(new URL(url));
+    }
+    case 'notice':
+      jar.delete({ name: hostedCookies.retry, ...clear });
+      return redirect(noticeLocation(origin, next, decision.notice));
+    case 'continue':
+      break;
+    default: {
+      const unexpected: never = decision;
+      return unexpected;
+    }
+  }
+  if (!verifier || !nonce) {
+    jar.delete({ name: hostedCookies.retry, ...clear });
+    return redirect(noticeLocation(origin, next, 'sign-in-expired'));
   }
   const code = here.searchParams.get('code') ?? '';
   const token = await exchangeAuthCode(config, code, verifier);
   const jwks = token ? await fetchJwks(config) : undefined;
-  const claims = token && jwks ? verifyIdToken(token, config, jwks, nonce) : undefined;
-  if (!claims) {
-    return redirect(signIn);
+  const read = token && jwks ? readIdToken(token, config, jwks, nonce) : { ok: false as const, reason: 'invalid' as const };
+  if (!read.ok) {
+    jar.delete({ name: hostedCookies.retry, ...clear });
+    const notice = read.reason === 'email-unverified' ? 'google-email-unverified' : 'google-failed';
+    return redirect(noticeLocation(origin, next, notice));
   }
-  const next = await readReturnPath();
+  const claims = read.claims;
+  const snapshot = await loadSnapshot();
   const email = normalizeAccountEmail(claims.email);
-  const existing = (await currentAccounts()).profiles.find((profile) => profile.sub === claims.sub || normalizeAccountEmail(profile.email) === email);
-  const verified = verifiedSignInFromClaims(
+  const existing =
+    snapshot.accounts.profiles.find((profile) => profile.sub === claims.sub) ??
+    snapshot.accounts.profiles.find((profile) => profile.emailVerified && normalizeAccountEmail(profile.email) === email);
+  const draft = verifiedSignInFromClaims(
     claims,
     pending,
     existing ? { username: existing.username, givenName: existing.givenName, familyName: existing.familyName } : undefined,
   );
-  if (!verified) {
-    jar.set(verifiedCookie, sealPayload(claims, 600), {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      path: '/account',
-      maxAge: 600,
-    });
-    const register = new URL('/account/register', here.origin);
-    if (next) {
-      register.searchParams.set('next', next);
-    }
-    return redirect(register);
+  jar.set(hostedCookies.verified, sealPayload(claims, 600), {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/account',
+    maxAge: 600,
+  });
+  if (!draft) {
+    jar.delete({ name: hostedCookies.retry, ...clear });
+    return redirect(new URL(profileSetupHref(next), origin));
   }
+  const verified = {
+    ...draft,
+    username: usernameForSignIn(
+      draft.username,
+      draft.email,
+      snapshot.accounts.profiles.map((profile) => profile.username),
+      snapshot.eventIds,
+    ),
+  };
   try {
     const sub = await establishVerifiedAccount(verified);
-    jar.set(sessionCookieName, createSessionToken(sub), {
+    const sessionToken = createSessionToken(sub);
+    jar.set(sessionCookieName, sessionToken, {
       httpOnly: true,
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
       path: '/',
       maxAge: sessionCookieMaxAge,
     });
-    jar.delete({ name: verifiedCookie, ...oauthClear() });
-  } catch {
-    return redirect(new URL(signInHref(next), here.origin));
+    if (!existing?.avatarKey && claims.pictureUrl) {
+      await storeGooglePicture(sub, claims.pictureUrl, undefined, sessionToken);
+    }
+    jar.delete({ name: hostedCookies.verified, ...clear });
+    jar.delete({ name: hostedCookies.retry, ...clear });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '';
+    const notice = noticeForAccountError(message) ?? 'google-failed';
+    if (notice === 'name-required') {
+      return redirect(new URL(profileSetupHref(next), origin));
+    }
+    jar.delete({ name: hostedCookies.verified, ...clear });
+    jar.delete({ name: hostedCookies.retry, ...clear });
+    return redirect(noticeLocation(origin, next, notice));
   }
   await clearReturnPath();
-  return redirect(new URL(next ?? '/', here.origin));
+  return redirect(new URL(next ?? '/', origin));
 }

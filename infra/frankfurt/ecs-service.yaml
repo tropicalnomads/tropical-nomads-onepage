@@ -1,21 +1,41 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: One private Fargate task for the Tropical Nomads API. No public IP. The dev load balancer forwards to it.
+Description: One Fargate task for the Tropical Nomads API. A public IP is outbound only. API Gateway reaches port 8787.
 
 Parameters:
   ClusterName:
     Type: String
   TaskDefinitionArn:
     Type: String
-  PrivateSubnetA:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+  PublicSubnetA:
     Type: AWS::EC2::Subnet::Id
-  PrivateSubnetB:
+  PublicSubnetB:
     Type: AWS::EC2::Subnet::Id
   ApiSecurityGroupId:
     Type: AWS::EC2::SecurityGroup::Id
-  TargetGroupArn:
-    Type: String
 
 Resources:
+  Namespace:
+    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+    Properties:
+      Name: tropical-nomads.local
+      Description: Private discovery for the API task.
+      Vpc: !Ref VpcId
+
+  ApiDiscovery:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      Name: api-srv
+      NamespaceId: !Ref Namespace
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - Type: SRV
+            TTL: 10
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+
   Service:
     Type: AWS::ECS::Service
     Properties:
@@ -30,21 +50,19 @@ Resources:
         DeploymentCircuitBreaker:
           Enable: true
           Rollback: true
-        MinimumHealthyPercent: 0
+        MinimumHealthyPercent: 100
         MaximumPercent: 200
-      HealthCheckGracePeriodSeconds: 60
-      LoadBalancers:
-        - ContainerName: api
-          ContainerPort: 8787
-          TargetGroupArn: !Ref TargetGroupArn
+      ServiceRegistries:
+        - RegistryArn: !GetAtt ApiDiscovery.Arn
+          Port: 8787
       NetworkConfiguration:
         AwsvpcConfiguration:
-          AssignPublicIp: DISABLED
+          AssignPublicIp: ENABLED
           SecurityGroups:
             - !Ref ApiSecurityGroupId
           Subnets:
-            - !Ref PrivateSubnetA
-            - !Ref PrivateSubnetB
+            - !Ref PublicSubnetA
+            - !Ref PublicSubnetB
       Tags:
         - Key: Name
           Value: tropical-nomads-api
@@ -52,3 +70,5 @@ Resources:
 Outputs:
   ServiceName:
     Value: !GetAtt Service.Name
+  DiscoveryServiceArn:
+    Value: !GetAtt ApiDiscovery.Arn

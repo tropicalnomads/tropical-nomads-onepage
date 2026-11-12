@@ -1,7 +1,8 @@
 'use client';
 
-import { BadgeCheck } from 'lucide-react';
-import { useState, type FormEvent } from 'react';
+import { AlertTriangle, BadgeCheck } from 'lucide-react';
+import { useEffect, useRef, useState, type ClipboardEvent, type DragEvent, type FormEvent, type KeyboardEvent } from 'react';
+import { deleteAccountAction } from '../account/delete-account';
 import { noticeForProfileFailure } from '../account/profile-failure';
 import { accountIdentity, firstProfileField, profileFieldIssues, profileInputFromFormData, type ProfileFieldIssues, type ProfileFieldName } from '../account/profile-form';
 import { saveAccountProfileAction } from '../account/profile';
@@ -12,6 +13,7 @@ import { useLanguage } from '../i18n/provider';
 import { AuthFrame, AuthNotice, AuthSubmitButton } from './AuthUi';
 import { ProfileFields, type ProfileValues } from './ProfileFields';
 import { Button, TextLink } from './ui/Button';
+import { fieldControlClass } from './ui/field';
 
 export interface AccountSummary extends ProfileValues {
   email: string;
@@ -58,6 +60,7 @@ export function AccountHome({
       subtitle={accountText(language, 'intro')}
     >
       <AccountProfileForm profile={profile} initialNotice={initialNotice} />
+      <DeleteAccountForm email={profile.email} />
     </AuthFrame>
   );
 }
@@ -130,5 +133,170 @@ function AccountProfileForm({
       ) : null}
       <AuthNotice notice={notice} />
     </form>
+  );
+}
+
+function blockClipboard(event: ClipboardEvent | DragEvent): void {
+  event.preventDefault();
+}
+
+function blockInsertedPaste(event: FormEvent<HTMLInputElement>): void {
+  const native = event.nativeEvent;
+  if (!(native instanceof InputEvent)) {
+    return;
+  }
+  if (native.inputType === 'insertFromPaste' || native.inputType === 'insertFromDrop') {
+    event.preventDefault();
+  }
+}
+
+function blockPasteKeys(event: KeyboardEvent<HTMLInputElement>): void {
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'v') {
+    event.preventDefault();
+  }
+  if (event.shiftKey && event.key === 'Insert') {
+    event.preventDefault();
+  }
+}
+
+function DeleteAccountForm({ email }: { email: string }) {
+  const { language } = useLanguage();
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
+  const [typedEmail, setTypedEmail] = useState('');
+  const [notice, setNotice] = useState<AccountNotice | null>(null);
+  const [pending, setPending] = useState(false);
+  const emailMatches = email.trim() !== '' && typedEmail.trim().toLowerCase() === email.trim().toLowerCase();
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) {
+      return;
+    }
+    if (open && !dialog.open) {
+      dialog.showModal();
+      emailRef.current?.focus();
+    } else if (!open && dialog.open) {
+      dialog.close();
+    }
+  }, [open]);
+
+  function openDialog(): void {
+    setConfirmed(false);
+    setTypedEmail('');
+    setNotice(null);
+    setOpen(true);
+  }
+
+  function closeDialog(): void {
+    if (pending) {
+      return;
+    }
+    setOpen(false);
+    setConfirmed(false);
+    setTypedEmail('');
+    setNotice(null);
+  }
+
+  async function onSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (!confirmed) {
+      setNotice('account-delete-unconfirmed');
+      return;
+    }
+    if (!emailMatches) {
+      setNotice('account-delete-email');
+      emailRef.current?.focus();
+      return;
+    }
+    setPending(true);
+    setNotice(null);
+    try {
+      const result = await deleteAccountAction(new FormData(form));
+      if (result.redirect) {
+        window.location.assign(result.redirect);
+        return;
+      }
+      setNotice(result.notice ?? 'account-delete-failed');
+    } catch {
+      setNotice('account-delete-failed');
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <>
+      <div className="mt-8 border-t border-white/10 pt-6">
+        <Button type="button" tone="ghost" onClick={openDialog}>
+          {accountText(language, 'deleteAccount')}
+        </Button>
+      </div>
+      <dialog
+        ref={dialogRef}
+        aria-labelledby="delete-account-title"
+        onCancel={(event) => {
+          event.preventDefault();
+          closeDialog();
+        }}
+        className="m-auto max-h-[90vh] w-[min(92vw,31rem)] overflow-y-auto rounded-[2rem] border border-ozora-coral/30 bg-ozora-navy p-0 text-ozora-cream shadow-[0_30px_120px_rgba(0,0,0,0.7)] backdrop:bg-black/80"
+      >
+        <form onSubmit={onSubmit} className="p-7" autoComplete="off" aria-busy={pending}>
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-ozora-coral/10 text-ozora-coral">
+            <AlertTriangle size={26} aria-hidden="true" />
+          </span>
+          <h2 id="delete-account-title" className="mt-5 font-display text-3xl font-bold">
+            {accountText(language, 'deleteAccount')}
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-ozora-cream/60">{accountText(language, 'deleteAccountHelp')}</p>
+          <p className="mt-5 text-sm text-ozora-cream/70">{accountText(language, 'deleteAccountTypeEmail')}</p>
+          <p className="mt-2 select-none font-bold text-ozora-cream" onCopy={blockClipboard} onCut={blockClipboard}>
+            {email}
+          </p>
+          <label htmlFor="delete-account-email" className="mt-4 block text-sm text-ozora-cream/70">
+            {accountText(language, 'deleteAccountEmailLabel')}
+          </label>
+          <input
+            id="delete-account-email"
+            ref={emailRef}
+            name="email"
+            type="email"
+            value={typedEmail}
+            autoComplete="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            onChange={(event) => setTypedEmail(event.target.value)}
+            onPaste={blockClipboard}
+            onDrop={blockClipboard}
+            onBeforeInput={blockInsertedPaste}
+            onKeyDown={blockPasteKeys}
+            className={`${fieldControlClass} mt-2`}
+          />
+          <label className="mt-5 flex items-start gap-3 text-sm leading-relaxed text-ozora-cream">
+            <input
+              name="confirm"
+              value="delete"
+              type="checkbox"
+              checked={confirmed}
+              onChange={(event) => setConfirmed(event.target.checked)}
+              className="mt-1 shrink-0 accent-ozora-turquoise"
+            />
+            <span>{accountText(language, 'deleteAccountConfirm')}</span>
+          </label>
+          <AuthNotice notice={notice} />
+          <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <Button type="button" tone="ghost" disabled={pending} onClick={closeDialog}>
+              {accountText(language, 'deleteAccountCancel')}
+            </Button>
+            <Button type="submit" tone="secondary" disabled={pending || !confirmed || !emailMatches}>
+              {pending ? accountText(language, 'working') : accountText(language, 'deleteAccountButton')}
+            </Button>
+          </div>
+        </form>
+      </dialog>
+    </>
   );
 }

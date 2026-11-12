@@ -110,6 +110,42 @@ Resources:
       SourceSecurityGroupId: !Ref ApiSecurityGroup
       Description: API to PostgreSQL
 
+  VpcLinkSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: tropical-nomads-api-link
+      GroupDescription: API Gateway VPC link. Inbound is closed. Egress is the API port only.
+      VpcId: !Ref VpcId
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 1
+          ToPort: 1
+          CidrIp: 127.0.0.1/32
+          Description: Replace the default allow-all egress
+      Tags:
+        - Key: Name
+          Value: tropical-nomads-api-link
+
+  LinkToApi:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref VpcLinkSecurityGroup
+      IpProtocol: tcp
+      FromPort: 8787
+      ToPort: 8787
+      DestinationSecurityGroupId: !Ref ApiSecurityGroup
+      Description: API container port
+
+  ApiFromLink:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref ApiSecurityGroup
+      IpProtocol: tcp
+      FromPort: 8787
+      ToPort: 8787
+      SourceSecurityGroupId: !Ref VpcLinkSecurityGroup
+      Description: API Gateway to the API
+
 Outputs:
   AlbSecurityGroupId:
     Value: !Ref AlbSecurityGroup
@@ -117,3 +153,5 @@ Outputs:
     Value: !Ref ApiSecurityGroup
   DbSecurityGroupId:
     Value: !Ref DbSecurityGroup
+  VpcLinkSecurityGroupId:
+    Value: !Ref VpcLinkSecurityGroup

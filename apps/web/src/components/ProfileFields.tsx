@@ -41,15 +41,19 @@ export function ProfileFields({
   issues,
   onNotice,
   onClearIssue,
+  initialPreview,
+  onCleared,
 }: {
   values?: Partial<ProfileValues>;
   pending: boolean;
   issues?: ProfileFieldIssues;
   onNotice?: (notice: AccountNotice | null) => void;
   onClearIssue?: (field: ProfileFieldName) => void;
+  initialPreview?: string;
+  onCleared?: () => void;
 }) {
   const { language } = useLanguage();
-  const [preview, setPreview] = useState<string>();
+  const [preview, setPreview] = useState<string | undefined>(initialPreview);
   const avatarRef = useRef<HTMLInputElement>(null);
   const savedAvatar = values?.hasAvatar ? '/account/avatar' : undefined;
   const requiredText = accountText(language, 'required');
@@ -109,6 +113,7 @@ export function ProfileFields({
             if (next.removed) {
               setPreview(undefined);
               assignAvatar(undefined);
+              onCleared?.();
               return;
             }
             setPreview(next.preview);

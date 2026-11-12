@@ -6,7 +6,7 @@
 
 SQL lives in `database/migrations`. `database/migrate.mjs` applies those files in order and records each filename in `schema_migrations`. `database/seed.mjs` reloads the public catalog from `apps/one-pager/public/data` and upserts the two shop products and their size counts from `apps/one-pager/src/lib/shop.ts`. It does not insert a person, a password, a ticket secret, a card number, or a live payment id. Operational tables stay empty.
 
-Both commands run inside the VPC, from a one-off task in the private subnets, with the API security group and no public IP:
+Both commands run inside the VPC, from a one-off task in the public subnets, with the API security group. The task's public address is outbound only, and port 5432 listens on localhost inside the task:
 
 `node database/migrate.mjs && node database/seed.mjs`
 
@@ -14,7 +14,7 @@ The API image copies `database/` and the public catalog. Do not copy `data/opera
 
 ## Dev site
 
-`https://api-dev.tropical-nomads.com` is the HTTPS listener on the existing API load balancer. The task still has no public IP. The Amplify `dev` branch has `API_BASE_URL=https://api-dev.tropical-nomads.com`. It does not have `DB_PASSWORD`. `ACCOUNT_SESSION_SECRET` is the Secrets Manager secret `tropical-nomads/api/session`, and the ECS task receives the same secret. Server actions that are only in this working tree are not on the Amplify branch until that code is pushed.
+`https://api-dev.tropical-nomads.com` is the custom domain on the HTTP API. The task's public address is outbound only. The Amplify `dev` branch has `API_BASE_URL=https://api-dev.tropical-nomads.com`. It does not have `DB_PASSWORD`. `ACCOUNT_SESSION_SECRET` is the Secrets Manager secret `tropical-nomads/api/session`, and the ECS task receives the same secret. Server actions that are only in this working tree are not on the Amplify branch until that code is pushed.
 
 ## Local development
 

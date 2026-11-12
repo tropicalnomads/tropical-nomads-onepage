@@ -5,6 +5,8 @@ import {
   accountCanScan,
   attachVerifiedSignIn,
   passwordProblem,
+  splitPersonName,
+  usernameForSignIn,
   usernameProblem,
   type VerifiedSignIn,
 } from '../src/account/identity.ts';
@@ -54,7 +56,7 @@ describe('account identity', () => {
     assert.equal(profile.username, 'Ada');
     assert.equal(profile.email, 'ada@example.com');
     assert.equal(profile.role, 'user');
-    assert.equal(profile.displayName, 'Ada');
+    assert.equal(profile.displayName, 'Ada Lovelace');
     assert.equal(JSON.stringify(profile).includes('password'), false);
     assert.equal(attachVerifiedSignIn([], signIn({ givenName: '  ' }), now).ok, false);
     assert.equal(attachVerifiedSignIn([], signIn({ givenName: '4111111111111111' }), now).ok, false);
@@ -108,5 +110,110 @@ describe('account identity', () => {
     assert.equal(admin.role, 'admin');
     assert.equal(accountCanPurchase(admin), false);
     assert.equal(accountCanScan(admin), false);
+  });
+
+  it('splits a full name only when a given or family name is missing', () => {
+    assert.deepEqual(splitPersonName({ givenName: 'Ada', familyName: 'Lovelace', fullName: 'Countess Ada' }), {
+      givenName: 'Ada',
+      familyName: 'Lovelace',
+    });
+    assert.deepEqual(splitPersonName({ givenName: '', familyName: '', fullName: 'Ada Lovelace' }), {
+      givenName: 'Ada',
+      familyName: 'Lovelace',
+    });
+    assert.deepEqual(splitPersonName({ givenName: 'Ada', familyName: '', fullName: 'Ada Lovelace' }), {
+      givenName: 'Ada',
+      familyName: 'Lovelace',
+    });
+    assert.deepEqual(splitPersonName({ givenName: '', familyName: '', fullName: 'Cher' }), {
+      givenName: 'Cher',
+      familyName: '',
+    });
+  });
+
+  it('keeps a free username and generates one from the email when the request is empty or taken', () => {
+    assert.equal(usernameForSignIn('Ada', 'ada@example.com', [], []), 'Ada');
+    assert.equal(usernameForSignIn('', 'ada@example.com', [], []), 'ada');
+    assert.equal(usernameForSignIn('Ada', 'ada@example.com', ['ada'], []), 'ada-1');
+    assert.equal(usernameForSignIn('', 'julio+tag@gmail.com', [], []), 'juliotag');
+    assert.notEqual(usernameForSignIn('', 'julio+tag@gmail.com', [], []), usernameForSignIn('', 'julio@gmail.com', [], []));
+  });
+
+  it('fills locale and display name on create, and leaves an existing profile alone', () => {
+    const created = one(attachVerifiedSignIn([], signIn({ locale: 'pt-BR', displayName: 'Countess Ada' }), now));
+    assert.equal(created.locale, 'pt');
+    assert.equal(created.displayName, 'Countess Ada');
+    const french = one(attachVerifiedSignIn([], signIn({ sub: 'sub-fr', providerSubject: 'sub-fr', email: 'fr@example.com', locale: 'fr' }), now));
+    assert.equal(french.locale, undefined);
+    const stored = {
+      ...created,
+      avatarKey: 'avatars/0123456789abcdef.jpg',
+      locale: 'pt' as const,
+      displayName: 'Countess',
+    };
+    const linked = attachVerifiedSignIn(
+      [stored],
+      signIn({
+        sub: 'google-sub',
+        provider: 'google',
+        providerSubject: 'google-ada',
+        email: 'ADA@example.com',
+        givenName: 'Other',
+        familyName: 'Person',
+        displayName: 'Nope',
+        locale: 'en',
+        username: 'someone',
+      }),
+      '2026-11-08T19:00:00.000Z',
+    );
+    assert.equal(linked.ok, true);
+    if (!linked.ok) {
+      return;
+    }
+    assert.equal(linked.value.profile.sub, created.sub);
+    assert.equal(linked.value.profile.givenName, 'Ada');
+    assert.equal(linked.value.profile.familyName, 'Lovelace');
+    assert.equal(linked.value.profile.displayName, 'Countess');
+    assert.equal(linked.value.profile.locale, 'pt');
+    assert.equal(linked.value.profile.avatarKey, 'avatars/0123456789abcdef.jpg');
+    assert.equal(linked.value.profile.username, 'Ada');
+  });
+
+  it('refuses a disabled profile and a Google subject that belongs to someone else', () => {
+    const profile = one(attachVerifiedSignIn([], signIn(), now));
+    const disabled = attachVerifiedSignIn([{ ...profile, status: 'disabled' }], signIn({ provider: 'google', providerSubject: 'google-ada' }), now);
+    assert.equal(disabled.ok, false);
+    if (!disabled.ok) {
+      assert.equal(disabled.errors[0], 'account is disabled');
+    }
+    const other = one(attachVerifiedSignIn([], signIn({ sub: 'sub-other', providerSubject: 'sub-other', email: 'other@example.com', username: 'Other' }), now));
+    const conflict = attachVerifiedSignIn(
+      [profile, { ...other, providers: [{ provider: 'google', subject: 'google-ada' }] }],
+      signIn({ sub: 'google-cognito', provider: 'google', providerSubject: 'google-ada', email: 'ada@example.com' }),
+      now,
+    );
+    assert.equal(conflict.ok, false);
+  });
+
+  it('updates a verified Google email only when no other profile has it', () => {
+    const profile = one(attachVerifiedSignIn([], signIn({ provider: 'google', providerSubject: 'google-ada' }), now));
+    const moved = attachVerifiedSignIn(
+      [profile],
+      signIn({ provider: 'google', providerSubject: 'google-ada', email: 'new@example.com', givenName: 'Changed', familyName: 'Name' }),
+      '2026-11-08T19:00:00.000Z',
+    );
+    assert.equal(moved.ok, true);
+    if (!moved.ok) {
+      return;
+    }
+    assert.equal(moved.value.profile.email, 'new@example.com');
+    assert.equal(moved.value.profile.givenName, 'Ada');
+    const taken = one(attachVerifiedSignIn([], signIn({ sub: 'sub-taken', providerSubject: 'sub-taken', email: 'taken@example.com', username: 'Taken' }), now));
+    const blocked = attachVerifiedSignIn(
+      [profile, taken],
+      signIn({ provider: 'google', providerSubject: 'google-ada', email: 'taken@example.com' }),
+      now,
+    );
+    assert.equal(blocked.ok, false);
   });
 });

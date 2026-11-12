@@ -1,5 +1,5 @@
 import { createHash, createPublicKey, createVerify, type JsonWebKey } from 'node:crypto';
-import type { VerifiedSignIn } from 'tropical-nomads-shared';
+import { splitPersonName, type VerifiedSignIn } from 'tropical-nomads-shared';
 import type { AccountNotice } from '../i18n/copy';
 
 export interface CognitoConfig {
@@ -20,10 +20,19 @@ export interface IdClaims {
   emailVerified: true;
   givenName: string;
   familyName: string;
+  fullName: string;
+  pictureUrl: string;
+  locale: string;
   preferredUsername: string;
   provider: 'cognito' | 'google' | 'apple';
   providerSubject: string;
 }
+
+export type IdTokenRead =
+  | { ok: true; claims: IdClaims }
+  | { ok: false; reason: 'email-unverified' | 'invalid' };
+
+export type HostedCallback = { kind: 'continue' } | { kind: 'retry-google' } | { kind: 'notice'; notice: AccountNotice };
 
 export interface PendingNames {
   username: string;
@@ -111,6 +120,26 @@ export function isCognitoAuthorizeUrl(value: string): boolean {
   }
 }
 
+export function browserAccountOrigin(redirectUri: string | undefined, hostHeader: string | null): string {
+  if (redirectUri) {
+    return new URL(redirectUri).origin;
+  }
+  const host = hostHeader?.trim() ?? '';
+  if (/^[A-Za-z0-9.-]+(?::\d+)?$/.test(host) && !host.includes('..')) {
+    return `http://${host}`;
+  }
+  return 'http://127.0.0.1:3100';
+}
+
+export function googleStartRedirect(redirectUri: string, hostHeader: string | null, search: string): string | undefined {
+  const origin = new URL(redirectUri).origin;
+  if ((hostHeader ?? '') === new URL(origin).host) {
+    return undefined;
+  }
+  const query = search.startsWith('?') ? search : '';
+  return new URL(`/account/google${query}`, origin).toString();
+}
+
 export function authorizeUrl(
   config: CognitoConfig,
   input: { provider: HostedProvider; state: string; nonce: string; verifier: string },
@@ -141,23 +170,23 @@ export function authorizeUrl(
   return url.toString();
 }
 
-export function verifyIdToken(
+export function readIdToken(
   token: string,
   config: CognitoConfig,
   jwks: { keys: readonly TokenKey[] },
   expectedNonce: string,
   now = Date.now(),
-): IdClaims | undefined {
+): IdTokenRead {
   if (token.length < 20 || token.length > 8000) {
-    return undefined;
+    return { ok: false, reason: 'invalid' };
   }
   const parts = token.split('.');
   if (parts.length !== 3) {
-    return undefined;
+    return { ok: false, reason: 'invalid' };
   }
   const [headerPart, payloadPart, signaturePart] = parts;
   if (!headerPart || !payloadPart || !signaturePart) {
-    return undefined;
+    return { ok: false, reason: 'invalid' };
   }
   let header: { alg?: unknown; kid?: unknown };
   let payload: Record<string, unknown>;
@@ -165,60 +194,133 @@ export function verifyIdToken(
     header = readJson(headerPart) as { alg?: unknown; kid?: unknown };
     const parsed = readJson(payloadPart);
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
-      return undefined;
+      return { ok: false, reason: 'invalid' };
     }
     payload = parsed as Record<string, unknown>;
   } catch {
-    return undefined;
+    return { ok: false, reason: 'invalid' };
   }
   if (header.alg !== 'RS256' || typeof header.kid !== 'string') {
-    return undefined;
+    return { ok: false, reason: 'invalid' };
   }
   const jwk = jwks.keys.find((key) => key.kid === header.kid && key.kty === 'RSA');
   if (!jwk) {
-    return undefined;
+    return { ok: false, reason: 'invalid' };
   }
   let verified = false;
   try {
     const key = createPublicKey({ key: jwk, format: 'jwk' });
     verified = createVerify('RSA-SHA256').update(`${headerPart}.${payloadPart}`).verify(key, Buffer.from(signaturePart, 'base64url'));
   } catch {
-    return undefined;
+    return { ok: false, reason: 'invalid' };
   }
   if (!verified) {
-    return undefined;
+    return { ok: false, reason: 'invalid' };
   }
   const issuer = `https://cognito-idp.eu-central-1.amazonaws.com/${config.userPoolId}`;
   if (payload.iss !== issuer || payload.aud !== config.clientId || payload.token_use !== 'id') {
-    return undefined;
+    return { ok: false, reason: 'invalid' };
   }
   if (expectedNonce !== '' && payload.nonce !== expectedNonce) {
-    return undefined;
+    return { ok: false, reason: 'invalid' };
   }
   if (typeof payload.exp !== 'number' || payload.exp * 1000 <= now) {
-    return undefined;
-  }
-  if (payload.email_verified !== true || typeof payload.email !== 'string' || typeof payload.sub !== 'string') {
-    return undefined;
-  }
-  const email = payload.email.trim().toLowerCase();
-  if (!/^[A-Za-z0-9_-]{1,128}$/.test(payload.sub) || !email.includes('@') || email.startsWith('@') || email.endsWith('@')) {
-    return undefined;
+    return { ok: false, reason: 'invalid' };
   }
   const federated = federatedIdentity(payload.identities);
   if (payload.identities !== undefined && !federated) {
-    return undefined;
+    return { ok: false, reason: 'invalid' };
+  }
+  const claimVerified = payload.email_verified === true || payload.email_verified === 'true';
+  // Cognito leaves email_verified false until Google's claim is mapped. A signed Google token is still a verified sign-in.
+  const providerVerified = federated?.provider === 'google';
+  if (!claimVerified && !providerVerified) {
+    if (payload.email_verified === false || payload.email_verified === 'false') {
+      return { ok: false, reason: 'email-unverified' };
+    }
+    return { ok: false, reason: 'invalid' };
+  }
+  if (typeof payload.email !== 'string' || typeof payload.sub !== 'string') {
+    return { ok: false, reason: 'invalid' };
+  }
+  const email = payload.email.trim().toLowerCase();
+  if (!/^[A-Za-z0-9_-]{1,128}$/.test(payload.sub) || !email.includes('@') || email.startsWith('@') || email.endsWith('@')) {
+    return { ok: false, reason: 'invalid' };
   }
   return {
-    sub: payload.sub,
-    email,
-    emailVerified: true,
-    givenName: typeof payload.given_name === 'string' ? payload.given_name.trim() : '',
-    familyName: typeof payload.family_name === 'string' ? payload.family_name.trim() : '',
-    preferredUsername: typeof payload.preferred_username === 'string' ? payload.preferred_username.trim() : '',
-    provider: federated?.provider ?? 'cognito',
-    providerSubject: federated?.subject ?? payload.sub,
+    ok: true,
+    claims: {
+      sub: payload.sub,
+      email,
+      emailVerified: true,
+      givenName: typeof payload.given_name === 'string' ? payload.given_name.trim() : '',
+      familyName: typeof payload.family_name === 'string' ? payload.family_name.trim() : '',
+      fullName: typeof payload.name === 'string' ? payload.name.trim().slice(0, 160) : '',
+      pictureUrl: pictureClaim(payload.picture),
+      locale: typeof payload.locale === 'string' ? payload.locale.trim().slice(0, 35) : '',
+      preferredUsername: typeof payload.preferred_username === 'string' ? payload.preferred_username.trim() : '',
+      provider: federated?.provider ?? 'cognito',
+      providerSubject: federated?.subject ?? payload.sub,
+    },
   };
+}
+
+export function verifyIdToken(
+  token: string,
+  config: CognitoConfig,
+  jwks: { keys: readonly TokenKey[] },
+  expectedNonce: string,
+  now = Date.now(),
+): IdClaims | undefined {
+  const read = readIdToken(token, config, jwks, expectedNonce, now);
+  return read.ok ? read.claims : undefined;
+}
+
+export function hostedCallbackDecision(input: {
+  error: string;
+  description: string;
+  stateMatches: boolean;
+  alreadyRetried: boolean;
+}): HostedCallback {
+  const error = input.error.trim().toLowerCase();
+  const description = input.description.trim().toLowerCase();
+  if (error !== '') {
+    if (error === 'access_denied' || description.includes('cancelled') || description.includes('canceled')) {
+      return { kind: 'notice', notice: 'google-cancelled' };
+    }
+    const linked =
+      description.includes('already exists') ||
+      description.includes('already found an entry') ||
+      description.includes('account_linked');
+    if (linked) {
+      return input.alreadyRetried ? { kind: 'notice', notice: 'email-unconfirmed' } : { kind: 'retry-google' };
+    }
+    return { kind: 'notice', notice: 'google-failed' };
+  }
+  if (!input.stateMatches) {
+    return { kind: 'notice', notice: 'sign-in-expired' };
+  }
+  return { kind: 'continue' };
+}
+
+export function noticeForAccountError(message: string): AccountNotice | undefined {
+  switch (message) {
+    case 'username is taken':
+      return 'username-taken';
+    case 'username is not valid':
+    case 'username is required':
+      return 'username-invalid';
+    case 'name is required':
+      return 'name-required';
+    case 'account is disabled':
+      return 'account-disabled';
+    case 'provider subject belongs to another profile':
+      return 'account-conflict';
+    case 'card number is not allowed':
+      return 'name-required';
+    default:
+      return undefined;
+  }
 }
 
 export function pendingNames(input: { username?: string; givenName?: string; familyName?: string }): PendingNames | undefined {
@@ -239,12 +341,18 @@ export function verifiedSignInFromClaims(
   pending: PendingNames | undefined,
   existing: PendingNames | undefined,
 ): VerifiedSignIn | undefined {
+  const split = splitPersonName({
+    givenName: claims.givenName,
+    familyName: claims.familyName,
+    fullName: existing ? '' : claims.fullName,
+  });
   const username = (existing?.username || pending?.username || claims.preferredUsername || '').trim();
-  const givenName = (existing?.givenName || claims.givenName || pending?.givenName || '').trim();
-  const familyName = (existing?.familyName || claims.familyName || pending?.familyName || '').trim();
-  if (username === '' || givenName === '' || familyName === '') {
+  const givenName = (existing?.givenName || split.givenName || pending?.givenName || '').trim();
+  const familyName = (existing?.familyName || split.familyName || pending?.familyName || '').trim();
+  if (givenName === '' || familyName === '') {
     return undefined;
   }
+  const displayName = (claims.fullName || `${givenName} ${familyName}`).trim().slice(0, 80);
   return {
     sub: claims.sub,
     provider: claims.provider,
@@ -254,6 +362,8 @@ export function verifiedSignInFromClaims(
     username,
     givenName,
     familyName,
+    ...(displayName !== '' ? { displayName } : {}),
+    ...(claims.locale !== '' ? { locale: claims.locale } : {}),
   };
 }
 
@@ -367,27 +477,43 @@ function readJson(segment: string): unknown {
   return JSON.parse(Buffer.from(segment, 'base64url').toString('utf8'));
 }
 
+function pictureClaim(value: unknown): string {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  const picture = value.trim();
+  if (picture.length === 0 || picture.length > 2048) {
+    return '';
+  }
+  return picture;
+}
+
 function federatedIdentity(value: unknown): { provider: 'google' | 'apple'; subject: string } | undefined {
   const parsed = typeof value === 'string' ? safeJson(value) : value;
   if (!Array.isArray(parsed) || parsed.length === 0) {
     return undefined;
   }
-  const first = parsed[0];
-  if (typeof first !== 'object' || first === null) {
-    return undefined;
+  const links: { provider: 'google' | 'apple'; subject: string }[] = [];
+  for (const item of parsed) {
+    if (typeof item !== 'object' || item === null) {
+      continue;
+    }
+    const record = item as { providerName?: unknown; userId?: unknown };
+    if (typeof record.userId !== 'string' || !/^[A-Za-z0-9:._-]{1,200}$/.test(record.userId)) {
+      continue;
+    }
+    switch (record.providerName) {
+      case 'Google':
+        links.push({ provider: 'google', subject: record.userId });
+        break;
+      case 'SignInWithApple':
+        links.push({ provider: 'apple', subject: record.userId });
+        break;
+      default:
+        break;
+    }
   }
-  const record = first as { providerName?: unknown; userId?: unknown };
-  if (typeof record.userId !== 'string' || !/^[A-Za-z0-9:._-]{1,200}$/.test(record.userId)) {
-    return undefined;
-  }
-  switch (record.providerName) {
-    case 'Google':
-      return { provider: 'google', subject: record.userId };
-    case 'SignInWithApple':
-      return { provider: 'apple', subject: record.userId };
-    default:
-      return undefined;
-  }
+  return links.find((link) => link.provider === 'google') ?? links.find((link) => link.provider === 'apple');
 }
 
 function safeJson(value: string): unknown {
@@ -428,7 +554,7 @@ function problemCode(body: unknown): string {
 function noticeFor(code: string): AccountNotice {
   switch (code) {
     case 'UsernameExistsException':
-      return 'username-taken';
+      return 'email-taken';
     case 'InvalidPasswordException':
     case 'InvalidParameterException':
       return 'password-short';

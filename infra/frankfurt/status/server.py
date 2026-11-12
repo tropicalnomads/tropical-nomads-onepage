@@ -134,12 +134,11 @@ def network() -> Card:
         lines.append({"label": name, "value": f"{subnet.get('State')} {subnet.get('CidrBlock')}"})
     live_nats = [item for item in (nats or {}).get("NatGateways", []) if item.get("State") != "deleted"]
     if not live_nats:
-        lines.append({"label": "NAT", "value": "not created"})
-        return card("Network", "pending", "vpc only", lines)
+        lines.append({"label": "NAT", "value": "removed"})
+        return card("Network", "ready", "no nat", lines)
     state = live_nats[0].get("State", "unknown")
     lines.append({"label": "NAT", "value": state})
-    tone = "ready" if state == "available" else "pending"
-    return card("Network", tone, state, lines)
+    return card("Network", "problem", state, lines)
 
 
 def security_groups() -> Card:
@@ -267,24 +266,20 @@ def repository() -> Card:
     return card("Image repository", "ready", f"{count} images", [{"label": "Name", "value": "tropical-nomads-api"}])
 
 
-def load_balancer() -> Card:
-    data = aws_json(["elbv2", "describe-load-balancers", "--names", "tropical-nomads-api"])
-    balancers = (data or {}).get("LoadBalancers", [])
-    if not balancers:
-        return missing("Load balancer")
-    balancer = balancers[0]
-    listeners = aws_json(
-        ["elbv2", "describe-listeners", "--load-balancer-arn", str(balancer["LoadBalancerArn"])]
-    )
-    listener_rows = (listeners or {}).get("Listeners", [])
-    ports = ", ".join(str(item.get("Port")) for item in listener_rows) or "none"
-    state = str((balancer.get("State") or {}).get("Code", "unknown"))
+def front_door() -> Card:
+    data = aws_json(["apigatewayv2", "get-apis"])
+    apis = [item for item in (data or {}).get("Items", []) if item.get("Name") == "tropical-nomads-api"]
+    if not apis:
+        return missing("API front door")
+    api = apis[0]
+    endpoint = str(api.get("ApiEndpoint", ""))
+    if endpoint.startswith("https://"):
+        endpoint = endpoint[len("https://") :]
     lines = [
-        {"label": "Scheme", "value": str(balancer.get("Scheme"))},
-        {"label": "Listeners", "value": ports},
+        {"label": "Type", "value": str(api.get("ProtocolType", ""))},
+        {"label": "Endpoint", "value": endpoint},
     ]
-    tone = "ready" if state == "active" else "pending"
-    return card("Load balancer", tone, state, lines)
+    return card("API front door", "ready", "http api", lines)
 
 
 def api_service() -> Card:
@@ -304,7 +299,7 @@ def api_service() -> Card:
     desired = int(service.get("desiredCount", 0))
     lines = [
         {"label": "Running", "value": f"{running} of {desired}"},
-        {"label": "Public IP", "value": "disabled"},
+        {"label": "Public IP", "value": "outbound" if str(((service.get("networkConfiguration") or {}).get("awsvpcConfiguration") or {}).get("assignPublicIp", "")).upper() == "ENABLED" else "disabled"},
     ]
     tone = "ready" if status == "ACTIVE" and running == desired and desired > 0 else "pending"
     return card("API service", tone, status, lines)
@@ -330,7 +325,7 @@ CHECKS = {
     "cognito": cognito,
     "amplify": amplify,
     "repository": repository,
-    "load-balancer": load_balancer,
+    "load-balancer": front_door,
     "api": api_service,
     "logs": logs,
 }

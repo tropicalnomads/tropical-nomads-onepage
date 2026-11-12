@@ -10,7 +10,6 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
     <SignInScreen
       hosted={config !== undefined}
       google={config?.google ?? false}
-      apple={config?.apple ?? false}
       initialNotice={knownAccountNotice(params.notice)}
       initialEmail={accountEmail(params.email) ?? ''}
     />

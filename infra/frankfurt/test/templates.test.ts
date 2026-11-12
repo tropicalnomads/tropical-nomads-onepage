@@ -1,8 +1,11 @@
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, it } from 'node:test';
+
+const require = createRequire(import.meta.url);
 
 const here = dirname(fileURLToPath(import.meta.url));
 const frankfurt = dirname(here);
@@ -83,6 +86,63 @@ describe('Frankfurt templates', () => {
     assert.match(pool, /GenerateSecret: false/);
     assert.equal(pool.includes('accounts.google.com'), false);
     assert.equal(pool.includes('BEGIN PRIVATE'), false);
+    assert.match(pool, /email_verified: email_verified/);
+    assert.match(pool, /picture: picture/);
+    assert.match(pool, /locale: locale/);
+    assert.match(pool, /PreSignUp: !GetAtt GoogleLinkFunction.Arn/);
+    const source = read(join(frankfurt, 'cognito-link-google.cjs'));
+    assert.ok(Buffer.byteLength(source) < 4096);
+    for (const line of source.split('\n')) {
+      if (line.trim() !== '') {
+        assert.equal(pool.includes(line), true);
+      }
+    }
+    const linked = require('../cognito-link-google.cjs') as {
+      linkDecision: (input: {
+        trigger: string;
+        userName: string;
+        email: string;
+        users: { username: string; email: string; emailVerified: boolean }[];
+      }) => { action: string; username?: string; subject?: string };
+    };
+    const users = [{ username: 'ada@example.com', email: 'Ada@Example.com', emailVerified: true }];
+    assert.deepEqual(linked.linkDecision({ trigger: 'PreSignUp_SignUp', userName: 'Google_123', email: 'ada@example.com', users }), {
+      action: 'ignore',
+    });
+    assert.deepEqual(linked.linkDecision({ trigger: 'PreSignUp_ExternalProvider', userName: 'Google_123', email: 'ada@example.com', users }), {
+      action: 'link',
+      username: 'ada@example.com',
+      subject: '123',
+    });
+    assert.deepEqual(
+      linked.linkDecision({
+        trigger: 'PreSignUp_ExternalProvider',
+        userName: 'Google_123',
+        email: 'ada@example.com',
+        users: [{ username: 'ada@example.com', email: 'ada@example.com', emailVerified: false }],
+      }),
+      { action: 'confirm' },
+    );
+    assert.deepEqual(linked.linkDecision({ trigger: 'PreSignUp_ExternalProvider', userName: 'Google_123', email: 'new@example.com', users: [] }), {
+      action: 'confirm',
+    });
+    assert.deepEqual(linked.linkDecision({ trigger: 'PreSignUp_ExternalProvider', userName: 'google_123', email: 'ada@example.com', users }), {
+      action: 'link',
+      username: 'ada@example.com',
+      subject: '123',
+    });
+    assert.deepEqual(
+      linked.linkDecision({
+        trigger: 'PreSignUp_ExternalProvider',
+        userName: 'Google_123',
+        email: 'ada@example.com',
+        users: [
+          { username: 'one', email: 'ada@example.com', emailVerified: true },
+          { username: 'two', email: 'ada@example.com', emailVerified: true },
+        ],
+      }),
+      { action: 'ignore' },
+    );
   });
 
   it('keeps the web Amplify definitions free of domains and repository tokens', () => {
@@ -109,23 +169,26 @@ describe('Frankfurt templates', () => {
     assert.equal(onePager.includes('OauthToken'), false);
   });
 
-  it('publishes only the dev API hostname and keeps the task private', () => {
-    const balancer = read(join(frankfurt, 'load-balancer.yaml'));
+  it('publishes only the dev API hostname and keeps the database closed', () => {
+    const frontDoor = read(join(frankfurt, 'api-http.yaml'));
     const service = read(join(frankfurt, 'ecs-service.yaml'));
     const task = read(join(frankfurt, 'ecs-task.yaml'));
+    const vpc = read(join(frankfurt, 'vpc.yaml'));
     const bastion = read(join(frankfurt, 'db-bastion.yaml'));
-    assert.match(balancer, /AWS::ElasticLoadBalancingV2::Listener/);
-    assert.match(balancer, /api-dev\.tropical-nomads\.com/);
-    assert.equal(balancer.includes('www.tropical-nomads.com'), false);
-    assert.match(service, /AssignPublicIp: DISABLED/);
-    assert.match(service, /LoadBalancers:/);
-    assert.match(service, /ContainerPort: 8787/);
+    const deploy = read(join(frankfurt, 'deploy.sh'));
+    assert.match(frontDoor, /ProtocolType: HTTP/);
+    assert.match(frontDoor, /api-dev\.tropical-nomads\.com/);
+    assert.equal(frontDoor.includes('www.tropical-nomads.com'), false);
+    assert.match(service, /AssignPublicIp: ENABLED/);
+    assert.equal(service.includes('LoadBalancers:'), false);
     assert.match(task, /Cpu: "512"/);
     assert.match(task, /Memory: "1024"/);
     assert.equal(task.includes('DATABASE_URL'), false);
     assert.match(task, /ValueFrom: !Sub "\$\{DbSecretArn\}:password::"/);
     assert.match(task, /ValueFrom: !Sub "\$\{DbSecretArn\}:username::"/);
     assert.match(task, /ACCOUNT_SESSION_SECRET/);
+    assert.equal(vpc.includes('AWS::EC2::NatGateway'), false);
+    assert.equal(deploy.includes('load-balancer.yaml'), false);
     assert.match(bastion, /AssociatePublicIpAddress: false/);
     assert.equal(bastion.includes('0.0.0.0/0') && /FromPort: 5432[\s\S]{0,80}0\.0\.0\.0\/0/.test(bastion), false);
   });
@@ -166,9 +229,13 @@ describe('Frankfurt templates', () => {
     assert.match(bucket, /Prefix: shop\//);
     assert.equal(bucket.includes('Effect: Allow'), false);
     assert.match(iam, /\$\{AssetsBucketArn\}\/shop\/\*/);
+    assert.match(iam, /cognito-idp:AdminDeleteUser/);
+    assert.match(iam, /cognito-idp:ListUsers/);
     assert.match(iam, /s3:prefix/);
     assert.equal(iam.includes('Action: "s3:*"'), false);
     assert.match(task, /ASSETS_BUCKET/);
+    assert.match(task, /COGNITO_USER_POOL_ID/);
+    assert.match(task, /UserPoolId/);
   });
 
   it('deploys dev from GitHub Actions without the one-pager or an HTTP listener', () => {

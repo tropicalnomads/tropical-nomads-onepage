@@ -1,11 +1,11 @@
 'use server';
 
-import { randomBytes } from 'node:crypto';
 import { cookies } from 'next/headers';
 import type { AccountNotice } from '../i18n/copy';
-import { authorizeUrl, pendingNames, readCognitoConfig, verifiedSignInFromClaims, type HostedProvider, type IdClaims } from './cognito';
+import { noticeForAccountError, pendingNames, readCognitoConfig, verifiedSignInFromClaims, type HostedProvider, type IdClaims } from './cognito';
 import { establishVerifiedAccount } from './establish';
-import { rememberReturnPath, takeReturnPath } from './return-cookie';
+import { beginHostedSignIn } from './hosted-flow';
+import { takeReturnPath } from './return-cookie';
 import { createSessionToken, openPayload, sealPayload, sessionCookieMaxAge, sessionCookieName } from './session';
 
 export interface HostedResult {
@@ -13,10 +13,6 @@ export interface HostedResult {
   redirect?: string;
 }
 
-const stateCookie = 'tn:cognito:state';
-const verifierCookie = 'tn:cognito:verifier';
-const nonceCookie = 'tn:cognito:nonce';
-const pendingCookie = 'tn:cognito:pending';
 const verifiedCookie = 'tn:cognito:verified';
 
 const blockedFields = new Set(['subject', 'sub', 'userId', 'providerSubject', 'password', 'cardNumber', 'secret']);
@@ -26,13 +22,13 @@ function field(formData: FormData, name: string): string {
   return typeof value === 'string' ? value : '';
 }
 
-function oauthCookie() {
+function oauthCookie(maxAge = 600) {
   return {
     httpOnly: true,
     sameSite: 'lax' as const,
     secure: process.env.NODE_ENV === 'production',
     path: '/account',
-    maxAge: 600,
+    maxAge,
   };
 }
 
@@ -52,36 +48,21 @@ export async function startHostedSignIn(formData: FormData): Promise<HostedResul
       return { notice: 'provider-not-allowed' };
     }
   }
-  const config = readCognitoConfig();
-  if (!config) {
+  if (!readCognitoConfig()) {
     return { notice: 'cognito-not-configured' };
   }
   const provider = hostedProvider(field(formData, 'provider'));
   if (!provider) {
     return { notice: 'provider-not-allowed' };
   }
-  const state = randomBytes(24).toString('base64url');
-  const nonce = randomBytes(24).toString('base64url');
-  const verifier = randomBytes(32).toString('base64url');
-  const redirect = authorizeUrl(config, { provider, state, nonce, verifier });
-  if (!redirect) {
-    return { notice: 'provider-not-allowed' };
-  }
-  await rememberReturnPath(field(formData, 'next'));
   const names = pendingNames({
     username: field(formData, 'username'),
     givenName: field(formData, 'givenName'),
     familyName: field(formData, 'familyName'),
   });
-  const jar = await cookies();
-  const options = oauthCookie();
-  jar.set(stateCookie, sealPayload(state, 600), options);
-  jar.set(verifierCookie, sealPayload(verifier, 600), options);
-  jar.set(nonceCookie, sealPayload(nonce, 600), options);
-  if (names) {
-    jar.set(pendingCookie, sealPayload(names, 600), options);
-  } else {
-    jar.delete({ name: pendingCookie, path: '/account' });
+  const redirect = await beginHostedSignIn({ provider, next: field(formData, 'next'), pending: names, retry: false });
+  if (!redirect) {
+    return { notice: 'provider-not-allowed' };
   }
   return { notice: 'cognito-not-configured', redirect };
 }
@@ -113,13 +94,7 @@ export async function finishVerifiedSignIn(formData: FormData): Promise<HostedRe
     return { notice: 'not-signed-in', redirect: await takeReturnPath(field(formData, 'next')) };
   } catch (error) {
     const message = error instanceof Error ? error.message : '';
-    if (message === 'username is taken') {
-      return { notice: 'username-taken' };
-    }
-    if (message === 'username is not valid' || message === 'username is required') {
-      return { notice: 'username-invalid' };
-    }
-    return { notice: 'provider-not-allowed' };
+    return { notice: noticeForAccountError(message) ?? 'provider-not-allowed' };
   }
 }
 
@@ -174,6 +149,9 @@ function claimsFrom(value: unknown): IdClaims | undefined {
         emailVerified: true,
         givenName: typeof record.givenName === 'string' ? record.givenName : '',
         familyName: typeof record.familyName === 'string' ? record.familyName : '',
+        fullName: typeof record.fullName === 'string' ? record.fullName : '',
+        pictureUrl: typeof record.pictureUrl === 'string' ? record.pictureUrl : '',
+        locale: typeof record.locale === 'string' ? record.locale : '',
         preferredUsername: typeof record.preferredUsername === 'string' ? record.preferredUsername : '',
         provider: record.provider,
         providerSubject: record.providerSubject,

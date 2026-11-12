@@ -297,17 +297,9 @@ function GoogleIcon() {
   );
 }
 
-function AppleIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 shrink-0 fill-current">
-      <path d="M17.05 12.54c.02-2.14 1.75-3.17 1.83-3.22a3.92 3.92 0 0 0-3.09-1.67c-1.3-.14-2.56.78-3.22.78-.67 0-1.69-.76-2.78-.74a4.1 4.1 0 0 0-3.45 2.1c-1.49 2.57-.38 6.35 1.05 8.43.72 1.03 1.56 2.18 2.65 2.14 1.07-.04 1.47-.69 2.77-.69 1.29 0 1.67.69 2.79.66 1.15-.02 1.88-1.02 2.57-2.06a8.35 8.35 0 0 0 1.18-2.4 3.68 3.68 0 0 1-2.3-3.33ZM14.94 6.27a3.75 3.75 0 0 0 .86-2.7 3.82 3.82 0 0 0-2.48 1.28 3.58 3.58 0 0 0-.89 2.6 3.16 3.16 0 0 0 2.51-1.18Z" />
-    </svg>
-  );
-}
-
 interface ProviderButtonsProps {
-  onProvider: (provider: 'google' | 'apple') => void;
-  pendingProvider: 'google' | 'apple' | null;
+  onProvider: (provider: 'google') => void;
+  pendingProvider: 'google' | null;
 }
 
 export function ProviderButtons({ onProvider, pendingProvider }: ProviderButtonsProps) {
@@ -315,24 +307,15 @@ export function ProviderButtons({ onProvider, pendingProvider }: ProviderButtons
   const disabled = pendingProvider !== null;
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div>
       <button
         type="button"
         onClick={() => onProvider('google')}
         disabled={disabled}
-        className="inline-flex h-12 items-center justify-center gap-3 rounded-xl border border-[#dadce0] bg-white px-4 text-sm font-semibold text-[#202124] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#f8fafd] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise disabled:cursor-wait disabled:translate-y-0 disabled:opacity-60"
+        className="inline-flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-[#dadce0] bg-white px-4 text-sm font-semibold text-[#202124] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#f8fafd] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise disabled:cursor-wait disabled:translate-y-0 disabled:opacity-60"
       >
         <GoogleIcon />
         <span>{pendingProvider === 'google' ? accountText(language, 'working') : accountText(language, 'continueGoogle')}</span>
-      </button>
-      <button
-        type="button"
-        onClick={() => onProvider('apple')}
-        disabled={disabled}
-        className="inline-flex h-12 items-center justify-center gap-3 rounded-xl border border-white/20 bg-black px-4 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:border-white/40 hover:bg-[#111] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise disabled:cursor-wait disabled:translate-y-0 disabled:opacity-60"
-      >
-        <AppleIcon />
-        <span>{pendingProvider === 'apple' ? accountText(language, 'working') : accountText(language, 'continueApple')}</span>
       </button>
     </div>
   );

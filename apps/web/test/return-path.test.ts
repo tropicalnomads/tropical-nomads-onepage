@@ -16,6 +16,7 @@ describe('return path', () => {
     assert.equal(safeReturnPath('/account/forgot-password'), undefined);
     assert.equal(safeReturnPath('/account/profile'), undefined);
     assert.equal(safeReturnPath('/account/callback'), undefined);
+    assert.equal(safeReturnPath('/account/google'), undefined);
     assert.equal(safeReturnPath('https://evil.example/events'), undefined);
     assert.equal(safeReturnPath('//evil.example'), undefined);
     assert.equal(safeReturnPath('/\\evil.example'), undefined);

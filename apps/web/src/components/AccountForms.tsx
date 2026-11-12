@@ -3,7 +3,6 @@
 import { KeyRound, Mail } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { completeProfileAction, confirmPasswordResetAction, confirmRegistrationAction, providerAction, registerAction, rememberConfirmationEmailAction, requestPasswordResetAction, resendConfirmationAction, signInAction, type AccountActionResult } from '../account/actions';
-import { startHostedSignIn } from '../account/cognito-actions';
 import { noticeForProfileFailure } from '../account/profile-failure';
 import { firstProfileField, profileFieldIssues, profileInputFromFormData, type ProfileFieldIssues, type ProfileFieldName } from '../account/profile-form';
 import { accountEmail } from '../account/review';
@@ -22,7 +21,7 @@ import {
   PasswordGuide,
   ProviderButtons,
 } from './AuthUi';
-import { ProfileFields } from './ProfileFields';
+import { ProfileFields, type ProfileValues } from './ProfileFields';
 
 function isCognitoAuthorize(target: string): boolean {
   try {
@@ -86,22 +85,29 @@ function noteActionFailure(setNotice: (notice: AccountNotice) => void): void {
   setNotice('sign-in-failed');
 }
 
+function goToGoogle(next: string): void {
+  const params = new URLSearchParams();
+  if (next) {
+    params.set('next', next);
+  }
+  const query = params.toString();
+  window.location.assign(query ? `/account/google?${query}` : '/account/google');
+}
+
 export function RegisterForm({
   hosted = false,
   google = false,
-  apple = false,
   initialNotice = null,
 }: {
   hosted?: boolean;
   google?: boolean;
-  apple?: boolean;
   initialNotice?: AccountNotice | null;
 }) {
   const { language } = useLanguage();
   const next = useReturnPath();
   const [notice, setNotice] = useState<AccountActionResult['notice'] | null>(initialNotice);
   const [pending, setPending] = useState(false);
-  const [pendingProvider, setPendingProvider] = useState<'google' | 'apple' | null>(null);
+  const [pendingProvider, setPendingProvider] = useState<'google' | null>(null);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -121,20 +127,17 @@ export function RegisterForm({
     }
   }
 
-  async function useProvider(provider: 'google' | 'apple'): Promise<void> {
-    setPendingProvider(provider);
+  async function useGoogle(): Promise<void> {
+    setPendingProvider('google');
     setNotice(null);
     try {
       const data = new FormData();
-      data.set('provider', provider);
+      data.set('provider', 'google');
       if (next) {
         data.set('next', next);
       }
-      if (hosted && ((provider === 'google' && google) || (provider === 'apple' && apple))) {
-        const result = await startHostedSignIn(data);
-        if (!follow(result)) {
-          setNotice(result.notice);
-        }
+      if (hosted && google) {
+        goToGoogle(next);
         return;
       }
       const result = await providerAction(data);
@@ -149,7 +152,7 @@ export function RegisterForm({
   return (
     <form onSubmit={onSubmit} className="space-y-5" noValidate aria-busy={pending || pendingProvider !== null}>
       <input type="hidden" name="next" value={next} />
-      <ProviderButtons onProvider={(provider) => void useProvider(provider)} pendingProvider={pendingProvider} />
+      <ProviderButtons onProvider={() => void useGoogle()} pendingProvider={pendingProvider} />
       <AuthDivider />
       <AuthField
         label={accountText(language, 'email')}
@@ -186,13 +189,11 @@ export function RegisterForm({
 export function SignInForm({
   hosted = false,
   google = false,
-  apple = false,
   initialNotice = null,
   initialEmail = '',
 }: {
   hosted?: boolean;
   google?: boolean;
-  apple?: boolean;
   initialNotice?: AccountNotice | null;
   initialEmail?: string;
 }) {
@@ -201,7 +202,7 @@ export function SignInForm({
   const forgotHref = useAuthHref('/account/forgot-password');
   const [notice, setNotice] = useState<AccountActionResult['notice'] | null>(initialNotice);
   const [pending, setPending] = useState(false);
-  const [pendingProvider, setPendingProvider] = useState<'google' | 'apple' | null>(null);
+  const [pendingProvider, setPendingProvider] = useState<'google' | null>(null);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -219,20 +220,17 @@ export function SignInForm({
     }
   }
 
-  async function useProvider(provider: 'google' | 'apple'): Promise<void> {
-    setPendingProvider(provider);
+  async function useGoogle(): Promise<void> {
+    setPendingProvider('google');
     setNotice(null);
     try {
       const data = new FormData();
-      data.set('provider', provider);
+      data.set('provider', 'google');
       if (next) {
         data.set('next', next);
       }
-      if (hosted && ((provider === 'google' && google) || (provider === 'apple' && apple))) {
-        const result = await startHostedSignIn(data);
-        if (!follow(result)) {
-          setNotice(result.notice);
-        }
+      if (hosted && google) {
+        goToGoogle(next);
         return;
       }
       const result = await providerAction(data);
@@ -247,7 +245,7 @@ export function SignInForm({
   return (
     <form onSubmit={onSubmit} className="space-y-5" noValidate aria-busy={pending || pendingProvider !== null}>
       <input type="hidden" name="next" value={next} />
-      <ProviderButtons onProvider={(provider) => void useProvider(provider)} pendingProvider={pendingProvider} />
+      <ProviderButtons onProvider={() => void useGoogle()} pendingProvider={pendingProvider} />
       <AuthDivider />
       <AuthField
         label={accountText(language, 'email')}
@@ -421,12 +419,10 @@ export function ConfirmEmailScreen({ email, initialNotice }: { email: string; in
 export function RegisterScreen({
   hosted,
   google,
-  apple,
   initialNotice,
 }: {
   hosted: boolean;
   google: boolean;
-  apple: boolean;
   initialNotice: AccountNotice | null;
 }) {
   const { language } = useLanguage();
@@ -454,7 +450,7 @@ export function RegisterScreen({
         </div>
       }
     >
-      <RegisterForm hosted={hosted} google={google} apple={apple} initialNotice={initialNotice} />
+      <RegisterForm hosted={hosted} google={google} initialNotice={initialNotice} />
     </AuthFrame>
   );
 }
@@ -462,13 +458,11 @@ export function RegisterScreen({
 export function SignInScreen({
   hosted,
   google,
-  apple,
   initialNotice,
   initialEmail = '',
 }: {
   hosted: boolean;
   google: boolean;
-  apple: boolean;
   initialNotice: AccountNotice | null;
   initialEmail?: string;
 }) {
@@ -500,7 +494,6 @@ export function SignInScreen({
       <SignInForm
         hosted={hosted}
         google={google}
-        apple={apple}
         initialNotice={initialNotice}
         initialEmail={initialEmail}
       />
@@ -615,12 +608,23 @@ export function ForgotPasswordScreen({ initialNotice = null }: { initialNotice?:
   );
 }
 
-export function ProfileSetupScreen({ initialNotice = null }: { initialNotice?: AccountNotice | null }) {
+export function ProfileSetupScreen({
+  initialNotice = null,
+  email = '',
+  values,
+  previewUrl,
+}: {
+  initialNotice?: AccountNotice | null;
+  email?: string;
+  values?: Partial<ProfileValues>;
+  previewUrl?: string;
+}) {
   const { language } = useLanguage();
   const next = useReturnPath();
   const [notice, setNotice] = useState<AccountActionResult['notice'] | null>(initialNotice);
   const [pending, setPending] = useState(false);
   const [issues, setIssues] = useState<ProfileFieldIssues>({});
+  const [skipPicture, setSkipPicture] = useState(false);
 
   function clearIssue(field: ProfileFieldName): void {
     setIssues((current) => {
@@ -665,7 +669,27 @@ export function ProfileSetupScreen({ initialNotice = null }: { initialNotice?: A
     >
       <form onSubmit={onSubmit} className="space-y-7" encType="multipart/form-data" noValidate aria-busy={pending}>
         <input type="hidden" name="next" value={next} />
-        <ProfileFields pending={pending} issues={issues} onNotice={setNotice} onClearIssue={clearIssue} />
+        {skipPicture ? <input type="hidden" name="skipGooglePicture" value="1" /> : null}
+        {email ? (
+          <AuthField
+            label={accountText(language, 'email')}
+            name="shownEmail"
+            icon={Mail}
+            type="email"
+            autoComplete="email"
+            readOnly
+            defaultValue={email}
+          />
+        ) : null}
+        <ProfileFields
+          pending={pending}
+          issues={issues}
+          values={values}
+          initialPreview={previewUrl}
+          onNotice={setNotice}
+          onClearIssue={clearIssue}
+          onCleared={() => setSkipPicture(true)}
+        />
         <AuthSubmitButton pending={pending}>{accountText(language, 'saveProfile')}</AuthSubmitButton>
         <AuthNotice notice={notice} />
       </form>
