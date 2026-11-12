@@ -72,7 +72,7 @@ function OrderLine({ line }: { line: OrderLineView }) {
   const size = lineSize(line, language);
   return (
     <li className="flex gap-4">
-      <div className="flex h-28 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#FFF8E7] p-1">
+      <div className="flex h-28 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-ozora-cream/[0.04] p-1">
         {line.kind === 'shop' && line.image ? <img src={line.image} alt="" className="h-full w-full object-contain" /> : null}
       </div>
       <div className="min-w-0 flex-1 py-1">
