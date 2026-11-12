@@ -88,6 +88,7 @@ class FakeElementHost {
   nodeType = 1;
   _items: FakeAttr[] = [];
   _map!: FakeMap;
+  declare readonly attributes: FakeMap;
 
   constructor() {
     const created = createElement();
