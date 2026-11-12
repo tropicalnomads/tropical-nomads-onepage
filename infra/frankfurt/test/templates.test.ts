@@ -160,7 +160,7 @@ describe('Frankfurt templates', () => {
     assert.match(onePager, /ensure-amplify-next\.mjs/);
     assert.match(amplify, /ensure-amplify-next\.mjs/);
     assert.match(amplify, /API_BASE_URL/);
-    assert.match(amplify, /https:\/\/api-dev\.tropical-nomads\.com/);
+    assert.match(amplify, /https:\/\/api\.tropical-nomads\.com/);
     assert.match(amplify, /COGNITO_REDIRECT_URI/);
     assert.match(amplify, /https:\/\/dev\.tropical-nomads\.com\/account\/callback/);
     assert.equal(amplify.includes('ACCOUNT_SESSION_SECRET'), false);
@@ -177,7 +177,8 @@ describe('Frankfurt templates', () => {
     const bastion = read(join(frankfurt, 'db-bastion.yaml'));
     const deploy = read(join(frankfurt, 'deploy.sh'));
     assert.match(frontDoor, /ProtocolType: HTTP/);
-    assert.match(frontDoor, /api-dev\.tropical-nomads\.com/);
+    assert.match(frontDoor, /DomainName: api\.tropical-nomads\.com/);
+    assert.equal(frontDoor.includes('api-dev.tropical-nomads.com'), false);
     assert.equal(frontDoor.includes('www.tropical-nomads.com'), false);
     assert.match(service, /AssignPublicIp: ENABLED/);
     assert.equal(service.includes('LoadBalancers:'), false);

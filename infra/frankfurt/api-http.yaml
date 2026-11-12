@@ -4,11 +4,6 @@ Description: HTTPS for api.tropical-nomads.com. Requests are billed per call. Th
 Parameters:
   CertificateArn:
     Type: String
-    Description: DNS-validated certificate for api-dev.tropical-nomads.com. Removed after the new host is live. Do not commit the value.
-    AllowedPattern: "^arn:aws:acm:eu-central-1:[0-9]{12}:certificate/.+"
-    NoEcho: true
-  ApiCertificateArn:
-    Type: String
     Description: DNS-validated certificate for api.tropical-nomads.com. Do not commit the value.
     AllowedPattern: "^arn:aws:acm:eu-central-1:[0-9]{12}:certificate/.+"
     NoEcho: true
@@ -73,31 +68,12 @@ Resources:
       Tags:
         Name: tropical-nomads-api
 
-  Domain:
-    Type: AWS::ApiGatewayV2::DomainName
-    Properties:
-      DomainName: api-dev.tropical-nomads.com
-      DomainNameConfigurations:
-        - CertificateArn: !Ref CertificateArn
-          EndpointType: REGIONAL
-          SecurityPolicy: TLS_1_2
-      Tags:
-        Name: tropical-nomads-api
-
-  Mapping:
-    Type: AWS::ApiGatewayV2::ApiMapping
-    DependsOn: Stage
-    Properties:
-      ApiId: !Ref Api
-      DomainName: !Ref Domain
-      Stage: "$default"
-
   ApiDomain:
     Type: AWS::ApiGatewayV2::DomainName
     Properties:
       DomainName: api.tropical-nomads.com
       DomainNameConfigurations:
-        - CertificateArn: !Ref ApiCertificateArn
+        - CertificateArn: !Ref CertificateArn
           EndpointType: REGIONAL
           SecurityPolicy: TLS_1_2
       Tags:
@@ -115,10 +91,6 @@ Outputs:
   ApiEndpoint:
     Value: !GetAtt Api.ApiEndpoint
   RegionalDomainName:
-    Value: !GetAtt Domain.RegionalDomainName
-  RegionalHostedZoneId:
-    Value: !GetAtt Domain.RegionalHostedZoneId
-  ApiRegionalDomainName:
     Value: !GetAtt ApiDomain.RegionalDomainName
-  ApiRegionalHostedZoneId:
+  RegionalHostedZoneId:
     Value: !GetAtt ApiDomain.RegionalHostedZoneId

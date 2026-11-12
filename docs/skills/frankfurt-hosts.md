@@ -6,7 +6,7 @@ The names are the VPC `tropical-nomads`, the database `tropical-nomads-frankfurt
 
 Run `node --test infra/frankfurt/test/templates.test.ts` and `pnpm --filter tropical-nomads-api test`.
 
-Check the live hosts with the local status page in [host-status.md](host-status.md). The API task is healthy. Its public address is outbound only. `https://api-dev.tropical-nomads.com` answers through the HTTP API, and the Amplify dev branch sets `API_BASE_URL` to that origin. The next change must not open port 5432 to the internet, put the task back behind a NAT gateway or a load balancer, put a password in git, attach www to the new Amplify app, or add Google or Apple without the owner's client ids.
+Check the live hosts with the local status page in [host-status.md](host-status.md). The API task is healthy. Its public address is outbound only. `https://api.tropical-nomads.com` answers through the HTTP API, and the Amplify dev branch sets `API_BASE_URL` to that origin. The next change must not open port 5432 to the internet, put the task back behind a NAT gateway or a load balancer, put a password in git, attach www to the new Amplify app, or add Google or Apple without the owner's client ids.
 
 ## Decisions
 
@@ -28,7 +28,7 @@ The owner asked for a separate repository named `tropical-nomads-aws`.
 
 - Problem: The API needs HTTPS on a hostname this account controls.
 - Options: An application load balancer, or an HTTP API with the existing certificate.
-- Why: `api-dev.tropical-nomads.com` is the HTTP API. www is not attached. The load balancer was removed.
+- Why: `api.tropical-nomads.com` is the HTTP API. www is not attached. The load balancer was removed.
 
 - Problem: A later listener reaches the task on the task network address. Loopback never sees that traffic.
 - Options: Bind every run to `0.0.0.0`, or keep loopback as the default and set `API_HOSTNAME` only on the ECS task.

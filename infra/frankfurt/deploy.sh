@@ -101,8 +101,7 @@ deploy_stack tn-frankfurt-ecr "$root/ecr-api.yaml"
 deploy_stack tn-frankfurt-amplify "$root/amplify-web-app.yaml" \
   --parameter-overrides "CognitoUserPoolId=${pool_id}" "CognitoClientId=${client_id}"
 deploy_stack tn-frankfurt-ecs-cluster "$root/ecs-cluster.yaml"
-cert_arn=$(aws_ff acm list-certificates --query "CertificateSummaryList[?DomainName=='api-dev.tropical-nomads.com'].CertificateArn | [0]" --output text)
-api_cert_arn=$(aws_ff acm list-certificates --query "CertificateSummaryList[?DomainName=='api.tropical-nomads.com'].CertificateArn | [0]" --output text)
+cert_arn=$(aws_ff acm list-certificates --query "CertificateSummaryList[?DomainName=='api.tropical-nomads.com'].CertificateArn | [0]" --output text)
 
 deploy_stack tn-frankfurt-rds "$root/rds-postgres.yaml" \
   --parameter-overrides "PrivateSubnetA=${private_a}" "PrivateSubnetB=${private_b}" "DbSecurityGroupId=${db_sg}"
@@ -137,7 +136,7 @@ deploy_stack tn-frankfurt-ecs-service "$root/ecs-service.yaml" \
   --parameter-overrides "ClusterName=${cluster}" "TaskDefinitionArn=${task_arn}" "VpcId=${vpc_id}" "PublicSubnetA=${public_a}" "PublicSubnetB=${public_b}" "ApiSecurityGroupId=${api_sg}"
 discovery_arn=$(stack_output tn-frankfurt-ecs-service DiscoveryServiceArn)
 deploy_stack tn-frankfurt-api-http "$root/api-http.yaml" \
-  --parameter-overrides "CertificateArn=${cert_arn}" "ApiCertificateArn=${api_cert_arn}" "DiscoveryServiceArn=${discovery_arn}" "PublicSubnetA=${public_a}" "PublicSubnetB=${public_b}" "VpcLinkSecurityGroupId=${link_sg}"
+  --parameter-overrides "CertificateArn=${cert_arn}" "DiscoveryServiceArn=${discovery_arn}" "PublicSubnetA=${public_a}" "PublicSubnetB=${public_b}" "VpcLinkSecurityGroupId=${link_sg}"
 
 deploy_stack tn-frankfurt-github-dev-deploy "$root/github-dev-deploy.yaml"
 

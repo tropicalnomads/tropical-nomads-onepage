@@ -19,7 +19,7 @@ Passwords stay in Amazon Cognito. The database password, when a database exists,
 | Amazon ECS cluster | 1 | Fargate. |
 | ECS service | 1 | Desired count 1. One task. |
 | Fargate task | 1 | Linux, 0.5 vCPU, 1 GB memory. One public address, used for outbound calls only. |
-| HTTP API | 1 | `api-dev.tropical-nomads.com`. Forwards to the task on port 8787 through a VPC link. |
+| HTTP API | 1 | `api.tropical-nomads.com`. Forwards to the task on port 8787 through a VPC link. |
 | Amazon RDS for PostgreSQL | 1 | `tropical-nomads-frankfurt`. `db.t4g.small`: 2 vCPU, 2 GiB memory. 20 GiB gp3, allowed to grow to 100 GiB. Backup retention 7 days. Private. Single-AZ. |
 | Amazon VPC | 1 | `10.0.0.0/16`. |
 | Public subnets | 2 | `10.0.0.0/24` and `10.0.1.0/24`. |
@@ -27,9 +27,9 @@ Passwords stay in Amazon Cognito. The database password, when a database exists,
 | CloudWatch log group | 1, for the API | Keep logs for 30 days. |
 | Secrets Manager secret | 2 | The RDS-managed database credential, and `tropical-nomads/api/session`. No value is written here. |
 | Amazon S3 bucket | 1 | Private assets bucket. The name is `tropical-nomads-assets-` plus the account id, which is not written here. Shop photos use the prefix `shop/`. |
-| Certificate | 1 | DNS-validated certificate for `api-dev.tropical-nomads.com`, on the HTTP API. |
+| Certificate | 1 | DNS-validated certificate for `api.tropical-nomads.com`, on the HTTP API. |
 
-PostgreSQL 16.15 is the version in the Frankfurt template. The API container port is `8787`. The HTTP API forwards `api-dev.tropical-nomads.com` to that port. www is not attached.
+PostgreSQL 16.15 is the version in the Frankfurt template. The API container port is `8787`. The HTTP API forwards `api.tropical-nomads.com` to that port. www is not attached.
 
 ## Templates
 

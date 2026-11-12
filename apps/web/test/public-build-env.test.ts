@@ -24,7 +24,7 @@ describe('public build environment', () => {
     const production = readFileSync(join(repo, '.env.production'), 'utf8');
     assert.equal(production.includes('COGNITO_USER_POOL_ID='), false);
     assert.equal(production.includes('COGNITO_CLIENT_ID='), false);
-    assert.match(production, /API_BASE_URL=https:\/\/api-dev\.tropical-nomads\.com\n/);
+    assert.match(production, /API_BASE_URL=https:\/\/api\.tropical-nomads\.com\n/);
     assert.equal(production.includes('elb.amazonaws.com'), false);
   });
 });

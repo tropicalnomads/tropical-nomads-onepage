@@ -49,7 +49,7 @@ Resources:
         - Name: NEXT_TELEMETRY_DISABLED
           Value: "1"
         - Name: API_BASE_URL
-          Value: https://api-dev.tropical-nomads.com
+          Value: https://api.tropical-nomads.com
         - Name: COGNITO_REGION
           Value: eu-central-1
         - Name: COGNITO_USER_POOL_ID

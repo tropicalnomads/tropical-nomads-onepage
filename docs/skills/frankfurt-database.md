@@ -14,11 +14,11 @@ The API image copies `database/` and the public catalog. Do not copy `data/opera
 
 ## Dev site
 
-`https://api-dev.tropical-nomads.com` is the custom domain on the HTTP API. The task's public address is outbound only. The Amplify `dev` branch has `API_BASE_URL=https://api-dev.tropical-nomads.com`. It does not have `DB_PASSWORD`. `ACCOUNT_SESSION_SECRET` is the Secrets Manager secret `tropical-nomads/api/session`, and the ECS task receives the same secret. Server actions that are only in this working tree are not on the Amplify branch until that code is pushed.
+`https://api.tropical-nomads.com` is the custom domain on the HTTP API. The task's public address is outbound only. The Amplify `dev` branch has `API_BASE_URL=https://api.tropical-nomads.com`. It does not have `DB_PASSWORD`. `ACCOUNT_SESSION_SECRET` is the Secrets Manager secret `tropical-nomads/api/session`, and the ECS task receives the same secret. Server actions that are only in this working tree are not on the Amplify branch until that code is pushed.
 
 ## Local development
 
-`pnpm dev:web` runs the website on `http://127.0.0.1:3100` with `API_BASE_URL=https://api-dev.tropical-nomads.com`. It does not start the API and does not open a database. Cognito lines and `ACCOUNT_SESSION_SECRET` stay in the gitignored `.env`.
+`pnpm dev:web` runs the website on `http://127.0.0.1:3100` with `API_BASE_URL=https://api.tropical-nomads.com`. It does not start the API and does not open a database. Cognito lines and `ACCOUNT_SESSION_SECRET` stay in the gitignored `.env`.
 
 `pnpm dev` runs the website and the API. The API reads a PostgreSQL 16 service on this machine. The gitignored `.env` holds:
 
