@@ -30,7 +30,7 @@ This folder holds short procedures for people working on Tropical Nomads.
 - [host-status.md](host-status.md) — the local page that reads the Frankfurt host status.
 - [cloudformation.md](cloudformation.md) — one template per resource, applied from `infra/frankfurt/deploy.sh`.
 - [cognito.md](cognito.md) — the web app user pool. Email sign-in. Google and Apple are not configured.
-- [rds-postgresql.md](rds-postgresql.md) — the private `db.t4g.small` PostgreSQL template.
+- [rds-postgresql.md](rds-postgresql.md) — the private `db.t4g.micro` PostgreSQL template.
 - [amplify-web.md](amplify-web.md) — the new web app's Amplify app. www stays the one-pager.
 - [ecs-api.md](ecs-api.md) — the private API container on Fargate.
 

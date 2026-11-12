@@ -18,9 +18,9 @@ Passwords stay in Amazon Cognito. The database password, when a database exists,
 | Amazon ECR repository | 1 | Keep the last 10 images. |
 | Amazon ECS cluster | 1 | Fargate. |
 | ECS service | 1 | Desired count 1. One task. |
-| Fargate task | 1 | Linux, 0.5 vCPU, 1 GB memory. One public address, used for outbound calls only. |
+| Fargate task | 1 | Linux, 0.25 vCPU, 0.5 GB memory. One public address, used for outbound calls only. |
 | HTTP API | 1 | `api.tropical-nomads.com`. Forwards to the task on port 8787 through a VPC link. |
-| Amazon RDS for PostgreSQL | 1 | `tropical-nomads-frankfurt`. `db.t4g.small`: 2 vCPU, 2 GiB memory. 20 GiB gp3, allowed to grow to 100 GiB. Backup retention 7 days. Private. Single-AZ. |
+| Amazon RDS for PostgreSQL | 1 | `tropical-nomads-frankfurt`. `db.t4g.micro`: 2 vCPU, 1 GiB memory. 20 GiB gp3, allowed to grow to 100 GiB. Backup retention 7 days. Private. Single-AZ. |
 | Amazon VPC | 1 | `10.0.0.0/16`. |
 | Public subnets | 2 | `10.0.0.0/24` and `10.0.1.0/24`. |
 | Private subnets | 2 | `10.0.10.0/24` and `10.0.11.0/24`. The database only. |
@@ -43,11 +43,11 @@ Cognito is the login. Google and Apple are later, in ticket 10. They are not cre
 
 The one-pager stays on its current Amplify publish path. The web app's Amplify app serves `dev.tropical-nomads.com` and calls the API. It does not hold the database password.
 
-The API image lives in one ECR repository. ECS runs one Fargate task at 0.5 vCPU and 1 GB. That pair is a valid Fargate size. A party of 100–200 people, and about five admins, does not need a second task.
+The API image lives in one ECR repository. ECS runs one Fargate task at 0.25 vCPU and 0.5 GB. That pair is the smallest Fargate size. A party of 100–200 people, and about five admins, does not need a second task.
 
 The HTTP API is the public door to the API. The task sits in the public subnets so it can reach Cognito, the image repository, and the private assets bucket without a NAT gateway. Its public address is outbound only: port 8787 accepts the VPC link, and the database stays in the private subnets.
 
-RDS uses private subnets in two availability zones. The database is one instance: `db.t4g.small`, 2 vCPU and 2 GiB. The disk starts at 20 GiB and may grow to 100 GiB. Backups are kept for 7 days. The instance is not publicly reachable. Aurora is not the choice. The API reads this database. The one-pager does not.
+RDS uses private subnets in two availability zones. The database is one instance: `db.t4g.micro`, 2 vCPU and 1 GiB. The disk starts at 20 GiB and may grow to 100 GiB. Backups are kept for 7 days. The instance is not publicly reachable. Aurora is not the choice. The API reads this database. The one-pager does not.
 
 ## Who can talk to what
 

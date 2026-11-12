@@ -47,7 +47,7 @@ Resources:
       DBInstanceIdentifier: tropical-nomads-frankfurt
       Engine: postgres
       EngineVersion: "16.15"
-      DBInstanceClass: db.t4g.small
+      DBInstanceClass: db.t4g.micro
       AllocatedStorage: 20
       MaxAllocatedStorage: 100
       StorageType: gp3

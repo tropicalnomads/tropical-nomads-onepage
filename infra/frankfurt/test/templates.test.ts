@@ -46,7 +46,7 @@ describe('Frankfurt templates', () => {
     const database = read(join(frankfurt, 'rds-postgres.yaml'));
     assert.match(database, /PubliclyAccessible: false/);
     assert.match(database, /MultiAZ: false/);
-    assert.match(database, /db\.t4g\.small/);
+    assert.match(database, /db\.t4g\.micro/);
     assert.match(database, /EngineVersion: "16\.15"/);
     assert.match(database, /ManageMasterUserPassword: true/);
     assert.match(database, /StorageEncrypted: true/);
@@ -182,8 +182,8 @@ describe('Frankfurt templates', () => {
     assert.equal(frontDoor.includes('www.tropical-nomads.com'), false);
     assert.match(service, /AssignPublicIp: ENABLED/);
     assert.equal(service.includes('LoadBalancers:'), false);
-    assert.match(task, /Cpu: "512"/);
-    assert.match(task, /Memory: "1024"/);
+    assert.match(task, /Cpu: "256"/);
+    assert.match(task, /Memory: "512"/);
     assert.equal(task.includes('DATABASE_URL'), false);
     assert.match(task, /ValueFrom: !Sub "\$\{DbSecretArn\}:password::"/);
     assert.match(task, /ValueFrom: !Sub "\$\{DbSecretArn\}:username::"/);

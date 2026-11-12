@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: One Fargate task for the Tropical Nomads API. 0.5 vCPU and 1 GB. The database password comes from Secrets Manager.
+Description: One Fargate task for the Tropical Nomads API. 0.25 vCPU and 0.5 GB. The database password comes from Secrets Manager.
 
 Parameters:
   ExecutionRoleArn:
@@ -41,8 +41,8 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: tropical-nomads-api
-      Cpu: "512"
-      Memory: "1024"
+      Cpu: "256"
+      Memory: "512"
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE

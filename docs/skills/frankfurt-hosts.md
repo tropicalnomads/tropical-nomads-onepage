@@ -10,7 +10,7 @@ Check the live hosts with the local status page in [host-status.md](host-status.
 
 ## Decisions
 
-The owner asked for one `db.t4g.small` in Frankfurt, single-AZ. The API uses that database. The one-pager stays on JSON.
+The database is one `db.t4g.micro` in Frankfurt, single-AZ. The API task is 0.25 vCPU and 0.5 GB. The one-pager stays on JSON.
 
 The owner asked for a separate repository named `tropical-nomads-aws`.
 
@@ -19,7 +19,7 @@ The owner asked for a separate repository named `tropical-nomads-aws`.
 - Why: The files have to be versioned and applied from a commit this pull request reviews.
 
 - Problem: The size record leaves the PostgreSQL version until the instance exists.
-- Options: PostgreSQL 16.15, or a newer major that Frankfurt offers on `db.t4g.small`.
+- Options: PostgreSQL 16.15, or a newer major that Frankfurt offers on `db.t4g.micro`.
 - Why: 16.15 is the newest PostgreSQL 16 for this class on gp3.
 
 - Problem: The pool has to exist for email sign-in, and Google and Apple need owner client ids that are not in the repo.
