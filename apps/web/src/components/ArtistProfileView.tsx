@@ -203,16 +203,9 @@ function EventList({
             </a>
 
             <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <a href={event.href} className={`rounded-sm font-display font-bold leading-tight text-ozora-cream underline-offset-4 transition hover:text-ozora-yellow hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise ${quiet ? 'text-xl' : 'text-2xl'}`}>
-                  {event.title}
-                </a>
-                {event.headliner ? (
-                  <span className="rounded-full bg-ozora-coral px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.12em] text-ozora-ink">
-                    {artistText(language, 'headliner')}
-                  </span>
-                ) : null}
-              </div>
+              <a href={event.href} className={`rounded-sm font-display font-bold leading-tight text-ozora-cream underline-offset-4 transition hover:text-ozora-yellow hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise ${quiet ? 'text-xl' : 'text-2xl'}`}>
+                {event.title}
+              </a>
               <p className="mt-2 flex items-center gap-2 text-sm font-medium text-ozora-cream/75">
                 <Calendar size={16} aria-hidden="true" />
                 {date}
