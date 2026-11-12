@@ -8,6 +8,7 @@ import { ShopMarkdown } from '../shop/markdown';
 import type { ShopImageSources } from '../shop/images';
 import { useShopProducts } from '../shop/product-context';
 import { ShopImagePlaceholder } from './ShopImagePlaceholder';
+import { ShopPhoto } from './ShopPhoto';
 import { Button } from './ui/Button';
 
 export type { ShopImageSources };
@@ -28,16 +29,22 @@ export function ShopCatalog({ imageSources }: { imageSources: ShopImageSources }
         <div className="mt-8 grid gap-5 sm:grid-cols-2">
           {products.map((product) => {
             const pieces = stockCount(product.stock);
+            const image = imageSources[product.id];
             return (
               <article key={product.id} className={cardClass}>
-                <a href={`/shop/${product.id}`} className="block">
+                {image ? (
+                  <ShopPhoto
+                    src={image}
+                    alt={product.name}
+                    frameClassName="flex aspect-[4/5] items-center justify-center bg-ozora-cream/[0.04] p-6"
+                    imageClassName="max-h-full w-full object-contain transition duration-300 group-hover:scale-[1.02]"
+                  />
+                ) : (
                   <div className="flex aspect-[4/5] items-center justify-center bg-ozora-cream/[0.04] p-6">
-                    {imageSources[product.id] ? (
-                      <img src={imageSources[product.id]} alt={product.name} className="max-h-full w-full object-contain transition duration-300 group-hover:scale-[1.02]" />
-                    ) : (
-                      <ShopImagePlaceholder />
-                    )}
+                    <ShopImagePlaceholder />
                   </div>
+                )}
+                <a href={`/shop/${product.id}`} className="block">
                   <div className="space-y-2 p-5">
                     <h2 className="font-display text-2xl font-bold text-ozora-cream">{product.name}</h2>
                     <div className="text-sm leading-relaxed text-ozora-cream/70">

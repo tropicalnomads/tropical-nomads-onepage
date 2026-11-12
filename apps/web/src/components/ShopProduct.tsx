@@ -14,6 +14,7 @@ import { ShopAddedPanel } from './ShopAddedPanel';
 import { ShopMissing } from './ShopCatalog';
 import { Button } from './ui/Button';
 import { ShopImagePlaceholder } from './ShopImagePlaceholder';
+import { ShopPhoto } from './ShopPhoto';
 import { QuantityStepper } from './ShopQuantity';
 
 export function ShopProduct({ productId, image }: { productId: string; image?: string }) {
@@ -57,9 +58,17 @@ export function ShopProduct({ productId, image }: { productId: string; image?: s
           {shopText(language, 'back')}
         </Button>
         <div className="grid gap-8 md:grid-cols-[minmax(0,22rem)_1fr] md:items-start">
-          <div className="flex aspect-[4/5] items-center justify-center rounded-3xl border border-white/10 bg-ozora-cream/[0.04] p-6">
-            {image ? <img src={image} alt={product.name} className="max-h-full w-full object-contain" /> : <ShopImagePlaceholder />}
-          </div>
+          {image ? (
+            <ShopPhoto
+              src={image}
+              alt={product.name}
+              frameClassName="flex aspect-[4/5] items-center justify-center rounded-3xl border border-white/10 bg-ozora-cream/[0.04] p-6"
+            />
+          ) : (
+            <div className="flex aspect-[4/5] items-center justify-center rounded-3xl border border-white/10 bg-ozora-cream/[0.04] p-6">
+              <ShopImagePlaceholder />
+            </div>
+          )}
           <div>
             <h1 className="font-display text-4xl font-bold tracking-tight text-ozora-cream">{product.name}</h1>
             <div className="mt-2 text-sm leading-relaxed text-ozora-cream/70">

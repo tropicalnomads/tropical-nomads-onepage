@@ -10,6 +10,7 @@ import { linePrice, shopTotalLabel } from '../shop/order';
 import { useShopProducts } from '../shop/product-context';
 import { useShopCart } from '../shop/useShopCart';
 import type { ShopImageSources } from '../shop/images';
+import { ShopPhoto } from './ShopPhoto';
 import { QuantityStepper } from './ShopQuantity';
 import { ShopSteps } from './ShopSteps';
 import { Button } from './ui/Button';
@@ -43,11 +44,18 @@ export function ShopCart({ imageSources }: { imageSources: ShopImageSources }) {
                 if (!product) {
                   return null;
                 }
+                const image = imageSources[line.productId];
                 return (
                   <article key={`${line.productId}-${line.size}`} className="flex gap-4 rounded-3xl border border-white/10 bg-ozora-navy/55 p-4">
-                    <a href={`/shop/${line.productId}`} className="flex h-24 w-20 shrink-0 items-center justify-center rounded-2xl bg-ozora-cream/[0.04] p-1">
-                      {imageSources[line.productId] ? <img src={imageSources[line.productId]} alt="" className="max-h-full w-full object-contain" /> : null}
-                    </a>
+                    {image ? (
+                      <ShopPhoto
+                        src={image}
+                        alt={product.name}
+                        frameClassName="flex h-24 w-20 shrink-0 items-center justify-center rounded-2xl bg-ozora-cream/[0.04] p-1"
+                      />
+                    ) : (
+                      <div className="h-24 w-20 shrink-0 rounded-2xl bg-ozora-cream/[0.04]" />
+                    )}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-3">
                         <div>

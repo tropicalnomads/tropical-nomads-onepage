@@ -194,6 +194,14 @@ describe('shop', () => {
     assert.equal(catalog.includes("shopText(language, 'admin')"), false);
     assert.equal(product.includes('location.assign'), false);
     assert.equal(product.includes('ShopAddedPanel'), true);
+    assert.equal(catalog.includes('ShopPhoto'), true);
+    assert.equal(product.includes('ShopPhoto'), true);
+    assert.equal(cart.includes('ShopPhoto'), true);
+    const photo = readFileSync(new URL('../src/components/ShopPhoto.tsx', import.meta.url), 'utf8');
+    assert.equal(photo.includes('Maximize2'), true);
+    assert.equal(photo.includes('Minimize2'), true);
+    assert.equal(photo.includes("shopText(language, 'enlarge')"), true);
+    assert.equal(photo.includes("shopText(language, 'shrink')"), true);
     assert.equal(added.includes('/shop/cart'), true);
     assert.equal(added.includes('continue'), true);
     assert.equal(cart.includes('postalCode'), false);

@@ -110,6 +110,8 @@ export interface ShopCopy {
   added: string;
   viewCart: string;
   close: string;
+  enlarge: string;
+  shrink: string;
   checkout: string;
   next: string;
   review: string;
@@ -246,6 +248,8 @@ export const shopCopy: Record<Locale, ShopCopy> = {
     added: 'Added to cart',
     viewCart: 'View cart',
     close: 'Close',
+    enlarge: 'Maximize photo',
+    shrink: 'Minimize photo',
     checkout: 'Proceed to checkout',
     next: 'Continue',
     review: 'Review',
@@ -380,6 +384,8 @@ export const shopCopy: Record<Locale, ShopCopy> = {
     added: 'Adicionado ao carrinho',
     viewCart: 'Ver carrinho',
     close: 'Fechar',
+    enlarge: 'Ampliar foto',
+    shrink: 'Reduzir foto',
     checkout: 'Finalizar compra',
     next: 'Continuar',
     review: 'Revisão',
