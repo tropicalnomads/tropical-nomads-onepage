@@ -41,6 +41,7 @@ describe('my orders', () => {
     assert.equal(tickets.includes("publicHref('/upcoming-events', language)"), true);
     assert.equal(tickets.includes("ticketText(language, 'browse')"), true);
     assert.equal(orders.includes("orderText(language, 'browse')"), true);
+    assert.equal(orders.includes("shopText(language, 'continue')"), true);
     assert.equal(tickets.includes("shellText(language, 'calendar')"), false);
     assert.equal(shellCopy.en.tickets.browse, 'Check upcoming parties');
     assert.equal(shellCopy.pt.tickets.browse, 'Ver as próximas festas');

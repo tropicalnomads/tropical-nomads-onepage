@@ -112,13 +112,18 @@ export function MyOrders({ signedIn, orders }: { signedIn: boolean; orders: read
             </EmptyState>
           </div>
         ) : (
-          <ul className="mt-6 space-y-4">
-            {orders.map((order) => (
-              <li key={order.id}>
-                <OrderCard order={order} />
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul className="mt-6 space-y-4">
+              {orders.map((order) => (
+                <li key={order.id}>
+                  <OrderCard order={order} />
+                </li>
+              ))}
+            </ul>
+            <Button href={publicHref('/shop', language)} tone="ghost" className="mt-6">
+              {shopText(language, 'continue')}
+            </Button>
+          </>
         )}
       </div>
     </section>
