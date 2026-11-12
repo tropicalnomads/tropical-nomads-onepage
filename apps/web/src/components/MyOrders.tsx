@@ -107,10 +107,9 @@ export function MyOrders({ signedIn, orders, selectedId }: { signedIn: boolean; 
           </div>
         ) : orders.length === 0 ? (
           <div className="mt-6">
-            <EmptyState title={orderText(language, 'emptyTitle')} description={orderText(language, 'emptyBody')} />
-            <Button href={publicHref('/shop', language)} className="mt-4">
-              {areaText(language, 'shop')}
-            </Button>
+            <EmptyState title={orderText(language, 'emptyTitle')} description={orderText(language, 'emptyBody')}>
+              <Button href={publicHref('/shop', language)}>{orderText(language, 'browse')}</Button>
+            </EmptyState>
           </div>
         ) : (
           <div className="mt-6 grid gap-4 md:grid-cols-[16rem_minmax(0,1fr)]">

@@ -424,6 +424,7 @@ export interface OrdersCopy {
   signInBody: string;
   emptyTitle: string;
   emptyBody: string;
+  browse: string;
   payNow: string;
   payNowNote: string;
   viewTicket: string;
@@ -440,6 +441,7 @@ export interface TicketCopy {
   signInBody: string;
   emptyTitle: string;
   emptyBody: string;
+  browse: string;
   unpaid: string;
   notValid: string;
   ready: string;
@@ -559,6 +561,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       signInBody: 'Tickets stay on your account. The QR code is not on this page until you sign in.',
       emptyTitle: 'No tickets yet',
       emptyBody: 'A ticket you buy for a published party will show up here.',
+      browse: 'Check upcoming parties',
       unpaid: 'Payment is not confirmed.',
       notValid: 'This ticket is not valid for entry.',
       ready: 'This ticket is ready for entry.',
@@ -573,6 +576,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       signInBody: 'Shop orders stay on your account. They are not on this page until you sign in.',
       emptyTitle: 'No orders yet',
       emptyBody: 'A shirt you order will show up here.',
+      browse: 'Check the shop',
       payNow: 'Pay now',
       payNowNote: 'The team confirms the payment. This order stays unpaid until then.',
       viewTicket: 'View ticket',
@@ -977,6 +981,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       signInBody: 'Os ingressos ficam na sua conta. O QR não aparece nesta página antes de entrar.',
       emptyTitle: 'Nenhum ingresso ainda',
       emptyBody: 'Um ingresso comprado para uma festa publicada aparece aqui.',
+      browse: 'Ver as próximas festas',
       unpaid: 'O pagamento não está confirmado.',
       notValid: 'Este ingresso não vale para entrar.',
       ready: 'Este ingresso vale para entrar.',
@@ -991,6 +996,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       signInBody: 'Os pedidos da loja ficam na sua conta. Eles não aparecem nesta página antes de entrar.',
       emptyTitle: 'Nenhum pedido ainda',
       emptyBody: 'Uma camiseta pedida aparece aqui.',
+      browse: 'Ver a loja',
       payNow: 'Pagar agora',
       payNowNote: 'A equipe confirma o pagamento. Este pedido continua não pago até lá.',
       viewTicket: 'Ver ingresso',

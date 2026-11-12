@@ -13,6 +13,7 @@
     "./check-in": "./src/check-in.ts",
     "./parties": "./src/parties.ts",
     "./orders": "./src/order-views.ts",
+    "./shop-pay-url": "./src/shop-pay-url.ts",
     "./artists": "./src/artists.ts"
   },
   "scripts": {

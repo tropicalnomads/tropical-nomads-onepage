@@ -1,7 +1,7 @@
 'use client';
 
 import { useSignInHref } from '../account/use-return-path';
-import { accountText, areaText, shellText, ticketText } from '../i18n/copy';
+import { accountText, areaText, ticketText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { publicHref } from '../seo/urls';
 import { EmptyState } from '../../../one-pager/src/components/EmptyState';
@@ -35,10 +35,9 @@ export function MyTickets({ signedIn, tickets }: { signedIn: boolean; tickets: r
           </div>
         ) : tickets.length === 0 ? (
           <div className="mt-6">
-            <EmptyState title={ticketText(language, 'emptyTitle')} description={ticketText(language, 'emptyBody')} />
-            <Button href={publicHref('/upcoming-events', language)} className="mt-4">
-              {shellText(language, 'calendar')}
-            </Button>
+            <EmptyState title={ticketText(language, 'emptyTitle')} description={ticketText(language, 'emptyBody')}>
+              <Button href={publicHref('/upcoming-events', language)}>{ticketText(language, 'browse')}</Button>
+            </EmptyState>
           </div>
         ) : (
           <div className="mt-6 grid gap-4 md:grid-cols-[16rem_minmax(0,1fr)]">

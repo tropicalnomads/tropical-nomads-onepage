@@ -13,7 +13,7 @@ import { reconcileUnpaidShopStock } from './shop-stock.ts';
 import { readStoredProducts } from './sql-store.ts';
 import { loadIssuedTickets, loadOrders, loadPartyTitles } from './tickets.ts';
 
-const shopPayNumber = '4917648996011';
+export { shopPayUrl } from './shop-pay-url.ts';
 
 export interface OrderCatalogProduct {
   id: string;
@@ -126,10 +126,6 @@ function payMessages(order: Order, lines: readonly OwnOrderLine[], amount: numbe
     return [heading, '', orderLine, '', ...rows, '', ...(address.length > 0 ? [deliveryLabel, ...address, ''] : []), `${totalLabel} ${money(amount, currency)}`].join('\n');
   };
   return { en: write('en'), pt: write('pt') };
-}
-
-export function shopPayUrl(message: string): string {
-  return `https://wa.me/${shopPayNumber}?text=${encodeURIComponent(message)}`;
 }
 
 function lineViews(order: Order, products: readonly OrderCatalogProduct[], titles: ReadonlyMap<string, string>, tickets: readonly OrderTicketRef[]): OwnOrderLine[] {

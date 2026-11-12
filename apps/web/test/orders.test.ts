@@ -1,6 +1,16 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
+
+function staticallyImportsOrders(source: string): boolean {
+  return source.split('\n').some((line) => {
+    const trimmed = line.trim();
+    if (!trimmed.includes("from 'tropical-nomads-api/orders'") && !trimmed.includes('from "tropical-nomads-api/orders"')) {
+      return false;
+    }
+    return !trimmed.startsWith('import type ');
+  });
+}
 import { shellCopy } from '../src/i18n/copy.ts';
 import { robotDisallows } from '../src/seo/robots.ts';
 import { isPublicPath } from '../src/seo/urls.ts';
@@ -26,7 +36,13 @@ describe('my orders', () => {
     assert.equal(tickets.includes('text-2xl font-bold text-ozora-cream md:text-3xl'), true);
     assert.equal(orders.includes("publicHref('/shop', language)"), true);
     assert.equal(tickets.includes("publicHref('/upcoming-events', language)"), true);
-    assert.equal(tickets.includes("shellText(language, 'calendar')"), true);
+    assert.equal(tickets.includes("ticketText(language, 'browse')"), true);
+    assert.equal(orders.includes("orderText(language, 'browse')"), true);
+    assert.equal(tickets.includes("shellText(language, 'calendar')"), false);
+    assert.equal(shellCopy.en.tickets.browse, 'Check upcoming parties');
+    assert.equal(shellCopy.pt.tickets.browse, 'Ver as próximas festas');
+    assert.equal(shellCopy.en.orders.browse, 'Check the shop');
+    assert.equal(shellCopy.pt.orders.browse, 'Ver a loja');
     assert.equal(orders.includes('shopOrderMessage'), false);
     assert.equal(orders.includes('wa.me'), false);
     assert.equal(isPublicPath('/my-orders'), false);
@@ -54,5 +70,22 @@ describe('my orders', () => {
     assert.equal(view.includes('wa.me'), false);
     assert.equal(shop.includes('href="/admin/orders"'), true);
     assert.equal(shop.includes('order.buyer'), false);
+  });
+
+  it('keeps the S3 client out of the order pages', () => {
+    const present = readFileSync(new URL('../src/orders/present.ts', import.meta.url), 'utf8');
+    const load = readFileSync(new URL('../src/orders/load.ts', import.meta.url), 'utf8');
+    const action = readFileSync(new URL('../src/admin/order-actions.ts', import.meta.url), 'utf8');
+    const buyerPage = readFileSync(new URL('../app/my-orders/page.tsx', import.meta.url), 'utf8');
+    const adminPage = readFileSync(new URL('../app/admin/orders/page.tsx', import.meta.url), 'utf8');
+    const payUrl = readFileSync(new URL('../../api/src/shop-pay-url.ts', import.meta.url), 'utf8');
+    for (const source of [present, load, action, buyerPage, adminPage]) {
+      assert.equal(staticallyImportsOrders(source), false);
+    }
+    assert.equal(present.includes("from 'tropical-nomads-api/shop-pay-url'"), true);
+    assert.equal(load.includes("await import('tropical-nomads-api/orders')"), true);
+    assert.equal(action.includes("await import('tropical-nomads-api/orders')"), true);
+    assert.equal(payUrl.includes('object-store'), false);
+    assert.equal(payUrl.includes('client-s3'), false);
   });
 });

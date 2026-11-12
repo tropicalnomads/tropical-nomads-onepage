@@ -1,7 +1,6 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { markOrderPaid } from 'tropical-nomads-api/orders';
 import { apiOrigin } from '../api-origin.ts';
 import { callPrivate } from '../remote-store.ts';
 import { adminActor } from './actions.ts';
@@ -28,6 +27,7 @@ export async function markOrderPaidAction(orderId: string): Promise<MarkPaidResu
     if (apiOrigin()) {
       await callPrivate('mark-order-paid', { orderId });
     } else {
+      const { markOrderPaid } = await import('tropical-nomads-api/orders');
       await markOrderPaid(actor.actorId, orderId);
     }
   } catch (error) {

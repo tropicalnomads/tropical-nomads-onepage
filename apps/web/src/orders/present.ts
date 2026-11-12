@@ -1,4 +1,5 @@
-import { shopPayUrl, type AdminOrderView, type OwnOrderView } from 'tropical-nomads-api/orders';
+import type { AdminOrderView, OwnOrderView } from 'tropical-nomads-api/orders';
+import { shopPayUrl } from 'tropical-nomads-api/shop-pay-url';
 import type { AdminOrderCardView, OrderCardView, OrderLineView } from './types.ts';
 
 function linesOf(view: OwnOrderView): OrderLineView[] {
