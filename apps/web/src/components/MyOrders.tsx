@@ -12,6 +12,19 @@ import { publicHref } from '../seo/urls';
 import { EmptyState } from '../../../one-pager/src/components/EmptyState';
 import { Button } from './ui/Button';
 
+function statusClass(status: OrderCardView['status']): string {
+  switch (status) {
+    case 'pending_provider':
+      return 'bg-ozora-yellow/10 text-ozora-yellow';
+    case 'confirmed':
+      return 'bg-emerald-400/10 text-emerald-300';
+    default: {
+      const unexpected: never = status;
+      return unexpected;
+    }
+  }
+}
+
 function statusLabel(status: OrderCardView['status'], language: Locale): string {
   switch (status) {
     case 'pending_provider':
@@ -41,17 +54,6 @@ function payHref(order: OrderCardView, language: Locale): string | undefined {
   }
 }
 
-function orderTitle(order: OrderCardView): string {
-  const names = order.lines.map((line) => line.name).filter((name) => name.trim() !== '');
-  if (names.length === 0) {
-    return order.id;
-  }
-  if (names.length === 1) {
-    return names[0] ?? order.id;
-  }
-  return `${names[0]} +${names.length - 1}`;
-}
-
 function lineSize(line: OrderLineView, language: Locale): string | undefined {
   switch (line.kind) {
     case 'shop':
@@ -70,11 +72,11 @@ function OrderLine({ line }: { line: OrderLineView }) {
   const size = lineSize(line, language);
   return (
     <li className="flex gap-4">
-      <div className="flex h-24 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#FFF8E7] p-1">
+      <div className="flex h-28 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#FFF8E7] p-1">
         {line.kind === 'shop' && line.image ? <img src={line.image} alt="" className="h-full w-full object-contain" /> : null}
       </div>
-      <div className="min-w-0 flex-1">
-        <p className="font-semibold text-ozora-cream">{line.name}</p>
+      <div className="min-w-0 flex-1 py-1">
+        <p className="font-display text-lg font-bold text-ozora-cream">{line.name}</p>
         {size ? (
           <p className="mt-1 text-sm text-ozora-cream/75">
             {shopText(language, 'size')} {size}
@@ -88,16 +90,14 @@ function OrderLine({ line }: { line: OrderLineView }) {
   );
 }
 
-export function MyOrders({ signedIn, orders, selectedId }: { signedIn: boolean; orders: readonly OrderCardView[]; selectedId?: string }) {
+export function MyOrders({ signedIn, orders }: { signedIn: boolean; orders: readonly OrderCardView[] }) {
   const { language } = useLanguage();
   const signInHref = useSignInHref();
-  const label = areaText(language, 'my-orders');
-  const open = orders.find((order) => order.id === selectedId);
 
   return (
     <section className="px-5 py-8 md:px-8">
       <div className="mx-auto max-w-5xl">
-        <h1 className="text-2xl font-bold text-ozora-cream md:text-3xl">{label}</h1>
+        <h1 className="text-2xl font-bold text-ozora-cream md:text-3xl">{areaText(language, 'my-orders')}</h1>
         {!signedIn ? (
           <div className="mt-6">
             <EmptyState title={orderText(language, 'signInTitle')} description={orderText(language, 'signInBody')} />
@@ -112,64 +112,78 @@ export function MyOrders({ signedIn, orders, selectedId }: { signedIn: boolean; 
             </EmptyState>
           </div>
         ) : (
-          <div className="mt-6 grid gap-4 md:grid-cols-[16rem_minmax(0,1fr)]">
-            <ul className="space-y-2">
-              {orders.map((order) => {
-                const selected = order.id === open?.id;
-                const size = order.lines[0] ? lineSize(order.lines[0], language) : undefined;
-                return (
-                  <li key={order.id}>
-                    <a
-                      href={`/my-orders?order=${order.id}`}
-                      className={`block rounded-xl border px-3 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise ${
-                        selected ? 'border-ozora-yellow/60 bg-ozora-yellow/10' : 'border-white/10 bg-black/20'
-                      }`}
-                    >
-                      <span className="block font-semibold text-ozora-cream">{orderTitle(order)}</span>
-                      {size ? <span className="mt-1 block text-sm text-ozora-cream/75">{size}</span> : null}
-                      <time dateTime={order.createdAt} className="mt-1 block text-xs text-ozora-cream/60">
-                        {orderWhen(order.createdAt, language)}
-                      </time>
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-            {open ? (
-              <OrderDetail order={open} />
-            ) : null}
-          </div>
+          <ul className="mt-6 space-y-4">
+            {orders.map((order) => (
+              <li key={order.id}>
+                <OrderCard order={order} />
+              </li>
+            ))}
+          </ul>
         )}
       </div>
     </section>
   );
 }
 
-function OrderDetail({ order }: { order: OrderCardView }) {
+function OrderCard({ order }: { order: OrderCardView }) {
   const { language } = useLanguage();
-  const place = [order.city, order.country].filter((part) => part.trim() !== '').join(' · ');
+  const place = [order.city, order.country]
+    .map((part) => part.trim())
+    .filter((part) => part !== '')
+    .join(' · ');
   const href = payHref(order, language);
+
   return (
-    <article className="rounded-2xl border border-white/10 bg-black/20 p-4 md:p-6">
-      <h2 className="text-lg font-semibold text-ozora-cream">{orderTitle(order)}</h2>
-      <p className="mt-2 text-sm text-ozora-yellow">{statusLabel(order.status, language)}</p>
-      {href ? <p className="mt-1 text-sm text-ozora-cream/80">{orderText(language, 'payNowNote')}</p> : null}
-      {place !== '' ? <p className="mt-1 text-sm text-ozora-cream/80">{place}</p> : null}
-      <ul className="mt-4 space-y-3">
+    <article className="overflow-hidden rounded-3xl border border-white/10 bg-ozora-navy/55">
+      <header className="border-b border-white/10 bg-black/20 px-4 py-3 md:px-5">
+        <div className="grid grid-cols-2 gap-x-5 gap-y-3 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,0.8fr)_minmax(0,1fr)_auto] sm:items-end">
+          <div>
+            <p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-ozora-cream/55">
+              {orderText(language, 'placed')}
+            </p>
+            <time dateTime={order.createdAt} className="mt-0.5 block text-sm text-ozora-cream">
+              {orderWhen(order.createdAt, language)}
+            </time>
+          </div>
+          <div>
+            <p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-ozora-cream/55">
+              {shopText(language, 'total')}
+            </p>
+            <p className="mt-0.5 font-bold text-ozora-yellow">{shopAmountLabel(order.amount, order.currency)}</p>
+          </div>
+          <div>
+            {place !== '' ? (
+              <>
+                <p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-ozora-cream/55">
+                  {orderText(language, 'shipsTo')}
+                </p>
+                <p className="mt-0.5 text-sm text-ozora-cream">{place}</p>
+              </>
+            ) : null}
+            <p className={`${place !== '' ? 'mt-1' : ''} text-xs text-ozora-cream/50`}>{order.id}</p>
+          </div>
+          <div className="col-span-2 justify-self-start sm:col-span-1 sm:justify-self-end">
+            <span className={`inline-flex rounded-full px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-[0.12em] ${statusClass(order.status)}`}>
+              {statusLabel(order.status, language)}
+            </span>
+          </div>
+        </div>
+      </header>
+      <ul className="space-y-4 px-4 py-5 md:px-5">
         {order.lines.map((line, index) => (
           <OrderLine key={`${order.id}-${index}`} line={line} />
         ))}
       </ul>
-      <p className="mt-4 text-sm font-semibold uppercase tracking-[0.14em] text-ozora-cream/60">{shopText(language, 'total')}</p>
-      <p className="text-2xl font-bold text-ozora-yellow">{shopAmountLabel(order.amount, order.currency)}</p>
       {href ? (
-        <Button href={href} target="_blank" rel="noopener noreferrer" className="mt-4">
-          {orderText(language, 'payNow')}
-        </Button>
+        <footer className="border-t border-white/10 px-4 py-4 md:px-5">
+          <div className="sm:flex sm:items-center sm:justify-between sm:gap-5">
+            <p className="text-xs leading-relaxed text-ozora-cream/55">{orderText(language, 'payNowNote')}</p>
+            <Button href={href} target="_blank" rel="noopener noreferrer" className="mt-3 shrink-0 sm:mt-0">
+              {orderText(language, 'payNow')}
+            </Button>
+          </div>
+        </footer>
       ) : null}
-      <Button href="/my-orders" tone="back" size="sm" className="mt-4">
-        {orderText(language, 'openOrders')}
-      </Button>
     </article>
   );
 }

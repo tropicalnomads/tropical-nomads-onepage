@@ -425,6 +425,8 @@ export interface OrdersCopy {
   emptyTitle: string;
   emptyBody: string;
   browse: string;
+  placed: string;
+  shipsTo: string;
   payNow: string;
   payNowNote: string;
   viewTicket: string;
@@ -577,6 +579,8 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       emptyTitle: 'No orders yet',
       emptyBody: 'A shirt you order will show up here.',
       browse: 'Check the shop',
+      placed: 'Placed',
+      shipsTo: 'Ships to',
       payNow: 'Pay now',
       payNowNote: 'The team confirms the payment. This order stays unpaid until then.',
       viewTicket: 'View ticket',
@@ -997,6 +1001,8 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       emptyTitle: 'Nenhum pedido ainda',
       emptyBody: 'Uma camiseta pedida aparece aqui.',
       browse: 'Ver a loja',
+      placed: 'Pedido em',
+      shipsTo: 'Envia para',
       payNow: 'Pagar agora',
       payNowNote: 'A equipe confirma o pagamento. Este pedido continua não pago até lá.',
       viewTicket: 'Ver ingresso',

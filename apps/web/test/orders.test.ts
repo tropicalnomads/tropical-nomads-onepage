@@ -27,10 +27,13 @@ describe('my orders', () => {
     assert.equal(header.indexOf('href="/my-tickets"') < header.indexOf('href="/my-orders"'), true);
     assert.equal(complete.includes('href="/my-orders"'), true);
     assert.equal(page.includes('loadSnapshot'), false);
-    assert.equal(page.includes('searchParams'), true);
+    assert.equal(page.includes('searchParams'), false);
     assert.equal(page.includes("purpose === 'shop'"), true);
     assert.equal(page.includes('own-orders') || page.includes('loadOwnOrders'), true);
-    assert.equal(orders.includes('md:grid-cols-[16rem_minmax(0,1fr)]'), true);
+    assert.equal(orders.includes('md:grid-cols-[16rem_minmax(0,1fr)]'), false);
+    assert.equal(orders.includes('?order='), false);
+    assert.equal(orders.includes('rounded-3xl'), true);
+    assert.equal(orders.includes("orderText(language, 'placed')"), true);
     assert.equal(tickets.includes('md:grid-cols-[16rem_minmax(0,1fr)]'), true);
     assert.equal(orders.includes('text-2xl font-bold text-ozora-cream md:text-3xl'), true);
     assert.equal(tickets.includes('text-2xl font-bold text-ozora-cream md:text-3xl'), true);
