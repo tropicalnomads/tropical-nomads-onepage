@@ -83,6 +83,16 @@ export interface IssuedTicket {
   secret: string;
   createdAt: string;
   validForEntry: boolean;
+  ownerName?: string;
+  ownerEmail?: string;
+}
+
+/** One purchase can name at most this many ticket owners. */
+export const ticketOwnerLimit = 10;
+
+export interface TicketOwner {
+  fullName: string;
+  email: string;
 }
 
 export interface QrPayload {
@@ -253,7 +263,7 @@ export function parseIssuedTicket(input: unknown, refs: SchemaRefs = {}): ParseR
   const read = readRecord(input);
   if (!read.ok) return read;
   const errors: string[] = [];
-  rejectUnknown(read.value, ['id', 'partyId', 'traceId', 'buyerId', 'secret', 'createdAt', 'validForEntry'], errors);
+  rejectUnknown(read.value, ['id', 'partyId', 'traceId', 'buyerId', 'secret', 'createdAt', 'validForEntry', 'ownerName', 'ownerEmail'], errors);
   rejectSensitive(read.value, errors, ['secret']);
   const id = requireString(read.value, 'id', errors);
   const partyId = requireString(read.value, 'partyId', errors);
@@ -261,13 +271,46 @@ export function parseIssuedTicket(input: unknown, refs: SchemaRefs = {}): ParseR
   const buyerId = requireString(read.value, 'buyerId', errors);
   const secret = requireString(read.value, 'secret', errors);
   const createdAt = requireString(read.value, 'createdAt', errors);
+  const rawOwnerName = optionalString(read.value, 'ownerName', errors);
+  const rawOwnerEmail = optionalString(read.value, 'ownerEmail', errors);
+  const ownerName = rawOwnerName === undefined ? undefined : personName(rawOwnerName, errors, 'ownerName');
+  const ownerEmail = rawOwnerEmail === undefined ? undefined : ownerEmailAddress(rawOwnerEmail, errors, 'ownerEmail');
   if (partyId) requireRef(refs.partyIds, partyId, 'partyId', errors);
   if (traceId) requireRef(refs.traceIds, traceId, 'traceId', errors);
   if (buyerId) requireRef(refs.profileIds, buyerId, 'buyerId', errors);
   if (secret && partyId && secret === partyId) errors.push('secret must not be the public party id');
   if (typeof read.value.validForEntry !== 'boolean') errors.push('validForEntry must be a boolean');
   if (!id || !partyId || !traceId || !buyerId || !secret || !createdAt || typeof read.value.validForEntry !== 'boolean') return fail(errors);
-  return finish(errors, { id, partyId, traceId, buyerId, secret, createdAt, validForEntry: read.value.validForEntry });
+  const ticket: IssuedTicket = { id, partyId, traceId, buyerId, secret, createdAt, validForEntry: read.value.validForEntry };
+  if (ownerName) ticket.ownerName = ownerName;
+  if (ownerEmail) ticket.ownerEmail = ownerEmail;
+  return finish(errors, ticket);
+}
+
+/** Names and emails for one purchase. An empty list, a blank field, or more than the limit is refused. */
+export function parseTicketOwners(input: unknown): ParseResult<TicketOwner[]> {
+  if (!Array.isArray(input) || input.length < 1 || input.length > ticketOwnerLimit) {
+    return fail('owner is required');
+  }
+  const errors: string[] = [];
+  const owners: TicketOwner[] = [];
+  for (const item of input) {
+    if (!isRecord(item)) {
+      errors.push('owner is required');
+      continue;
+    }
+    rejectUnknown(item, ['fullName', 'email'], errors);
+    rejectSensitive(item, errors);
+    const rawName = requireString(item, 'fullName', errors);
+    const rawEmail = requireString(item, 'email', errors);
+    const fullName = rawName ? personName(rawName, errors, 'fullName') : undefined;
+    const email = rawEmail ? ownerEmailAddress(rawEmail, errors, 'email') : undefined;
+    if (fullName && email) owners.push({ fullName, email });
+  }
+  if (owners.length !== input.length) {
+    return fail(errors.length > 0 ? errors : ['owner is required']);
+  }
+  return finish(errors, owners);
 }
 
 export function parseQrPayload(input: unknown): ParseResult<QrPayload> {
@@ -347,6 +390,15 @@ function personName(value: string, errors: string[], field: string): string | un
     return undefined;
   }
   return name;
+}
+
+function ownerEmailAddress(value: string, errors: string[], field: string): string | undefined {
+  const email = value.trim().toLowerCase();
+  if (email === '' || email.length > 160 || !email.includes('@') || email.startsWith('@') || email.endsWith('@') || /\s/.test(email) || /[\u0000-\u001f]/.test(email)) {
+    errors.push(`${field} is not an email`);
+    return undefined;
+  }
+  return email;
 }
 
 export function parseGuestList(input: unknown, refs: SchemaRefs = {}): ParseResult<GuestList> {

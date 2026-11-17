@@ -30,7 +30,7 @@ const nextConfig: NextConfig = {
   typedRoutes: false,
   poweredByHeader: false,
   transpilePackages: ['tropical-nomads-shared', 'tropical-nomads-api'],
-  serverExternalPackages: ['@aws-sdk/client-cognito-identity-provider'],
+  serverExternalPackages: ['@aws-sdk/client-cognito-identity-provider', '@aws-sdk/client-sesv2'],
   outputFileTracingRoot: repoRoot,
   outputFileTracingIncludes: {
     '/*': [

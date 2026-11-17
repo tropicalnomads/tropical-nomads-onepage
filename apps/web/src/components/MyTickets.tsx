@@ -11,6 +11,7 @@ export interface TicketRow {
   id: string;
   title: string;
   offerName: string;
+  ownerName: string;
   createdAt: string;
   ready: boolean;
   qrSvg?: string;
@@ -51,6 +52,7 @@ export function MyTickets({ signedIn, tickets }: { signedIn: boolean; tickets: r
                     }`}
                   >
                     <span className="block font-semibold text-ozora-cream">{ticket.title}</span>
+                    {ticket.ownerName ? <span className="mt-1 block text-sm text-ozora-cream/80">{ticket.ownerName}</span> : null}
                     {ticket.offerName ? <span className="mt-1 block text-sm text-ozora-cream/75">{ticket.offerName}</span> : null}
                     <time dateTime={ticket.createdAt} className="mt-1 block text-xs text-ozora-cream/60">
                       {new Intl.DateTimeFormat(language === 'pt' ? 'pt-PT' : 'en-IE', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(ticket.createdAt))}
@@ -60,8 +62,9 @@ export function MyTickets({ signedIn, tickets }: { signedIn: boolean; tickets: r
               ))}
             </ul>
             {open?.qrSvg ? (
-              <article className="rounded-2xl border border-white/10 bg-black/20 p-4 md:p-6">
+              <article className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-black/20 p-4 md:p-6">
                 <h2 className="text-lg font-semibold text-ozora-cream">{open.title}</h2>
+                {open.ownerName ? <p className="mt-1 text-sm text-ozora-cream/80">{open.ownerName}</p> : null}
                 {open.ready ? (
                   <>
                     <p className="mt-2 text-sm text-ozora-yellow">{ticketText(language, 'ready')}</p>
@@ -74,13 +77,13 @@ export function MyTickets({ signedIn, tickets }: { signedIn: boolean; tickets: r
                   </>
                 )}
                 <div
-                  className="mx-auto mt-4 w-full min-w-[240px] max-w-[280px] rounded-2xl bg-[#FFF8E7] p-3"
+                  className="mx-auto mt-4 w-full max-w-64 overflow-hidden rounded-2xl bg-[#FFF8E7] p-3 [&_svg]:block [&_svg]:h-auto [&_svg]:w-full [&_svg]:max-w-full"
                   role="img"
                   aria-label={ticketText(language, 'qrLabel').replaceAll('{title}', open.title)}
                   dangerouslySetInnerHTML={{ __html: open.qrSvg }}
                 />
-                <Button href="/my-tickets" tone="back" size="sm" className="mt-4">
-                  {ticketText(language, 'back')}
+                <Button href={`/my-tickets/download?ticket=${encodeURIComponent(open.id)}`} size="sm" className="mt-4">
+                  {ticketText(language, 'download')}
                 </Button>
               </article>
             ) : null}

@@ -9,8 +9,10 @@ import {
   parseConsents,
   parseEmailTemplate,
   parseParty,
+  parseIssuedTicket,
   parseOrder,
   parsePaymentMethod,
+  parseTicketOwners,
   parsePaymentTrace,
   parseProfile,
   parseProfiles,
@@ -290,6 +292,43 @@ describe('schemas', () => {
     }
     assert.equal(parseOrder({ ...shop, delivery: { name: 'Ada' } }).ok, false);
     assert.equal(parseOrder({ ...ticket, cardNumber: '4242424242424242' }).ok, false);
+  });
+
+  it('reads a ticket with an owner and a ticket stored before owners existed', () => {
+    const base = {
+      id: 'ticket-1',
+      partyId: 'party-1',
+      traceId: 'trace-1',
+      buyerId: 'user-1',
+      secret: 'not-the-party',
+      createdAt: '2026-11-10T12:00:00.000Z',
+      validForEntry: true,
+    };
+    const older = parseIssuedTicket(base);
+    assert.equal(older.ok, true);
+    if (older.ok) {
+      assert.equal(older.value.ownerName, undefined);
+      assert.equal(older.value.ownerEmail, undefined);
+    }
+    const owned = parseIssuedTicket({ ...base, ownerName: 'Ada Lovelace', ownerEmail: 'ADA@example.com' });
+    assert.equal(owned.ok, true);
+    if (owned.ok) {
+      assert.equal(owned.value.ownerName, 'Ada Lovelace');
+      assert.equal(owned.value.ownerEmail, 'ada@example.com');
+    }
+    assert.equal(parseIssuedTicket({ ...base, ownerName: ' ' }).ok, false);
+    const owners = parseTicketOwners([
+      { fullName: 'Ada Lovelace', email: 'ada@example.com' },
+      { fullName: 'Grace Hopper', email: 'grace@example.com' },
+    ]);
+    assert.equal(owners.ok, true);
+    if (owners.ok) {
+      assert.equal(owners.value.length, 2);
+    }
+    assert.equal(parseTicketOwners([]).ok, false);
+    assert.equal(parseTicketOwners([{ fullName: 'Ada', email: 'not-an-email' }]).ok, false);
+    assert.equal((schemas.issuedTicket as readonly string[]).includes('ownerName'), true);
+    assert.equal((schemas.issuedTicket as readonly string[]).includes('ownerEmail'), true);
   });
 
   it('rejects a reference to a missing id', () => {

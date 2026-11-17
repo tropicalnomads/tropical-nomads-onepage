@@ -91,7 +91,10 @@ describe('payment interfaces', () => {
     assert.throws(() => attachPaymentMethod(file, caller(), 'sub-ada', method({ last4: cardNumber })), /card number/);
     assert.equal(JSON.stringify(file), before);
     const noBilling = registerVerifiedAccount(emptyAccounts(), signIn('ada'), [], now);
-    assert.throws(() => startTicketPayment(noBilling, [], draft(), caller()), /billing address/);
+    const ticketsWithoutBilling = startTicketPayment(noBilling, [], draft(), caller());
+    assert.equal(ticketsWithoutBilling.trace.purpose, 'tickets');
+    assert.equal(ticketsWithoutBilling.trace.status, 'pending_provider');
+    assert.throws(() => startShopPayment(noBilling, [], draft(), caller()), /billing address/);
     assert.throws(() => startTicketPayment(file, [], draft({ userId: 'sub-grace' }), caller()), /not allowed/);
     assert.throws(() => listPaymentMethods(file, caller('sub-grace'), 'sub-ada'), /not allowed/);
     const disabled = {

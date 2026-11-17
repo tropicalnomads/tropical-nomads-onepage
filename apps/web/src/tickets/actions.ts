@@ -1,7 +1,8 @@
 'use server';
 
-import { accountCanPurchase, containsCardNumber, type IssuedTicket } from 'tropical-nomads-shared';
-import { commitTicket } from 'tropical-nomads-api/tickets';
+import { accountCanPurchase, containsCardNumber, ticketOwnerLimit, type IssuedTicket, type Locale } from 'tropical-nomads-shared';
+import { commitTicket, loadPartyTitles } from 'tropical-nomads-api/tickets';
+import { notifyTicketHolders } from 'tropical-nomads-api/ticket-mail';
 import { currentAccountSub } from '../account/actions';
 import { apiOrigin } from '../api-origin.ts';
 import type { PaymentNotice } from '../i18n/copy';
@@ -10,6 +11,7 @@ import { callPrivate, currentAccounts } from '../remote-store.ts';
 export interface TicketActionResult {
   notice: PaymentNotice;
   ticketId?: string;
+  unsent?: string[];
 }
 
 const blockedFields = new Set([
@@ -54,9 +56,47 @@ function noticeFrom(error: unknown): PaymentNotice {
       return 'card-rejected';
     case 'offer is sold out':
       return 'sold-out';
+    case 'owner is required':
+      return 'owner-required';
     default:
       return 'cannot-pay';
   }
+}
+
+function ownersFrom(formData: FormData): { fullName: string; email: string }[] | undefined {
+  const names = formData.getAll('ownerName');
+  const emails = formData.getAll('ownerEmail');
+  if (names.length !== emails.length || names.length < 1 || names.length > ticketOwnerLimit) {
+    return undefined;
+  }
+  const owners: { fullName: string; email: string }[] = [];
+  for (let index = 0; index < names.length; index += 1) {
+    const fullName = names[index];
+    const email = emails[index];
+    if (typeof fullName !== 'string' || typeof email !== 'string') {
+      return undefined;
+    }
+    owners.push({ fullName, email });
+  }
+  return owners;
+}
+
+async function issueLocally(
+  input: { partyId: string; offerName: string; owners: { fullName: string; email: string }[] },
+  actorId: string,
+): Promise<{ tickets: IssuedTicket[]; unsent: string[] }> {
+  const tickets = await commitTicket(input, { role: 'user', actorId });
+  const profile = (await currentAccounts()).profiles.find((item) => item.sub === actorId);
+  const titles = await loadPartyTitles();
+  const partyId = input.partyId.trim();
+  const language: Locale = profile?.locale === 'pt' ? 'pt' : 'en';
+  const unsent = await notifyTicketHolders({
+    tickets,
+    title: titles.get(partyId) ?? partyId,
+    offerName: input.offerName,
+    language,
+  });
+  return { tickets, unsent };
 }
 
 async function buyer(): Promise<{ role: 'user'; actorId: string } | PaymentNotice> {
@@ -80,12 +120,20 @@ export async function issueTicketAction(formData: FormData): Promise<TicketActio
     return { notice: actor };
   }
   try {
-    const input = { partyId: field(formData, 'partyId'), offerName: field(formData, 'offerName') };
-    const ticket = apiOrigin() ? await callPrivate<IssuedTicket>('issue-ticket', { input, caller: actor }) : await commitTicket(input, actor);
-    if (ticket.validForEntry !== true || !/^ticket-[a-f0-9]{18}$/.test(ticket.id)) {
+    const owners = ownersFrom(formData);
+    if (!owners) {
+      return { notice: 'owner-required' };
+    }
+    const input = { partyId: field(formData, 'partyId'), offerName: field(formData, 'offerName'), owners };
+    const issued = apiOrigin()
+      ? await callPrivate<{ tickets: IssuedTicket[]; unsent: string[] }>('issue-ticket', { input, caller: actor })
+      : await issueLocally(input, actor.actorId);
+    const first = issued.tickets[0];
+    const ready = first !== undefined && issued.tickets.every((ticket) => ticket.validForEntry === true && /^ticket-[a-f0-9]{18}$/.test(ticket.id));
+    if (!ready || !first) {
       return { notice: 'cannot-pay' };
     }
-    return { notice: 'ticket-ready', ticketId: ticket.id };
+    return { notice: 'ticket-ready', ticketId: first.id, ...(issued.unsent.length > 0 ? { unsent: issued.unsent } : {}) };
   } catch (error) {
     return { notice: noticeFrom(error) };
   }

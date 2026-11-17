@@ -18,18 +18,25 @@ export default async function MyTicketsPage({ searchParams }: { searchParams: Pr
   const sub = readSessionSub(jar.get(sessionCookieName)?.value);
   const snapshot = await loadSnapshot();
   const profile = sub ? snapshot.accounts.profiles.find((item) => item.sub === sub) : undefined;
-  const caller = profile && accountCanPurchase(profile) ? { role: 'user' as const, actorId: profile.sub } : undefined;
-  if (!caller) {
+  if (!profile || !accountCanPurchase(profile)) {
     return <MyTickets signedIn={Boolean(sub)} tickets={[]} />;
   }
+  const caller = { role: 'user' as const, actorId: profile.sub };
   const tickets = snapshot.tickets;
-  const views = ownTicketViews(caller, tickets, snapshot.orders, new Map(snapshot.titles));
+  const views = ownTicketViews(caller, tickets, snapshot.orders, new Map(snapshot.titles), profile.email);
   const rows: TicketRow[] = [];
   for (const view of views) {
     const open = requested !== undefined && requested === view.id && ticketIdPattern.test(view.id);
-    const row: TicketRow = { id: view.id, title: view.title, offerName: view.offerName, createdAt: view.createdAt, ready: view.validForEntry };
+    const row: TicketRow = {
+      id: view.id,
+      title: view.title,
+      offerName: view.offerName,
+      ownerName: view.ownerName,
+      createdAt: view.createdAt,
+      ready: view.validForEntry,
+    };
     if (open) {
-      row.qrSvg = await ticketQrSvg(JSON.parse(ownTicketPayload(caller, tickets, view.id)) as unknown);
+      row.qrSvg = await ticketQrSvg(JSON.parse(ownTicketPayload(caller, tickets, view.id, profile.email)) as unknown);
     }
     rows.push(row);
   }

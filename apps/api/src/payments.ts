@@ -191,7 +191,6 @@ export function startPayment(file: AccountFile, traces: readonly PaymentTrace[],
   assertClean(input);
   assertSelf(caller, input.userId);
   const profile = activeProfile(file, input.userId);
-  requireBilling(file, profile.billingAddressId);
   if (traces.filter((trace) => trace.userId === input.userId).length >= traceLimit) {
     throw new Error('payment is not allowed');
   }
@@ -200,6 +199,17 @@ export function startPayment(file: AccountFile, traces: readonly PaymentTrace[],
   const reference = input.reference.trim();
   if (!purpose) {
     throw new Error('purpose is not allowed');
+  }
+  switch (purpose) {
+    case 'shop':
+      requireBilling(file, profile.billingAddressId);
+      break;
+    case 'tickets':
+      break;
+    default: {
+      const unexpected: never = purpose;
+      throw new Error(unexpected);
+    }
   }
   if (!money(input.amount)) {
     throw new Error('amount is not valid');

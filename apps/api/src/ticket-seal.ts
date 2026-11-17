@@ -45,5 +45,7 @@ export function sealStoredTicket(ticket: IssuedTicket, key = ticketQrKey()): Rec
     secretBox: sealTicketSecret(ticket.secret, key),
     createdAt: ticket.createdAt,
     validForEntry: ticket.validForEntry,
+    ...(ticket.ownerName === undefined ? {} : { ownerName: ticket.ownerName }),
+    ...(ticket.ownerEmail === undefined ? {} : { ownerEmail: ticket.ownerEmail }),
   };
 }

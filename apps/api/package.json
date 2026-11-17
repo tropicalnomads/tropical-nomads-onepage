@@ -10,6 +10,8 @@
     "./account-erasure": "./src/account-erasure.ts",
     "./payments": "./src/payments.ts",
     "./tickets": "./src/tickets.ts",
+    "./ticket-mail": "./src/ticket-mail.ts",
+    "./ticket-pdf": "./src/ticket-pdf.ts",
     "./check-in": "./src/check-in.ts",
     "./parties": "./src/parties.ts",
     "./orders": "./src/order-views.ts",
@@ -26,14 +28,18 @@
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "3.1164.0",
     "@aws-sdk/client-s3": "3.1164.0",
+    "@aws-sdk/client-sesv2": "3.1164.0",
     "@hono/node-server": "2.1.6",
     "hono": "4.13.17",
+    "pdf-lib": "1.17.1",
     "pg": "8.13.3",
+    "qrcode": "1.5.4",
     "tropical-nomads-shared": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "24.19.2",
     "@types/pg": "8.11.11",
+    "@types/qrcode": "1.5.5",
     "typescript": "^6.0.3"
   }
 }

@@ -32,6 +32,7 @@ import { markOrderPaid } from './shop-stock.ts';
 import { saveArtistProfile } from './artists.ts';
 import { saveVenue } from './venues.ts';
 import { loadCatalogImages, loadShopProducts } from './s3-load.ts';
+import { notifyTicketHolders } from './ticket-mail.ts';
 import { commitTicket, loadIssuedTickets, loadOrders, loadPartyTitles, loadPublishedParties } from './tickets.ts';
 
 export interface PrivateResponse {
@@ -327,7 +328,18 @@ async function runAction(action: string, input: unknown, sessionSub: string | un
       if (!isRecord(input) || !isRecord(input.input)) {
         throw new Error('ticket was not issued');
       }
-      return commitTicket({ partyId: text(input.input.partyId, 'ticket'), offerName: text(input.input.offerName, 'ticket') }, userCaller(input.caller, sub));
+      const partyId = text(input.input.partyId, 'ticket');
+      const offerName = text(input.input.offerName, 'ticket');
+      const tickets = await commitTicket({ partyId, offerName, owners: input.input.owners }, userCaller(input.caller, sub));
+      const profile = (await loadAccounts()).profiles.find((item) => item.sub === sub);
+      const titles = await loadPartyTitles();
+      const unsent = await notifyTicketHolders({
+        tickets,
+        title: titles.get(partyId.trim()) ?? partyId.trim(),
+        offerName,
+        language: profile?.locale === 'pt' ? 'pt' : 'en',
+      });
+      return { tickets, unsent };
     }
     case 'scan': {
       const sub = requireSignedIn(sessionSub);

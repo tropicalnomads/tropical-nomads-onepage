@@ -11,11 +11,13 @@
     "test": "node --test test/*.test.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-sesv2": "3.1164.0",
     "@fontsource-variable/outfit": "5.2.8",
     "@zxing/browser": "0.1.5",
     "country-flag-icons": "^1.6.20",
     "lucide-react": "0.453.0",
     "next": "^16.4.5",
+    "pdf-lib": "1.17.1",
     "qrcode": "1.5.4",
     "react": "19.3.1",
     "react-dom": "19.3.1",

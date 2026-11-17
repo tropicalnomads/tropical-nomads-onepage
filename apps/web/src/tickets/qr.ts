@@ -26,3 +26,17 @@ export async function ticketQrSvg(payload: unknown): Promise<string> {
   }
   return body.replace('<svg', '<svg role="presentation" focusable="false"');
 }
+
+export async function ticketQrPng(payload: unknown): Promise<Buffer> {
+  const text = qrPayloadText(payload);
+  if (!text.ok) {
+    throw new Error('ticket was not shown');
+  }
+  return QRCode.toBuffer(text.value, {
+    type: 'png',
+    margin: 1,
+    width: 280,
+    errorCorrectionLevel: 'M',
+    color: { dark: ink, light: cream },
+  });
+}

@@ -53,6 +53,13 @@ function euroParty(capacity = 20): TicketParty {
   return party([{ name: 'Early', amount: 15, currency: 'EUR', capacity }]);
 }
 
+const adaOwner = { fullName: 'Ada Nomad', email: 'ada@example.com' };
+const graceOwner = { fullName: 'Grace Hopper', email: 'Grace@Example.com' };
+
+function purchase(overrides: Partial<{ partyId: string; offerName: string; owners: unknown }> = {}) {
+  return { partyId, offerName: 'Early', owners: [adaOwner], ...overrides };
+}
+
 function emptyRoot(): string {
   const root = mkdtempSync(join(tmpdir(), 'tn-tickets-'));
   for (const name of ['payment-traces', 'orders', 'issued-tickets']) {
@@ -85,11 +92,42 @@ describe('tickets', () => {
     assert.notEqual(secret, createTicketSecret(partyId, buyerId, ticketId, '117713'));
   });
 
-  it('refuses a profile with no billing address and writes nothing', async () => {
+  it('issues tickets without a billing address when every owner has a name and email', async () => {
     const root = emptyRoot();
     writeAccounts(registerVerifiedAccount(emptyAccounts(), signIn('ada'), [], now), root);
     const eventsBefore = readFileSync(new URL('../../one-pager/public/data/events.json', import.meta.url), 'utf8');
-    await assert.rejects(() => commitTicket({ partyId, offerName: 'Early' }, caller(), now, root, [euroParty()]), /billing address is required/);
+    const issued = await commitTicket(purchase({ owners: [adaOwner, graceOwner] }), caller(), now, root, [euroParty(2)]);
+    assert.equal(issued.length, 2);
+    assert.equal(issued[0]?.ownerName, 'Ada Nomad');
+    assert.equal(issued[0]?.ownerEmail, 'ada@example.com');
+    assert.equal(issued[1]?.ownerName, 'Grace Hopper');
+    assert.equal(issued[1]?.ownerEmail, 'grace@example.com');
+    assert.equal(issued[0]?.validForEntry, true);
+    assert.equal(issued[1]?.buyerId, buyerId);
+    assert.notEqual(issued[0]?.id, issued[1]?.id);
+    const trace = readOperational('payment-traces', root).records[0] as { status: string; currency: string; purpose: string; amount: number };
+    assert.equal(trace.amount, 30);
+    assert.equal(trace.currency, 'EUR');
+    assert.equal(trace.purpose, 'tickets');
+    const order = readOperational('orders', root).records[0] as { lines: { quantity: number }[] };
+    assert.equal(order.lines[0]?.quantity, 2);
+    await assert.rejects(() => commitTicket(purchase(), caller(), now, root, [euroParty(2)]), /sold out/);
+    assert.equal(readOperational('issued-tickets', root).records.length, 2);
+    assert.equal(readFileSync(new URL('../../one-pager/public/data/events.json', import.meta.url), 'utf8'), eventsBefore);
+  });
+
+  it('refuses a blank owner and writes nothing', async () => {
+    const root = emptyRoot();
+    const eventsBefore = readFileSync(new URL('../../one-pager/public/data/events.json', import.meta.url), 'utf8');
+    await assert.rejects(
+      () => commitTicket(purchase({ owners: [{ fullName: ' ', email: 'ada@example.com' }] }), caller(), now, root, [euroParty()]),
+      /owner is required/,
+    );
+    await assert.rejects(() => commitTicket(purchase({ owners: [] }), caller(), now, root, [euroParty()]), /owner is required/);
+    await assert.rejects(
+      () => commitTicket(purchase({ owners: [{ fullName: 'Ada Nomad', email: 'not-an-email' }] }), caller(), now, root, [euroParty()]),
+      /owner is required/,
+    );
     assert.equal(readOperational('issued-tickets', root).records.length, 0);
     assert.equal(readOperational('orders', root).records.length, 0);
     assert.equal(readOperational('payment-traces', root).records.length, 0);
@@ -99,16 +137,16 @@ describe('tickets', () => {
   it('stores a paid euro ticket and refuses a draft, another currency, and another buyer', async () => {
     const root = emptyRoot();
     const eventsBefore = readFileSync(new URL('../../one-pager/public/data/events.json', import.meta.url), 'utf8');
-    await assert.rejects(() => commitTicket({ partyId: 'draft-party', offerName: 'Early' }, caller(), now, root), /event is not published/);
+    await assert.rejects(() => commitTicket(purchase({ partyId: 'draft-party' }), caller(), now, root), /event is not published/);
     assert.equal(readFileSync(new URL('../../one-pager/public/data/events.json', import.meta.url), 'utf8'), eventsBefore);
     assert.equal(readOperational('issued-tickets', root).records.length, 0);
 
     await assert.rejects(
-      () => commitTicket({ partyId, offerName: 'Early' }, caller(), now, root, [party([{ name: 'Early', amount: 15, currency: 'USD' }])]),
+      () => commitTicket(purchase(), caller(), now, root, [party([{ name: 'Early', amount: 15, currency: 'USD' }])]),
       /offer is not for sale/,
     );
     await assert.rejects(
-      () => commitTicket({ partyId, offerName: 'Early' }, caller(), now, root, [party([{ name: 'Early', amount: 15 }])]),
+      () => commitTicket(purchase(), caller(), now, root, [party([{ name: 'Early', amount: 15 }])]),
       /offer is not for sale/,
     );
     assert.equal(readOperational('issued-tickets', root).records.length, 0);
@@ -118,27 +156,36 @@ describe('tickets', () => {
       ...file,
       profiles: file.profiles.map((profile) => ({ ...profile, status: 'disabled' as const })),
     };
-    assert.throws(() => issueTicket(disabled, [], [], [], [euroParty()], { partyId, offerName: 'Early' }, caller(), now), /not allowed/);
-    assert.throws(() => issueTicket(file, [], [], [], [euroParty()], { partyId, offerName: 'Early' }, caller(buyerId, 'door'), now), /not allowed/);
-    assert.throws(() => issueTicket(file, [], [], [], [euroParty()], { partyId, offerName: 'Early' }, caller('admin-1', 'admin'), now), /not allowed/);
+    assert.throws(() => issueTicket(disabled, [], [], [], [euroParty()], purchase(), caller(), now), /not allowed/);
+    assert.throws(() => issueTicket(file, [], [], [], [euroParty()], purchase(), caller(buyerId, 'door'), now), /not allowed/);
+    assert.throws(() => issueTicket(file, [], [], [], [euroParty()], purchase(), caller('admin-1', 'admin'), now), /not allowed/);
 
     await assert.rejects(
-      () => commitTicket({ partyId, offerName: 'Early' }, caller(), now, root, [{ ...euroParty(), publication: 'draft' }]),
+      () => commitTicket(purchase(), caller(), now, root, [{ ...euroParty(), publication: 'draft' }]),
       /event is not published/,
     );
-    const ticket = await commitTicket({ partyId, offerName: 'Early' }, caller(), now, root, [euroParty(1)]);
+    const [ticket] = await commitTicket(purchase(), caller(), now, root, [euroParty(1)]);
+    assert.ok(ticket);
     assert.equal(ticket.validForEntry, true);
     assert.equal(ticket.buyerId, buyerId);
     assert.equal(ticket.partyId, partyId);
     assert.notEqual(ticket.secret, partyId);
     assert.notEqual(ticket.secret, `${partyId}${buyerId}`);
     assert.notEqual(ticket.secret, `${buyerId}${partyId}`);
-    const stored = readOperational('issued-tickets', root).records[0] as { validForEntry: boolean; secret: string; secretBox?: string };
+    const stored = readOperational('issued-tickets', root).records[0] as {
+      validForEntry: boolean;
+      secret: string;
+      secretBox?: string;
+      ownerName?: string;
+      ownerEmail?: string;
+    };
     assert.equal(stored.validForEntry, true);
+    assert.equal(stored.ownerName, 'Ada Nomad');
+    assert.equal(stored.ownerEmail, 'ada@example.com');
     assert.equal(stored.secret, createHash('sha256').update(ticket.secret, 'utf8').digest('hex'));
     assert.equal(typeof stored.secretBox, 'string');
     assert.equal(JSON.stringify(stored).includes(`"${ticket.secret}"`), false);
-    await assert.rejects(() => commitTicket({ partyId, offerName: 'Early' }, caller(), now, root, [euroParty(1)]), /sold out/);
+    await assert.rejects(() => commitTicket(purchase(), caller(), now, root, [euroParty(1)]), /sold out/);
     const trace = readOperational('payment-traces', root).records[0] as { status: string; currency: string; purpose: string; amount: number };
     assert.equal(trace.status, 'confirmed');
     assert.equal(trace.currency, 'EUR');
@@ -155,6 +202,9 @@ describe('tickets', () => {
     assert.equal(other, missing);
     assert.equal(listOwnTickets(caller(), [ticket]).length, 1);
     assert.deepEqual(listOwnTickets(caller('sub-grace'), [ticket]), []);
+    assert.deepEqual(listOwnTickets(caller('sub-grace'), [ticket], 'ada@example.com'), [ticket]);
+    assert.deepEqual(listOwnTickets(caller('sub-grace'), [ticket], 'other@example.com'), []);
+    assert.equal(readOwnTicket(caller('sub-grace'), [ticket], ticket.id, 'ADA@example.com').id, ticket.id);
     assert.deepEqual(listOwnTickets(caller('sub-grace', 'door'), [ticket]), []);
     assert.throws(() => readOwnTicket(caller('sub-grace', 'door'), [ticket], ticket.id), /ticket was not found/);
 

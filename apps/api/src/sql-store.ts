@@ -452,6 +452,23 @@ export async function insertStoredRecord(client: StoredQuery, name: 'orders' | '
   await insertCollectionRow(client, name, record);
 }
 
+export function insertEmailSend(record: {
+  id: string;
+  templateId: string;
+  recipient: string;
+  language: string;
+  purpose: string;
+  at: string;
+}): Promise<void> {
+  return queueDatabase(async () => {
+    await db().query(
+      `insert into email_send (id, template_id, recipient, language, purpose, at, document)
+       values ($1, $2, $3, $4, $5, $6, $7::jsonb)`,
+      [record.id, record.templateId, record.recipient, record.language, record.purpose, record.at, JSON.stringify(record)],
+    );
+  });
+}
+
 export async function closeStoredDatabase(): Promise<void> {
   if (!pool) {
     return;

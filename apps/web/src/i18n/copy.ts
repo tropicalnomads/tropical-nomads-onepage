@@ -167,7 +167,8 @@ export type PaymentNotice =
   | 'cannot-pay'
   | 'pending-provider'
   | 'ticket-ready'
-  | 'sold-out';
+  | 'sold-out'
+  | 'owner-required';
 
 export interface AdminCopy {
   title: string;
@@ -424,6 +425,18 @@ export interface EventCopy {
   ticketsTitle: string;
   inAppNote: string;
   capacityLabel: string;
+  ownerName: string;
+  ownerEmail: string;
+  ownerHeading: string;
+  quantityLabel: string;
+  decreaseQuantity: string;
+  increaseQuantity: string;
+  orderLine: string;
+  checkout: string;
+  checkoutAria: string;
+  holdersTitle: string;
+  paymentTitle: string;
+  pay: string;
   viewTickets: string;
   eventDetails: string;
   eventDetailsAria: string;
@@ -469,6 +482,8 @@ export interface TicketCopy {
   open: string;
   back: string;
   qrLabel: string;
+  download: string;
+  mailMissed: string;
 }
 
 export interface CheckInCopy {
@@ -566,6 +581,18 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       ticketsTitle: 'Tickets',
       inAppNote: 'The amount is in euro. No card is charged yet. The ticket is ready for entry.',
       capacityLabel: '{count} available',
+      ownerName: 'Full name',
+      ownerEmail: 'Email',
+      ownerHeading: 'Ticket {number}',
+      quantityLabel: 'Quantity',
+      decreaseQuantity: 'Fewer tickets',
+      increaseQuantity: 'More tickets',
+      orderLine: '{count} × {name}',
+      checkout: 'Checkout',
+      checkoutAria: 'Continue to checkout for {title}.',
+      holdersTitle: 'Who is coming',
+      paymentTitle: 'Payment',
+      pay: 'Pay',
       viewTickets: 'View my tickets',
       eventDetails: 'Event details',
       eventDetailsAria: 'Open event details for {title}',
@@ -590,6 +617,8 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       open: 'Open ticket',
       back: 'All tickets',
       qrLabel: 'QR code for {title}',
+      download: 'Download ticket',
+      mailMissed: 'We could not email {emails}.',
     },
     orders: {
       intro: 'Shirts you ordered, and whether each one is paid.',
@@ -675,6 +704,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
         'pending-provider': 'The payment is pending. It is not confirmed.',
         'ticket-ready': 'Your ticket is ready.',
         'sold-out': 'That ticket is sold out.',
+        'owner-required': 'Enter a full name and email for each ticket.',
       },
     },
     account: {
@@ -1006,6 +1036,18 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       ticketsTitle: 'Ingressos',
       inAppNote: 'O valor é em euro. Nenhum cartão é cobrado ainda. O ingresso vale para entrar.',
       capacityLabel: '{count} disponíveis',
+      ownerName: 'Nome completo',
+      ownerEmail: 'E-mail',
+      ownerHeading: 'Ingresso {number}',
+      quantityLabel: 'Quantidade',
+      decreaseQuantity: 'Menos ingressos',
+      increaseQuantity: 'Mais ingressos',
+      orderLine: '{count} × {name}',
+      checkout: 'Finalizar compra',
+      checkoutAria: 'Continuar para o pagamento de {title}.',
+      holdersTitle: 'Quem vai',
+      paymentTitle: 'Pagamento',
+      pay: 'Pagar',
       viewTickets: 'Ver meus ingressos',
       eventDetails: 'Detalhes do evento',
       eventDetailsAria: 'Abrir detalhes de {title}',
@@ -1030,6 +1072,8 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       open: 'Abrir ingresso',
       back: 'Todos os ingressos',
       qrLabel: 'QR de {title}',
+      download: 'Baixar ingresso',
+      mailMissed: 'Não foi possível enviar para {emails}.',
     },
     orders: {
       intro: 'As camisetas que você pediu, e se cada uma está paga.',
@@ -1115,6 +1159,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
         'pending-provider': 'O pagamento está pendente. Ele não foi confirmado.',
         'ticket-ready': 'Seu ingresso está pronto.',
         'sold-out': 'Esse ingresso está esgotado.',
+        'owner-required': 'Informe o nome completo e o e-mail de cada ingresso.',
       },
     },
     account: {
