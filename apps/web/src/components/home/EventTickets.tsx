@@ -29,12 +29,23 @@ function fitCount(length: number, nextCap: number): number {
   return Math.min(Math.max(length, 1), nextCap);
 }
 
-export function EventTickets({ event }: { event: HomeEvent }) {
+export function EventTickets({
+  event,
+  offers,
+  titleKey = 'ticketsTitle',
+  radioName = 'offerName',
+}: {
+  event: HomeEvent;
+  offers?: readonly HomeEvent['inAppOffers'][number][];
+  titleKey?: 'ticketsTitle' | 'guestListsTitle';
+  radioName?: string;
+}) {
   const { language } = useLanguage();
-  const cheapest = cheapestOffer(event.inAppOffers);
+  const choices = offers ?? event.inAppOffers;
+  const cheapest = cheapestOffer(choices);
   const [offerName, setOfferName] = useState(cheapest?.name ?? '');
   const [quantity, setQuantity] = useState(1);
-  const selected = event.inAppOffers.find((offer) => offer.name === offerName) ?? cheapest;
+  const selected = choices.find((offer) => offer.name === offerName) ?? cheapest;
   const cap = selected ? Math.min(ticketOwnerLimit, selected.remaining) : 0;
   const canBuy = selected !== undefined && cap >= 1 && quantity >= 1 && quantity <= cap;
 
@@ -46,7 +57,7 @@ export function EventTickets({ event }: { event: HomeEvent }) {
   }
 
   function selectOffer(name: string): void {
-    const offer = event.inAppOffers.find((item) => item.name === name);
+    const offer = choices.find((item) => item.name === name);
     const nextCap = offer ? Math.min(ticketOwnerLimit, offer.remaining) : 0;
     setOfferName(name);
     setQuantity((current) => fitCount(current, nextCap));
@@ -60,10 +71,10 @@ export function EventTickets({ event }: { event: HomeEvent }) {
 
   return (
     <div className="rounded-[2rem] border border-white/10 bg-black/25 p-5 shadow-2xl shadow-black/30">
-      <h2 className="font-display text-2xl font-bold text-ozora-cream">{eventText(language, 'ticketsTitle')}</h2>
+      <h2 className="font-display text-2xl font-bold text-ozora-cream">{eventText(language, titleKey)}</h2>
       <fieldset className="mt-4 space-y-2">
-        <legend className="sr-only">{eventText(language, 'ticketsTitle')}</legend>
-        {event.inAppOffers.map((offer) => {
+        <legend className="sr-only">{eventText(language, titleKey)}</legend>
+        {choices.map((offer) => {
           const active = offer.name === selected.name;
           return (
             <label
@@ -74,7 +85,7 @@ export function EventTickets({ event }: { event: HomeEvent }) {
             >
               <input
                 type="radio"
-                name="offerName"
+                name={radioName}
                 value={offer.name}
                 checked={active}
                 onChange={() => selectOffer(offer.name)}
@@ -109,7 +120,7 @@ export function EventTickets({ event }: { event: HomeEvent }) {
       </div>
       <p className="mt-4 text-sm font-bold text-ozora-cream">{fill(eventText(language, 'orderLine'), { count: String(quantity), name: selected.name })}</p>
       <Button
-        href={ticketCheckoutPath(event.id, selected.name, quantity)}
+        href={ticketCheckoutPath(event.slug, selected.name, quantity)}
         disabled={!canBuy}
         className="mt-4 w-full"
         aria-label={fill(eventText(language, 'checkoutAria'), { title: event.title })}

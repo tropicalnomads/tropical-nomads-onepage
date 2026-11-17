@@ -1,13 +1,15 @@
 import { randomBytes } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { decideAccess, euroTicketOffers, isPayableAmount, knownTimeZone, readTicketOffers, type Role, type Venue } from 'tropical-nomads-shared';
+import { decideAccess, euroTicketOffers, eventSlugFor, isPayableAmount, knownTimeZone, readTicketOffers, type Role, type SlugEvent, type Venue } from 'tropical-nomads-shared';
 import type { AccountFile } from './accounts.ts';
+import { guestListsOrEmpty, loadGuestLists, ordersOrEmpty, partyGuestListsAfterSave, type GuestListSaveInput } from './check-in.ts';
 import { usingDatabase } from './database.ts';
 import { loadCatalogImages } from './s3-load.ts';
-import { operationalDirectory } from './operational.ts';
+import { operationalDirectory, writeOperational } from './operational.ts';
 import { readEvents, type PublishedEvent, type PublishedEventImages } from './published.ts';
-import { queueDatabase, readStoredPartyRows, upsertStoredParty } from './sql-store.ts';
+import { queueDatabase, readStoredPartyRows, upsertStoredParty, writeStoredCollection } from './sql-store.ts';
+import { loadOrders } from './tickets.ts';
 import { loadVenueCatalog } from './venues.ts';
 
 export interface PartyRevision {
@@ -56,6 +58,7 @@ export interface PartySaveInput {
   artists: string;
   headliners?: string;
   offers: PartyOfferInput[];
+  guestLists?: GuestListSaveInput[];
   publish: boolean;
 }
 
@@ -282,6 +285,29 @@ function imagesAfter(current: PublishedEventImages | undefined, cleaned: CleanPa
   }
 }
 
+function slugSources(managed: readonly ManagedParty[], catalog: readonly PublishedEvent[], exceptId: string): SlugEvent[] {
+  const byId = new Map<string, SlugEvent>();
+  for (const event of catalog) {
+    if (event.id === exceptId) {
+      continue;
+    }
+    const slug = event.slug?.trim() ?? '';
+    byId.set(event.id, { id: event.id, title: event.title, ...(slug === '' ? {} : { slug }) });
+  }
+  for (const party of managed) {
+    if (party.id === exceptId) {
+      continue;
+    }
+    const slug = party.event.slug?.trim() ?? '';
+    byId.set(party.id, { id: party.id, title: party.event.title, ...(slug === '' ? {} : { slug }) });
+  }
+  return [...byId.values()];
+}
+
+function withSlug(event: PublishedEvent, title: string, managed: readonly ManagedParty[], catalog: readonly PublishedEvent[]): PublishedEvent {
+  return { ...event, slug: eventSlugFor(title, event.id, slugSources(managed, catalog, event.id)) };
+}
+
 function applyInput(event: PublishedEvent, cleaned: CleanParty, id: string, venues: readonly Venue[]): PublishedEvent {
   const next: PublishedEvent = {
     ...event,
@@ -366,7 +392,7 @@ export function saveManagedParty(
       publication: cleaned.publish ? 'published' : 'draft',
       revisions: [{ actorId: caller.actorId, at: now }],
       offersManaged: cleaned.offers.length > 0,
-      event: applyInput({ id, title: cleaned.title, dateStart: cleaned.dateStart }, cleaned, id, venues),
+      event: withSlug(applyInput({ id, title: cleaned.title, dateStart: cleaned.dateStart }, cleaned, id, venues), cleaned.title, managed, catalog),
     };
     return { managed: [...managed, saved], saved };
   }
@@ -382,7 +408,7 @@ export function saveManagedParty(
     base,
     caller.actorId,
     now,
-    applyInput(base.event, cleaned, base.id, venues),
+    withSlug(applyInput(base.event, cleaned, base.id, venues), cleaned.title, managed, catalog),
     publicationAfter(base.publication, cleaned.publish),
     base.origin === 'catalog' ? true : cleaned.offers.length > 0 || base.offersManaged,
   );
@@ -546,6 +572,38 @@ async function storeFlyer(id: string, input: PartySaveInput): Promise<void> {
   }
 }
 
+function offerNamesOf(offers: unknown): string[] {
+  return readTicketOffers(offers).map((offer) => offer.name.trim()).filter((name) => name !== '');
+}
+
+async function storeSavedGuestLists(
+  file: AccountFile,
+  caller: PartyCaller,
+  partyId: string,
+  input: PartySaveInput,
+  offerNames: readonly string[],
+  now: string,
+  root?: string,
+): Promise<void> {
+  if (usingDatabase(root)) {
+    const next = partyGuestListsAfterSave(file, await loadGuestLists(), await loadOrders(), caller, partyId, input.guestLists, offerNames, now);
+    await writeStoredCollection('guest-lists', { schemaVersion: 1, records: next });
+    return;
+  }
+  const directory = root ?? operationalDirectory();
+  const next = partyGuestListsAfterSave(
+    file,
+    guestListsOrEmpty(directory),
+    ordersOrEmpty(directory),
+    caller,
+    partyId,
+    input.guestLists,
+    offerNames,
+    now,
+  );
+  writeOperational('guest-lists', { schemaVersion: 1, records: next }, directory);
+}
+
 export async function commitPartySave(input: PartySaveInput, file: AccountFile, caller: PartyCaller, now = new Date().toISOString(), root?: string): Promise<ManagedParty> {
   if (usingDatabase(root)) {
     return queueDatabase(async () => {
@@ -559,6 +617,7 @@ export async function commitPartySave(input: PartySaveInput, file: AccountFile, 
         offersManaged: result.saved.offersManaged,
         event: { ...result.saved.event } as Record<string, unknown>,
       });
+      await storeSavedGuestLists(file, caller, result.saved.id, input, offerNamesOf(result.saved.event.offers), now, root);
       await storeFlyer(result.saved.id, input);
       return result.saved;
     });
@@ -567,6 +626,7 @@ export async function commitPartySave(input: PartySaveInput, file: AccountFile, 
   const venues = await loadVenueCatalog(root);
   const result = saveManagedParty(readManagedPartyFile(directory), readEvents().events, input, file, caller, now, venues);
   writeManagedPartyFile(result.managed, directory);
+  await storeSavedGuestLists(file, caller, result.saved.id, input, offerNamesOf(result.saved.event.offers), now, directory);
   await storeFlyer(result.saved.id, input);
   return result.saved;
 }

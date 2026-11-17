@@ -1,4 +1,4 @@
-import { publicHttpsUrl } from 'tropical-nomads-shared';
+import { assignEventSlugs, publicHttpsUrl } from 'tropical-nomads-shared';
 import { uploadedEventFlyer } from '../admin/event-image.ts';
 import { bannerSrc } from '../events/assets.ts';
 import type { ArtistEventCard } from './profile.ts';
@@ -105,6 +105,15 @@ export function artistEventHistory(body: unknown, artistName: string, now: Date)
   }
   const seen = new Set<string>();
   const cards: ArtistEventCard[] = [];
+  const slugs = assignEventSlugs(
+    body.events.flatMap((item) => {
+      if (!isRecord(item) || text(item.id) === '' || text(item.title) === '') {
+        return [];
+      }
+      const slug = text(item.slug);
+      return [{ id: text(item.id), title: text(item.title), ...(slug === '' ? {} : { slug }) }];
+    }),
+  );
   for (const item of body.events) {
     if (!isRecord(item) || text(item.title) === '' || text(item.id) === '' || !eventIncludesArtist(item, artistName)) {
       continue;
@@ -139,7 +148,7 @@ export function artistEventHistory(body: unknown, artistName: string, now: Date)
       date,
       when: date,
       place,
-      href: `/events/${encodeURIComponent(id)}`,
+      href: `/events/${encodeURIComponent(slugs.get(id) ?? id)}`,
       stageNames: stageNamesFor(item, artistName),
       ...(flyer ? { flyer } : {}),
       ...(venueName ? { venue: venueName } : {}),

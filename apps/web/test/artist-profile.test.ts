@@ -139,7 +139,7 @@ describe('artist event history', () => {
     assert.equal(stageOnly.city, 'Lisbon');
     assert.equal(stageOnly.country, 'Portugal');
     assert.equal(stageOnly.flyer, '/events/media/stage-only');
-    assert.equal(stageOnly.href, '/events/stage-only');
+    assert.equal(stageOnly.href, '/events/forest-night');
     assert.equal(stageOnly.mapUrl, undefined);
     assert.equal(stageOnly.ticketUrl, undefined);
     assert.equal(stageOnly.headliner, undefined);
@@ -153,7 +153,7 @@ describe('artist event history', () => {
     assert.equal(both.ticketUrl, 'https://tickets.example/both');
     assert.equal(both.flyer, 'https://cdn.example/both.jpg');
     assert.equal(both.headliner, true);
-    assert.equal(both.href, '/events/both');
+    assert.equal(both.href, '/events/both-rooms');
 
     const past = historyCard('past-card');
     assert.equal(past.ticketUrl, 'https://tickets.example/past');

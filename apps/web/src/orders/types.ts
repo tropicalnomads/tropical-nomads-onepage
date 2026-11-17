@@ -5,6 +5,7 @@ export interface OrderLineView {
   quantity: number;
   image?: string;
   ticketId?: string;
+  partyId?: string;
 }
 
 export interface OrderCardView {

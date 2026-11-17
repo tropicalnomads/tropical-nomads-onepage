@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { accountCanScan } from 'tropical-nomads-shared';
 import { eventRoster, searchRoster, visibleEvents } from 'tropical-nomads-api/check-in';
+import { ensuredGuestLists } from '../../src/check-in/actions';
 import { readSessionSub, sessionCookieName } from '../../src/account/session';
 import { loadSnapshot } from '../../src/remote-store';
 import { CheckInDesk } from '../../src/components/CheckInDesk';
@@ -34,11 +35,12 @@ export default async function CheckInPage({ searchParams }: { searchParams: Prom
   const titles = new Map(snapshot.titles);
   const events = visibleEvents(staff, snapshot.invites, partyIds).map((id) => ({ id, title: titles.get(id) ?? id }));
   const selected = events.some((event) => event.id === eventId) ? eventId : undefined;
+  const guestLists = selected ? await ensuredGuestLists(selected, staff) : snapshot.guestLists;
   const roster = selected
     ? eventRoster(
         snapshot.accounts,
         snapshot.invites,
-        snapshot.guestLists,
+        guestLists,
         snapshot.tickets,
         snapshot.orders,
         snapshot.traces,
@@ -56,7 +58,6 @@ export default async function CheckInPage({ searchParams }: { searchParams: Prom
           events={events}
           partyId={selected}
           query={query}
-          admin={staff.role === 'admin'}
           sold={shown?.sold ?? []}
           guests={shown?.guests ?? []}
           lists={roster?.lists ?? []}

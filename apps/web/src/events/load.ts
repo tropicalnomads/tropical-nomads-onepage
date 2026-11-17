@@ -1,5 +1,5 @@
 import { api } from 'tropical-nomads-api';
-import { decideAccess, eventSaleChoice, getEventTimetableUrl, publicHttpsUrl } from 'tropical-nomads-shared';
+import { assignEventSlugs, decideAccess, eventSaleChoice, eventSlug, getEventTimetableUrl, publicHttpsUrl, type SlugEvent } from 'tropical-nomads-shared';
 import { uploadedEventFlyer } from '../admin/event-image.ts';
 import { apiOrigin } from '../api-origin.ts';
 import { readHomeEvent } from '../home/catalog.ts';
@@ -104,8 +104,11 @@ function readEvent(value: unknown, partners: Map<string, UpcomingPartner>, sold:
   const mapUrl = publicHttpsUrl(readString(venue.mapUrl));
   const instagramPost = publicHttpsUrl(readString(links.instagramPost));
   const durationHours = typeof value.durationHours === 'number' && Number.isFinite(value.durationHours) ? value.durationHours : undefined;
+  const storedSlug = readString(value.slug);
+  const slug = storedSlug !== undefined && storedSlug === eventSlug(storedSlug) ? storedSlug : eventSlug(title);
   return {
     id,
+    slug,
     title,
     dateStart,
     ...(dateEnd ? { dateEnd } : {}),
@@ -150,6 +153,33 @@ export interface TicketSaleCount {
   sold: number;
 }
 
+export interface GuestListPass {
+  partyId: string;
+  name: string;
+  amount: number;
+  capacity: number;
+}
+
+export async function loadGuestListOffers(): Promise<GuestListPass[]> {
+  try {
+    const body = await readCatalogJson('/guest-list-offers');
+    if (!isRecord(body) || !Array.isArray(body.offers)) {
+      return [];
+    }
+    return body.offers.flatMap((item) => {
+      if (!isRecord(item) || typeof item.partyId !== 'string' || typeof item.name !== 'string' || typeof item.amount !== 'number' || typeof item.capacity !== 'number') {
+        return [];
+      }
+      if ('guests' in item) {
+        return [];
+      }
+      return [{ partyId: item.partyId, name: item.name, amount: item.amount, capacity: item.capacity }];
+    });
+  } catch {
+    return [];
+  }
+}
+
 export async function loadTicketSales(): Promise<TicketSaleCount[]> {
   try {
     const body = await readCatalogJson('/ticket-sales');
@@ -177,14 +207,41 @@ function soldForParty(sales: readonly TicketSaleCount[], partyId: string): Recor
   return sold;
 }
 
-function readEventList(body: unknown, partners: Map<string, UpcomingPartner>, sales: readonly TicketSaleCount[]): UpcomingEventCard[] {
+function slugSources(events: readonly unknown[]): SlugEvent[] {
+  const sources: SlugEvent[] = [];
+  for (const event of events) {
+    if (!isRecord(event) || typeof event.id !== 'string' || event.id.trim() === '' || typeof event.title !== 'string' || event.title.trim() === '') {
+      continue;
+    }
+    const slug = typeof event.slug === 'string' ? event.slug.trim() : '';
+    sources.push({ id: event.id, title: event.title, ...(slug === '' ? {} : { slug }) });
+  }
+  return sources;
+}
+
+function catalogSlugs(body: unknown): Map<string, string> {
+  if (!isRecord(body) || !Array.isArray(body.events)) {
+    return new Map();
+  }
+  return assignEventSlugs(slugSources(body.events));
+}
+
+function readEventList(
+  body: unknown,
+  partners: Map<string, UpcomingPartner>,
+  sales: readonly TicketSaleCount[],
+  assigned: Map<string, string>,
+): UpcomingEventCard[] {
   if (!isRecord(body) || !Array.isArray(body.events)) {
     throw new Error('upcoming events are unavailable');
   }
   return body.events.flatMap((event) => {
     const id = isRecord(event) && typeof event.id === 'string' ? event.id : '';
     const card = readEvent(event, partners, soldForParty(sales, id));
-    return card === undefined ? [] : [card];
+    if (card === undefined) {
+      return [];
+    }
+    return [{ ...card, slug: assigned.get(card.id) ?? card.slug }];
   });
 }
 
@@ -192,25 +249,32 @@ export async function loadUpcomingEvents(): Promise<UpcomingEventCard[]> {
   if (decideAccess({ action: 'read-published' }).effect !== 'allow') {
     return [];
   }
-  const [eventsBody, partnersBody, sales] = await Promise.all([readCatalogJson('/events/upcoming'), readCatalogJson('/partners'), loadTicketSales()]);
+  const [eventsBody, catalogBody, partnersBody, sales] = await Promise.all([
+    readCatalogJson('/events/upcoming'),
+    readCatalogJson('/events'),
+    readCatalogJson('/partners'),
+    loadTicketSales(),
+  ]);
   const partners = readPartners(partnersBody);
-  return readEventList(eventsBody, partners, sales).map((event) => ({ ...event, when: 'upcoming' as const }));
+  return readEventList(eventsBody, partners, sales, catalogSlugs(catalogBody)).map((event) => ({ ...event, when: 'upcoming' as const }));
 }
 
 export async function loadCalendarEvents(): Promise<UpcomingEventCard[]> {
   if (decideAccess({ action: 'read-published' }).effect !== 'allow') {
     return [];
   }
-  const [upcomingBody, pastBody, partnersBody, sales] = await Promise.all([
+  const [upcomingBody, pastBody, catalogBody, partnersBody, sales] = await Promise.all([
     readCatalogJson('/events/upcoming'),
     readCatalogJson('/events/past'),
+    readCatalogJson('/events'),
     readCatalogJson('/partners'),
     loadTicketSales(),
   ]);
   const partners = readPartners(partnersBody);
-  const upcoming = readEventList(upcomingBody, partners, sales).map((event) => ({ ...event, when: 'upcoming' as const }));
+  const assigned = catalogSlugs(catalogBody);
+  const upcoming = readEventList(upcomingBody, partners, sales, assigned).map((event) => ({ ...event, when: 'upcoming' as const }));
   const seen = new Set(upcoming.map((event) => event.id));
-  const past = readEventList(pastBody, partners, sales)
+  const past = readEventList(pastBody, partners, sales, assigned)
     .filter((event) => !seen.has(event.id))
     .sort((left, right) => new Date(right.dateStart).getTime() - new Date(left.dateStart).getTime())
     .map((event) => ({ ...event, when: 'past' as const }));
@@ -221,11 +285,25 @@ export async function loadPublicEvent(id: string): Promise<HomeEvent | undefined
   if (decideAccess({ action: 'read-published' }).effect !== 'allow') {
     return undefined;
   }
-  const [body, sales] = await Promise.all([readCatalogJson('/events'), loadTicketSales()]);
+  const [body, sales, passes] = await Promise.all([readCatalogJson('/events'), loadTicketSales(), loadGuestListOffers()]);
   if (!isRecord(body) || !Array.isArray(body.events)) {
     throw new Error('events are unavailable');
   }
-  const event = body.events.find((item) => isRecord(item) && item.id === id);
+  const assigned = assignEventSlugs(slugSources(body.events));
+  const event = body.events.find((item) => {
+    if (!isRecord(item) || typeof item.id !== 'string') {
+      return false;
+    }
+    return item.id === id || assigned.get(item.id) === id;
+  });
   const partyId = isRecord(event) && typeof event.id === 'string' ? event.id : '';
-  return readHomeEvent(event, soldForParty(sales, partyId));
+  const home = readHomeEvent(
+    event,
+    soldForParty(sales, partyId),
+    passes.filter((pass) => pass.partyId === partyId),
+  );
+  if (home === undefined) {
+    return undefined;
+  }
+  return { ...home, slug: assigned.get(home.id) ?? home.slug };
 }

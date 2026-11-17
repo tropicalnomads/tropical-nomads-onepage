@@ -207,6 +207,42 @@ export interface AdminCopy {
   invalid: string;
   back: string;
   empty: string;
+  dashboardTab: string;
+  eventLink: string;
+  copyLink: string;
+  copiedLink: string;
+  netSales: string;
+  ticketsSold: string;
+  salesTrend: string;
+  last30Days: string;
+  noSales: string;
+  recentOrders: string;
+  noOrders: string;
+  noTickets: string;
+  orderColumn: string;
+  buyerColumn: string;
+  quantityColumn: string;
+  ticketColumn: string;
+  dashboardPrice: string;
+  dashboardDate: string;
+  participantsTab: string;
+  participantSearch: string;
+  participantType: string;
+  participantAllTypes: string;
+  participantStatusFilter: string;
+  participantAllStatuses: string;
+  participantChecked: string;
+  participantOpen: string;
+  participantUnpaid: string;
+  participantName: string;
+  participantEmail: string;
+  participantNote: string;
+  participantEmpty: string;
+  participantNoMatch: string;
+  participantPeople: string;
+  participantCheckedCount: string;
+  participantWaitingCount: string;
+  openCheckIn: string;
   detailsTab: string;
   ticketsTab: string;
   flyer: string;
@@ -258,6 +294,25 @@ export interface AdminCopy {
   noArtists: string;
   ticketLadder: string;
   ticketHelp: string;
+  guestListsTitle: string;
+  guestListHelp: string;
+  addGuestList: string;
+  guestListName: string;
+  listFree: string;
+  listDoor: string;
+  listOnline: string;
+  listWhere: string;
+  removeGuestList: string;
+  lockedGuestList: string;
+  openList: string;
+  backToLists: string;
+  personName: string;
+  personEmail: string;
+  personNote: string;
+  savePerson: string;
+  editPerson: string;
+  removePerson: string;
+  personInvalid: string;
   addType: string;
   typeName: string;
   addLote: string;
@@ -423,6 +478,7 @@ export interface EventCopy {
   buyInApp: string;
   buyInAppAria: string;
   ticketsTitle: string;
+  guestListsTitle: string;
   inAppNote: string;
   capacityLabel: string;
   ownerName: string;
@@ -514,6 +570,8 @@ export interface CheckInCopy {
   createList: string;
   addGuest: string;
   noPeople: string;
+  freeList: string;
+  doorCover: string;
 }
 
 export const shellCopy: Record<Locale, ShellCopy> = {
@@ -579,6 +637,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       buyInApp: 'Buy ticket',
       buyInAppAria: 'Buy a euro ticket for {title}.',
       ticketsTitle: 'Tickets',
+      guestListsTitle: 'Guest list',
       inAppNote: 'The amount is in euro. No card is charged yet. The ticket is ready for entry.',
       capacityLabel: '{count} available',
       ownerName: 'Full name',
@@ -667,6 +726,8 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       createList: 'Create guest list',
       addGuest: 'Add person',
       noPeople: 'No one matches that name.',
+      freeList: 'Free',
+      doorCover: '{price} at the door',
     },
     payments: {
       section: 'Payment',
@@ -885,6 +946,42 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       invalid: 'Check the event and try again.',
       back: 'All events',
       empty: 'No events yet.',
+      dashboardTab: 'Dashboard',
+      eventLink: 'Event link',
+      copyLink: 'Copy link',
+      copiedLink: 'Copied',
+      netSales: 'Net sales',
+      ticketsSold: 'Tickets sold',
+      salesTrend: 'Sales trend',
+      last30Days: 'Last 30 days',
+      noSales: 'No sales in the last 30 days.',
+      recentOrders: 'Recent orders',
+      noOrders: 'No ticket orders yet.',
+      noTickets: 'No tickets yet.',
+      orderColumn: 'Order',
+      buyerColumn: 'Name',
+      quantityColumn: 'Quantity',
+      ticketColumn: 'Ticket',
+      dashboardPrice: 'Price',
+      dashboardDate: 'Date',
+      participantsTab: 'Participants',
+      participantSearch: 'Search name, email, or ticket',
+      participantType: 'Ticket type',
+      participantAllTypes: 'All ticket types',
+      participantStatusFilter: 'Status',
+      participantAllStatuses: 'All statuses',
+      participantChecked: 'Checked in',
+      participantOpen: 'Not checked in',
+      participantUnpaid: 'Unpaid',
+      participantName: 'Name',
+      participantEmail: 'Email',
+      participantNote: 'Note',
+      participantEmpty: 'No one is on this event yet.',
+      participantNoMatch: 'No one matches this search.',
+      participantPeople: 'People',
+      participantCheckedCount: 'Checked in',
+      participantWaitingCount: 'Still to arrive',
+      openCheckIn: 'Open check-in',
       detailsTab: 'Details',
       ticketsTab: 'Tickets',
       flyer: 'Flyer',
@@ -936,6 +1033,25 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       noArtists: 'No matching artists.',
       ticketLadder: 'Ticket types',
       ticketHelp: 'Each type sells one lote at a time. The next lote opens when the earlier one sells out or its end date passes.',
+      guestListsTitle: 'Guest lists',
+      guestListHelp: 'Add a list, then add the people on it.',
+      addGuestList: 'Add list',
+      guestListName: 'List name',
+      listFree: 'Free',
+      listDoor: 'At the door',
+      listOnline: 'Sold online',
+      listWhere: 'Where',
+      removeGuestList: 'Remove',
+      lockedGuestList: 'Included with every event',
+      openList: 'Open',
+      backToLists: 'All lists',
+      personName: 'Name',
+      personEmail: 'Email',
+      personNote: 'Note',
+      savePerson: 'Save person',
+      editPerson: 'Edit',
+      removePerson: 'Remove',
+      personInvalid: 'Check the person and try again.',
       addType: 'Add ticket type',
       typeName: 'Type name',
       addLote: 'Add lote',
@@ -1034,6 +1150,7 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       buyInApp: 'Comprar ingresso',
       buyInAppAria: 'Comprar um ingresso em euro para {title}.',
       ticketsTitle: 'Ingressos',
+      guestListsTitle: 'Lista',
       inAppNote: 'O valor é em euro. Nenhum cartão é cobrado ainda. O ingresso vale para entrar.',
       capacityLabel: '{count} disponíveis',
       ownerName: 'Nome completo',
@@ -1121,6 +1238,8 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       guestName: 'Nome da pessoa',
       createList: 'Criar lista de convidados',
       addGuest: 'Adicionar pessoa',
+      freeList: 'Grátis',
+      doorCover: '{price} na porta',
       noPeople: 'Ninguém com esse nome.',
     },
     payments: {
@@ -1340,6 +1459,42 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       invalid: 'Confira o evento e tente de novo.',
       back: 'Todos os eventos',
       empty: 'Nenhum evento ainda.',
+      dashboardTab: 'Painel',
+      eventLink: 'Link do evento',
+      copyLink: 'Copiar link',
+      copiedLink: 'Copiado',
+      netSales: 'Vendas líquidas',
+      ticketsSold: 'Ingressos vendidos',
+      salesTrend: 'Tendência de vendas',
+      last30Days: 'Últimos 30 dias',
+      noSales: 'Nenhuma venda nos últimos 30 dias.',
+      recentOrders: 'Pedidos recentes',
+      noOrders: 'Ainda não há pedidos de ingresso.',
+      noTickets: 'Ainda não há ingressos.',
+      orderColumn: 'Pedido',
+      buyerColumn: 'Nome',
+      quantityColumn: 'Quantidade',
+      ticketColumn: 'Ingresso',
+      dashboardPrice: 'Preço',
+      dashboardDate: 'Data',
+      participantsTab: 'Participantes',
+      participantSearch: 'Buscar nome, e-mail ou ingresso',
+      participantType: 'Tipo de ingresso',
+      participantAllTypes: 'Todos os tipos',
+      participantStatusFilter: 'Estado',
+      participantAllStatuses: 'Todos os estados',
+      participantChecked: 'Entrou',
+      participantOpen: 'Ainda não entrou',
+      participantUnpaid: 'Não pago',
+      participantName: 'Nome',
+      participantEmail: 'E-mail',
+      participantNote: 'Observação',
+      participantEmpty: 'Ainda não há ninguém neste evento.',
+      participantNoMatch: 'Ninguém corresponde a esta busca.',
+      participantPeople: 'Pessoas',
+      participantCheckedCount: 'Entraram',
+      participantWaitingCount: 'Ainda vão chegar',
+      openCheckIn: 'Abrir check-in',
       detailsTab: 'Detalhes',
       ticketsTab: 'Ingressos',
       flyer: 'Cartaz',
@@ -1391,6 +1546,25 @@ export const shellCopy: Record<Locale, ShellCopy> = {
       noArtists: 'Nenhum artista encontrado.',
       ticketLadder: 'Tipos de ingresso',
       ticketHelp: 'Cada tipo vende um lote de cada vez. O próximo lote abre quando o anterior esgota ou a data acaba.',
+      guestListsTitle: 'Listas',
+      guestListHelp: 'Adicione uma lista e as pessoas nela.',
+      addGuestList: 'Adicionar lista',
+      guestListName: 'Nome da lista',
+      listFree: 'Grátis',
+      listDoor: 'Na porta',
+      listOnline: 'Venda online',
+      listWhere: 'Onde',
+      removeGuestList: 'Remover',
+      lockedGuestList: 'Entra em todo evento',
+      openList: 'Abrir',
+      backToLists: 'Todas as listas',
+      personName: 'Nome',
+      personEmail: 'E-mail',
+      personNote: 'Observação',
+      savePerson: 'Salvar pessoa',
+      editPerson: 'Editar',
+      removePerson: 'Remover',
+      personInvalid: 'Confira a pessoa e tente de novo.',
       addType: 'Adicionar tipo',
       typeName: 'Nome do tipo',
       addLote: 'Adicionar lote',

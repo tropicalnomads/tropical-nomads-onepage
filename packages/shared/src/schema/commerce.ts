@@ -115,6 +115,26 @@ export interface GuestPerson {
   id: string;
   name: string;
   addedAt: string;
+  email?: string;
+  observation?: string;
+}
+
+export const defaultGuestListNames = ['DJ', 'Crew'] as const;
+
+export type DefaultGuestListName = (typeof defaultGuestListNames)[number];
+
+export type GuestListChannel = 'door' | 'online';
+
+export function isDefaultGuestListName(name: string): name is DefaultGuestListName {
+  return name === 'DJ' || name === 'Crew';
+}
+
+/** Zero is free. A priced list uses the same euro bound as a ticket. */
+export function isGuestListAmount(amount: number): boolean {
+  if (typeof amount !== 'number' || !Number.isFinite(amount) || amount < 0 || amount > 100000) {
+    return false;
+  }
+  return /^\d+(\.\d{1,2})?$/.test(amount.toString());
 }
 
 export interface GuestList {
@@ -123,6 +143,10 @@ export interface GuestList {
   name: string;
   createdAt: string;
   guests: readonly GuestPerson[];
+  amount: number;
+  channel: GuestListChannel;
+  locked: boolean;
+  capacity?: number;
 }
 
 export interface DoorInvite {
@@ -401,11 +425,67 @@ function ownerEmailAddress(value: string, errors: string[], field: string): stri
   return email;
 }
 
+function guestObservation(value: string, errors: string[]): string | undefined {
+  const note = value.trim();
+  if (note === '') {
+    return undefined;
+  }
+  if (note.length > 500 || /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(note)) {
+    errors.push('observation is not valid');
+    return undefined;
+  }
+  return note;
+}
+
+function guestListAmount(record: Record<string, unknown>, errors: string[]): number | undefined {
+  if (!('amount' in record) || record.amount === undefined) {
+    return 0;
+  }
+  if (typeof record.amount !== 'number' || !isGuestListAmount(record.amount)) {
+    errors.push('amount is not valid');
+    return undefined;
+  }
+  return record.amount;
+}
+
+function guestListChannel(record: Record<string, unknown>, errors: string[]): GuestListChannel | undefined {
+  if (!('channel' in record) || record.channel === undefined) {
+    return 'door';
+  }
+  if (record.channel !== 'door' && record.channel !== 'online') {
+    errors.push('channel is not valid');
+    return undefined;
+  }
+  return record.channel;
+}
+
+function guestListLocked(record: Record<string, unknown>, errors: string[]): boolean | undefined {
+  if (!('locked' in record) || record.locked === undefined) {
+    return false;
+  }
+  if (typeof record.locked !== 'boolean') {
+    errors.push('locked is not valid');
+    return undefined;
+  }
+  return record.locked;
+}
+
+function guestListCapacity(record: Record<string, unknown>, errors: string[]): number | undefined {
+  if (!('capacity' in record) || record.capacity === undefined) {
+    return undefined;
+  }
+  if (typeof record.capacity !== 'number' || !Number.isInteger(record.capacity) || record.capacity < 1 || record.capacity > 100000) {
+    errors.push('capacity is not valid');
+    return undefined;
+  }
+  return record.capacity;
+}
+
 export function parseGuestList(input: unknown, refs: SchemaRefs = {}): ParseResult<GuestList> {
   const read = readRecord(input);
   if (!read.ok) return read;
   const errors: string[] = [];
-  rejectUnknown(read.value, ['id', 'partyId', 'name', 'createdAt', 'guests'], errors);
+  rejectUnknown(read.value, ['id', 'partyId', 'name', 'createdAt', 'guests', 'amount', 'channel', 'locked', 'capacity'], errors);
   rejectSensitive(read.value, errors);
   const id = requireString(read.value, 'id', errors);
   const partyId = requireString(read.value, 'partyId', errors);
@@ -422,17 +502,47 @@ export function parseGuestList(input: unknown, refs: SchemaRefs = {}): ParseResu
         errors.push('guest must be an object');
         continue;
       }
-      rejectUnknown(guest, ['id', 'name', 'addedAt'], errors);
+      rejectUnknown(guest, ['id', 'name', 'addedAt', 'email', 'observation'], errors);
       rejectSensitive(guest, errors);
       const guestId = requireString(guest, 'id', errors);
       const guestName = requireString(guest, 'name', errors);
       const addedAt = requireString(guest, 'addedAt', errors);
       const cleanName = guestName ? personName(guestName, errors, 'name') : undefined;
-      if (guestId && cleanName && addedAt) guests.push({ id: guestId, name: cleanName, addedAt });
+      const rawEmail = optionalString(guest, 'email', errors);
+      const rawNote = optionalString(guest, 'observation', errors);
+      const email = rawEmail !== undefined && rawEmail.trim() !== '' ? ownerEmailAddress(rawEmail, errors, 'email') : undefined;
+      const observation = rawNote !== undefined ? guestObservation(rawNote, errors) : undefined;
+      const emailInvalid = rawEmail !== undefined && rawEmail.trim() !== '' && email === undefined;
+      const noteInvalid = rawNote !== undefined && rawNote.trim() !== '' && observation === undefined;
+      if (guestId && cleanName && addedAt && !emailInvalid && !noteInvalid) {
+        const person: GuestPerson = { id: guestId, name: cleanName, addedAt };
+        if (email) person.email = email;
+        if (observation) person.observation = observation;
+        guests.push(person);
+      }
     }
   }
-  if (!id || !partyId || !name || !createdAt || !Array.isArray(read.value.guests)) return fail(errors);
-  return finish(errors, { id, partyId, name, createdAt, guests });
+  const amount = guestListAmount(read.value, errors);
+  const channel = guestListChannel(read.value, errors);
+  const locked = guestListLocked(read.value, errors);
+  const capacity = guestListCapacity(read.value, errors);
+  if (channel === 'online' && capacity === undefined && !errors.includes('capacity is not valid')) {
+    errors.push('capacity is not valid');
+  }
+  if (channel === 'door' && capacity !== undefined) {
+    errors.push('capacity is not valid');
+  }
+  if (locked === true && name && (amount !== 0 || channel !== 'door' || !isDefaultGuestListName(name))) {
+    errors.push('guest list is locked');
+  }
+  if (!id || !partyId || !name || !createdAt || !Array.isArray(read.value.guests) || amount === undefined || channel === undefined || locked === undefined) {
+    return fail(errors);
+  }
+  const list: GuestList = { id, partyId, name, createdAt, guests, amount, channel, locked };
+  if (channel === 'online' && capacity !== undefined) {
+    list.capacity = capacity;
+  }
+  return finish(errors, list);
 }
 
 export function parseDoorInvite(input: unknown, refs: SchemaRefs = {}): ParseResult<DoorInvite> {

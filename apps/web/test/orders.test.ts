@@ -12,6 +12,7 @@ function staticallyImportsOrders(source: string): boolean {
   });
 }
 import { shellCopy } from '../src/i18n/copy.ts';
+import { adminOrderCards } from '../src/orders/present.ts';
 import { robotDisallows } from '../src/seo/robots.ts';
 import { isPublicPath } from '../src/seo/urls.ts';
 import { sitemapXml } from '../src/seo/sitemap.ts';
@@ -91,5 +92,23 @@ describe('my orders', () => {
     assert.equal(action.includes("await import('tropical-nomads-api/orders')"), true);
     assert.equal(payUrl.includes('object-store'), false);
     assert.equal(payUrl.includes('client-s3'), false);
+  });
+
+  it('keeps the event id on a ticket order line', () => {
+    const [card] = adminOrderCards([
+      {
+        id: 'order-1',
+        createdAt: '2026-11-17T12:00:00.000Z',
+        purpose: 'tickets',
+        status: 'confirmed',
+        amount: 20,
+        currency: 'EUR',
+        city: '',
+        country: '',
+        buyer: 'Ada',
+        lines: [{ kind: 'ticket', name: 'Friday', detail: 'Door', quantity: 1, partyId: 'party-1' }],
+      },
+    ]);
+    assert.equal(card?.lines[0]?.partyId, 'party-1');
   });
 });

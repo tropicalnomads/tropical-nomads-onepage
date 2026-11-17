@@ -1,5 +1,5 @@
 import { adminActor } from '../../../../src/admin/actions';
-import { emptyEventValues } from '../../../../src/admin/values';
+import { defaultGuestListFields, emptyEventValues } from '../../../../src/admin/values';
 import { loadArtistProfiles } from '../../../../src/artists/load';
 import { loadVenues } from '../../../../src/venues/load';
 import { AdminEventForm } from '../../../../src/components/AdminEventForm';
@@ -12,5 +12,14 @@ export default async function NewAdminEventPage() {
   if (!actor) {
     return <AdminDenied />;
   }
-  return <AdminEventForm values={emptyEventValues()} artists={await loadArtistProfiles()} venues={await loadVenues()} sold={{}} phase="draft" />;
+  return (
+    <AdminEventForm
+      values={emptyEventValues()}
+      artists={await loadArtistProfiles()}
+      venues={await loadVenues()}
+      sold={{}}
+      phase="draft"
+      initialGuestLists={defaultGuestListFields()}
+    />
+  );
 }

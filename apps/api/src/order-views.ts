@@ -35,6 +35,7 @@ export interface OwnOrderLine {
   quantity: number;
   image?: string;
   ticketId?: string;
+  partyId?: string;
 }
 
 export interface OwnOrderView {
@@ -154,6 +155,7 @@ function lineViews(order: Order, products: readonly OrderCatalogProduct[], title
           name: titles.get(line.partyId) ?? line.partyId,
           detail: line.offerName,
           quantity: line.quantity,
+          partyId: line.partyId,
         };
         if (ticket) {
           view.ticketId = ticket.id;

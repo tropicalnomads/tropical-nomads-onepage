@@ -13,8 +13,8 @@ export {
 } from './account/identity.ts';
 export type { AttachedProfile, VerifiedSignIn } from './account/identity.ts';
 export type { BillingAddress, PaymentMethod, Profile } from './schema/account.ts';
-export type { CheckIn, DoorInvite, GuestList, GuestPerson, IssuedTicket, Order, OrderDelivery, PaymentTrace, QrPayload, StockCorrection, TicketOwner } from './schema/commerce.ts';
-export { ticketOwnerLimit } from './schema/commerce.ts';
+export type { CheckIn, DoorInvite, GuestList, GuestListChannel, GuestPerson, IssuedTicket, Order, OrderDelivery, PaymentTrace, QrPayload, StockCorrection, TicketOwner } from './schema/commerce.ts';
+export { defaultGuestListNames, isDefaultGuestListName, isGuestListAmount, ticketOwnerLimit } from './schema/commerce.ts';
 export type { PaymentMethodType, PaymentPurpose } from './schema/values.ts';
 export {
   accessActions,
@@ -44,6 +44,8 @@ export {
 export type { PublicEventLinks, PublicEventLineup, PublicEventWhen } from './events/public-list.ts';
 export { artistIdFromName, httpsProfileUrl, soundCloudPlayerUrl } from './events/artist-profile.ts';
 export { knownTimeZone } from './events/time-zone.ts';
+export { assignEventSlugs, eventSlug, eventSlugFor } from './events/slug.ts';
+export type { SlugEvent } from './events/slug.ts';
 export type { Venue } from './schema/catalog.ts';
 export { loteOffers, loteStatusFor, loteStatuses, openLoteOffers } from './events/ticket-lotes.ts';
 export type { LoteOffer, LoteStatus } from './events/ticket-lotes.ts';

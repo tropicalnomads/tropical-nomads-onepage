@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { EventDetails } from '../../../src/components/home/EventDetails';
 import { loadPublicEvent } from '../../../src/events/load';
 import { absoluteAsset, siteOrigin } from '../../../src/seo/urls';
@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     return {};
   }
   const description = event.description ?? `${event.title} in ${event.city}, ${event.country}.`;
-  const url = `${siteOrigin}/events/${encodeURIComponent(event.id)}`;
+  const url = `${siteOrigin}/events/${encodeURIComponent(event.slug)}`;
   const image = event.schemaImage ? absoluteAsset(event.schemaImage) : undefined;
   return {
     title: `${event.title} | Tropical Nomads`,
@@ -35,6 +35,9 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
   const event = await loadPublicEvent(id);
   if (!event) {
     notFound();
+  }
+  if (event.slug !== id) {
+    redirect(`/events/${encodeURIComponent(event.slug)}`);
   }
   return <EventDetails event={event} />;
 }

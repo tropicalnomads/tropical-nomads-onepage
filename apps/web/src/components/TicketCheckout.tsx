@@ -46,6 +46,7 @@ function ownerRows(quantity: number, buyer?: TicketBuyer): OwnerDraft[] {
 
 export function TicketCheckout({
   eventId,
+  slug = eventId,
   title,
   offerName,
   amount,
@@ -53,6 +54,7 @@ export function TicketCheckout({
   buyer,
 }: {
   eventId: string;
+  slug?: string;
   title: string;
   offerName: string;
   amount: number;
@@ -64,7 +66,7 @@ export function TicketCheckout({
   const [pending, setPending] = useState(false);
   const [result, setResult] = useState<TicketActionResult | null>(null);
   const total = euroTotal(amount, quantity);
-  const eventHref = `/events/${encodeURIComponent(eventId)}`;
+  const eventHref = `/events/${encodeURIComponent(slug)}`;
 
   function updateOwner(key: string, field: 'fullName' | 'email', value: string): void {
     setOwners((current) => current.map((owner) => (owner.key === key ? { ...owner, [field]: value } : owner)));
@@ -160,7 +162,7 @@ export function TicketCheckout({
             </TextLink>
           ) : null}
           {result?.notice === 'not-signed-in' ? (
-            <TextLink href={signInHref(ticketCheckoutPath(eventId, offerName, quantity))} className="mt-2 text-sm">
+            <TextLink href={signInHref(ticketCheckoutPath(slug, offerName, quantity))} className="mt-2 text-sm">
               {accountText(language, 'signIn')}
             </TextLink>
           ) : null}

@@ -107,6 +107,14 @@ function requiredText(record: Record<string, unknown>, key: string, label: strin
   return value;
 }
 
+function requiredNumber(record: Record<string, unknown>, key: string, label: string): number {
+  const value = record[key];
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    throw new Error(`${label} is missing ${key}`);
+  }
+  return value;
+}
+
 const catalogTables = {
   events: 'party',
   artists: 'artist',
@@ -429,14 +437,18 @@ async function insertCollectionRow(client: Queryable, name: Exclude<StoredCollec
       return;
     case 'guest-lists':
       await client.query(
-        `insert into guest_list (id, party_id, name, created_at, guests, document)
-         values ($1, $2, $3, $4, $5::jsonb, $6::jsonb)`,
+        `insert into guest_list (id, party_id, name, created_at, guests, amount, channel, locked, capacity, document)
+         values ($1, $2, $3, $4, $5::jsonb, $6, $7, $8, $9, $10::jsonb)`,
         [
           requiredText(record, 'id', name),
           requiredText(record, 'partyId', name),
           requiredText(record, 'name', name),
           requiredText(record, 'createdAt', name),
           JSON.stringify(record.guests ?? []),
+          requiredNumber(record, 'amount', name),
+          requiredText(record, 'channel', name),
+          record.locked === true,
+          typeof record.capacity === 'number' ? record.capacity : null,
           document,
         ],
       );

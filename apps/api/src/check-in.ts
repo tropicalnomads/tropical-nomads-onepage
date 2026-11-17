@@ -1,7 +1,12 @@
 import { randomBytes } from 'node:crypto';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import {
   accountCanScan,
   decideAccess,
+  defaultGuestListNames,
+  isDefaultGuestListName,
+  isGuestListAmount,
   normalizeAccountEmail,
   parseCheckIn,
   parseDoorInvite,
@@ -13,6 +18,7 @@ import {
   type DoorInvite,
   type DoorInviteScope,
   type GuestList,
+  type GuestListChannel,
   type IssuedTicket,
   type Order,
   type PaymentTrace,
@@ -21,7 +27,7 @@ import {
 } from 'tropical-nomads-shared';
 import { loadAccounts, readAccounts, writeAccounts, type AccountFile } from './accounts.ts';
 import { usingDatabase } from './database.ts';
-import { operationalDirectory, readOperational, updateOperational } from './operational.ts';
+import { operationalDirectory, readOperational, updateOperational, writeOperational } from './operational.ts';
 import { loadTraces } from './payments.ts';
 import { queueDatabase, readStoredCollection, writeStoredCollection, writeStoredState } from './sql-store.ts';
 import { loadIssuedTickets, readIssuedTickets, readOrders } from './tickets.ts';
@@ -43,12 +49,45 @@ export interface GuestRow {
   listId: string;
   listName: string;
   name: string;
+  email?: string;
+  observation?: string;
   state: 'checked' | 'open';
+}
+
+export interface GuestInput {
+  name: string;
+  email?: string;
+  observation?: string;
 }
 
 export interface RosterList {
   id: string;
   name: string;
+  amount: number;
+  channel: GuestListChannel;
+}
+
+export interface GuestListConfig {
+  id?: string;
+  name: string;
+  amount: number;
+  channel: GuestListChannel;
+  capacity?: number;
+}
+
+export interface GuestListSaveInput {
+  id: string;
+  name: string;
+  amount: string;
+  channel: string;
+  capacity: string;
+}
+
+export interface PublicGuestListOffer {
+  partyId: string;
+  name: string;
+  amount: number;
+  capacity: number;
 }
 
 export interface EventRoster {
@@ -219,12 +258,318 @@ export function createGuestList(
   staffProfile(file, caller);
   requireAdmin(caller);
   published(partyId, publishedPartyIds);
-  const draft = { id: newId('list'), partyId, name: cleanName(name), createdAt: now, guests: [] };
+  const draft = {
+    id: newId('list'),
+    partyId,
+    name: cleanName(name),
+    createdAt: now,
+    guests: [],
+    amount: 0,
+    channel: 'door' as const,
+    locked: false,
+  };
   const parsed = parseGuestList(draft, { partyIds: publishedPartyIds });
   if (!parsed.ok) {
     throw new Error('guest list was not stored');
   }
   return [...lists, parsed.value];
+}
+
+const listError = 'guest list was not stored';
+
+function copyList(list: GuestList): GuestList {
+  const copy: GuestList = {
+    id: list.id,
+    partyId: list.partyId,
+    name: list.name,
+    createdAt: list.createdAt,
+    guests: list.guests.map((guest) => ({ ...guest })),
+    amount: list.amount,
+    channel: list.channel,
+    locked: list.locked,
+  };
+  if (list.capacity !== undefined) {
+    copy.capacity = list.capacity;
+  }
+  return copy;
+}
+
+export function ensureDefaultGuestLists(lists: readonly GuestList[], partyId: string, now: string): GuestList[] {
+  const id = partyId.trim();
+  if (id === '' || id.length > 80) {
+    throw new Error(listError);
+  }
+  const next = lists.map(copyList);
+  for (const name of defaultGuestListNames) {
+    const index = next.findIndex((list) => list.partyId === id && list.name === name);
+    const current = index < 0 ? undefined : next[index];
+    const draft = current
+      ? {
+          id: current.id,
+          partyId: id,
+          name,
+          createdAt: current.createdAt,
+          guests: current.guests,
+          amount: 0,
+          channel: 'door' as const,
+          locked: true,
+        }
+      : {
+          id: newId('list'),
+          partyId: id,
+          name,
+          createdAt: now,
+          guests: [],
+          amount: 0,
+          channel: 'door' as const,
+          locked: true,
+        };
+    const parsed = parseGuestList(draft);
+    if (!parsed.ok) {
+      throw new Error(listError);
+    }
+    if (index < 0) {
+      next.push(parsed.value);
+    } else {
+      next[index] = parsed.value;
+    }
+  }
+  return next;
+}
+
+export function readGuestListConfigs(inputs: readonly GuestListSaveInput[]): GuestListConfig[] {
+  const configs: GuestListConfig[] = [];
+  const names = new Set<string>();
+  for (const input of inputs) {
+    const name = input.name.trim();
+    const amountText = input.amount.trim();
+    const capacityText = input.capacity.trim();
+    const id = input.id.trim();
+    if (name === '' && amountText === '' && capacityText === '' && id === '') {
+      continue;
+    }
+    if (name === '' || name.length > 80 || /[\u0000-\u001f]/.test(name) || names.has(name)) {
+      throw new Error(listError);
+    }
+    const amount = amountText === '' ? 0 : Number(amountText);
+    if (!isGuestListAmount(amount)) {
+      throw new Error(listError);
+    }
+    if (input.channel !== 'door' && input.channel !== 'online') {
+      throw new Error(listError);
+    }
+    let capacity: number | undefined;
+    if (input.channel === 'online') {
+      const parsedCapacity = Number(capacityText);
+      if (!Number.isInteger(parsedCapacity) || parsedCapacity < 1 || parsedCapacity > 100000) {
+        throw new Error(listError);
+      }
+      capacity = parsedCapacity;
+    } else if (capacityText !== '') {
+      throw new Error(listError);
+    }
+    names.add(name);
+    configs.push({
+      ...(id === '' ? {} : { id }),
+      name,
+      amount,
+      channel: input.channel,
+      ...(capacity === undefined ? {} : { capacity }),
+    });
+  }
+  return configs;
+}
+
+export function soldForParty(orders: readonly Order[], partyId: string): Record<string, number> {
+  const sold: Record<string, number> = {};
+  for (const order of orders) {
+    for (const line of order.lines) {
+      if (line.kind !== 'ticket' || line.partyId !== partyId) {
+        continue;
+      }
+      sold[line.offerName] = (sold[line.offerName] ?? 0) + line.quantity;
+    }
+  }
+  return sold;
+}
+
+function listUsed(list: GuestList, sold: Readonly<Record<string, number>>): boolean {
+  return list.guests.length > 0 || (sold[list.name] ?? 0) > 0;
+}
+
+export function configureGuestLists(
+  file: AccountFile,
+  lists: readonly GuestList[],
+  caller: CheckInCaller,
+  partyId: string,
+  configs: readonly GuestListConfig[],
+  offerNames: readonly string[],
+  sold: Readonly<Record<string, number>>,
+  now: string,
+): GuestList[] {
+  staffProfile(file, caller);
+  requireAdmin(caller);
+  const ensured = ensureDefaultGuestLists(lists, partyId, now);
+  const id = partyId.trim();
+  const configNames = new Set(configs.map((item) => item.name));
+  if (configNames.size !== configs.length) {
+    throw new Error(listError);
+  }
+  for (const name of defaultGuestListNames) {
+    const config = configs.find((item) => item.name === name);
+    const existing = ensured.find((list) => list.partyId === id && list.name === name);
+    if (!config || !existing || config.amount !== 0 || config.channel !== 'door' || config.capacity !== undefined) {
+      throw new Error(listError);
+    }
+    if (config.id !== undefined && config.id !== existing.id) {
+      throw new Error(listError);
+    }
+  }
+  const partyLists = ensured.filter((list) => list.partyId === id);
+  const nextParty: GuestList[] = [];
+  const keptIds = new Set<string>();
+  const seenIds = new Set<string>();
+  for (const name of defaultGuestListNames) {
+    const existing = partyLists.find((list) => list.name === name);
+    if (!existing) {
+      throw new Error(listError);
+    }
+    keptIds.add(existing.id);
+    nextParty.push(existing);
+  }
+  for (const config of configs) {
+    if (isDefaultGuestListName(config.name)) {
+      continue;
+    }
+    if (config.channel === 'online' && offerNames.includes(config.name)) {
+      throw new Error(listError);
+    }
+    if (config.id !== undefined) {
+      if (seenIds.has(config.id)) {
+        throw new Error(listError);
+      }
+      seenIds.add(config.id);
+      const existing = partyLists.find((list) => list.id === config.id);
+      if (!existing || existing.locked) {
+        throw new Error(listError);
+      }
+      if (listUsed(existing, sold) && (existing.name !== config.name || existing.channel !== config.channel)) {
+        throw new Error(listError);
+      }
+      const soldCount = sold[config.name] ?? 0;
+      if (config.channel === 'online' && (config.capacity === undefined || config.capacity < soldCount)) {
+        throw new Error(listError);
+      }
+      const draft = {
+        id: existing.id,
+        partyId: id,
+        name: config.name,
+        createdAt: existing.createdAt,
+        guests: existing.guests,
+        amount: config.amount,
+        channel: config.channel,
+        locked: false,
+        ...(config.channel === 'online' && config.capacity !== undefined ? { capacity: config.capacity } : {}),
+      };
+      const parsed = parseGuestList(draft);
+      if (!parsed.ok) {
+        throw new Error(listError);
+      }
+      keptIds.add(existing.id);
+      nextParty.push(parsed.value);
+      continue;
+    }
+    const draft = {
+      id: newId('list'),
+      partyId: id,
+      name: config.name,
+      createdAt: now,
+      guests: [],
+      amount: config.amount,
+      channel: config.channel,
+      locked: false,
+      ...(config.capacity === undefined ? {} : { capacity: config.capacity }),
+    };
+    const parsed = parseGuestList(draft);
+    if (!parsed.ok) {
+      throw new Error(listError);
+    }
+    nextParty.push(parsed.value);
+  }
+  for (const existing of partyLists) {
+    if (keptIds.has(existing.id)) {
+      continue;
+    }
+    if (existing.locked || listUsed(existing, sold)) {
+      throw new Error(listError);
+    }
+  }
+  return [...ensured.filter((list) => list.partyId !== id), ...nextParty];
+}
+
+export function partyGuestListsAfterSave(
+  file: AccountFile,
+  lists: readonly GuestList[],
+  orders: readonly Order[],
+  caller: CheckInCaller,
+  partyId: string,
+  inputs: readonly GuestListSaveInput[] | undefined,
+  offerNames: readonly string[],
+  now: string,
+): GuestList[] {
+  if (inputs === undefined) {
+    return ensureDefaultGuestLists(lists, partyId, now);
+  }
+  return configureGuestLists(file, lists, caller, partyId, readGuestListConfigs(inputs), offerNames, soldForParty(orders, partyId), now);
+}
+
+export function publicGuestListOffers(lists: readonly GuestList[]): PublicGuestListOffer[] {
+  return lists.flatMap((list) => {
+    if (list.channel !== 'online' || list.capacity === undefined) {
+      return [];
+    }
+    return [{ partyId: list.partyId, name: list.name, amount: list.amount, capacity: list.capacity }];
+  });
+}
+
+export function guestListsOrEmpty(root: string): GuestList[] {
+  if (!existsSync(join(root, 'guest-lists.json'))) {
+    return [];
+  }
+  return readGuestLists(root);
+}
+
+export function ordersOrEmpty(root: string): Order[] {
+  if (!existsSync(join(root, 'orders.json'))) {
+    return [];
+  }
+  return readOrders(root);
+}
+
+function guestFields(input: GuestInput): { name: string; email?: string; observation?: string } {
+  const email = input.email?.trim() ?? '';
+  const observation = input.observation?.trim() ?? '';
+  return {
+    name: input.name,
+    ...(email === '' ? {} : { email }),
+    ...(observation === '' ? {} : { observation }),
+  };
+}
+
+function withGuest(list: GuestList, guest: { id: string; name: string; addedAt: string; email?: string; observation?: string }, guests: GuestList['guests']): GuestList {
+  const parsed = parseGuestList({ ...list, guests });
+  if (!parsed.ok || !parsed.value.guests.some((person) => person.id === guest.id)) {
+    throw new Error('guest was not stored');
+  }
+  return parsed.value;
+}
+
+function requireGuestEditor(file: AccountFile, caller: CheckInCaller): void {
+  staffProfile(file, caller);
+  const decision = decideAccess({ action: 'add-guest', role: caller.role, actorId: caller.actorId });
+  if (decision.effect !== 'allow') {
+    throw new Error('check-in is not allowed');
+  }
 }
 
 export function addGuest(
@@ -233,21 +578,54 @@ export function addGuest(
   caller: CheckInCaller,
   listId: string,
   name: string,
-  publishedPartyIds: readonly string[],
   now: string,
+  extras: { email?: string; observation?: string } = {},
 ): GuestList[] {
-  staffProfile(file, caller);
-  const decision = decideAccess({ action: 'add-guest', role: caller.role, actorId: caller.actorId });
-  if (decision.effect !== 'allow') {
-    throw new Error('check-in is not allowed');
-  }
+  requireGuestEditor(file, caller);
   const list = lists.find((item) => item.id === listId);
   if (!list) {
     throw new Error('guest list was not stored');
   }
-  published(list.partyId, publishedPartyIds);
-  const guest = { id: newId('guest'), name: cleanName(name), addedAt: now };
-  const parsed = parseGuestList({ ...list, guests: [...list.guests, guest] }, { partyIds: publishedPartyIds });
+  const guest = { id: newId('guest'), addedAt: now, ...guestFields({ name, ...extras }) };
+  return lists.map((item) => (item.id === listId ? withGuest(list, guest, [...list.guests, guest]) : item));
+}
+
+export function updateGuest(
+  file: AccountFile,
+  lists: readonly GuestList[],
+  caller: CheckInCaller,
+  listId: string,
+  guestId: string,
+  input: GuestInput,
+): GuestList[] {
+  requireGuestEditor(file, caller);
+  const list = lists.find((item) => item.id === listId);
+  const current = list?.guests.find((guest) => guest.id === guestId);
+  if (!list || !current) {
+    throw new Error('guest was not stored');
+  }
+  const guest = { id: current.id, addedAt: current.addedAt, ...guestFields(input) };
+  const guests = list.guests.map((person) => (person.id === guestId ? guest : person));
+  return lists.map((item) => (item.id === listId ? withGuest(list, guest, guests) : item));
+}
+
+export function removeGuest(
+  file: AccountFile,
+  lists: readonly GuestList[],
+  checkIns: readonly CheckIn[],
+  caller: CheckInCaller,
+  listId: string,
+  guestId: string,
+): GuestList[] {
+  requireGuestEditor(file, caller);
+  const list = lists.find((item) => item.id === listId);
+  if (!list?.guests.some((guest) => guest.id === guestId)) {
+    throw new Error('guest was not stored');
+  }
+  if (guestChecked(checkIns, guestId)) {
+    throw new Error('guest is checked in');
+  }
+  const parsed = parseGuestList({ ...list, guests: list.guests.filter((guest) => guest.id !== guestId) });
   if (!parsed.ok) {
     throw new Error('guest was not stored');
   }
@@ -326,10 +704,14 @@ export function eventRoster(
         listId: list.id,
         listName: list.name,
         name: guest.name,
+        ...(guest.email ? { email: guest.email } : {}),
+        ...(guest.observation ? { observation: guest.observation } : {}),
         state: guestChecked(checkIns, guest.id) ? ('checked' as const) : ('open' as const),
       })),
     );
-  const listRows = lists.filter((list) => list.partyId === partyId).map((list) => ({ id: list.id, name: list.name }));
+  const listRows = lists
+    .filter((list) => list.partyId === partyId)
+    .map((list) => ({ id: list.id, name: list.name, amount: list.amount, channel: list.channel }));
   return { partyId, sold, guests, lists: listRows };
 }
 
@@ -343,7 +725,9 @@ export function searchRoster(roster: EventRoster, query: string, file: AccountFi
     const profile = ticket ? file.profiles.find((item) => item.sub === ticket.buyerId) : undefined;
     return buyerNames(profile).some((name) => name.toLowerCase().includes(needle));
   });
-  const guests = roster.guests.filter((row) => row.name.toLowerCase().includes(needle) || row.listName.toLowerCase().includes(needle));
+  const guests = roster.guests.filter((row) =>
+    [row.name, row.listName, row.email ?? '', row.observation ?? ''].some((value) => value.toLowerCase().includes(needle)),
+  );
   return { partyId: roster.partyId, sold, guests, lists: roster.lists };
 }
 
@@ -579,6 +963,28 @@ export async function loadGuestLists(root?: string): Promise<GuestList[]> {
   return readGuestLists(root ?? operationalDirectory());
 }
 
+export function commitEnsureGuestLists(partyId: string, now: string, root?: string): Promise<GuestList[]> {
+  if (usingDatabase(root)) {
+    return queueDatabase(async () => {
+      const current = await loadGuestLists();
+      const next = ensureDefaultGuestLists(current, partyId, now);
+      await writeStoredCollection('guest-lists', { schemaVersion: 1, records: next });
+      return next;
+    });
+  }
+  const directory = root ?? operationalDirectory();
+  if (!existsSync(join(directory, 'guest-lists.json'))) {
+    const next = ensureDefaultGuestLists([], partyId, now);
+    writeOperational('guest-lists', { schemaVersion: 1, records: next }, directory);
+    return Promise.resolve(next);
+  }
+  return updateOperational(
+    'guest-lists',
+    (current) => ({ schemaVersion: 1, records: ensureDefaultGuestLists(storedLists(current.records), partyId, now) }),
+    directory,
+  ).then((file) => storedLists(file.records));
+}
+
 export async function loadCheckIns(root?: string): Promise<CheckIn[]> {
   if (usingDatabase(root)) {
     return storedCheckIns((await readStoredCollection('check-ins')).records);
@@ -744,17 +1150,25 @@ export function commitGuestList(
   });
 }
 
+function savedGuestList(file: { records: readonly unknown[] }, listId: string): GuestList {
+  const list = storedLists(file.records).find((item) => item.id === listId);
+  if (!list) {
+    throw new Error('guest was not stored');
+  }
+  return list;
+}
+
 export function commitAddGuest(
   caller: CheckInCaller,
   listId: string,
   name: string,
-  publishedPartyIds: readonly string[],
   now: string,
+  extras: { email?: string; observation?: string } = {},
   root?: string,
 ): Promise<GuestList> {
   if (usingDatabase(root)) {
     return queueDatabase(async () => {
-      const lists = addGuest(await loadAccounts(), await loadGuestLists(), caller, listId, name, publishedPartyIds, now);
+      const lists = addGuest(await loadAccounts(), await loadGuestLists(), caller, listId, name, now, extras);
       await writeStoredCollection('guest-lists', { schemaVersion: 1, records: lists });
       const list = (await loadGuestLists()).find((item) => item.id === listId);
       if (!list) {
@@ -768,16 +1182,67 @@ export function commitAddGuest(
     'guest-lists',
     (current) => ({
       schemaVersion: 1,
-      records: addGuest(readAccounts(directory), storedLists(current.records), caller, listId, name, publishedPartyIds, now),
+      records: addGuest(readAccounts(directory), storedLists(current.records), caller, listId, name, now, extras),
     }),
     directory,
-  ).then((file) => {
-    const list = storedLists(file.records).find((item) => item.id === listId);
-    if (!list) {
-      throw new Error('guest was not stored');
-    }
-    return list;
-  });
+  ).then((file) => savedGuestList(file, listId));
+}
+
+export function commitUpdateGuest(
+  caller: CheckInCaller,
+  listId: string,
+  guestId: string,
+  input: GuestInput,
+  root?: string,
+): Promise<GuestList> {
+  if (usingDatabase(root)) {
+    return queueDatabase(async () => {
+      const lists = updateGuest(await loadAccounts(), await loadGuestLists(), caller, listId, guestId, input);
+      await writeStoredCollection('guest-lists', { schemaVersion: 1, records: lists });
+      const list = (await loadGuestLists()).find((item) => item.id === listId);
+      if (!list) {
+        throw new Error('guest was not stored');
+      }
+      return list;
+    });
+  }
+  const directory = root ?? operationalDirectory();
+  return updateOperational(
+    'guest-lists',
+    (current) => ({
+      schemaVersion: 1,
+      records: updateGuest(readAccounts(directory), storedLists(current.records), caller, listId, guestId, input),
+    }),
+    directory,
+  ).then((file) => savedGuestList(file, listId));
+}
+
+export function commitRemoveGuest(
+  caller: CheckInCaller,
+  listId: string,
+  guestId: string,
+  root?: string,
+): Promise<GuestList> {
+  if (usingDatabase(root)) {
+    return queueDatabase(async () => {
+      const lists = removeGuest(await loadAccounts(), await loadGuestLists(), await loadCheckIns(), caller, listId, guestId);
+      await writeStoredCollection('guest-lists', { schemaVersion: 1, records: lists });
+      const list = (await loadGuestLists()).find((item) => item.id === listId);
+      if (!list) {
+        throw new Error('guest was not stored');
+      }
+      return list;
+    });
+  }
+  const directory = root ?? operationalDirectory();
+  return updateOperational(
+    'guest-lists',
+    (current) => ({
+      schemaVersion: 1,
+      records: removeGuest(readAccounts(directory), storedLists(current.records), readCheckIns(directory), caller, listId, guestId),
+    }),
+    directory,
+  ).then((file) => savedGuestList(file, listId));
 }
 
 export function commitGuestCheckIn(

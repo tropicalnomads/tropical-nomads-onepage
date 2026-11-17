@@ -3,10 +3,8 @@
 import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  addGuestAction,
   checkInGuestAction,
   checkInTicketAction,
-  createGuestListAction,
   type CheckInActionResult,
 } from '../check-in/actions';
 import { QrCamera } from '../check-in/camera';
@@ -32,7 +30,13 @@ export interface CheckInGuestRow {
   listId: string;
   listName: string;
   name: string;
+  email?: string;
+  observation?: string;
   state: 'checked' | 'open';
+}
+
+function euroAmount(amount: number, language: string): string {
+  return new Intl.NumberFormat(language === 'pt' ? 'pt-PT' : 'en-IE', { style: 'currency', currency: 'EUR' }).format(amount);
 }
 
 function resultText(language: Parameters<typeof checkInText>[0], result: CheckInActionResult): string {
@@ -62,7 +66,6 @@ export function CheckInDesk({
   events,
   partyId,
   query,
-  admin,
   sold,
   guests,
   lists,
@@ -70,15 +73,15 @@ export function CheckInDesk({
   events: readonly CheckInEventOption[];
   partyId?: string;
   query: string;
-  admin: boolean;
   sold: readonly CheckInSoldRow[];
   guests: readonly CheckInGuestRow[];
-  lists: readonly { id: string; name: string }[];
+  lists: readonly { id: string; name: string; amount: number; channel: 'door' | 'online' }[];
 }) {
   const { language } = useLanguage();
   const router = useRouter();
   const [result, setResult] = useState<CheckInActionResult | null>(null);
   const selected = events.find((event) => event.id === partyId);
+  const doorLists = lists.filter((list) => list.channel === 'door');
 
   async function run(action: (formData: FormData) => Promise<CheckInActionResult>, form: HTMLFormElement): Promise<void> {
     const outcome = await action(new FormData(form));
@@ -151,32 +154,27 @@ export function CheckInDesk({
                 <li key={row.guestId} className="flex flex-col gap-2 rounded-xl border border-white/10 bg-black/20 px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
                   <span>
                     <span className="block font-semibold text-ozora-cream">{row.name}</span>
+                    {row.email ? <span className="block text-sm text-ozora-cream/70">{row.email}</span> : null}
+                    {row.observation ? <span className="block text-sm text-ozora-cream/70">{row.observation}</span> : null}
                     <span className="text-sm text-ozora-cream/70">{row.listName}</span>
                   </span>
                   <RowAction partyId={selected.id} idName="guestId" id={row.guestId} state={row.state} action={checkInGuestAction} onSubmit={onSubmit} />
                 </li>
               ))}
             </ul>
-            {admin ? (
-              <div className="mt-4 space-y-3">
-                <form onSubmit={onSubmit(createGuestListAction)} className="flex flex-col gap-2 sm:flex-row">
-                  <input type="hidden" name="partyId" value={selected.id} />
-                  <input name="listName" placeholder={checkInText(language, 'listName')} className={`${fieldControlClass} text-sm`} />
-                  <Button type="submit" tone="ghost" size="sm">
-                    {checkInText(language, 'createList')}
-                  </Button>
-                </form>
-                {lists.map((list) => (
-                  <form key={list.id} onSubmit={onSubmit(addGuestAction)} className="flex flex-col gap-2 sm:flex-row">
-                    <input type="hidden" name="partyId" value={selected.id} />
-                    <input type="hidden" name="listId" value={list.id} />
-                    <input name="guestName" placeholder={checkInText(language, 'guestName')} className={`${fieldControlClass} text-sm`} />
-                    <Button type="submit" tone="ghost" size="sm">
-                      {checkInText(language, 'addGuest')}
-                    </Button>
-                  </form>
+            {doorLists.length > 0 ? (
+              <ul className="mt-4 space-y-1">
+                {doorLists.map((list) => (
+                  <li key={list.id} className="text-sm text-ozora-cream">
+                    <span className="font-semibold">{list.name}</span>
+                    <span className="ml-2 text-ozora-cream/70">
+                      {list.amount === 0
+                        ? checkInText(language, 'freeList')
+                        : checkInText(language, 'doorCover').replaceAll('{price}', euroAmount(list.amount, language))}
+                    </span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             ) : null}
           </section>
           <QrCamera partyId={selected.id} onResult={setResult} />

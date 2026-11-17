@@ -74,10 +74,15 @@ describe('admin parties', () => {
     assert.equal(edited.saved.offersManaged, true);
     const imported = publishedEventList(catalog, edited.managed).find((event) => event.id === 'imported');
     assert.equal(imported?.title, 'Imported Night');
+    assert.equal(imported?.slug, 'imported-night');
     assert.equal(imported?.links?.tickets, 'https://www.example.com/tickets');
     assert.deepEqual(imported?.headliners, ['Burn in Noise']);
 
     const created = saveManagedParty(edited.managed, catalog, input(), file, { role: 'admin', actorId: 'sub-admin' }, now, venues);
+    assert.equal(created.saved.event.slug, 'river-night');
+    const sameTitle = saveManagedParty(created.managed, catalog, input({ title: 'River Night' }), file, { role: 'admin', actorId: 'sub-admin' }, now, venues);
+    assert.equal(sameTitle.saved.event.slug, 'river-night-2');
+    assert.notEqual(sameTitle.saved.event.slug, created.saved.event.slug);
     assert.equal(created.saved.publication, 'draft');
     assert.equal(created.saved.origin, 'admin');
     assert.deepEqual(publishedEventList([{ id: 'imported', title: 'Imported', dateStart: '2026-12-03T20:00:00Z' }], created.managed).map((event) => event.id), ['imported']);

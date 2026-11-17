@@ -56,6 +56,8 @@ export function EventDetails({ event }: { event: HomeEvent }) {
 
   const hasMedia = event.photos.length > 0 || event.videos.length > 0 || event.sets.length > 0;
   const hasTickets = event.inAppOffers.length > 0;
+  const hasGuestLists = event.guestListOffers.length > 0;
+  const hasSale = hasTickets || hasGuestLists;
   const place = `${event.venueName ? `${event.venueName} - ` : ''}${event.city}, ${event.country}${event.address ? ` (${event.address})` : ''}`;
   const flyer = event.bannerSrc ? (
     <div className={`overflow-hidden rounded-[2rem] border border-white/10 bg-black/20 shadow-2xl shadow-black/30 ${hasTickets ? 'max-w-sm' : 'lg:sticky lg:top-24'}`}>
@@ -155,14 +157,15 @@ export function EventDetails({ event }: { event: HomeEvent }) {
         <Button href="/upcoming-events" tone="back" size="sm">
           {shellText(language, 'calendar')}
         </Button>
-        {hasTickets ? (
+        {hasSale ? (
           <div className="mt-6 grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)] lg:gap-12">
             <div className="contents lg:block lg:min-w-0">
               <div className="order-1">{heading}</div>
               <div className="order-3 min-w-0 lg:order-none">{story}</div>
             </div>
-            <aside className="order-2 lg:sticky lg:top-24 lg:order-none">
-              <EventTickets event={event} />
+            <aside className="order-2 space-y-4 lg:sticky lg:top-24 lg:order-none">
+              {hasTickets ? <EventTickets event={event} /> : null}
+              {hasGuestLists ? <EventTickets event={event} offers={event.guestListOffers} titleKey="guestListsTitle" radioName="guestListOffer" /> : null}
             </aside>
           </div>
         ) : (

@@ -41,6 +41,19 @@ describe('public event pages', () => {
     );
     assert.equal(cheapestOffer(event.inAppOffers)?.name, 'Early');
     assert.equal(cheapestOffer(event.inAppOffers)?.amount, 15);
+    const passes = readHomeEvent(
+      {
+        id: 'party-march',
+        title: 'Tropical Groove March',
+        dateStart: '2027-03-13T19:00:00.000Z',
+        venue: { city: 'Dublin', country: 'Ireland' },
+      },
+      { Friends: 1 },
+      [{ name: 'Friends', amount: 0, capacity: 4 }],
+    );
+    assert.equal(passes?.guestListOffers[0]?.amount, 0);
+    assert.equal(passes?.guestListOffers[0]?.remaining, 3);
+    assert.equal(JSON.stringify(passes).includes('Hidden Guest'), false);
     const tickets = readFileSync(new URL('../src/components/home/EventTickets.tsx', import.meta.url), 'utf8');
     const details = readFileSync(new URL('../src/components/home/EventDetails.tsx', import.meta.url), 'utf8');
     assert.equal(tickets.includes('ticketCheckoutPath'), true);
@@ -68,9 +81,9 @@ describe('public event pages', () => {
     const past = readFileSync(new URL('../src/components/home/PastSection.tsx', import.meta.url), 'utf8');
     const page = readFileSync(new URL('../app/events/[id]/page.tsx', import.meta.url), 'utf8');
     const calendarPage = readFileSync(new URL('../app/upcoming-events/page.tsx', import.meta.url), 'utf8');
-    assert.equal(calendar.includes('href={`/events/${encodeURIComponent(event.id)}`}'), true);
-    assert.equal(upcoming.includes('href={`/events/${encodeURIComponent(event.id)}`}'), true);
-    assert.equal(past.includes('href={`/events/${encodeURIComponent(event.id)}`}'), true);
+    assert.equal(calendar.includes('href={`/events/${encodeURIComponent(event.slug)}`}'), true);
+    assert.equal(upcoming.includes('href={`/events/${encodeURIComponent(event.slug)}`}'), true);
+    assert.equal(past.includes('href={`/events/${encodeURIComponent(event.slug)}`}'), true);
     assert.equal(page.includes('loadPublicEvent(id)'), true);
     assert.equal(page.includes('notFound()'), true);
     assert.equal(calendar.includes('href={`/artists/${encodeURIComponent('), true);

@@ -45,14 +45,29 @@ export default async function TicketCheckoutPage({
   if (!event) {
     notFound();
   }
-  const eventHref = `/events/${encodeURIComponent(event.id)}`;
-  const offer = event.inAppOffers.find((item) => item.name === one(query.offer));
+  if (event.slug !== id) {
+    const next = new URLSearchParams();
+    const offerName = one(query.offer);
+    const quantityText = one(query.qty);
+    if (offerName !== '') {
+      next.set('offer', offerName);
+    }
+    if (quantityText !== '') {
+      next.set('qty', quantityText);
+    }
+    const search = next.toString();
+    redirect(`/events/${encodeURIComponent(event.slug)}/checkout${search === '' ? '' : `?${search}`}`);
+  }
+  const eventHref = `/events/${encodeURIComponent(event.slug)}`;
+  const offer =
+    event.inAppOffers.find((item) => item.name === one(query.offer)) ??
+    event.guestListOffers.find((item) => item.name === one(query.offer));
   const cap = offer ? Math.min(ticketOwnerLimit, offer.remaining) : 0;
   const quantity = offer ? readQuantity(one(query.qty), cap) : undefined;
   if (!offer || quantity === undefined) {
     redirect(eventHref);
   }
-  const next = ticketCheckoutPath(event.id, offer.name, quantity);
+  const next = ticketCheckoutPath(event.slug, offer.name, quantity);
   const jar = await cookies();
   const sub = readSessionSub(jar.get(sessionCookieName)?.value);
   if (!sub) {
@@ -66,6 +81,7 @@ export default async function TicketCheckoutPage({
     <main>
       <TicketCheckout
         eventId={event.id}
+        slug={event.slug}
         title={event.title}
         offerName={offer.name}
         amount={offer.amount}

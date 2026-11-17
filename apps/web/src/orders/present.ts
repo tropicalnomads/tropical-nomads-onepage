@@ -11,6 +11,9 @@ function linesOf(view: OwnOrderView): OrderLineView[] {
     if (line.ticketId) {
       next.ticketId = line.ticketId;
     }
+    if (line.partyId) {
+      next.partyId = line.partyId;
+    }
     return next;
   });
 }

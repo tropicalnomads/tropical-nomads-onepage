@@ -1,28 +1,33 @@
 'use client';
 
-import { CalendarDays, MapPin, Music2, Plus, Star, Ticket } from 'lucide-react';
+import { CalendarDays, MapPin, Music2, Pencil, Plus, Star, Ticket, Trash2, UserPlus } from 'lucide-react';
 import { useMemo, useState, type FormEvent } from 'react';
 import { loteOffers, loteStatuses, type LoteOffer, type LoteStatus } from 'tropical-nomads-shared';
 import { savePartyAction, type PartyFormResult } from '../admin/actions';
-import type { EventPhase } from '../admin/event-board';
+import { eventWhenLabel, type EventPhase } from '../admin/event-board';
+import { initialEventTab, type EventDashboardModel } from '../admin/event-dashboard';
+import type { ParticipantRow } from '../admin/event-participants';
 import { instantFromWall, wallClock } from '../admin/event-time';
 import { followingMorning, timezoneForCity, venueIdFor } from '../admin/place-time';
 import { timeZoneChoices } from '../admin/time-zones';
-import type { AdminEventValues } from '../admin/values';
+import type { AdminEventValues, AdminGuestListField, AdminGuestPersonField } from '../admin/values';
+import { removeGuestPersonAction, saveGuestPersonAction } from '../check-in/actions';
 import { displayedCountryFlag } from '../artists/flag';
 import { lineupArtists, type ArtistProfile } from '../artists/profile';
 import { normalizeSearch } from '../events/calendar';
-import { adminText } from '../i18n/copy';
+import { adminText, eventText } from '../i18n/copy';
 import { useLanguage } from '../i18n/provider';
 import { eventCropSize } from '../shop/crop-image';
 import type { VenueChoice } from '../venues/load';
 import { ArtistEditor } from './admin/ArtistEditor';
+import { EventDashboard } from './admin/EventDashboard';
+import { EventParticipants } from './admin/EventParticipants';
 import { CroppedImageField } from './admin/CroppedImageField';
 import { AdminSection, adminFieldClass } from './admin/form';
 import { MarkdownField } from './admin/MarkdownField';
 import { VenueEditor } from './admin/VenueEditor';
 import { CountryMark } from './ui/CountryMark';
-import { Button, TextLink } from './ui/Button';
+import { Button, IconButton, TextLink } from './ui/Button';
 import { SelectField } from './ui/Select';
 
 interface LoteDraft {
@@ -134,12 +139,20 @@ export function AdminEventForm({
   venues,
   sold,
   phase,
+  initialGuestLists,
+  dashboard,
+  participants = [],
+  publicSlug = '',
 }: {
   values: AdminEventValues;
   artists: ArtistProfile[];
   venues: VenueChoice[];
   sold: Record<string, number>;
   phase: EventPhase;
+  initialGuestLists: AdminGuestListField[];
+  dashboard?: EventDashboardModel;
+  participants?: readonly ParticipantRow[];
+  publicSlug?: string;
 }) {
   const { language } = useLanguage();
   const zones = timeZoneChoices();
@@ -148,7 +161,7 @@ export function AdminEventForm({
   const matchedCity = venues.find((place) => place.id === matchedVenueId)?.city || values.venueCity;
   const start = wallClock(values.dateStart, knownZone);
   const end = wallClock(values.dateEnd, knownZone);
-  const [tab, setTab] = useState<'details' | 'tickets'>('details');
+  const [tab, setTab] = useState<'dashboard' | 'participants' | 'details' | 'tickets' | 'lists'>(initialEventTab(values.id));
   const [title, setTitle] = useState(values.title);
   const [description, setDescription] = useState(values.description);
   const [timezone, setTimezone] = useState(knownZone || timezoneForCity(matchedCity) || '');
@@ -176,6 +189,7 @@ export function AdminEventForm({
   const [query, setQuery] = useState('');
   const [draftName, setDraftName] = useState('');
   const [types, setTypes] = useState<TypeDraft[]>(() => typesFrom(values));
+  const [guestLists, setGuestLists] = useState(initialGuestLists);
   const [preview, setPreview] = useState<string | undefined>(values.imageUrl || undefined);
   const [imageFile, setImageFile] = useState<File>();
   const [imageRemoved, setImageRemoved] = useState(false);
@@ -204,6 +218,21 @@ export function AdminEventForm({
     const known = catalog.find((artist) => artist.name.toLowerCase() === name.toLowerCase());
     setLineup((current) => [...current, known ? { name: known.name, artistId: known.id } : { name }]);
     setDraftName('');
+  }
+
+  function updateGuestList(index: number, patch: Partial<AdminGuestListField>): void {
+    setGuestLists((current) =>
+      current.map((list, itemIndex) => {
+        if (itemIndex !== index || list.locked) {
+          return list;
+        }
+        const next = { ...list, ...patch };
+        if (next.channel !== 'online') {
+          next.capacity = '';
+        }
+        return next;
+      }),
+    );
   }
 
   function chooseVenue(id: string, city?: string): void {
@@ -284,6 +313,13 @@ export function AdminEventForm({
         data.append('offerEnds', lote.endsOn === '' ? '' : instantFromWall(lote.endsOn, '23:59', timezone));
       }
     }
+    for (const list of guestLists) {
+      data.append('guestListId', list.id);
+      data.append('guestListName', list.name);
+      data.append('guestListAmount', list.locked ? '0' : list.amount);
+      data.append('guestListChannel', list.locked ? 'door' : list.channel);
+      data.append('guestListCapacity', !list.locked && list.channel === 'online' ? list.capacity : '');
+    }
     setPending(true);
     const saved = await savePartyAction(data);
     setResult(saved);
@@ -293,6 +329,14 @@ export function AdminEventForm({
     }
   }
 
+  const whenLabel = eventWhenLabel(
+    {
+      dateStart: values.dateStart,
+      ...(values.dateEnd.trim() !== '' ? { dateEnd: values.dateEnd } : {}),
+      ...(values.timezone.trim() !== '' ? { timezone: values.timezone } : {}),
+    },
+    eventText(language, 'dateLocale'),
+  );
   const priced = catalogFrom(types, timezone);
   const selectedVenue = places.find((place) => place.id === venueId);
   const zoneOptions = zones.map((zone) => ({ value: zone, label: zone }));
@@ -313,16 +357,33 @@ export function AdminEventForm({
           </span>
         </div>
 
-        <div className="mt-6 flex gap-2" role="tablist">
+        <div className="mt-6 flex flex-wrap gap-2" role="tablist">
+          {values.id ? (
+            <>
+              <Button type="button" role="tab" aria-selected={tab === 'dashboard'} tone={tab === 'dashboard' ? 'primary' : 'ghost'} size="sm" onClick={() => setTab('dashboard')}>
+                {text('dashboardTab')}
+              </Button>
+              <Button type="button" role="tab" aria-selected={tab === 'participants'} tone={tab === 'participants' ? 'primary' : 'ghost'} size="sm" onClick={() => setTab('participants')}>
+                {text('participantsTab')}
+              </Button>
+            </>
+          ) : null}
           <Button type="button" role="tab" aria-selected={tab === 'details'} tone={tab === 'details' ? 'primary' : 'ghost'} size="sm" onClick={() => setTab('details')}>
             {text('detailsTab')}
           </Button>
           <Button type="button" role="tab" aria-selected={tab === 'tickets'} tone={tab === 'tickets' ? 'primary' : 'ghost'} size="sm" onClick={() => setTab('tickets')}>
             {text('ticketsTab')}
           </Button>
+          <Button type="button" role="tab" aria-selected={tab === 'lists'} tone={tab === 'lists' ? 'primary' : 'ghost'} size="sm" onClick={() => setTab('lists')}>
+            {text('guestListsTitle')}
+          </Button>
         </div>
 
-        {tab === 'details' ? (
+        {tab === 'dashboard' ? (
+          dashboard && values.id ? <EventDashboard model={dashboard} slug={publicSlug || values.id} when={whenLabel} timeZone={values.timezone} /> : null
+        ) : tab === 'participants' ? (
+          values.id ? <EventParticipants rows={participants} eventId={values.id} /> : null
+        ) : tab === 'details' ? (
           <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(18rem,23rem)_minmax(0,1fr)] lg:items-start">
             <CroppedImageField
               preview={preview}
@@ -519,7 +580,8 @@ export function AdminEventForm({
               </AdminSection>
             </div>
           </div>
-        ) : (
+        ) : null}
+        {tab === 'tickets' ? (
           <div className="mt-8 space-y-6">
             <AdminSection icon={<Ticket size={20} aria-hidden="true" />} title={text('ticketLadder')} help={text('ticketHelp')}>
               {types.map((type, typeIndex) => (
@@ -598,26 +660,53 @@ export function AdminEventForm({
               </TextLink>
             </AdminSection>
           </div>
-        )}
+        ) : null}
+        {tab === 'lists' ? (
+          <div className="mt-8 space-y-6">
+            <AdminSection icon={<Ticket size={20} aria-hidden="true" />} title={text('guestListsTitle')} help={text('guestListHelp')}>
+              <GuestListRows
+                lists={guestLists}
+                onPatch={updateGuestList}
+                onRemove={(index) => setGuestLists((current) => current.filter((_item, itemIndex) => itemIndex !== index))}
+                onParticipants={(id, participants) =>
+                  setGuestLists((current) =>
+                    current.map((item) => (item.id === id ? { ...item, participants, used: item.used || participants.length > 0 } : item)),
+                  )
+                }
+              />
+              <TextLink
+                onClick={() =>
+                  setGuestLists((current) => [...current, { id: '', name: '', amount: '', channel: 'door', capacity: '', locked: false, used: false, participants: [] }])
+                }
+                className="inline-flex items-center gap-2 text-sm"
+              >
+                <Plus size={16} aria-hidden="true" />
+                {text('addGuestList')}
+              </TextLink>
+            </AdminSection>
+          </div>
+        ) : null}
 
-        <div className="mt-8 flex flex-wrap items-center gap-4 rounded-[2rem] border border-white/10 bg-black/15 p-4">
-          {alreadyPublished(phase) ? (
-            <Button type="submit" name="intent" value="save" disabled={pending} className="min-w-40">
-              {pending ? text('saving') : text('saveChanges')}
-            </Button>
-          ) : (
-            <>
-              <Button type="submit" name="intent" value="save" tone="ghost" disabled={pending} className="min-w-40">
-                {pending ? text('saving') : text('save')}
+        {tab !== 'dashboard' && tab !== 'participants' ? (
+          <div className="mt-8 flex flex-wrap items-center gap-4 rounded-[2rem] border border-white/10 bg-black/15 p-4">
+            {alreadyPublished(phase) ? (
+              <Button type="submit" name="intent" value="save" disabled={pending} className="min-w-40">
+                {pending ? text('saving') : text('saveChanges')}
               </Button>
-              <Button type="submit" name="intent" value="publish" disabled={pending} className="min-w-40">
-                {text('publish')}
-              </Button>
-            </>
-          )}
-          {result?.notice === 'saved' ? <p className="text-sm font-semibold text-emerald-300">{text('saved')}</p> : null}
-          {result?.notice === 'invalid' || result?.notice === 'denied' ? <p className="text-sm font-semibold text-ozora-coral">{text('invalid')}</p> : null}
-        </div>
+            ) : (
+              <>
+                <Button type="submit" name="intent" value="save" tone="ghost" disabled={pending} className="min-w-40">
+                  {pending ? text('saving') : text('save')}
+                </Button>
+                <Button type="submit" name="intent" value="publish" disabled={pending} className="min-w-40">
+                  {text('publish')}
+                </Button>
+              </>
+            )}
+            {result?.notice === 'saved' ? <p className="text-sm font-semibold text-emerald-300">{text('saved')}</p> : null}
+            {result?.notice === 'invalid' || result?.notice === 'denied' ? <p className="text-sm font-semibold text-ozora-coral">{text('invalid')}</p> : null}
+          </div>
+        ) : null}
       </form>
       <ArtistEditor
         artist={editing}
@@ -653,6 +742,204 @@ export function AdminEventForm({
         }}
       />
     </main>
+  );
+}
+
+function GuestListRows({
+  lists,
+  onPatch,
+  onRemove,
+  onParticipants,
+}: {
+  lists: AdminGuestListField[];
+  onPatch: (index: number, patch: Partial<AdminGuestListField>) => void;
+  onRemove: (index: number) => void;
+  onParticipants: (id: string, participants: AdminGuestPersonField[]) => void;
+}) {
+  return (
+    <ul className="space-y-2">
+      {lists.map((list, index) => (
+        <GuestListRow
+          key={list.id === '' ? `guest-list-${index}` : list.id}
+          list={list}
+          onPatch={(patch) => onPatch(index, patch)}
+          onRemove={() => onRemove(index)}
+          onParticipants={(participants) => onParticipants(list.id, participants)}
+        />
+      ))}
+    </ul>
+  );
+}
+
+function GuestListRow({
+  list,
+  onPatch,
+  onRemove,
+  onParticipants,
+}: {
+  list: AdminGuestListField;
+  onPatch: (patch: Partial<AdminGuestListField>) => void;
+  onRemove: () => void;
+  onParticipants: (participants: AdminGuestPersonField[]) => void;
+}) {
+  const { language } = useLanguage();
+  const text = (key: Parameters<typeof adminText>[1]) => adminText(language, key);
+  const [expanded, setExpanded] = useState(false);
+  const [editing, setEditing] = useState(list.id === '');
+  const [draft, setDraft] = useState({ guestId: '', name: '', email: '', observation: '' });
+  const [adding, setAdding] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [invalid, setInvalid] = useState(false);
+  const price = list.amount.trim() === '' || Number(list.amount) === 0 ? text('listFree') : list.amount;
+
+  async function savePerson(): Promise<void> {
+    setPending(true);
+    const result = await saveGuestPersonAction({
+      listId: list.id,
+      ...(draft.guestId === '' ? {} : { guestId: draft.guestId }),
+      name: draft.name,
+      email: draft.email,
+      observation: draft.observation,
+    });
+    setPending(false);
+    if (!result.ok || !result.participants) {
+      setInvalid(true);
+      return;
+    }
+    setInvalid(false);
+    setDraft({ guestId: '', name: '', email: '', observation: '' });
+    setAdding(false);
+    onParticipants(result.participants);
+  }
+
+  async function removePerson(guestId: string): Promise<void> {
+    setPending(true);
+    const result = await removeGuestPersonAction({ listId: list.id, guestId });
+    setPending(false);
+    if (!result.ok || !result.participants) {
+      setInvalid(true);
+      return;
+    }
+    setInvalid(false);
+    if (draft.guestId === guestId) {
+      setDraft({ guestId: '', name: '', email: '', observation: '' });
+    }
+    onParticipants(result.participants);
+  }
+
+  const showForm = list.id !== '' && (adding || draft.guestId !== '');
+
+  return (
+    <li className="rounded-2xl border border-white/10">
+      <div className="flex items-center gap-2 px-3 py-2">
+        {editing && !list.locked ? (
+          <div className="flex min-w-0 flex-1 gap-2">
+            <input
+              value={list.name}
+              readOnly={list.used}
+              aria-label={text('guestListName')}
+              onChange={(event) => onPatch({ name: event.target.value })}
+              className={`${adminFieldClass} min-w-0 flex-1`}
+            />
+            <input
+              value={list.amount}
+              aria-label={text('price')}
+              inputMode="decimal"
+              onChange={(event) => onPatch({ amount: event.target.value })}
+              className={`${adminFieldClass} w-24`}
+            />
+          </div>
+        ) : (
+          <button type="button" className="min-w-0 flex-1 truncate px-1 py-2 text-left" onClick={() => setExpanded((current) => !current)}>
+            <span className="font-semibold text-ozora-cream">{list.name || text('guestListName')}</span>
+            <span className="ml-2 text-sm text-ozora-cream/55">{price}</span>
+          </button>
+        )}
+        <span className="flex shrink-0">
+          {list.locked ? null : (
+            <IconButton label={text('editPerson')} onClick={() => setEditing((current) => !current)}>
+              <Pencil size={16} aria-hidden="true" />
+            </IconButton>
+          )}
+          {list.id === '' ? null : (
+            <IconButton
+              label={text('addName')}
+              onClick={() => {
+                setExpanded(true);
+                setAdding(true);
+                setDraft({ guestId: '', name: '', email: '', observation: '' });
+              }}
+            >
+              <UserPlus size={16} aria-hidden="true" />
+            </IconButton>
+          )}
+          {list.locked || list.used ? null : (
+            <IconButton label={text('removeGuestList')} onClick={onRemove}>
+              <Trash2 size={16} aria-hidden="true" />
+            </IconButton>
+          )}
+        </span>
+      </div>
+      {expanded ? (
+        <div className="space-y-3 border-t border-white/10 px-4 py-3">
+          <ul className="space-y-1">
+            {list.participants.map((person) => (
+              <li key={person.id} className="flex items-center justify-between gap-2">
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-semibold text-ozora-cream">{person.name}</span>
+                  {person.email !== '' ? <span className="block truncate text-xs text-ozora-cream/55">{person.email}</span> : null}
+                  {person.observation !== '' ? <span className="block truncate text-xs text-ozora-cream/55">{person.observation}</span> : null}
+                </span>
+                <span className="flex shrink-0">
+                  <IconButton
+                    label={text('editPerson')}
+                    onClick={() => {
+                      setAdding(false);
+                      setDraft({ guestId: person.id, name: person.name, email: person.email, observation: person.observation });
+                    }}
+                  >
+                    <Pencil size={15} aria-hidden="true" />
+                  </IconButton>
+                  <IconButton label={text('removePerson')} onClick={() => void removePerson(person.id)}>
+                    <Trash2 size={15} aria-hidden="true" />
+                  </IconButton>
+                </span>
+              </li>
+            ))}
+          </ul>
+          {showForm ? (
+            <div className="grid gap-2 md:grid-cols-[1fr_1fr_1fr_auto] md:items-end">
+              <input
+                value={draft.name}
+                aria-label={text('personName')}
+                placeholder={text('personName')}
+                onChange={(event) => setDraft((current) => ({ ...current, name: event.target.value }))}
+                className={adminFieldClass}
+              />
+              <input
+                value={draft.email}
+                aria-label={text('personEmail')}
+                placeholder={text('personEmail')}
+                onChange={(event) => setDraft((current) => ({ ...current, email: event.target.value }))}
+                className={adminFieldClass}
+              />
+              <input
+                value={draft.observation}
+                aria-label={text('personNote')}
+                placeholder={text('personNote')}
+                maxLength={500}
+                onChange={(event) => setDraft((current) => ({ ...current, observation: event.target.value }))}
+                className={adminFieldClass}
+              />
+              <Button type="button" size="sm" disabled={pending} onClick={() => void savePerson()}>
+                {text('savePerson')}
+              </Button>
+            </div>
+          ) : null}
+          {invalid ? <p className="text-sm font-semibold text-ozora-coral">{text('personInvalid')}</p> : null}
+        </div>
+      ) : null}
+    </li>
   );
 }
 

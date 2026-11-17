@@ -70,6 +70,8 @@ describe('own order views', () => {
     assert.equal(views[2]?.pay, undefined);
     assert.equal(views[2]?.lines[0]?.name, 'Friday');
     assert.equal(views[2]?.lines[0]?.ticketId, 'ticket-aaaaaaaaaaaaaaaaaa');
+    assert.equal(views[2]?.lines[0]?.partyId, 'party-1');
+    assert.equal(views[0]?.lines[0]?.partyId, undefined);
     const pay = views[0]?.pay?.en;
     assert.ok(pay);
     const url = shopPayUrl(pay);

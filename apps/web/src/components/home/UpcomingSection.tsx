@@ -64,7 +64,7 @@ export function UpcomingSection({ events, partners }: { events: readonly HomeEve
                     ) : null}
                     <h3 className="text-lg font-semibold text-ozora-cream">
                       <a
-                        href={`/events/${encodeURIComponent(event.id)}`}
+                        href={`/events/${encodeURIComponent(event.slug)}`}
                         className="rounded-sm underline-offset-4 transition hover:text-ozora-yellow hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
                       >
                         {event.title}

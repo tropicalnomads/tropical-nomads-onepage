@@ -27,6 +27,7 @@ export interface InAppOffer {
 
 export interface UpcomingEventCard {
   id: string;
+  slug: string;
   title: string;
   dateStart: string;
   dateEnd?: string;

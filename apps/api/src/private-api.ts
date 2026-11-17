@@ -14,6 +14,9 @@ import {
 } from './accounts.ts';
 import {
   commitAddGuest,
+  commitEnsureGuestLists,
+  commitRemoveGuest,
+  commitUpdateGuest,
   commitGuestCheckIn,
   commitGuestList,
   commitScan,
@@ -102,6 +105,7 @@ async function partyInput(value: unknown): Promise<PartySaveInput> {
   });
   const imageAction = value.imageAction === 'replace' || value.imageAction === 'remove' || value.imageAction === 'keep' ? value.imageAction : 'keep';
   const imageBase64 = typeof value.imageBase64 === 'string' ? value.imageBase64 : '';
+  const guestLists = guestListInputs(value.guestLists);
   return {
     ...(typeof value.id === 'string' && value.id !== '' ? { id: value.id } : {}),
     title: text(value.title, 'event'),
@@ -116,8 +120,39 @@ async function partyInput(value: unknown): Promise<PartySaveInput> {
     artists: typeof value.artists === 'string' ? value.artists : '',
     ...(typeof value.headliners === 'string' ? { headliners: value.headliners } : {}),
     offers,
+    ...(guestLists === undefined ? {} : { guestLists }),
     publish: value.publish === true,
   };
+}
+
+function guestListInputs(value: unknown): PartySaveInput['guestLists'] {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (!Array.isArray(value)) {
+    throw new Error('event was not saved');
+  }
+  return value.map((item) => {
+    if (!isRecord(item)) {
+      throw new Error('event was not saved');
+    }
+    return {
+      id: typeof item.id === 'string' ? item.id : '',
+      name: typeof item.name === 'string' ? item.name : '',
+      amount: offerField(item.amount),
+      channel: typeof item.channel === 'string' ? item.channel : '',
+      capacity: offerField(item.capacity),
+    };
+  });
+}
+
+function guestParticipants(list: { guests: readonly { id: string; name: string; email?: string; observation?: string }[] }) {
+  return list.guests.map((guest) => ({
+    id: guest.id,
+    name: guest.name,
+    email: guest.email ?? '',
+    observation: guest.observation ?? '',
+  }));
 }
 
 function staffCaller(value: unknown, sessionSub: string): CheckInCaller {
@@ -374,6 +409,22 @@ async function runAction(action: string, input: unknown, sessionSub: string | un
         new Date().toISOString(),
       );
     }
+    case 'ensure-guest-lists': {
+      const sub = requireSignedIn(sessionSub);
+      if (!isRecord(input)) {
+        throw new Error('guest list was not stored');
+      }
+      const caller = staffCaller(input.caller, sub);
+      const partyId = text(input.partyId, 'guest list');
+      if (caller.role === 'door') {
+        const invites = await loadDoorInvites();
+        const allowed = invites.some((invite) => !invite.revoked && invite.userId === caller.actorId && invite.partyIds.includes(partyId));
+        if (!allowed) {
+          throw new Error('check-in is not allowed');
+        }
+      }
+      return commitEnsureGuestLists(partyId, new Date().toISOString());
+    }
     case 'create-guest-list': {
       const sub = requireSignedIn(sessionSub);
       if (!isRecord(input)) {
@@ -395,8 +446,39 @@ async function runAction(action: string, input: unknown, sessionSub: string | un
       if (caller.role !== 'admin') {
         throw new Error('check-in is not allowed');
       }
-      await commitAddGuest(caller, text(input.listId, 'guest'), text(input.name, 'guest'), await loadPublishedEventIds(), new Date().toISOString());
-      return { saved: true };
+      const added = await commitAddGuest(caller, text(input.listId, 'guest'), text(input.name, 'guest'), new Date().toISOString(), {
+        ...(typeof input.email === 'string' ? { email: input.email } : {}),
+        ...(typeof input.observation === 'string' ? { observation: input.observation } : {}),
+      });
+      return { participants: guestParticipants(added) };
+    }
+    case 'update-guest': {
+      const sub = requireSignedIn(sessionSub);
+      if (!isRecord(input)) {
+        throw new Error('guest was not stored');
+      }
+      const caller = staffCaller(input.caller, sub);
+      if (caller.role !== 'admin') {
+        throw new Error('check-in is not allowed');
+      }
+      const updated = await commitUpdateGuest(caller, text(input.listId, 'guest'), text(input.guestId, 'guest'), {
+        name: text(input.name, 'guest'),
+        ...(typeof input.email === 'string' ? { email: input.email } : {}),
+        ...(typeof input.observation === 'string' ? { observation: input.observation } : {}),
+      });
+      return { participants: guestParticipants(updated) };
+    }
+    case 'remove-guest': {
+      const sub = requireSignedIn(sessionSub);
+      if (!isRecord(input)) {
+        throw new Error('guest was not stored');
+      }
+      const caller = staffCaller(input.caller, sub);
+      if (caller.role !== 'admin') {
+        throw new Error('check-in is not allowed');
+      }
+      const removed = await commitRemoveGuest(caller, text(input.listId, 'guest'), text(input.guestId, 'guest'));
+      return { participants: guestParticipants(removed) };
     }
     case 'admin-parties': {
       const sub = requireSignedIn(sessionSub);

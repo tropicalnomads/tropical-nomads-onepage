@@ -3,6 +3,81 @@ import type { ManagedParty } from 'tropical-nomads-api/parties';
 import { uploadedEventFlyer } from './event-image';
 import { bannerSrc } from '../events/assets';
 
+export interface AdminGuestPersonField {
+  id: string;
+  name: string;
+  email: string;
+  observation: string;
+}
+
+export interface AdminGuestListField {
+  id: string;
+  name: string;
+  amount: string;
+  channel: 'door' | 'online';
+  capacity: string;
+  locked: boolean;
+  used: boolean;
+  participants: AdminGuestPersonField[];
+}
+
+function guestPeople(guests: readonly unknown[]): AdminGuestPersonField[] {
+  return guests.flatMap((guest) => {
+    if (typeof guest !== 'object' || guest === null || Array.isArray(guest)) {
+      return [];
+    }
+    const row = guest as Record<string, unknown>;
+    if (typeof row.id !== 'string' || typeof row.name !== 'string') {
+      return [];
+    }
+    return [
+      {
+        id: row.id,
+        name: row.name,
+        email: typeof row.email === 'string' ? row.email : '',
+        observation: typeof row.observation === 'string' ? row.observation : '',
+      },
+    ];
+  });
+}
+
+export function defaultGuestListFields(): AdminGuestListField[] {
+  return [
+    { id: '', name: 'DJ', amount: '0', channel: 'door', capacity: '', locked: true, used: false, participants: [] },
+    { id: '', name: 'Crew', amount: '0', channel: 'door', capacity: '', locked: true, used: false, participants: [] },
+  ];
+}
+
+export function guestListFields(
+  lists: readonly {
+    id: string;
+    name: string;
+    amount: number;
+    channel: 'door' | 'online';
+    locked: boolean;
+    capacity?: number;
+    guests: readonly unknown[];
+  }[],
+  sold: Readonly<Record<string, number>>,
+): AdminGuestListField[] {
+  const mapped: AdminGuestListField[] = lists.map((list) => ({
+    id: list.id,
+    name: list.name,
+    amount: String(list.amount),
+    channel: list.channel,
+    capacity: list.capacity === undefined ? '' : String(list.capacity),
+    locked: list.locked,
+    used: list.guests.length > 0 || (sold[list.name] ?? 0) > 0,
+    participants: guestPeople(list.guests),
+  }));
+  const withDefaults = [...defaultGuestListFields().filter((item) => !mapped.some((list) => list.name === item.name)), ...mapped];
+  return [
+    ...withDefaults.filter((list) => list.name === 'DJ'),
+    ...withDefaults.filter((list) => list.name === 'Crew'),
+    ...withDefaults.filter((list) => list.name !== 'DJ' && list.name !== 'Crew'),
+  ];
+}
+
 export interface AdminOfferField {
   name: string;
   amount: string;

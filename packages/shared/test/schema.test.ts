@@ -10,6 +10,7 @@ import {
   parseEmailTemplate,
   parseParty,
   parseIssuedTicket,
+  parseGuestList,
   parseOrder,
   parsePaymentMethod,
   parseTicketOwners,
@@ -329,6 +330,110 @@ describe('schemas', () => {
     assert.equal(parseTicketOwners([{ fullName: 'Ada', email: 'not-an-email' }]).ok, false);
     assert.equal((schemas.issuedTicket as readonly string[]).includes('ownerName'), true);
     assert.equal((schemas.issuedTicket as readonly string[]).includes('ownerEmail'), true);
+  });
+
+  it('reads an old guest list as free at the door and rejects a broken price', () => {
+    const stored = parseGuestList({
+      id: 'list-1',
+      partyId: 'party-1',
+      name: 'Artists',
+      createdAt: '2026-11-08T00:00:00.000Z',
+      guests: [],
+    });
+    assert.equal(stored.ok, true);
+    if (stored.ok) {
+      assert.equal(stored.value.amount, 0);
+      assert.equal(stored.value.channel, 'door');
+      assert.equal(stored.value.locked, false);
+      assert.equal(stored.value.capacity, undefined);
+    }
+    assert.equal(parseGuestList({ id: 'list-1', partyId: 'party-1', name: 'Artists', createdAt: '2026-11-08T00:00:00.000Z', guests: [], amount: -1 }).ok, false);
+    assert.equal(
+      parseGuestList({ id: 'list-1', partyId: 'party-1', name: 'Artists', createdAt: '2026-11-08T00:00:00.000Z', guests: [], channel: 'online' }).ok,
+      false,
+    );
+    assert.equal(
+      parseGuestList({
+        id: 'list-1',
+        partyId: 'party-1',
+        name: 'Artists',
+        createdAt: '2026-11-08T00:00:00.000Z',
+        guests: [],
+        amount: 0,
+        channel: 'door',
+        locked: true,
+      }).ok,
+      false,
+    );
+    const online = parseGuestList({
+      id: 'list-1',
+      partyId: 'party-1',
+      name: 'Friends',
+      createdAt: '2026-11-08T00:00:00.000Z',
+      guests: [],
+      amount: 0,
+      channel: 'online',
+      locked: false,
+      capacity: 4,
+    });
+    assert.equal(online.ok, true);
+    if (online.ok) {
+      assert.equal(online.value.capacity, 4);
+    }
+    const locked = parseGuestList({
+      id: 'list-dj',
+      partyId: 'party-1',
+      name: 'DJ',
+      createdAt: '2026-11-08T00:00:00.000Z',
+      guests: [],
+      amount: 0,
+      channel: 'door',
+      locked: true,
+    });
+    assert.equal(locked.ok, true);
+    const named = parseGuestList({
+      id: 'list-1',
+      partyId: 'party-1',
+      name: 'Artists',
+      createdAt: '2026-11-08T00:00:00.000Z',
+      amount: 0,
+      channel: 'door',
+      locked: false,
+      guests: [{ id: 'guest-1', name: 'Mina Souza', addedAt: '2026-11-08T00:00:00.000Z' }],
+    });
+    assert.equal(named.ok, true);
+    if (named.ok) {
+      assert.equal(named.value.guests[0]?.email, undefined);
+      assert.equal(named.value.guests[0]?.observation, undefined);
+    }
+    const noted = parseGuestList({
+      id: 'list-1',
+      partyId: 'party-1',
+      name: 'Artists',
+      createdAt: '2026-11-08T00:00:00.000Z',
+      amount: 0,
+      channel: 'door',
+      locked: false,
+      guests: [{ id: 'guest-1', name: 'Mina Souza', addedAt: '2026-11-08T00:00:00.000Z', email: 'Mina@Example.com', observation: 'Arrives late' }],
+    });
+    assert.equal(noted.ok, true);
+    if (noted.ok) {
+      assert.equal(noted.value.guests[0]?.email, 'mina@example.com');
+      assert.equal(noted.value.guests[0]?.observation, 'Arrives late');
+    }
+    assert.equal(
+      parseGuestList({
+        id: 'list-1',
+        partyId: 'party-1',
+        name: 'Artists',
+        createdAt: '2026-11-08T00:00:00.000Z',
+        amount: 0,
+        channel: 'door',
+        locked: false,
+        guests: [{ id: 'guest-1', name: 'Mina Souza', addedAt: '2026-11-08T00:00:00.000Z', email: 'not-an-email' }],
+      }).ok,
+      false,
+    );
   });
 
   it('rejects a reference to a missing id', () => {

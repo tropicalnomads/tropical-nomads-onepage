@@ -1,10 +1,13 @@
 import { randomBytes } from 'node:crypto';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import {
   accountCanPurchase,
   decideAccess,
   loteOffers,
   loteStatusFor,
   normalizeAccountEmail,
+  parseGuestList,
   parseIssuedTicket,
   parseOrder,
   parsePaymentTrace,
@@ -12,6 +15,7 @@ import {
   qrPayloadText,
   readTicketOffers,
   ticketSecretMatches,
+  type GuestList,
   type IssuedTicket,
   type Order,
   type PaymentTrace,
@@ -166,7 +170,8 @@ function chargeAmount(unit: number, count: number): number {
 }
 
 /**
- * Issue one paid ticket for each owner. Writes nothing. Currency is euro. The server marks the trace confirmed.
+ * Issue one ticket for each owner. Writes nothing. Currency is euro.
+ * A priced offer is confirmed after the payment trace starts. A free guest-list pass is confirmed at amount zero.
  */
 export function issueTicket(
   file: AccountFile,
@@ -177,6 +182,7 @@ export function issueTicket(
   input: IssueInput,
   caller: PaymentCaller,
   now: string,
+  lists: readonly GuestList[] = [],
 ): TicketSale {
   const userId = requireSelf(caller);
   const profile = file.profiles.find((item) => item.sub === userId);
@@ -190,8 +196,9 @@ export function issueTicket(
   }
   const offerName = offerNameOf(input.offerName);
   const catalog = loteOffers(readTicketOffers(party.offers));
-  const offer = catalog.find((item) => item.name === offerName);
-  if (!offer) {
+  const ticketOffer = catalog.find((item) => item.name === offerName);
+  const listOffer = lists.find((item) => item.partyId === party.id && item.channel === 'online' && item.name === offerName);
+  if (ticketOffer && listOffer) {
     throw new Error('offer is not for sale');
   }
   const soldByName: Record<string, number> = {};
@@ -203,47 +210,71 @@ export function issueTicket(
       soldByName[line.offerName] = (soldByName[line.offerName] ?? 0) + line.quantity;
     }
   }
-  const status = loteStatusFor(catalog, offer.name, soldByName, new Date(now));
-  switch (status) {
-    case 'on-sale':
-      break;
-    case 'sold-out':
-      throw new Error('offer is sold out');
-    case 'scheduled':
-    case 'ended':
-    case undefined:
-      throw new Error('offer is not for sale');
-    default: {
-      const unexpected: never = status;
-      throw new Error(unexpected);
+  let unitAmount = 0;
+  let capacity = 0;
+  if (ticketOffer) {
+    const status = loteStatusFor(catalog, ticketOffer.name, soldByName, new Date(now));
+    switch (status) {
+      case 'on-sale':
+        break;
+      case 'sold-out':
+        throw new Error('offer is sold out');
+      case 'scheduled':
+      case 'ended':
+      case undefined:
+        throw new Error('offer is not for sale');
+      default: {
+        const unexpected: never = status;
+        throw new Error(unexpected);
+      }
     }
+    unitAmount = ticketOffer.amount;
+    capacity = ticketOffer.capacity;
+  } else if (listOffer && listOffer.capacity !== undefined) {
+    if ((soldByName[listOffer.name] ?? 0) >= listOffer.capacity) {
+      throw new Error('offer is sold out');
+    }
+    unitAmount = listOffer.amount;
+    capacity = listOffer.capacity;
+  } else {
+    throw new Error('offer is not for sale');
   }
   const parsedOwners = parseTicketOwners(input.owners);
   if (!parsedOwners.ok) {
     throw new Error('owner is required');
   }
   const owners = parsedOwners.value;
-  const sold = soldByName[offer.name] ?? 0;
-  if (sold + owners.length > offer.capacity) {
+  const sold = soldByName[offerName] ?? 0;
+  if (sold + owners.length > capacity) {
     throw new Error('offer is sold out');
   }
   const orderId = newId('order');
-  const started = startTicketPayment(
-    file,
-    traces,
-    { userId, amount: chargeAmount(offer.amount, owners.length), currency: 'EUR', reference: orderId },
-    caller,
-  );
-  if (started.trace.status !== 'pending_provider' || started.trace.currency !== 'EUR' || started.trace.purpose !== 'tickets') {
-    throw new Error('payment trace is not pending');
+  const total = unitAmount === 0 ? 0 : chargeAmount(unitAmount, owners.length);
+  let trace: PaymentTrace;
+  let confirmedTraces: PaymentTrace[];
+  if (total === 0) {
+    const parsedTrace = parsePaymentTrace(
+      { id: newId('trace'), userId, amount: 0, currency: 'EUR', purpose: 'tickets', reference: orderId, status: 'confirmed' },
+      { profileIds: file.profiles.map((item) => item.sub) },
+    );
+    if (!parsedTrace.ok) {
+      throw new Error('ticket was not issued');
+    }
+    trace = parsedTrace.value;
+    confirmedTraces = [...traces, trace];
+  } else {
+    const started = startTicketPayment(file, traces, { userId, amount: total, currency: 'EUR', reference: orderId }, caller);
+    if (started.trace.status !== 'pending_provider' || started.trace.currency !== 'EUR' || started.trace.purpose !== 'tickets') {
+      throw new Error('payment trace is not pending');
+    }
+    trace = { ...started.trace, status: 'confirmed' };
+    confirmedTraces = started.traces.map((item) => (item.id === trace.id ? trace : item));
   }
-  const trace = { ...started.trace, status: 'confirmed' as const };
-  const confirmedTraces = started.traces.map((item) => (item.id === trace.id ? trace : item));
   const orderDraft = {
     id: orderId,
     userId,
     purpose: 'tickets' as const,
-    lines: [{ kind: 'ticket' as const, partyId: party.id, offerName: offer.name, quantity: owners.length }],
+    lines: [{ kind: 'ticket' as const, partyId: party.id, offerName, quantity: owners.length }],
     traceId: trace.id,
     createdAt: now,
   };
@@ -439,6 +470,28 @@ function issuedFrom(records: readonly unknown[], ids: readonly string[]): Issued
   return found;
 }
 
+function storedGuestList(input: unknown): GuestList {
+  const parsed = parseGuestList(input);
+  if (!parsed.ok) {
+    throw new Error('guest list was not stored');
+  }
+  return parsed.value;
+}
+
+function guestListsForSale(root: string): GuestList[] {
+  if (!existsSync(join(root, 'guest-lists.json'))) {
+    return [];
+  }
+  return readOperational('guest-lists', root).records.map(storedGuestList);
+}
+
+async function loadGuestListsForSale(root?: string): Promise<GuestList[]> {
+  if (usingDatabase(root)) {
+    return (await readStoredCollection('guest-lists')).records.map(storedGuestList);
+  }
+  return guestListsForSale(root ?? operationalDirectory());
+}
+
 export function commitTicket(
   input: IssueInput,
   caller: PaymentCaller,
@@ -451,6 +504,7 @@ export function commitTicket(
   }
   const directory = root ?? operationalDirectory();
   const catalog = parties ?? publishedParties();
+  const lists = guestListsForSale(directory);
   let issuedIds: string[] = [];
   return updateOperational(
     'issued-tickets',
@@ -464,6 +518,7 @@ export function commitTicket(
         input,
         caller,
         now,
+        lists,
       );
       writeOperational('payment-traces', { schemaVersion: 1, records: sale.traces }, directory);
       writeOperational('orders', { schemaVersion: 1, records: sale.orders }, directory);
@@ -486,7 +541,8 @@ async function commitTicketOnDatabase(
     const orders = (await readStoredCollection('orders')).records.map(storedOrder);
     const tickets = (await readStoredCollection('issued-tickets')).records.map(openStoredTicket);
     const catalog = parties ?? (await loadPublishedParties());
-    const sale = issueTicket(accounts, traces, orders, tickets, catalog, input, caller, now);
+    const lists = await loadGuestListsForSale();
+    const sale = issueTicket(accounts, traces, orders, tickets, catalog, input, caller, now, lists);
     await writeStoredState({
       collections: {
         'payment-traces': { schemaVersion: 1, records: sale.traces },

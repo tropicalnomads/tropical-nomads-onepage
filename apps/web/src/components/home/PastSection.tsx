@@ -152,7 +152,7 @@ export function PastSection({ events }: { events: readonly HomeEvent[] }) {
                   {shownEvents.map((event) => (
                     <a
                       key={event.id}
-                      href={`/events/${encodeURIComponent(event.id)}`}
+                      href={`/events/${encodeURIComponent(event.slug)}`}
                       className={cardClassName}
                       aria-label={fillHome(homeText(language, 'viewDetailsAria'), { title: event.title })}
                     >

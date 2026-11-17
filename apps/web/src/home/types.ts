@@ -18,6 +18,7 @@ export interface HomeStage {
 
 export interface HomeEvent {
   id: string;
+  slug: string;
   title: string;
   dateStart: string;
   dateEnd?: string;
@@ -36,6 +37,7 @@ export interface HomeEvent {
   ticketUrl?: string;
   ticketsOnSale: boolean;
   inAppOffers: InAppOffer[];
+  guestListOffers: InAppOffer[];
   timetableUrl?: string;
   instagramPost?: string;
   goabaseUrl?: string;

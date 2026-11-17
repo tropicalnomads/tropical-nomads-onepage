@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { eventSaleChoice, getEventTimetableUrl } from 'tropical-nomads-shared';
+import { assignEventSlugs, eventSaleChoice, eventSlug, getEventTimetableUrl } from 'tropical-nomads-shared';
 import { bannerSrc, onePagerPublicDir, partnerLogoSrc } from '../events/assets.ts';
 import { offersWithRemaining } from '../events/offers.ts';
 import type { HomeCatalog, HomeEvent, HomeMediaLink, HomePartner, HomeSocial, HomeStage } from './types.ts';
@@ -109,7 +109,11 @@ function readPlatform(value: unknown): HomeSocial['platform'] | undefined {
   }
 }
 
-export function readHomeEvent(value: unknown, sold: Readonly<Record<string, number>> = {}): HomeEvent | undefined {
+export function readHomeEvent(
+  value: unknown,
+  sold: Readonly<Record<string, number>> = {},
+  passes: readonly { name: string; amount: number; capacity: number }[] = [],
+): HomeEvent | undefined {
   if (!isRecord(value)) {
     return undefined;
   }
@@ -153,8 +157,11 @@ export function readHomeEvent(value: unknown, sold: Readonly<Record<string, numb
     new Date(),
     sold,
   );
+  const storedSlug = readString(value.slug);
+  const slug = storedSlug !== undefined && storedSlug === eventSlug(storedSlug) ? storedSlug : eventSlug(title);
   return {
     id,
+    slug,
     title,
     dateStart,
     ...(dateEnd ? { dateEnd } : {}),
@@ -173,6 +180,10 @@ export function readHomeEvent(value: unknown, sold: Readonly<Record<string, numb
     ...(ticketUrl ? { ticketUrl } : {}),
     ticketsOnSale: eventbrite !== undefined || tickets !== undefined,
     inAppOffers: offersWithRemaining(sale.inAppOffers, sold),
+    guestListOffers: offersWithRemaining(
+      passes.map((pass) => ({ name: pass.name, amount: pass.amount, currency: 'EUR' as const, capacity: pass.capacity })),
+      sold,
+    ).filter((offer) => offer.remaining > 0),
     ...(timetableUrl ? { timetableUrl } : {}),
     ...(instagramPost ? { instagramPost } : {}),
     ...(goabase ? { goabaseUrl: goabase } : {}),
@@ -258,6 +269,8 @@ export function loadHomeCatalog(): HomeCatalog {
     const card = readHomeEvent(event);
     return card === undefined ? [] : [card];
   });
+  const assigned = assignEventSlugs(events.map((event) => ({ id: event.id, title: event.title, slug: event.slug })));
+  const slugged = events.map((event) => ({ ...event, slug: assigned.get(event.id) ?? event.slug }));
   const partners = partnersFile.partners.flatMap((partner) => {
     const card = readPartner(partner);
     return card === undefined ? [] : [card];
@@ -270,5 +283,5 @@ export function loadHomeCatalog(): HomeCatalog {
   if (!follow) {
     throw new Error('the journey link is unavailable');
   }
-  return { events, partners, socials, followHref: follow.url };
+  return { events: slugged, partners, socials, followHref: follow.url };
 }

@@ -58,6 +58,11 @@ describe('database migration', () => {
     assert.equal(/index[\s\S]*secret_box/i.test(ticketing), false);
     const headliners = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../../../database/migrations/005_party_headliners.sql'), 'utf8');
     assert.match(headliners, /alter table party add column headliners jsonb/);
+    const guestLists = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../../../database/migrations/006_guest_list_terms.sql'), 'utf8');
+    assert.match(guestLists, /alter table guest_list add column amount numeric not null default 0/);
+    assert.match(guestLists, /alter table guest_list add column channel text not null default 'door'/);
+    assert.match(guestLists, /alter table guest_list add column locked boolean not null default false/);
+    assert.match(guestLists, /alter table guest_list add column capacity integer/);
     const seed = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../../../database/seed.mjs'), 'utf8');
     assert.match(seed, /headliners/);
   });

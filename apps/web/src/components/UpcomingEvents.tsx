@@ -161,7 +161,7 @@ export function CalendarEventList({
                     ) : null}
                     <h3 className={`font-display font-bold leading-tight text-ozora-cream ${highlighted ? 'text-2xl md:text-4xl' : past ? 'text-xl' : 'text-2xl'}`}>
                       <a
-                        href={`/events/${encodeURIComponent(event.id)}`}
+                        href={`/events/${encodeURIComponent(event.slug)}`}
                         className="rounded-sm underline-offset-4 transition hover:text-ozora-yellow hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ozora-turquoise"
                       >
                         {event.title}
@@ -216,7 +216,7 @@ export function CalendarEventList({
                           </Button>
                         ) : null
                       ) : cheapest ? (
-                        <Button href={`/events/${encodeURIComponent(event.id)}`} size="sm" icon={<Ticket size={16} aria-hidden="true" />}>
+                        <Button href={`/events/${encodeURIComponent(event.slug)}`} size="sm" icon={<Ticket size={16} aria-hidden="true" />}>
                           {`${eventText(language, 'buyTickets')} · ${euroAmount(cheapest.amount, language)}`}
                         </Button>
                       ) : event.ticketUrl ? (

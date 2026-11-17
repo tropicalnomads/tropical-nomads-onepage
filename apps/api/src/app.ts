@@ -9,6 +9,7 @@ import { handlePrivate } from './private-api.ts';
 import { loadProductCatalog } from './products.ts';
 import { assertNoPrivateFields, eventsView, pastEvents, publishedEventsFrom, publishedSchema, readCatalog, upcomingEvents, type PublishedCatalog } from './published.ts';
 import { readStoredCatalog, type StoredCatalog } from './sql-store.ts';
+import { loadGuestLists, publicGuestListOffers } from './check-in.ts';
 import { loadOrders, summarizeTicketSales } from './tickets.ts';
 
 export interface TodayQuery {
@@ -143,6 +144,16 @@ const routes = new Hono()
       return c.json({ sales: summarizeTicketSales(await loadOrders()) });
     } catch {
       return c.json({ sales: [] });
+    }
+  })
+  .get('/guest-list-offers', async (c) => {
+    if (new URL(c.req.url).search !== '') {
+      return c.json({ error: 'unknown query' } satisfies ApiError, 400);
+    }
+    try {
+      return c.json({ offers: publicGuestListOffers(await loadGuestLists()) });
+    } catch {
+      return c.json({ offers: [] });
     }
   })
   .get('/event-image/:id', async (c) => {

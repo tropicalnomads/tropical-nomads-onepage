@@ -116,6 +116,60 @@ describe('tickets', () => {
     assert.equal(readFileSync(new URL('../../one-pager/public/data/events.json', import.meta.url), 'utf8'), eventsBefore);
   });
 
+  it('issues a priced guest-list pass and a free one with a zero confirmed trace', async () => {
+    const root = emptyRoot();
+    writeFileSync(
+      join(root, 'guest-lists.json'),
+      `${JSON.stringify({
+        schemaVersion: 1,
+        records: [
+          {
+            id: 'list-paid',
+            partyId,
+            name: 'Friends',
+            createdAt: now,
+            guests: [{ id: 'guest-1', name: 'Hidden Guest', addedAt: now }],
+            amount: 8,
+            channel: 'online',
+            locked: false,
+            capacity: 5,
+          },
+          {
+            id: 'list-free',
+            partyId,
+            name: 'Comp',
+            createdAt: now,
+            guests: [],
+            amount: 0,
+            channel: 'online',
+            locked: false,
+            capacity: 2,
+          },
+          {
+            id: 'list-door',
+            partyId,
+            name: 'Door',
+            createdAt: now,
+            guests: [],
+            amount: 10,
+            channel: 'door',
+            locked: false,
+          },
+        ],
+      })}\n`,
+    );
+    const paid = await commitTicket(purchase({ offerName: 'Friends' }), caller(), now, root, [euroParty()]);
+    assert.equal(paid.length, 1);
+    assert.equal(paid[0]?.validForEntry, true);
+    const free = await commitTicket(purchase({ offerName: 'Comp' }), caller(), now, root, [euroParty()]);
+    assert.equal(free.length, 1);
+    const traces = readOperational('payment-traces', root).records as { amount: number; status: string }[];
+    assert.equal(traces.find((item) => item.amount === 8)?.status, 'confirmed');
+    assert.equal(traces.find((item) => item.amount === 0)?.status, 'confirmed');
+    assert.equal(JSON.stringify(readOperational('issued-tickets', root)).includes('Hidden Guest'), false);
+    await assert.rejects(() => commitTicket(purchase({ offerName: 'Door' }), caller(), now, root, [euroParty()]), /offer is not for sale/);
+  });
+
   it('refuses a blank owner and writes nothing', async () => {
     const root = emptyRoot();
     const eventsBefore = readFileSync(new URL('../../one-pager/public/data/events.json', import.meta.url), 'utf8');

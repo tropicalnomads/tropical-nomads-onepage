@@ -1,5 +1,6 @@
 'use server';
 
+import type { GuestListSaveInput } from 'tropical-nomads-api/check-in';
 import { commitPartySave, loadAdminParties } from 'tropical-nomads-api/parties';
 import type { ManagedParty, PartyOfferInput } from 'tropical-nomads-api/parties';
 import { currentAccountSub } from '../account/actions';
@@ -41,6 +42,29 @@ function offerRows(formData: FormData): PartyOfferInput[] {
     });
   }
   return offers;
+}
+
+function textAt(values: FormDataEntryValue[], index: number): string {
+  const value = values[index];
+  return typeof value === 'string' ? value : '';
+}
+
+function guestListRows(formData: FormData): GuestListSaveInput[] | undefined {
+  const names = formData.getAll('guestListName');
+  if (names.length === 0) {
+    return undefined;
+  }
+  const ids = formData.getAll('guestListId');
+  const amounts = formData.getAll('guestListAmount');
+  const channels = formData.getAll('guestListChannel');
+  const capacities = formData.getAll('guestListCapacity');
+  return names.map((_name, index) => ({
+    id: textAt(ids, index),
+    name: textAt(names, index),
+    amount: textAt(amounts, index),
+    channel: textAt(channels, index),
+    capacity: textAt(capacities, index),
+  }));
 }
 
 async function imagePayload(formData: FormData): Promise<{ imageAction: 'keep' | 'replace' | 'remove'; imageBase64?: string }> {
@@ -91,6 +115,7 @@ export async function savePartyAction(formData: FormData): Promise<PartyFormResu
   const id = field(formData, 'id');
   try {
     const image = await imagePayload(formData);
+    const guestLists = guestListRows(formData);
     const party = {
       ...(id === '' ? {} : { id }),
       title: field(formData, 'title'),
@@ -105,6 +130,7 @@ export async function savePartyAction(formData: FormData): Promise<PartyFormResu
       artists: field(formData, 'artists'),
       ...(typeof formData.get('headliners') === 'string' ? { headliners: field(formData, 'headliners') } : {}),
       offers: offerRows(formData),
+      ...(guestLists ? { guestLists } : {}),
       publish: field(formData, 'intent') === 'publish',
     };
     const saved = apiOrigin()

@@ -9,14 +9,21 @@ import { emptyAccounts, registerVerifiedAccount, type AccountFile } from '../src
 import {
   addGuest,
   checkInGuest,
+  removeGuest,
+  updateGuest,
   checkInTicket,
+  configureGuestLists,
   createGuestList,
+  ensureDefaultGuestLists,
   eventRoster,
   inviteDoor,
+  publicGuestListOffers,
+  readGuestListConfigs,
   revokeDoor,
   scanTicket,
   searchRoster,
   type CheckInCaller,
+  type GuestListSaveInput,
 } from '../src/check-in.ts';
 
 const now = '2026-11-08T21:00:00.000Z';
@@ -73,6 +80,16 @@ function order() {
 const admin: CheckInCaller = { role: 'admin', actorId: 'sub-admin' };
 const door: CheckInCaller = { role: 'door', actorId: 'sub-doe' };
 const buyer: CheckInCaller = { role: 'user', actorId: 'sub-ada' };
+
+function defaultInputs(lists: readonly { id: string; name: string }[]): GuestListSaveInput[] {
+  return ['DJ', 'Crew'].map((name) => ({
+    id: lists.find((list) => list.name === name)?.id ?? '',
+    name,
+    amount: '0',
+    channel: 'door',
+    capacity: '',
+  }));
+}
 
 describe('check-in', () => {
   it('keeps a door invite on one event and lets an admin open without one', () => {
@@ -134,11 +151,129 @@ describe('check-in', () => {
     assert.equal(byAdmin.outcome.checkIn?.actorId, 'sub-admin');
   });
 
+  it('seeds DJ and Crew, keeps a door price off the public list, and refuses a bad change', () => {
+    const file = accounts();
+    const seeded = ensureDefaultGuestLists([], 'party-a', now);
+    assert.deepEqual(
+      seeded.map((list) => list.name),
+      ['DJ', 'Crew'],
+    );
+    assert.equal(seeded.every((list) => list.locked && list.amount === 0 && list.channel === 'door' && list.guests.length === 0), true);
+    const again = ensureDefaultGuestLists(seeded, 'party-a', later);
+    assert.equal(again.length, 2);
+    assert.equal(again[0]?.id, seeded[0]?.id);
+    const configs = readGuestListConfigs([
+      ...defaultInputs(seeded),
+      { id: '', name: 'Friends', amount: '10', channel: 'door', capacity: '' },
+      { id: '', name: 'Online', amount: '12.5', channel: 'online', capacity: '4' },
+      { id: '', name: 'Comp', amount: '', channel: 'online', capacity: '3' },
+    ]);
+    assert.throws(() => configureGuestLists(file, seeded, door, 'party-a', configs, [], {}, now), /not allowed/);
+    const priced = configureGuestLists(file, seeded, admin, 'party-a', configs, [], {}, now);
+    const friends = priced.find((list) => list.name === 'Friends');
+    const online = priced.find((list) => list.name === 'Online');
+    const comp = priced.find((list) => list.name === 'Comp');
+    assert.equal(friends?.amount, 10);
+    assert.equal(friends?.channel, 'door');
+    assert.equal(online?.capacity, 4);
+    assert.equal(comp?.amount, 0);
+    const published = publicGuestListOffers(priced);
+    assert.deepEqual(
+      published.map((offer) => offer.name),
+      ['Online', 'Comp'],
+    );
+    assert.equal(JSON.stringify(published).includes('Friends'), false);
+    const withGuest = addGuest(file, priced, admin, friends?.id ?? '', 'Mina Souza', now);
+    assert.equal(JSON.stringify(publicGuestListOffers(withGuest)).includes('Mina Souza'), false);
+    const roster = eventRoster(file, [], withGuest, [], [], [], [], admin, 'party-a', parties);
+    assert.equal(roster.lists.find((list) => list.name === 'Friends')?.amount, 10);
+    assert.throws(
+      () => configureGuestLists(file, withGuest, admin, 'party-a', readGuestListConfigs(defaultInputs(withGuest)), [], {}, now),
+      /not stored/,
+    );
+    assert.throws(
+      () =>
+        configureGuestLists(
+          file,
+          priced,
+          admin,
+          'party-a',
+          readGuestListConfigs(defaultInputs(priced).map((item) => (item.name === 'DJ' ? { ...item, amount: '5' } : item))),
+          [],
+          {},
+          now,
+        ),
+      /not stored/,
+    );
+    assert.throws(
+      () => configureGuestLists(file, priced, admin, 'party-a', readGuestListConfigs([...defaultInputs(priced), { id: '', name: 'Early', amount: '8', channel: 'online', capacity: '2' }]), ['Early'], {}, now),
+      /not stored/,
+    );
+    assert.throws(
+      () =>
+        configureGuestLists(
+          file,
+          priced,
+          admin,
+          'party-a',
+          readGuestListConfigs([
+            ...defaultInputs(priced),
+            { id: friends?.id ?? '', name: 'Friends', amount: '10', channel: 'door', capacity: '' },
+            { id: online?.id ?? '', name: 'Online', amount: '12.5', channel: 'online', capacity: '1' },
+            { id: comp?.id ?? '', name: 'Comp', amount: '0', channel: 'online', capacity: '3' },
+          ]),
+          [],
+          { Online: 2 },
+          now,
+        ),
+      /not stored/,
+    );
+  });
+
+  it('edits a guest note, keeps it off the public offer, and refuses to remove a checked-in guest', () => {
+    const file = accounts();
+    const seeded = ensureDefaultGuestLists([], 'party-a', now);
+    const priced = configureGuestLists(
+      file,
+      seeded,
+      admin,
+      'party-a',
+      readGuestListConfigs([...defaultInputs(seeded), { id: '', name: 'Friends', amount: '0', channel: 'door', capacity: '' }]),
+      [],
+      {},
+      now,
+    );
+    const listId = priced.find((list) => list.name === 'Friends')?.id ?? '';
+    const withGuest = addGuest(file, priced, admin, listId, 'Mina Souza', now, { email: 'mina@example.com', observation: 'Arrives late' });
+    const guestId = withGuest.find((list) => list.id === listId)?.guests[0]?.id ?? '';
+    assert.equal(withGuest.find((list) => list.id === listId)?.guests[0]?.email, 'mina@example.com');
+    const edited = updateGuest(file, withGuest, admin, listId, guestId, { name: 'Mina Souza', observation: 'VIP' });
+    const person = edited.find((list) => list.id === listId)?.guests[0];
+    assert.equal(person?.observation, 'VIP');
+    assert.equal(person?.email, undefined);
+    const roster = eventRoster(file, [], edited, [], [], [], [], admin, 'party-a', parties);
+    assert.equal(roster.guests[0]?.observation, 'VIP');
+    const offers = JSON.stringify(publicGuestListOffers(edited));
+    assert.equal(offers.includes('mina@example.com'), false);
+    assert.equal(offers.includes('VIP'), false);
+    assert.equal(offers.includes('Mina Souza'), false);
+    const invited = inviteDoor(file, [], admin, 'doe@example.com', ['party-a'], parties, now);
+    assert.throws(() => updateGuest(invited.file, edited, door, listId, guestId, { name: 'Other' }), /not allowed/);
+    assert.throws(() => removeGuest(invited.file, edited, [], door, listId, guestId), /not allowed/);
+    const removed = removeGuest(invited.file, edited, [], admin, listId, guestId);
+    assert.equal(removed.find((list) => list.id === listId)?.guests.length, 0);
+    const checked = checkInGuest(invited.file, invited.invites, edited, [], door, 'party-a', guestId, parties, now);
+    assert.equal(checked.outcome.admitted, true);
+    assert.throws(() => removeGuest(invited.file, edited, checked.checkIns, admin, listId, guestId), /checked in/);
+    const renamed = updateGuest(invited.file, edited, admin, listId, guestId, { name: 'Mina Costa', email: 'mina@example.com', observation: 'Still coming' });
+    assert.equal(renamed.find((list) => list.id === listId)?.guests[0]?.name, 'Mina Costa');
+  });
+
   it('lets an admin add a guest and lets door check that guest in once', () => {
     const invited = inviteDoor(accounts(), [], admin, 'doe@example.com', ['party-a'], parties, now);
     assert.throws(() => createGuestList(invited.file, [], door, 'party-a', 'Artists', parties, now), /not allowed/);
     const lists = createGuestList(invited.file, [], admin, 'party-a', 'Artists', parties, now);
-    const withGuest = addGuest(invited.file, lists, admin, lists[0]?.id ?? '', 'Mina Souza', parties, now);
+    const withGuest = addGuest(invited.file, lists, admin, lists[0]?.id ?? '', 'Mina Souza', now);
     const roster = eventRoster(invited.file, invited.invites, withGuest, [ticket()], [order()], [trace('pending_provider')], [], door, 'party-a', parties);
     assert.equal(roster.guests[0]?.name, 'Mina Souza');
     assert.equal(roster.sold[0]?.state, 'unpaid');
@@ -171,6 +306,9 @@ describe('check-in', () => {
     assert.equal(readFileSync(new URL('../../one-pager/public/data/events.json', import.meta.url), 'utf8'), eventsBefore);
     assert.equal((await api.request('/check-ins')).status, 404);
     assert.equal((await api.request('/guest-lists', { method: 'POST' })).status, 405);
+    const offers = await api.request('/guest-list-offers');
+    assert.equal(offers.status, 200);
+    assert.equal(JSON.stringify(await offers.json()).includes('guests'), false);
     const source = readFileSync(new URL('../src/check-in.ts', import.meta.url), 'utf8');
     assert.equal(source.includes('markPaymentConfirmed'), false);
     assert.equal(source.includes('recordRefund'), false);

@@ -46,7 +46,7 @@ export const schemas = {
   issuedTicket: ['id', 'partyId', 'traceId', 'buyerId', 'secret', 'createdAt', 'validForEntry', 'ownerName', 'ownerEmail'],
   checkIn: ['id', 'ticketId', 'guestId', 'partyId', 'at', 'actorId', 'result', 'reason'],
   doorInvite: ['id', 'email', 'userId', 'partyIds', 'revoked'],
-  guestList: ['id', 'partyId', 'name', 'createdAt', 'guests'],
+  guestList: ['id', 'partyId', 'name', 'createdAt', 'guests', 'amount', 'channel', 'locked', 'capacity'],
   product: ['id', 'name', 'image', 'alt', 'amount', 'currency', 'pickup', 'stockNote'],
   stockCount: ['productId', 'size', 'count'],
   stockCorrection: ['id', 'productId', 'size', 'actorId', 'at', 'oldCount', 'newCount'],

@@ -84,6 +84,7 @@ export interface PublishedEventImages {
 export interface PublishedEvent {
   id: string;
   title: string;
+  slug?: string;
   dateStart: string;
   dateEnd?: string;
   timezone?: string;
